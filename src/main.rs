@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Instant};
 
 use poset::{Poset, MAX_N};
 
@@ -8,9 +8,12 @@ fn main() {
     let mut cache = HashMap::new();
     for n in 0..=MAX_N as u8 {
         for i in 0..(n + 1) / 2 {
+            let start = Instant::now();
+
             if let Some(comparisions) = search(Poset::new(n, i), u8::MAX, &mut cache) {
                 println!("n = {n}, i = {i}, comparisions = {comparisions}");
                 println!("cache_entries = {}", cache.len());
+                println!("time = {}s", (Instant::now() - start).as_secs_f64());
             } else {
             }
         }
@@ -29,7 +32,7 @@ fn search(poset: Poset, mut max_comps: u8, cache: &mut HashMap<Poset, Option<u8>
     }
 
     if poset.n() == 1 {
-        cache.insert(poset.clone(), Some(0));
+        // cache.insert(poset.clone(), Some(0));
 
         return Some(0);
     }
@@ -37,7 +40,6 @@ fn search(poset: Poset, mut max_comps: u8, cache: &mut HashMap<Poset, Option<u8>
     if max_comps == 0 {
         return None;
     }
-
     let mut result = None;
 
     for i in 0..poset.n() {
