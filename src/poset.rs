@@ -33,7 +33,10 @@ impl Poset {
         self.i
     }
 
-    fn normalize(&mut self) {
+    /// adapted from [https://www.cs.hut.fi/~cessu/selection/selgen.c.html]
+    ///
+    /// This is important, as is maps isomorphic posets to the same one (hopefully), which reduces the search space dramatically
+    pub fn normalize(&mut self) {
         // how many elements are less than it
         let mut less = [0; MAX_N];
         // how many elements are greater than it
@@ -76,8 +79,8 @@ impl Poset {
             }
         }
 
-        // recalculate less/greater for the new indices
-        if new_n != self.n as usize {
+        if new_n != self.n.into() {
+            // recalculate less/greater for the new indices
             for i in 0..new_n {
                 for j in 0..new_n {
                     if self.is_less(new_indices[i], new_indices[j]) {
@@ -112,7 +115,7 @@ impl Poset {
         }
 
         // dbg!(&self, &new);
-        debug_assert!(new.is_closed());
+        debug_assert!(new.is_closed(), "{new:?}");
         *self = new;
     }
 
@@ -160,6 +163,7 @@ impl Poset {
     /// adds i < j to the poset
     pub fn add_less(&mut self, i: u8, j: u8) {
         debug_assert!(!self.is_less(i, j));
+        debug_assert!(!self.is_less(j, i));
 
         self.close(i, j);
         self.normalize();
@@ -182,14 +186,15 @@ impl Poset {
         }
     }
 
-    pub fn with_less(&self, (i, j): (u8, u8)) -> Self {
+    /// returns a clone of the poset, with i < j added
+    pub fn with_less(&self, i: u8, j: u8) -> Self {
         let mut new = self.clone();
         new.add_less(i, j);
         new
     }
 
     /// is either i < j or j < i?
-    pub fn has_order(&self, (i, j): (u8, u8)) -> bool {
+    pub fn has_order(&self, i: u8, j: u8) -> bool {
         self.is_less(i, j) || self.is_less(j, i)
     }
 }
@@ -227,5 +232,71 @@ impl Debug for Poset {
             .field("adjacency", &adjacency)
             .field("comparisons", &comparisons)
             .finish()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::collections::HashSet;
+
+    use super::*;
+
+    #[test]
+    fn test_normalize_1() {
+        let n = 10;
+        let i = 5;
+
+        let mut hashset = HashSet::new();
+
+        for j in 0..n {
+            for k in 0..n {
+                if j == k {
+                    continue;
+                }
+                hashset.insert(Poset::new(n, i).with_less(j, k));
+            }
+        }
+
+        // all posets with one comparison should be isomorph
+        assert_eq!(hashset.len(), 1);
+    }
+
+    #[test]
+    fn test_normalize_2() {
+        let n = 10;
+        let i = 5;
+
+        let mut hashset = HashSet::new();
+
+        for j in 0..n {
+            for k in 0..n {
+                if j == k {
+                    continue;
+                }
+
+                for l in 0..n {
+                    for m in 0..n {
+                        if l == m || (j, k) == (l, m) || (j, k) == (m, l) {
+                            continue;
+                        }
+
+                        let mut poset = Poset::new(n, i);
+                        poset.close(j, k); // just adding without normalizing
+                        poset.close(l, m);
+                        poset.normalize();
+                        hashset.insert(poset);
+                    }
+                }
+            }
+        }
+
+        // all posets with two comparison should be isomorph to one of the four:
+        // 1. 0 < 1, 2 < 3
+        // 2. 0 < 1, 0 < 2
+        // 3. 1 < 0, 2 < 0
+        // 4. 0 < 1, 1 < 2
+        // This doesn't work yet
+        dbg!(&hashset);
+        assert_eq!(hashset.len(), 4);
     }
 }

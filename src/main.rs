@@ -42,14 +42,14 @@ fn search(poset: Poset, mut max_comps: u8, cache: &mut HashMap<Poset, Option<u8>
 
     for i in 0..poset.n() {
         for j in 0..poset.n() {
-            if i == j || poset.has_order((i, j)) {
+            if i == j || poset.has_order(i, j) {
                 continue;
             }
 
-            let less = poset.with_less((i, j));
+            let less = poset.with_less(i, j);
             let less_result = search(less, max_comps - 1, cache);
 
-            let greater = poset.with_less((j, i));
+            let greater = poset.with_less(j, i);
             let greater_result = search(greater, max_comps - 1, cache);
 
             if let Some(comps_less) = less_result {
