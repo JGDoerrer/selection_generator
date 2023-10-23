@@ -65,6 +65,10 @@ fn my_search(
         return Some(0);
     }
 
+    if best == 0 {
+        return None;
+    }
+
     if !poset.is_solvable_in(best) {
         return None;
     }
@@ -95,6 +99,8 @@ fn my_search(
             }
         }
     }
+
+    poset.topological_order();
 
     // if result.is_some() {
     cache.insert(poset.dual(), result);

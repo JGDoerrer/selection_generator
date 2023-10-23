@@ -101,8 +101,16 @@ impl Poset {
                 MAX_N * MAX_N - greater[new_index] as usize * MAX_N - less[new_index] as usize;
         }
 
-        new_indices[0..self.n as usize]
-            .sort_by(|a, b| lessness[*a as usize].cmp(&lessness[*b as usize]).reverse());
+        let topo_order = self.topological_order();
+
+        new_indices[0..self.n as usize].sort_by(|a, b| {
+            let i = topo_order.iter().position(|i| *i == *a).unwrap();
+            let j = topo_order.iter().position(|i| *i == *b).unwrap();
+            lessness[*a as usize]
+                .cmp(&lessness[*b as usize])
+                .reverse()
+                .then(i.cmp(&j))
+        });
 
         let mut new = Poset::new(new_n as u8, self.i - n_less_dropped);
 
@@ -131,6 +139,15 @@ impl Poset {
         let mask = 1 << (bit % 8);
 
         self.adjacency[byte as usize] |= mask;
+    }
+
+    fn clear_bit(&mut self, i: u8, j: u8) {
+        debug_assert!(i != j);
+        let bit = self.get_bit_index(i, j);
+        let byte = bit / 8;
+        let mask = 1 << (bit % 8);
+
+        self.adjacency[byte as usize] &= !mask;
     }
 
     /// is i < j?
@@ -252,7 +269,7 @@ impl Poset {
                 }
             }
 
-            max_comparisons >= num_groups - 2 + (u32::BITS - s.leading_zeros()) as u8
+            max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 2
         } else if self.i == self.n - 2 {
             let mut num_groups = 0;
             let mut s = 0u32;
@@ -264,7 +281,7 @@ impl Poset {
                 }
             }
 
-            max_comparisons >= num_groups - 2 + (u32::BITS - s.leading_zeros()) as u8
+            max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 2
         } else {
             // todo!();
             true
@@ -286,6 +303,55 @@ impl Poset {
 
         // debug_assert_eq!(dual, *self);
         dual
+    }
+
+    pub fn topological_order(&self) -> Vec<u8> {
+        let mut less = [0; MAX_N];
+        let mut greater = [0; MAX_N];
+
+        for i in 0..self.n {
+            for j in 0..self.n {
+                if self.is_less(i, j) {
+                    less[j as usize] += 1;
+                    greater[i as usize] += 1;
+                }
+            }
+        }
+
+        let mut roots = vec![];
+
+        let mut copy = self.clone();
+
+        for i in 0..self.n {
+            if greater[i as usize] == 0 {
+                roots.push(i);
+            }
+        }
+
+        let mut order = vec![];
+
+        while !roots.is_empty() {
+            roots.sort_by(|i, j| less[*i as usize].cmp(&less[*j as usize]));
+
+            let root = roots.pop().unwrap();
+
+            order.push(root);
+
+            for j in 0..self.n {
+                if copy.is_less(j, root) {
+                    copy.clear_bit(j, root);
+                    greater[j as usize] -= 1;
+
+                    if greater[j as usize] == 0 {
+                        roots.push(j);
+                    }
+                }
+            }
+        }
+
+        // dbg!(self, &order);
+
+        order
     }
 }
 
