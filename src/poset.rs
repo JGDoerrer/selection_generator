@@ -8,11 +8,12 @@ pub struct Poset {
     /// The number of elements
     n: u8,
     i: u8,
+    /// The comparisons as an adjacency matrix
     adjacency: [u8; Self::BYTES],
 }
 
 impl Poset {
-    const BITS: usize = MAX_N * (MAX_N - 1) / 2;
+    const BITS: usize = MAX_N * (MAX_N - 1);
     const BYTES: usize = (Self::BITS + 7) / 8;
 
     pub fn new(n: u8, i: u8) -> Self {
@@ -160,27 +161,27 @@ impl Poset {
         true
     }
 
-    /// adds i < j to the poset
+    /// adds i < j to the poset and normalize
     pub fn add_less(&mut self, i: u8, j: u8) {
         debug_assert!(!self.is_less(i, j));
         debug_assert!(!self.is_less(j, i));
 
-        self.close(i, j);
+        self.add_and_close(i, j);
         self.normalize();
 
         debug_assert!(self.is_closed(), "{self:?}");
     }
 
     /// adds i < j and makes sure, that i < j && j < k => i < k is true
-    fn close(&mut self, i: u8, j: u8) {
+    pub fn add_and_close(&mut self, i: u8, j: u8) {
         self.set_bit(i, j);
         for k in 0..self.n {
             if i != k && j != k {
                 if self.is_less(k, i) {
-                    self.close(k, j)
+                    self.add_and_close(k, j)
                 }
                 if self.is_less(j, k) {
-                    self.close(j, k)
+                    self.add_and_close(j, k)
                 }
             }
         }
@@ -196,6 +197,95 @@ impl Poset {
     /// is either i < j or j < i?
     pub fn has_order(&self, i: u8, j: u8) -> bool {
         self.is_less(i, j) || self.is_less(j, i)
+    }
+
+    pub fn get_unknown_orders(&self) -> Vec<(u8, u8)> {
+        let mut orders = Vec::with_capacity(MAX_N * (MAX_N - 1) / 2);
+
+        for i in 0..self.n {
+            for j in (i + 1)..self.n {
+                if !self.has_order(i, j) {
+                    orders.push((i, j));
+                }
+            }
+        }
+
+        orders
+    }
+
+    ///
+    pub fn is_solvable_in(&self, max_comparisons: u8) -> bool {
+        let mut less = [0i32; MAX_N];
+        let mut greater = [0i32; MAX_N];
+        let mut unknown = [0i32; MAX_N];
+
+        for i in 0..self.n {
+            for j in 0..self.n {
+                if self.is_less(i, j) {
+                    less[j as usize] += 1;
+                    greater[i as usize] += 1;
+                } else if !self.is_less(j, i) {
+                    unknown[i as usize] += 1;
+                    unknown[j as usize] += 1;
+                }
+            }
+        }
+
+        let mut hardness = 0;
+        for i in 0..self.n as usize {
+            let d = (greater[i] - less[i]).abs();
+            let u = unknown[i];
+            hardness -= d + 2 * u;
+        }
+        // dbg!(hardness);
+
+        if self.i == 0 || self.i == self.n - 1 {
+            max_comparisons >= self.n - 1
+        } else if self.i == 1 {
+            let mut num_groups = 0;
+            let mut s = 0u32;
+
+            for i in 0..self.n as usize {
+                if greater[i] == 0 {
+                    num_groups += 1;
+                    s += 1 << less[i];
+                }
+            }
+
+            max_comparisons >= num_groups - 2 + (u32::BITS - s.leading_zeros()) as u8
+        } else if self.i == self.n - 2 {
+            let mut num_groups = 0;
+            let mut s = 0u32;
+
+            for i in 0..self.n as usize {
+                if less[i] == 0 {
+                    num_groups += 1;
+                    s += 1 << greater[i];
+                }
+            }
+
+            max_comparisons >= num_groups - 2 + (u32::BITS - s.leading_zeros()) as u8
+        } else {
+            // todo!();
+            true
+        }
+    }
+
+    pub fn dual(&self) -> Self {
+        let mut dual = Poset::new(self.n, self.n - self.i - 1);
+
+        for i in 0..self.n {
+            for j in 0..self.n {
+                if self.is_less(i, j) {
+                    dual.add_and_close(j, i); // add without normalizing
+                }
+            }
+        }
+
+        dual.normalize();
+
+        // debug_assert_eq!(dual, *self);
+        dual
     }
 }
 
@@ -281,8 +371,8 @@ mod test {
                         }
 
                         let mut poset = Poset::new(n, i);
-                        poset.close(j, k); // just adding without normalizing
-                        poset.close(l, m);
+                        poset.add_and_close(j, k); // just adding without normalizing
+                        poset.add_and_close(l, m);
                         poset.normalize();
                         hashset.insert(poset);
                     }
