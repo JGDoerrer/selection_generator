@@ -1,8 +1,10 @@
 [package]
-name = "median"
+name = "selection_generator"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+postcard = { version = "1.0.8", features = ["use-std"] }
+serde = "1.0.189"

@@ -1,4 +1,9 @@
-use std::{collections::HashMap, time::Instant};
+use std::{
+    collections::HashMap,
+    fs::OpenOptions,
+    io::{Read, Write},
+    time::Instant,
+};
 
 use poset::{Poset, MAX_N};
 
@@ -6,13 +11,6 @@ mod poset;
 
 /// Number of comparisons
 pub type Cost = u8;
-
-#[derive(PartialEq, Eq, Clone)]
-pub enum Solvability {
-    Solved(Cost),
-    Impossible,
-    Unknown,
-}
 
 const KNOWN_VALUES: [&[u8]; 12] = [
     &[0],
@@ -30,19 +28,24 @@ const KNOWN_VALUES: [&[u8]; 12] = [
 ];
 
 fn main() {
-    let mut cache = HashMap::new();
+    let mut cache = load_cache().unwrap_or(HashMap::new());
+
+    println!("cache_entries = {}", cache.len());
     for n in 1..MAX_N as u8 {
         for i in 0..(n + 1) / 2 {
             let start = Instant::now();
 
             let comparisons = my_search(Poset::new(n, i), Cost::MAX, &mut cache);
+
             if let Some(comparisons) = comparisons {
-                println!("n = {n}, i = {i}, comparisions = {comparisons}");
+                println!("n = {n}, i = {i}, comparisons = {comparisons}");
                 println!("cache_entries = {}", cache.len());
 
                 if n < KNOWN_VALUES.len() as u8 {
                     assert_eq!(comparisons, KNOWN_VALUES[n as usize - 1][i as usize]);
                 }
+
+                save_cache(&cache);
             } else {
                 println!("found no solution for n = {n}, i = {i}");
             }
@@ -100,12 +103,50 @@ fn my_search(
         }
     }
 
-    poset.topological_order();
-
     // if result.is_some() {
     cache.insert(poset.dual(), result);
     cache.insert(poset, result);
     // }
 
     result
+}
+
+const CACHE_FILE_PATH: &str = "cache.dat";
+
+fn save_cache(cache: &HashMap<Poset, Option<Cost>>) {
+    let mut file = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .truncate(true)
+        .open(CACHE_FILE_PATH)
+        .unwrap();
+
+    let bytes = postcard::to_stdvec(cache).unwrap();
+
+    file.write_all(&bytes).unwrap();
+}
+
+fn load_cache() -> Option<HashMap<Poset, Option<Cost>>> {
+    let mut file = match OpenOptions::new().read(true).open(CACHE_FILE_PATH) {
+        Ok(file) => file,
+        Err(err) => {
+            dbg!(err);
+            return None;
+        }
+    };
+
+    let mut bytes = vec![];
+    match file.read_to_end(&mut bytes) {
+        Ok(len) => {
+            dbg!(len);
+        }
+        Err(err) => {
+            dbg!(err);
+            return None;
+        }
+    }
+
+    let cache = postcard::from_bytes(&bytes).map_or(None, |c| Some(c));
+
+    cache
 }

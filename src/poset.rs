@@ -1,14 +1,21 @@
 use std::fmt::Debug;
 
+use serde::{Deserialize, Serialize};
+
 pub const MAX_N: usize = 15;
 
 /// A partially ordered set with <
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Poset {
     /// The number of elements
     n: u8,
     i: u8,
     /// The comparisons as an adjacency matrix
+    //   i 0 1 2
+    // j +------
+    // 0 | -
+    // 1 |   -
+    // 2 |     -
     adjacency: [u8; Self::BYTES],
 }
 
@@ -216,20 +223,6 @@ impl Poset {
         self.is_less(i, j) || self.is_less(j, i)
     }
 
-    pub fn get_unknown_orders(&self) -> Vec<(u8, u8)> {
-        let mut orders = Vec::with_capacity(MAX_N * (MAX_N - 1) / 2);
-
-        for i in 0..self.n {
-            for j in (i + 1)..self.n {
-                if !self.has_order(i, j) {
-                    orders.push((i, j));
-                }
-            }
-        }
-
-        orders
-    }
-
     ///
     pub fn is_solvable_in(&self, max_comparisons: u8) -> bool {
         let mut less = [0i32; MAX_N];
@@ -247,14 +240,6 @@ impl Poset {
                 }
             }
         }
-
-        let mut hardness = 0;
-        for i in 0..self.n as usize {
-            let d = (greater[i] - less[i]).abs();
-            let u = unknown[i];
-            hardness -= d + 2 * u;
-        }
-        // dbg!(hardness);
 
         if self.i == 0 || self.i == self.n - 1 {
             max_comparisons >= self.n - 1
