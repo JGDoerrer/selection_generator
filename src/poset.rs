@@ -2,6 +2,8 @@ use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
 
+use crate::KNOWN_VALUES;
+
 pub const MAX_N: usize = 15;
 
 /// A partially ordered set with <
@@ -223,7 +225,7 @@ impl Poset {
         self.is_less(i, j) || self.is_less(j, i)
     }
 
-    ///
+    /// adapted from [https://www.cs.hut.fi/~cessu/selection/selgen.c.html]
     pub fn is_solvable_in(&self, max_comparisons: u8) -> bool {
         let mut less = [0i32; MAX_N];
         let mut greater = [0i32; MAX_N];
@@ -254,7 +256,7 @@ impl Poset {
                 }
             }
 
-            max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 2
+            max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 3
         } else if self.i == self.n - 2 {
             let mut num_groups = 0;
             let mut s = 0u32;
@@ -266,9 +268,55 @@ impl Poset {
                 }
             }
 
-            max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 2
+            max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 3
+        } else if self.n - 1 < KNOWN_VALUES.len() as u8 {
+            let mut comps = KNOWN_VALUES[self.n as usize - 1]
+                [(self.i as usize).min((self.n - self.i - 1) as usize)];
+
+            for i in 0..self.n as usize {
+                if less[i] == 1 {
+                    comps -= 1;
+                }
+
+                if comps <= max_comparisons {
+                    return true;
+                }
+            }
+
+            for i in 0..self.n - 1 {
+                if less[i as usize] < 2 {
+                    continue;
+                }
+
+                'j_loop: for j in i + 1..self.n {
+                    if !self.is_less(j as u8, i as u8) {
+                        continue;
+                    }
+
+                    if greater[j as usize] == 1 {
+                        comps -= 1;
+
+                        if comps <= max_comparisons {
+                            return true;
+                        }
+                    } else {
+                        for k in 0..self.n {
+                            if i != k && j != k && self.is_less(j, k) && self.is_less(k, i) {
+                                continue 'j_loop;
+                            }
+                        }
+
+                        comps -= 1;
+
+                        if comps <= max_comparisons {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            comps <= max_comparisons
         } else {
-            // todo!();
             true
         }
     }

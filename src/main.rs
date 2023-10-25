@@ -1,4 +1,5 @@
 use hashbrown::HashMap;
+use serde::{Deserialize, Serialize};
 use std::{
     fs::OpenOptions,
     io::{Read, Write},
@@ -9,10 +10,55 @@ use poset::{Poset, MAX_N};
 
 mod poset;
 
-/// Number of comparisons
-pub type Cost = u8;
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum Cost {
+    /// Not solved. Impossible in less than the number of comparisons
+    Minimum(u8),
+    /// Solved in the number of comparisons
+    Solved(u8),
+}
 
-const KNOWN_VALUES: [&[u8]; 12] = [
+impl Cost {
+    pub fn min(self, other: Self) -> Self {
+        match self {
+            Cost::Minimum(min) => match other {
+                Cost::Minimum(min2) => Cost::Minimum(min.min(min2)),
+                Cost::Solved(solved) => {
+                    if min < solved {
+                        Cost::Minimum(min)
+                    } else {
+                        Cost::Solved(solved)
+                    }
+                }
+            },
+            Cost::Solved(solved) => match other {
+                Cost::Minimum(min) => {
+                    if min < solved {
+                        Cost::Minimum(min)
+                    } else {
+                        Cost::Solved(solved)
+                    }
+                }
+                Cost::Solved(solved2) => Cost::Solved(solved.min(solved2)),
+            },
+        }
+    }
+
+    pub fn max(self, other: Self) -> Self {
+        match self {
+            Cost::Minimum(min) => match other {
+                Cost::Minimum(min2) => Cost::Minimum(min.max(min2)),
+                Cost::Solved(solved) => Cost::Minimum(solved.max(min)),
+            },
+            Cost::Solved(solved) => match other {
+                Cost::Minimum(min) => Cost::Minimum(solved.max(min)),
+                Cost::Solved(solved2) => Cost::Solved(solved.max(solved2)),
+            },
+        }
+    }
+}
+
+const KNOWN_VALUES: [&[u8]; 13] = [
     &[0],
     &[1],
     &[2, 3],
@@ -25,29 +71,37 @@ const KNOWN_VALUES: [&[u8]; 12] = [
     &[9, 12, 14, 15, 16],
     &[10, 13, 15, 17, 18, 18],
     &[11, 14, 17, 18, 19, 20],
+    &[12, 15, 18, 20, 21, 22, 23],
 ];
 
 fn main() {
     let mut cache = load_cache().unwrap_or(HashMap::new());
 
     println!("cache_entries = {}", cache.len());
+
     for n in 1..MAX_N as u8 {
         for i in 0..(n + 1) / 2 {
             let start = Instant::now();
 
-            let comparisons = my_search(Poset::new(n, i), Cost::MAX, &mut cache);
+            for k in 1..u8::max_value() {
+                let mut nodes = 0;
+                let cost = new_search(Poset::new(n, i), k, &mut nodes, &mut cache);
 
-            if let Some(comparisons) = comparisons {
-                println!("n = {n}, i = {i}, comparisons = {comparisons}");
-                println!("cache_entries = {}", cache.len());
+                if let Cost::Solved(comparisons) = cost {
+                    println!("n = {n}, i = {i}, comparisons = {comparisons}");
+                    println!("cache_entries = {}", cache.len());
+                    println!("nodes = {}", nodes);
 
-                if n < KNOWN_VALUES.len() as u8 {
-                    assert_eq!(comparisons, KNOWN_VALUES[n as usize - 1][i as usize]);
+                    if n < KNOWN_VALUES.len() as u8 {
+                        assert_eq!(comparisons, KNOWN_VALUES[n as usize - 1][i as usize]);
+                    }
+
+                    save_cache(&cache);
+
+                    break;
+                } else {
+                    println!("found no solution for n = {n}, i = {i}, comparisons = {k}");
                 }
-
-                save_cache(&cache);
-            } else {
-                println!("found no solution for n = {n}, i = {i}");
             }
 
             println!("time = {}s", (Instant::now() - start).as_secs_f64());
@@ -55,28 +109,45 @@ fn main() {
     }
 }
 
-fn my_search(
+fn new_search(
     poset: Poset,
-    mut best: Cost,
-    cache: &mut HashMap<Poset, Option<Cost>>,
-) -> Option<Cost> {
-    if let Some(result) = cache.get(&poset) {
-        return *result;
+    mut max_comparisons: u8,
+    nodes: &mut u64,
+    cache: &mut HashMap<Poset, Cost>,
+) -> Cost {
+    if let Some(cost) = cache.get(&poset) {
+        match cost {
+            Cost::Solved(_) => {
+                // if *solved > max_comparisons {
+                //     return Cost::Minimum(*solved);
+                // } else {
+                //     return Cost::Solved(*solved);
+                // }
+                return *cost;
+            }
+            Cost::Minimum(min) => {
+                if *min > max_comparisons {
+                    return *cost;
+                }
+            }
+        }
     }
 
     if poset.n() == 1 {
-        return Some(0);
+        return Cost::Solved(0);
     }
 
-    if best == 0 {
-        return None;
+    if max_comparisons == 0 {
+        cache.insert(poset, Cost::Minimum(1));
+        return Cost::Minimum(1);
     }
 
-    if !poset.is_solvable_in(best) {
-        return None;
+    if !poset.is_solvable_in(max_comparisons) {
+        cache.insert(poset, Cost::Minimum(max_comparisons + 1));
+        return Cost::Minimum(max_comparisons + 1);
     }
 
-    let mut result = None;
+    let mut result = Cost::Minimum(max_comparisons + 1);
 
     for i in 0..poset.n() {
         for j in (i + 1)..poset.n() {
@@ -85,35 +156,40 @@ fn my_search(
             }
 
             let less = poset.with_less(i, j);
-            let less_result = my_search(less, best - 1, cache);
-
             let greater = poset.with_less(j, i);
-            let greater_result = my_search(greater, best - 1, cache);
 
-            if let (Some(comps_less), Some(comps_greater)) = (less_result, greater_result) {
-                let comps_max = comps_less.max(comps_greater) + 1;
-                best = best.min(comps_max);
+            let less_result = new_search(less, max_comparisons - 1, nodes, cache);
+            let greater_result = new_search(greater, max_comparisons - 1, nodes, cache);
 
-                if let Some(min) = &mut result {
-                    *min = comps_max.min(*min);
-                } else {
-                    result = Some(comps_max)
-                }
-            }
+            let new_result = match less_result.max(greater_result) {
+                Cost::Minimum(_) => continue,
+                Cost::Solved(solved) => Cost::Solved(solved + 1),
+            };
+
+            result = result.min(new_result);
+
+            max_comparisons = if let Cost::Solved(comps) = result {
+                comps.min(max_comparisons)
+            } else {
+                max_comparisons
+            };
         }
     }
 
-    // if result.is_some() {
+    *nodes += 1;
+    if *nodes % 10000 == 0 {
+        dbg!(cache.len());
+    }
+
     cache.insert(poset.dual(), result);
     cache.insert(poset, result);
-    // }
 
     result
 }
 
 const CACHE_FILE_PATH: &str = "cache.dat";
 
-fn save_cache(cache: &HashMap<Poset, Option<Cost>>) {
+fn save_cache(cache: &HashMap<Poset, Cost>) {
     let mut file = OpenOptions::new()
         .create(true)
         .write(true)
@@ -126,7 +202,7 @@ fn save_cache(cache: &HashMap<Poset, Option<Cost>>) {
     file.write_all(&bytes).unwrap();
 }
 
-fn load_cache() -> Option<HashMap<Poset, Option<Cost>>> {
+fn load_cache() -> Option<HashMap<Poset, Cost>> {
     let mut file = match OpenOptions::new().read(true).open(CACHE_FILE_PATH) {
         Ok(file) => file,
         Err(err) => {
