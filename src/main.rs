@@ -1,5 +1,6 @@
+use clap::Parser;
 use hashbrown::HashMap;
-use serde::{Deserialize, Serialize};
+use search::Cost;
 use std::{
     fs::OpenOptions,
     io::{Read, Write},
@@ -8,55 +9,10 @@ use std::{
 
 use poset::{Poset, MAX_N};
 
+use crate::search::Search;
+
 mod poset;
-
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum Cost {
-    /// Not solved. Impossible in less than the number of comparisons
-    Minimum(u8),
-    /// Solved in the number of comparisons
-    Solved(u8),
-}
-
-impl Cost {
-    pub fn min(self, other: Self) -> Self {
-        match self {
-            Cost::Minimum(min) => match other {
-                Cost::Minimum(min2) => Cost::Minimum(min.min(min2)),
-                Cost::Solved(solved) => {
-                    if min < solved {
-                        Cost::Minimum(min)
-                    } else {
-                        Cost::Solved(solved)
-                    }
-                }
-            },
-            Cost::Solved(solved) => match other {
-                Cost::Minimum(min) => {
-                    if min < solved {
-                        Cost::Minimum(min)
-                    } else {
-                        Cost::Solved(solved)
-                    }
-                }
-                Cost::Solved(solved2) => Cost::Solved(solved.min(solved2)),
-            },
-        }
-    }
-
-    pub fn max(self, other: Self) -> Self {
-        match self {
-            Cost::Minimum(min) => match other {
-                Cost::Minimum(min2) => Cost::Minimum(min.max(min2)),
-                Cost::Solved(solved) => Cost::Minimum(solved.max(min)),
-            },
-            Cost::Solved(solved) => match other {
-                Cost::Minimum(min) => Cost::Minimum(solved.max(min)),
-                Cost::Solved(solved2) => Cost::Solved(solved.max(solved2)),
-            },
-        }
-    }
-}
+mod search;
 
 const KNOWN_VALUES: [&[u8]; 13] = [
     &[0],
@@ -74,117 +30,53 @@ const KNOWN_VALUES: [&[u8]; 13] = [
     &[12, 15, 18, 20, 21, 22, 23],
 ];
 
+#[derive(Parser, Debug)]
+#[command(author, version)]
+struct Args {
+    /// The n to start at
+    #[arg(short)]
+    n: Option<u8>,
+    /// The i to start at. Requires n to be set.
+    #[arg(short, requires("n"))]
+    i: Option<u8>,
+    /// Do only a single calculation
+    #[arg(short, long, default_value_t = false, requires("i"))]
+    single: bool,
+    /// The name of the cache to use.
+    #[arg(short, long, default_value = "cache.dat", value_hint = clap::ValueHint::FilePath)]
+    cache_file: String,
+}
+
 fn main() {
+    let args = Args::parse();
+
+    let start_n = args.n.unwrap_or(1);
+
     let mut cache = load_cache().unwrap_or(HashMap::new());
 
     println!("cache_entries = {}", cache.len());
 
-    for n in 1..MAX_N as u8 {
-        for i in 0..(n + 1) / 2 {
-            let start = Instant::now();
+    for n in start_n..MAX_N as u8 {
+        let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
-            for k in 1..u8::max_value() {
-                let mut nodes = 0;
-                let cost = new_search(Poset::new(n, i), k, &mut nodes, &mut cache);
+        for i in start_i..(n + 1) / 2 {
+            let cost = Search::new(n, i, &mut cache).search();
 
-                if let Cost::Solved(comparisons) = cost {
-                    println!("n = {n}, i = {i}, comparisons = {comparisons}");
-                    println!("cache_entries = {}", cache.len());
-                    println!("nodes = {}", nodes);
-
-                    if n < KNOWN_VALUES.len() as u8 {
-                        assert_eq!(comparisons, KNOWN_VALUES[n as usize - 1][i as usize]);
-                    }
-
-                    save_cache(&cache);
-
-                    break;
-                } else {
-                    println!("found no solution for n = {n}, i = {i}, comparisons = {k}");
+            if let Cost::Solved(comparisons) = cost {
+                if n < KNOWN_VALUES.len() as u8 {
+                    assert_eq!(comparisons, KNOWN_VALUES[n as usize - 1][i as usize]);
                 }
-            }
 
-            println!("time = {}s", (Instant::now() - start).as_secs_f64());
-        }
-    }
-}
-
-fn new_search(
-    poset: Poset,
-    mut max_comparisons: u8,
-    nodes: &mut u64,
-    cache: &mut HashMap<Poset, Cost>,
-) -> Cost {
-    if let Some(cost) = cache.get(&poset) {
-        match cost {
-            Cost::Solved(_) => {
-                // if *solved > max_comparisons {
-                //     return Cost::Minimum(*solved);
-                // } else {
-                //     return Cost::Solved(*solved);
-                // }
-                return *cost;
-            }
-            Cost::Minimum(min) => {
-                if *min > max_comparisons {
-                    return *cost;
-                }
-            }
-        }
-    }
-
-    if poset.n() == 1 {
-        return Cost::Solved(0);
-    }
-
-    if max_comparisons == 0 {
-        cache.insert(poset, Cost::Minimum(1));
-        return Cost::Minimum(1);
-    }
-
-    if !poset.is_solvable_in(max_comparisons) {
-        cache.insert(poset, Cost::Minimum(max_comparisons + 1));
-        return Cost::Minimum(max_comparisons + 1);
-    }
-
-    let mut result = Cost::Minimum(max_comparisons + 1);
-
-    for i in 0..poset.n() {
-        for j in (i + 1)..poset.n() {
-            if poset.has_order(i, j) {
-                continue;
-            }
-
-            let less = poset.with_less(i, j);
-            let greater = poset.with_less(j, i);
-
-            let less_result = new_search(less, max_comparisons - 1, nodes, cache);
-            let greater_result = new_search(greater, max_comparisons - 1, nodes, cache);
-
-            let new_result = match less_result.max(greater_result) {
-                Cost::Minimum(_) => continue,
-                Cost::Solved(solved) => Cost::Solved(solved + 1),
-            };
-
-            result = result.min(new_result);
-
-            max_comparisons = if let Cost::Solved(comps) = result {
-                comps.min(max_comparisons)
+                save_cache(&cache);
             } else {
-                max_comparisons
-            };
+                unreachable!()
+            }
+
+            if args.single {
+                return;
+            }
         }
     }
-
-    *nodes += 1;
-    if *nodes % 10000 == 0 {
-        dbg!(cache.len());
-    }
-
-    cache.insert(poset.dual(), result);
-    cache.insert(poset, result);
-
-    result
 }
 
 const CACHE_FILE_PATH: &str = "cache.dat";
