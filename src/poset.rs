@@ -19,10 +19,14 @@ pub struct Poset {
     // 1 |   -
     // 2 |     -
     adjacency: [u8; Self::BYTES],
+    /// how many elements are less than it
+    less: [u8; MAX_N],
+    /// how many elements are greater than it
+    greater: [u8; MAX_N],
 }
 
 impl Poset {
-    const BITS: usize = MAX_N * (MAX_N - 1);
+    const BITS: usize = MAX_N * MAX_N;
     const BYTES: usize = (Self::BITS + 7) / 8;
 
     pub fn new(n: u8, i: u8) -> Self {
@@ -32,6 +36,8 @@ impl Poset {
             n,
             i,
             adjacency: [0; Self::BYTES],
+            less: [0; MAX_N],
+            greater: [0; MAX_N],
         }
     }
 
@@ -43,32 +49,30 @@ impl Poset {
         self.i
     }
 
+    pub fn less(&self) -> &[u8; MAX_N] {
+        &self.less
+    }
+
+    pub fn greater(&self) -> &[u8; MAX_N] {
+        &self.greater
+    }
+
     /// adapted from [https://www.cs.hut.fi/~cessu/selection/selgen.c.html]
     ///
     /// This is important, as is maps isomorphic posets to the same one (hopefully), which reduces the search space dramatically
     pub fn normalize(&mut self) {
-        // how many elements are less than it
-        let mut less = [0; MAX_N];
-        // how many elements are greater than it
-        let mut greater = [0; MAX_N];
+        self.check_counts();
 
-        for i in 0..self.n {
-            for j in 0..self.n {
-                if self.is_less(i, j) {
-                    less[j as usize] += 1;
-                    greater[i as usize] += 1;
-                }
-            }
-        }
+        let topo_order = self.topological_order();
 
         // can the element be ignored, because it is too large/small
         let mut dropped = [false; MAX_N];
         let mut n_less_dropped = 0;
 
         for i in 0..self.n as usize {
-            if greater[i] > self.i {
+            if self.greater[i] > self.i {
                 dropped[i] = true;
-            } else if less[i] >= self.n - self.i {
+            } else if self.less[i] >= self.n - self.i {
                 dropped[i] = true;
                 n_less_dropped += 1;
             }
@@ -91,11 +95,14 @@ impl Poset {
 
         if new_n != self.n.into() {
             // recalculate less/greater for the new indices
+            self.less = [0; MAX_N];
+            self.greater = [0; MAX_N];
+
             for i in 0..new_n {
                 for j in 0..new_n {
                     if self.is_less(new_indices[i], new_indices[j]) {
-                        less[j as usize] += 1;
-                        greater[i as usize] += 1;
+                        self.less[j as usize] += 1;
+                        self.greater[i as usize] += 1;
                     }
                 }
             }
@@ -106,11 +113,10 @@ impl Poset {
 
         for i in 0..new_n {
             let new_index = new_indices[i] as usize;
-            lessness[new_index] =
-                MAX_N * MAX_N - greater[new_index] as usize * MAX_N - less[new_index] as usize;
+            lessness[new_index] = MAX_N * MAX_N
+                - self.greater[new_index] as usize * MAX_N
+                - self.less[new_index] as usize;
         }
-
-        let topo_order = self.topological_order();
 
         new_indices[0..self.n as usize].sort_by(|a, b| {
             let i = topo_order.iter().position(|i| *i == *a).unwrap();
@@ -135,21 +141,28 @@ impl Poset {
         // dbg!(&self, &new);
         debug_assert!(new.is_closed(), "{new:?}");
         *self = new;
+        self.check_counts();
     }
 
+    #[inline]
     fn get_bit_index(&self, i: u8, j: u8) -> u8 {
-        i + j * (self.n - 1) - if i > j { 1 } else { 0 }
+        i + j * self.n
     }
 
+    #[inline]
     fn set_bit(&mut self, i: u8, j: u8) {
         debug_assert!(i != j);
         let bit = self.get_bit_index(i, j);
         let byte = bit / 8;
         let mask = 1 << (bit % 8);
 
+        self.less[j as usize] += 1;
+        self.greater[i as usize] += 1;
         self.adjacency[byte as usize] |= mask;
     }
 
+    /// should only be used by the topo sort
+    #[inline]
     fn clear_bit(&mut self, i: u8, j: u8) {
         debug_assert!(i != j);
         let bit = self.get_bit_index(i, j);
@@ -160,11 +173,8 @@ impl Poset {
     }
 
     /// is i < j?
+    #[inline]
     pub fn is_less(&self, i: u8, j: u8) -> bool {
-        if i == j {
-            return false;
-        }
-
         let bit = self.get_bit_index(i, j);
         let byte = bit / 8;
         let mask = 1 << (bit % 8);
@@ -187,6 +197,31 @@ impl Poset {
         true
     }
 
+    fn check_counts(&self) {
+        return;
+        let mut less = [0u8; MAX_N];
+        let mut greater = [0u8; MAX_N];
+        let mut unknown = [0u8; MAX_N];
+
+        for i in 0..self.n {
+            for j in (i + 1)..self.n {
+                if self.is_less(i, j) {
+                    less[j as usize] += 1;
+                    greater[i as usize] += 1;
+                } else if self.is_less(j, i) {
+                    less[i as usize] += 1;
+                    greater[j as usize] += 1;
+                } else {
+                    unknown[i as usize] += 1;
+                    unknown[j as usize] += 1;
+                }
+            }
+        }
+
+        assert_eq!(self.less, less);
+        assert_eq!(self.greater, greater);
+    }
+
     /// adds i < j to the poset and normalize
     pub fn add_less(&mut self, i: u8, j: u8) {
         debug_assert!(!self.is_less(i, j));
@@ -203,11 +238,11 @@ impl Poset {
         self.set_bit(i, j);
         for k in 0..self.n {
             if i != k && j != k {
-                if self.is_less(k, i) {
+                if self.is_less(k, i) && !self.is_less(k, j) {
                     self.add_and_close(k, j)
                 }
-                if self.is_less(j, k) {
-                    self.add_and_close(j, k)
+                if self.is_less(j, k) && !self.is_less(i, k) {
+                    self.add_and_close(i, k)
                 }
             }
         }
@@ -220,29 +255,21 @@ impl Poset {
         new
     }
 
+    /// returns a clone of the poset, with i < j added
+    pub fn with_less_not_normalized(&self, i: u8, j: u8) -> Self {
+        let mut new = self.clone();
+        new.set_bit(i, j);
+        new
+    }
+
     /// is either i < j or j < i?
+    #[inline]
     pub fn has_order(&self, i: u8, j: u8) -> bool {
         self.is_less(i, j) || self.is_less(j, i)
     }
 
     /// adapted from [https://www.cs.hut.fi/~cessu/selection/selgen.c.html]
     pub fn is_solvable_in(&self, max_comparisons: u8) -> bool {
-        let mut less = [0i32; MAX_N];
-        let mut greater = [0i32; MAX_N];
-        let mut unknown = [0i32; MAX_N];
-
-        for i in 0..self.n {
-            for j in 0..self.n {
-                if self.is_less(i, j) {
-                    less[j as usize] += 1;
-                    greater[i as usize] += 1;
-                } else if !self.is_less(j, i) {
-                    unknown[i as usize] += 1;
-                    unknown[j as usize] += 1;
-                }
-            }
-        }
-
         if self.i == 0 || self.i == self.n - 1 {
             max_comparisons >= self.n - 1
         } else if self.i == 1 {
@@ -250,9 +277,9 @@ impl Poset {
             let mut s = 0u32;
 
             for i in 0..self.n as usize {
-                if greater[i] == 0 {
+                if self.greater[i] == 0 {
                     num_groups += 1;
-                    s += 1 << less[i];
+                    s += 1 << self.less[i];
                 }
             }
 
@@ -262,9 +289,9 @@ impl Poset {
             let mut s = 0u32;
 
             for i in 0..self.n as usize {
-                if less[i] == 0 {
+                if self.less[i] == 0 {
                     num_groups += 1;
-                    s += 1 << greater[i];
+                    s += 1 << self.greater[i];
                 }
             }
 
@@ -274,7 +301,7 @@ impl Poset {
                 [(self.i as usize).min((self.n - self.i - 1) as usize)];
 
             for i in 0..self.n as usize {
-                if less[i] == 1 {
+                if self.less[i] == 1 {
                     comps -= 1;
                 }
 
@@ -284,7 +311,7 @@ impl Poset {
             }
 
             for i in 0..self.n - 1 {
-                if less[i as usize] < 2 {
+                if self.less[i as usize] < 2 {
                     continue;
                 }
 
@@ -293,7 +320,7 @@ impl Poset {
                         continue;
                     }
 
-                    if greater[j as usize] == 1 {
+                    if self.greater[j as usize] == 1 {
                         comps -= 1;
 
                         if comps <= max_comparisons {
@@ -327,7 +354,7 @@ impl Poset {
         for i in 0..self.n {
             for j in 0..self.n {
                 if self.is_less(i, j) {
-                    dual.add_and_close(j, i); // add without normalizing
+                    dual.set_bit(j, i); // add without normalizing
                 }
             }
         }
@@ -339,17 +366,9 @@ impl Poset {
     }
 
     pub fn topological_order(&self) -> Vec<u8> {
-        let mut less = [0; MAX_N];
-        let mut greater = [0; MAX_N];
+        self.check_counts();
 
-        for i in 0..self.n {
-            for j in 0..self.n {
-                if self.is_less(i, j) {
-                    less[j as usize] += 1;
-                    greater[i as usize] += 1;
-                }
-            }
-        }
+        let mut greater = self.greater.clone();
 
         let mut roots = vec![];
 
@@ -364,7 +383,7 @@ impl Poset {
         let mut order = vec![];
 
         while !roots.is_empty() {
-            roots.sort_by(|i, j| less[*i as usize].cmp(&less[*j as usize]));
+            // roots.sort_by(|i, j| self.less[*i as usize].cmp(&self.less[*j as usize]));
 
             let root = roots.pop().unwrap();
 
@@ -373,7 +392,10 @@ impl Poset {
             for j in 0..self.n {
                 if copy.is_less(j, root) {
                     copy.clear_bit(j, root);
+
+                    // if greater[j as usize] > 0 {
                     greater[j as usize] -= 1;
+                    // }
 
                     if greater[j as usize] == 0 {
                         roots.push(j);
@@ -381,8 +403,6 @@ impl Poset {
                 }
             }
         }
-
-        // dbg!(self, &order);
 
         order
     }

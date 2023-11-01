@@ -4,7 +4,6 @@ use search::Cost;
 use std::{
     fs::OpenOptions,
     io::{Read, Write},
-    time::Instant,
 };
 
 use poset::{Poset, MAX_N};
@@ -43,8 +42,14 @@ struct Args {
     #[arg(short, long, default_value_t = false, requires("i"))]
     single: bool,
     /// The name of the cache to use.
-    #[arg(short, long, default_value = "cache.dat", value_hint = clap::ValueHint::FilePath)]
-    cache_file: String,
+    #[arg(long, default_value = "cache.dat", value_hint = clap::ValueHint::FilePath)]
+    cache_load_file: String,
+    #[arg(long, default_value = "cache.dat", value_hint = clap::ValueHint::FilePath)]
+    cache_save_file: String,
+    #[arg(long, default_value_t = false)]
+    no_cache: bool,
+    #[arg(long, default_value_t = false)]
+    explore: bool,
 }
 
 fn main() {
@@ -52,7 +57,11 @@ fn main() {
 
     let start_n = args.n.unwrap_or(1);
 
-    let mut cache = load_cache().unwrap_or(HashMap::new());
+    let mut cache = if args.no_cache {
+        HashMap::new()
+    } else {
+        load_cache(&args.cache_load_file).unwrap_or(HashMap::new())
+    };
 
     println!("cache_entries = {}", cache.len());
 
@@ -67,7 +76,13 @@ fn main() {
                     assert_eq!(comparisons, KNOWN_VALUES[n as usize - 1][i as usize]);
                 }
 
-                save_cache(&cache);
+                if !args.no_cache {
+                    save_cache(&args.cache_save_file, &cache);
+                }
+
+                if args.explore {
+                    todo!();
+                }
             } else {
                 unreachable!()
             }
@@ -79,14 +94,12 @@ fn main() {
     }
 }
 
-const CACHE_FILE_PATH: &str = "cache.dat";
-
-fn save_cache(cache: &HashMap<Poset, Cost>) {
+fn save_cache(path: &String, cache: &HashMap<Poset, Cost>) {
     let mut file = OpenOptions::new()
         .create(true)
         .write(true)
         .truncate(true)
-        .open(CACHE_FILE_PATH)
+        .open(path)
         .unwrap();
 
     let bytes = postcard::to_stdvec(cache).unwrap();
@@ -94,8 +107,8 @@ fn save_cache(cache: &HashMap<Poset, Cost>) {
     file.write_all(&bytes).unwrap();
 }
 
-fn load_cache() -> Option<HashMap<Poset, Cost>> {
-    let mut file = match OpenOptions::new().read(true).open(CACHE_FILE_PATH) {
+fn load_cache(path: &String) -> Option<HashMap<Poset, Cost>> {
+    let mut file = match OpenOptions::new().read(true).open(path) {
         Ok(file) => file,
         Err(err) => {
             dbg!(err);
