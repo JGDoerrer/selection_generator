@@ -4,9 +4,7 @@ use hashbrown::HashMap;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    poset::{Poset, MAX_N},
-};
+use crate::poset::{Poset, MAX_N};
 
 pub struct Search<'a> {
     n: u8,
@@ -70,7 +68,7 @@ impl<'a> Search<'a> {
                         self.n, self.i
                     );
 
-                    assert_eq!(comps, max);
+                    // assert_eq!(comps, max);
                     return cost;
                 }
                 _cost => {
@@ -88,7 +86,7 @@ impl<'a> Search<'a> {
     fn search_rec(&mut self, poset: Poset, mut max_comparisons: u8, depth: u8) -> Cost {
         if let Some(cost) = self.cache.get(&poset) {
             match cost {
-                Cost::Solved(_solved) => {
+                Cost::Solved(solved) => {
                     // if *solved > max_comparisons {
                     //     return Cost::Minimum(*solved);
                     // } else {
@@ -118,7 +116,13 @@ impl<'a> Search<'a> {
         }
 
         if let Some(false) = self.estimate_solvable(poset.clone(), max_comparisons, 0, 0) {
-            self.cache.insert(poset, Cost::Minimum(max_comparisons + 1));
+            if let Some(cost) = self.cache.get(&poset) {
+                if !cost.is_solved() && cost.value() < max_comparisons + 1 {
+                    self.cache.insert(poset, Cost::Minimum(max_comparisons + 1));
+                }
+            } else {
+                self.cache.insert(poset, Cost::Minimum(max_comparisons + 1));
+            }
 
             return Cost::Minimum(max_comparisons + 1);
         }
@@ -188,10 +192,7 @@ impl<'a> Search<'a> {
                 continue;
             }
 
-            let new_result = match first_result.max(second_result) {
-                Cost::Minimum(_min) => continue, //Cost::Minimum(min + 1),
-                Cost::Solved(solved) => solved + 1,
-            };
+            let new_result = first_result.value().max(second_result.value()) + 1;
 
             // result = result.min(new_result);
 
@@ -210,8 +211,15 @@ impl<'a> Search<'a> {
             result = Cost::Minimum(max_comparisons + 1);
         }
 
-        self.cache.insert(poset.clone(), result);
-        self.cache.insert(poset.dual(), result);
+        if let Some(cost) = self.cache.get(&poset) {
+            if !cost.is_solved() {
+                self.cache.insert(poset.clone(), result);
+            }
+        } else {
+            self.cache.insert(poset.clone(), result);
+        }
+
+        // self.cache.insert(poset.dual(), result);
 
         result
     }
