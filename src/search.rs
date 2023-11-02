@@ -207,9 +207,9 @@ impl<'a> Search<'a> {
             self.progress_bars.remove(&progress);
         }
 
-        if !result.is_solved() {
-            result = Cost::Minimum(max_comparisons + 1);
-        }
+        // if !result.is_solved() {
+        //     result = Cost::Minimum(max_comparisons + 1);
+        // }
 
         if let Some(cost) = self.cache.get(&poset) {
             if !cost.is_solved() {
