@@ -71,7 +71,7 @@ impl<'a> Search<'a> {
                         self.n, self.i
                     );
 
-                    // assert_eq!(comps, max);
+                    assert_eq!(comps, max);
                     return cost;
                 }
                 cost => {
@@ -120,6 +120,7 @@ impl<'a> Search<'a> {
 
         if let Some(false) = self.estimate_solvable(poset.clone(), max_comparisons, 0, 0) {
             self.cache.insert(poset, Cost::Minimum(max_comparisons + 1));
+
             return Cost::Minimum(max_comparisons + 1);
         }
 
@@ -146,11 +147,12 @@ impl<'a> Search<'a> {
             }
         }
 
-        let progress = if depth <= (self.n + 3) / 2 {
+        let progress = if depth <= self.n * 2 / 3 {
             let progress = ProgressBar::new(pairs.len() as u64).with_style(
-                ProgressStyle::with_template("[{pos:3}/{len:3}] {msg} {wide_bar}").unwrap(),
+                ProgressStyle::with_template("[{pos:2}/{len:2}] {msg} {wide_bar}").unwrap(),
             );
-            self.progress_bars.add(progress.clone());
+            let progress = self.progress_bars.add(progress.clone());
+            progress.tick();
             Some(progress)
         } else {
             None
@@ -188,13 +190,15 @@ impl<'a> Search<'a> {
             }
 
             let new_result = match first_result.max(second_result) {
-                Cost::Minimum(_min) => unreachable!(),
+                Cost::Minimum(_min) => continue, //Cost::Minimum(min + 1),
                 Cost::Solved(solved) => solved + 1,
             };
 
-            if new_result <= result.value() {
+            // result = result.min(new_result);
+
+            max_comparisons = (max_comparisons - 1).min(new_result);
+            if new_result < result.value() {
                 result = Cost::Solved(new_result);
-                max_comparisons = new_result;
             }
         }
 
@@ -203,8 +207,12 @@ impl<'a> Search<'a> {
             self.progress_bars.remove(&progress);
         }
 
+        if !result.is_solved() {
+            result = Cost::Minimum(max_comparisons + 1);
+        }
+
+        self.cache.insert(poset.clone(), result);
         self.cache.insert(poset.dual(), result);
-        self.cache.insert(poset, result);
 
         result
     }
@@ -212,19 +220,13 @@ impl<'a> Search<'a> {
     fn estimate_hardness(poset: &Poset) -> u8 {
         let mut hardness = 0;
 
-        let mut less = [0u8; MAX_N];
-        let mut greater = [0u8; MAX_N];
+        let less = poset.less();
+        let greater = poset.greater();
         let mut unknown = [0u8; MAX_N];
 
         for i in 0..poset.n() {
             for j in (i + 1)..poset.n() {
-                if poset.is_less(i, j) {
-                    less[j as usize] += 1;
-                    greater[i as usize] += 1;
-                } else if poset.is_less(j, i) {
-                    less[i as usize] += 1;
-                    greater[j as usize] += 1;
-                } else {
+                if !poset.has_order(i, j) {
                     unknown[i as usize] += 1;
                     unknown[j as usize] += 1;
                 }

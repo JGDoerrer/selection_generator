@@ -101,8 +101,8 @@ impl Poset {
             for i in 0..new_n {
                 for j in 0..new_n {
                     if self.is_less(new_indices[i], new_indices[j]) {
-                        self.less[j as usize] += 1;
-                        self.greater[i as usize] += 1;
+                        self.less[new_indices[j] as usize] += 1;
+                        self.greater[new_indices[i] as usize] += 1;
                     }
                 }
             }
@@ -113,12 +113,13 @@ impl Poset {
 
         for i in 0..new_n {
             let new_index = new_indices[i] as usize;
+
             lessness[new_index] = MAX_N * MAX_N
                 - self.greater[new_index] as usize * MAX_N
                 - self.less[new_index] as usize;
         }
 
-        new_indices[0..self.n as usize].sort_by(|a, b| {
+        new_indices[0..new_n].sort_by(|a, b| {
             let i = topo_order.iter().position(|i| *i == *a).unwrap();
             let j = topo_order.iter().position(|i| *i == *b).unwrap();
             lessness[*a as usize]
@@ -126,6 +127,7 @@ impl Poset {
                 .reverse()
                 .then(i.cmp(&j))
         });
+        // new_indices[0..new_n].reverse();
 
         let mut new = Poset::new(new_n as u8, self.i - n_less_dropped);
 

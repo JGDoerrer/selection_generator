@@ -48,7 +48,7 @@ struct Args {
     cache_save_file: String,
     #[arg(long, default_value_t = false)]
     no_cache: bool,
-    #[arg(long, default_value_t = false)]
+    #[arg(short, long, default_value_t = false)]
     explore: bool,
 }
 
@@ -81,7 +81,8 @@ fn main() {
                 }
 
                 if args.explore {
-                    todo!();
+                    explore(Poset::new(n, i), &cache);
+                    return;
                 }
             } else {
                 unreachable!()
@@ -91,6 +92,52 @@ fn main() {
                 return;
             }
         }
+    }
+}
+
+fn explore(poset: Poset, cache: &HashMap<Poset, Cost>) {
+    dbg!(&poset);
+
+    print!("     |");
+    for i in 0..poset.n() {
+        print!("  {i}");
+    }
+    println!();
+
+    println!("-----+{}", "---".repeat(poset.n().into()));
+    for i in 0..poset.n() {
+        print!(" {i} < | ");
+
+        for j in 0..poset.n() {
+            if i == j || poset.has_order(i, j) {
+                print!("   ");
+                continue;
+            }
+
+            let less = poset.with_less(i, j);
+            match cache.get(&less) {
+                Some(cost) => print!("{:2} ", cost.value()),
+                None => print!("?? "),
+            }
+        }
+
+        println!()
+    }
+
+    let mut input = String::new();
+
+    print!("> ");
+    std::io::stdout().flush().unwrap();
+    std::io::stdin().read_line(&mut input).unwrap();
+
+    match input.trim().split_once('<') {
+        Some((left, right)) => match (left.trim().parse::<u8>(), right.trim().parse::<u8>()) {
+            (Ok(left), Ok(right)) => {
+                explore(poset.with_less(left, right), cache);
+            }
+            _ => {}
+        },
+        None => {}
     }
 }
 
