@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     poset::{Poset, MAX_N},
-    KNOWN_VALUES,
 };
 
 pub struct Search<'a> {
@@ -74,7 +73,7 @@ impl<'a> Search<'a> {
                     assert_eq!(comps, max);
                     return cost;
                 }
-                cost => {
+                _cost => {
                     println!(
                         "found no solution for n = {}, i = {}, comparisons = {max}",
                         self.n, self.i
@@ -89,7 +88,7 @@ impl<'a> Search<'a> {
     fn search_rec(&mut self, poset: Poset, mut max_comparisons: u8, depth: u8) -> Cost {
         if let Some(cost) = self.cache.get(&poset) {
             match cost {
-                Cost::Solved(solved) => {
+                Cost::Solved(_solved) => {
                     // if *solved > max_comparisons {
                     //     return Cost::Minimum(*solved);
                     // } else {
