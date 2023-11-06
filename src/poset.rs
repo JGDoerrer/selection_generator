@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
 
-use crate::KNOWN_VALUES;
+use crate::KNOWN_MIN_VALUES;
 
 pub const MAX_N: usize = 15;
 
@@ -60,8 +60,8 @@ impl Poset {
     /// adapted from [https://www.cs.hut.fi/~cessu/selection/selgen.c.html]
     ///
     /// This is important, as is maps isomorphic posets to the same one (hopefully), which reduces the search space dramatically
-    pub fn normalize(&mut self) {
-        self.check_counts();
+    fn normalize(&mut self) {
+        debug_assert!(self.check_counts());
 
         let topo_order = self.topological_order();
 
@@ -143,7 +143,95 @@ impl Poset {
         // dbg!(&self, &new);
         debug_assert!(new.is_closed(), "{new:?}");
         *self = new;
-        self.check_counts();
+        debug_assert!(self.check_counts());
+    }
+
+    fn normalize_mapping(&mut self) -> [u8; MAX_N] {
+        debug_assert!(self.check_counts());
+
+        let topo_order = self.topological_order();
+
+        // can the element be ignored, because it is too large/small
+        let mut dropped = [false; MAX_N];
+        let mut n_less_dropped = 0;
+
+        for i in 0..self.n as usize {
+            if self.greater[i] > self.i {
+                dropped[i] = true;
+            } else if self.less[i] >= self.n - self.i {
+                dropped[i] = true;
+                n_less_dropped += 1;
+            }
+        }
+
+        // maps the old indices to the new ones
+        let mut new_indices = [0; MAX_N];
+        let mut new_n = 0;
+        let mut b = self.n as usize - 1;
+
+        for i in 0..self.n {
+            if !dropped[i as usize] {
+                new_indices[new_n as usize] = i;
+                new_n += 1;
+            } else {
+                new_indices[b] = i;
+                b -= 1;
+            }
+        }
+
+        if new_n != self.n.into() {
+            // recalculate less/greater for the new indices
+            self.less = [0; MAX_N];
+            self.greater = [0; MAX_N];
+
+            for i in 0..new_n {
+                for j in 0..new_n {
+                    if self.is_less(new_indices[i], new_indices[j]) {
+                        self.less[new_indices[j] as usize] += 1;
+                        self.greater[new_indices[i] as usize] += 1;
+                    }
+                }
+            }
+        }
+
+        // a heuristic to sort the elements
+        let mut lessness = [0; MAX_N];
+
+        for i in 0..new_n {
+            let new_index = new_indices[i] as usize;
+
+            lessness[new_index] = MAX_N * MAX_N
+                - self.greater[new_index] as usize * MAX_N
+                - self.less[new_index] as usize;
+        }
+
+        new_indices[0..new_n].sort_by(|a, b| {
+            let i = topo_order.iter().position(|i| *i == *a).unwrap();
+            let j = topo_order.iter().position(|i| *i == *b).unwrap();
+            lessness[*a as usize]
+                .cmp(&lessness[*b as usize])
+                .reverse()
+                .then(i.cmp(&j))
+        });
+        // new_indices[0..new_n].reverse();
+
+        let mut new = Poset::new(new_n as u8, self.i - n_less_dropped);
+
+        // make the new poset
+        for i in 0..new.n {
+            for j in 0..new.n {
+                if self.is_less(new_indices[i as usize], new_indices[j as usize]) {
+                    new.set_bit(i, j)
+                }
+            }
+        }
+
+        // dbg!(&self, &new);
+        debug_assert!(new.is_closed(), "{new:?}");
+        *self = new;
+        debug_assert!(self.check_counts());
+
+        new_indices
     }
 
     #[inline]
@@ -199,8 +287,7 @@ impl Poset {
         true
     }
 
-    fn check_counts(&self) {
-        return;
+    fn check_counts(&self) -> bool {
         let mut less = [0u8; MAX_N];
         let mut greater = [0u8; MAX_N];
         let mut unknown = [0u8; MAX_N];
@@ -220,8 +307,7 @@ impl Poset {
             }
         }
 
-        assert_eq!(self.less, less);
-        assert_eq!(self.greater, greater);
+        self.less == less && self.greater == greater
     }
 
     /// adds i < j to the poset and normalize
@@ -258,10 +344,13 @@ impl Poset {
     }
 
     /// returns a clone of the poset, with i < j added
-    pub fn with_less_not_normalized(&self, i: u8, j: u8) -> Self {
+    pub fn with_less_mapping(&self, i: u8, j: u8) -> (Self, [u8; MAX_N]) {
         let mut new = self.clone();
-        new.set_bit(i, j);
-        new
+
+        new.add_and_close(i, j);
+        let mapping = new.normalize_mapping();
+
+        (new, mapping)
     }
 
     /// is either i < j or j < i?
@@ -298,8 +387,8 @@ impl Poset {
             }
 
             max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 3
-        } else if self.n - 1 < KNOWN_VALUES.len() as u8 {
-            let mut comps = KNOWN_VALUES[self.n as usize - 1]
+        } else if self.n - 1 < KNOWN_MIN_VALUES.len() as u8 {
+            let mut comps = KNOWN_MIN_VALUES[self.n as usize - 1]
                 [(self.i as usize).min((self.n - self.i - 1) as usize)];
 
             for i in 0..self.n as usize {
@@ -368,7 +457,7 @@ impl Poset {
     }
 
     pub fn topological_order(&self) -> Vec<u8> {
-        self.check_counts();
+        debug_assert!(self.check_counts());
 
         let mut greater = self.greater.clone();
 

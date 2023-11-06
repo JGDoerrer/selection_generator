@@ -62,10 +62,20 @@ impl<'a> Search<'a> {
             self.current_max = max;
             match self.search_rec(Poset::new(self.n, self.i), max, 0) {
                 cost @ Cost::Solved(comps) => {
-                    self.print_info();
+                    // self.print_info();
                     println!(
                         "found solution for n = {}, i = {}, comparisons = {comps}",
                         self.n, self.i
+                    );
+                    println!("cache entries: {}", self.cache.len());
+                    let duration = Instant::now() - self.start;
+                    let seconds = duration.as_secs_f32() % 60.0;
+                    let minutes = (duration.as_secs() / 60) % 60;
+                    let hours = (duration.as_secs() / (60 * 60)) % 24;
+                    let days = duration.as_secs() / (60 * 60 * 24);
+                    println!(
+                        "time since start: {}d {}h {}m {}s",
+                        days, hours, minutes, seconds
                     );
 
                     // assert_eq!(comps, max);
@@ -86,7 +96,7 @@ impl<'a> Search<'a> {
     fn search_rec(&mut self, poset: Poset, mut max_comparisons: u8, depth: u8) -> Cost {
         if let Some(cost) = self.cache.get(&poset) {
             match cost {
-                Cost::Solved(solved) => {
+                Cost::Solved(_solved) => {
                     // if *solved > max_comparisons {
                     //     return Cost::Minimum(*solved);
                     // } else {
@@ -127,7 +137,7 @@ impl<'a> Search<'a> {
             return Cost::Minimum(max_comparisons + 1);
         }
 
-        let mut pairs = Vec::with_capacity(poset.n() as usize * poset.n() as usize);
+        let mut comparisons = Vec::with_capacity(poset.n() as usize * poset.n() as usize);
 
         for i in 0..poset.n() {
             for j in (i + 1)..poset.n() {
@@ -135,18 +145,31 @@ impl<'a> Search<'a> {
                     continue;
                 }
 
-                let less = poset.with_less(i, j);
-                let greater = poset.with_less(j, i);
+                comparisons.push((i, j));
+            }
+        }
 
-                let pair = if Self::estimate_hardness(&less) > Self::estimate_hardness(&greater) {
-                    (less, greater)
-                } else {
-                    (greater, less)
-                };
+        comparisons.sort_by_cached_key(|(i, j)| Self::get_priority(&poset, *i, *j));
+        comparisons.reverse();
 
-                if !pairs.contains(&pair) {
-                    pairs.push(pair);
-                }
+        let mut pairs = Vec::with_capacity(poset.n() as usize * poset.n() as usize);
+
+        for (i, j) in comparisons {
+            if poset.has_order(i, j) {
+                continue;
+            }
+
+            let less = poset.with_less(i, j);
+            let greater = poset.with_less(j, i);
+
+            let pair = if Self::estimate_hardness(&less) > Self::estimate_hardness(&greater) {
+                (less, greater)
+            } else {
+                (greater, less)
+            };
+
+            if !pairs.contains(&pair) {
+                pairs.push(pair);
             }
         }
 
@@ -168,11 +191,6 @@ impl<'a> Search<'a> {
                 progress.set_message(format!("max: {max_comparisons:2}"));
                 progress.inc(1);
             }
-            // self.total_nodes += 1;
-            // if self.total_nodes % 1000000 == 0 {
-            //     // dbg!(&poset, max_comparisons);
-            //     self.print_info();
-            // }
 
             let first_result = self.search_rec(first, max_comparisons - 1, depth + 1);
 
@@ -196,9 +214,9 @@ impl<'a> Search<'a> {
 
             // result = result.min(new_result);
 
-            max_comparisons = max_comparisons.min(new_result);
             if new_result < result.value() {
                 result = Cost::Solved(new_result);
+                max_comparisons = max_comparisons.min(new_result);
             }
         }
 
@@ -206,10 +224,15 @@ impl<'a> Search<'a> {
             progress.finish_and_clear();
             self.progress_bars.remove(&progress);
         }
+        // self.total_nodes += 1;
+        // if self.total_nodes % 1000000 == 0 {
+        //     // dbg!(&poset, max_comparisons);
+        //     self.print_info();
+        // }
 
-        if !result.is_solved() {
-            result = Cost::Minimum(max_comparisons + 1);
-        }
+        // if !result.is_solved() {
+        //     result = Cost::Minimum(max_comparisons + 1);
+        // }
 
         if let Some(cost) = self.cache.get(&poset) {
             if !cost.is_solved() {
@@ -219,9 +242,36 @@ impl<'a> Search<'a> {
             self.cache.insert(poset.clone(), result);
         }
 
+        // if let Some(cost) = self.cache.get(&poset.dual()) {
+        //     if !cost.is_solved() {
+        //         self.cache.insert(poset.dual(), result);
+        //     }
+        // } else {
+        //     self.cache.insert(poset.dual(), result);
+        // }
+
         // self.cache.insert(poset.dual(), result);
 
         result
+    }
+
+    fn get_priority(poset: &Poset, i: u8, j: u8) -> u8 {
+        let mut compares = 0;
+
+        for k in 0..poset.n() {
+            if k == i || k == j {
+                continue;
+            }
+
+            if poset.has_order(i, k) {
+                compares += 1;
+            }
+            if poset.has_order(j, k) {
+                compares += 1;
+            }
+        }
+
+        compares
     }
 
     fn estimate_hardness(poset: &Poset) -> u8 {
