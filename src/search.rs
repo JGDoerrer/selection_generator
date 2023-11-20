@@ -205,7 +205,11 @@ impl<'a> Search<'a> {
 
         for (first, second) in pairs {
             if let Some(progress) = &progress {
-                progress.set_message(format!("max: {max_comparisons:2}"));
+                progress.set_message(format!(
+                    "max: {max_comparisons:2}, nodes: {:10}, cache: {:10}",
+                    self.total_nodes,
+                    self.cache.len()
+                ));
                 progress.inc(1);
             }
 
@@ -231,11 +235,11 @@ impl<'a> Search<'a> {
             }
         }
 
-        self.total_nodes += 1;
-        if self.total_nodes % 10000 == 0 {
-            // dbg!(&poset, max_comparisons);
-            self.print_info();
-        }
+        // self.total_nodes += 1;
+        // if self.total_nodes % 10000 == 0 {
+        //     // dbg!(&poset, max_comparisons);
+        //     self.print_info();
+        // }
 
         if let Some(progress) = progress {
             progress.finish_and_clear();
@@ -249,6 +253,9 @@ impl<'a> Search<'a> {
         // if let Some(cost) = self.cache.get(&poset) {
         //     if !cost.is_solved() {
         self.cache.insert(poset.clone(), result);
+        //     } else if result.is_solved() {
+        //         let result = Cost::Solved(result.value().min(cost.value()));
+        //         self.cache.insert(poset.clone(), result);
         //     }
         // } else {
         //     self.cache.insert(poset.clone(), result);
