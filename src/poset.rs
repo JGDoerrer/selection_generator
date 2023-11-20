@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::{collections::hash_map::DefaultHasher, fmt::Debug, hash::Hasher};
 
 use serde::{Deserialize, Serialize};
 
@@ -57,100 +57,29 @@ impl Poset {
         &self.greater
     }
 
+    fn hash(a: u64, b: u64) -> u64 {
+        let mut hash: u64 = 9118271012717746669;
+
+        hash = hash.wrapping_mul(a);
+        hash = hash.rotate_left(7);
+        hash = hash.wrapping_add(3032928155878307119);
+        hash = hash.wrapping_mul(b);
+        hash = hash.rotate_right(9);
+        hash = hash.wrapping_add(16728691407311227577);
+
+        hash
+    }
+
     /// adapted from [https://www.cs.hut.fi/~cessu/selection/selgen.c.html]
     ///
     /// This is important, as is maps isomorphic posets to the same one (hopefully), which reduces the search space dramatically
     fn normalize(&mut self) {
-        debug_assert!(self.check_counts());
-
-        let topo_order = self.topological_order();
-
-        // can the element be ignored, because it is too large/small
-        let mut dropped = [false; MAX_N];
-        let mut n_less_dropped = 0;
-
-        for i in 0..self.n as usize {
-            if self.greater[i] > self.i {
-                dropped[i] = true;
-            } else if self.less[i] >= self.n - self.i {
-                dropped[i] = true;
-                n_less_dropped += 1;
-            }
-        }
-
-        // maps the old indices to the new ones
-        let mut new_indices = [0; MAX_N];
-        let mut new_n = 0;
-        let mut b = self.n as usize - 1;
-
-        for i in 0..self.n {
-            if !dropped[i as usize] {
-                new_indices[new_n as usize] = i;
-                new_n += 1;
-            } else {
-                new_indices[b] = i;
-                b -= 1;
-            }
-        }
-
-        if new_n != self.n.into() {
-            // recalculate less/greater for the new indices
-            self.less = [0; MAX_N];
-            self.greater = [0; MAX_N];
-
-            for i in 0..new_n {
-                for j in 0..new_n {
-                    if self.is_less(new_indices[i], new_indices[j]) {
-                        self.less[new_indices[j] as usize] += 1;
-                        self.greater[new_indices[i] as usize] += 1;
-                    }
-                }
-            }
-        }
-
-        // a heuristic to sort the elements
-        let mut lessness = [0; MAX_N];
-
-        for i in 0..new_n {
-            let new_index = new_indices[i] as usize;
-
-            lessness[new_index] = MAX_N * MAX_N
-                - self.greater[new_index] as usize * MAX_N
-                - self.less[new_index] as usize;
-        }
-
-        new_indices[0..new_n].sort_by(|a, b| {
-            let i = topo_order.iter().position(|i| *i == *a).unwrap();
-            let j = topo_order.iter().position(|i| *i == *b).unwrap();
-            lessness[*a as usize]
-                .cmp(&lessness[*b as usize])
-                .reverse()
-                .then(i.cmp(&j))
-        });
-        // new_indices[0..new_n].reverse();
-
-        let mut new = Poset::new(new_n as u8, self.i - n_less_dropped);
-
-        // make the new poset
-        for i in 0..new.n {
-            for j in 0..new.n {
-                if self.is_less(new_indices[i as usize], new_indices[j as usize]) {
-                    new.set_bit(i, j)
-                }
-            }
-        }
-
-        // dbg!(&self, &new);
-        debug_assert!(new.is_closed(), "{new:?}");
-        *self = new;
-        debug_assert!(self.check_counts());
+        self.normalize_mapping();
     }
 
     fn normalize_mapping(&mut self) -> [u8; MAX_N] {
         debug_assert!(self.check_counts());
 
-        let topo_order = self.topological_order();
-
         // can the element be ignored, because it is too large/small
         let mut dropped = [false; MAX_N];
         let mut n_less_dropped = 0;
@@ -193,7 +122,6 @@ impl Poset {
                 }
             }
         }
-
         // a heuristic to sort the elements
         let mut lessness = [0; MAX_N];
 
@@ -205,14 +133,106 @@ impl Poset {
                 - self.less[new_index] as usize;
         }
 
+        let mut deg_hash = [0; MAX_N];
+        let mut hash = [0; MAX_N];
+
+        for i in 0..new_n {
+            let i = new_indices[i];
+            let i_hash = Self::hash(
+                self.less[i as usize].into(),
+                self.greater[i as usize].into(),
+            );
+            deg_hash[i as usize] = i_hash;
+            hash[i as usize] = i_hash;
+        }
+
+        for _ in 0..3 {
+            let mut sum_hash = [0; MAX_N];
+
+            for i in 0..new_n {
+                let i = new_indices[i];
+                let mut sum = hash[i as usize];
+
+                for j in 0..new_n {
+                    let j = new_indices[j];
+
+                    if i == j {
+                        continue;
+                    }
+
+                    if self.is_less(i, j) {
+                        sum = sum.wrapping_add(hash[j as usize]);
+                    }
+                }
+
+                sum_hash[i as usize] = sum;
+            }
+
+            for i in 0..new_n {
+                let i = new_indices[i];
+                hash[i as usize] = Self::hash(sum_hash[i as usize], deg_hash[i as usize]);
+            }
+        }
+
         new_indices[0..new_n].sort_by(|a, b| {
-            let i = topo_order.iter().position(|i| *i == *a).unwrap();
-            let j = topo_order.iter().position(|i| *i == *b).unwrap();
             lessness[*a as usize]
                 .cmp(&lessness[*b as usize])
+                .then(hash[*a as usize].cmp(&hash[*b as usize]))
                 .reverse()
-                .then(i.cmp(&j))
         });
+        // new_indices[0..new_n].reverse();
+
+        let mut i = 1;
+        while i < new_n {
+            if !(lessness[new_indices[i] as usize] == lessness[new_indices[i - 1] as usize]
+                && hash[new_indices[i] as usize] == hash[new_indices[i - 1] as usize])
+            {
+                i += 1;
+                continue;
+            }
+
+            while i < new_n
+                && lessness[new_indices[i] as usize] == lessness[new_indices[i - 1] as usize]
+                && hash[new_indices[i] as usize] == hash[new_indices[i - 1] as usize]
+            {
+                i += 1;
+            }
+
+            if i == new_n {
+                continue;
+            }
+
+            for _ in 0..2 {
+                let mut sum_hash = [0; MAX_N];
+
+                for i in i..new_n {
+                    let mut sum = hash[new_indices[i] as usize];
+
+                    for j in 0..i {
+                        if new_indices[i] == new_indices[j] {
+                            continue;
+                        }
+
+                        if self.is_less(new_indices[i], new_indices[j]) {
+                            sum = sum.wrapping_add(hash[new_indices[j] as usize]);
+                        }
+                    }
+
+                    sum_hash[new_indices[i] as usize] = sum;
+                }
+
+                for i in i..new_n {
+                    let i = new_indices[i];
+                    hash[i as usize] = Self::hash(sum_hash[i as usize], deg_hash[i as usize]);
+                }
+            }
+            new_indices[i..new_n].sort_by(|a, b| {
+                lessness[*a as usize]
+                    .cmp(&lessness[*b as usize])
+                    .then(hash[*a as usize].cmp(&hash[*b as usize]))
+                    .reverse()
+            });
+        }
         // new_indices[0..new_n].reverse();
 
         let mut new = Poset::new(new_n as u8, self.i - n_less_dropped);

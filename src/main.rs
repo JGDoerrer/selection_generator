@@ -76,8 +76,10 @@ fn main() {
 
             if let Cost::Solved(_comparisons) = cost {
                 if n < KNOWN_MIN_VALUES.len() as u8 {
-                    // assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
+                    assert_eq!(_comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
                 }
+
+                println!("cache_entries = {}", cache.len());
 
                 if !args.no_cache && cache.len() != old_cache_len {
                     save_cache(&args.cache_save_file, &cache);
@@ -119,7 +121,7 @@ fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &HashMap<Poset, Cost>) {
         for i in 0..poset.n() {
             let mapped_i = old_mapping[i as usize];
 
-            print!(" {i} < |");
+            print!("{i:2} < |");
 
             for j in 0..poset.n() {
                 let mapped_j = old_mapping[j as usize];
