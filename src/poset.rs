@@ -19,10 +19,6 @@ pub struct Poset {
     // 1 |   -
     // 2 |     -
     adjacency: [u8; Self::BYTES],
-    /// how many elements are less than it
-    less: [u8; MAX_N],
-    /// how many elements are greater than it
-    greater: [u8; MAX_N],
 }
 
 impl Poset {
@@ -36,8 +32,6 @@ impl Poset {
             n,
             i,
             adjacency: [0; Self::BYTES],
-            less: [0; MAX_N],
-            greater: [0; MAX_N],
         }
     }
 
@@ -45,12 +39,28 @@ impl Poset {
         self.n
     }
 
-    pub fn less(&self) -> &[u8; MAX_N] {
-        &self.less
-    }
+    /// returns how many elements are less, unknown or greater than it
+    pub fn calculate_relations(&self) -> ([u8; MAX_N], [u8; MAX_N], [u8; MAX_N]) {
+        let mut less = [0u8; MAX_N];
+        let mut greater = [0u8; MAX_N];
+        let mut unknown = [0u8; MAX_N];
 
-    pub fn greater(&self) -> &[u8; MAX_N] {
-        &self.greater
+        for i in 0..self.n {
+            for j in (i + 1)..self.n {
+                if self.is_less(i, j) {
+                    less[j as usize] += 1;
+                    greater[i as usize] += 1;
+                } else if self.is_less(j, i) {
+                    less[i as usize] += 1;
+                    greater[j as usize] += 1;
+                } else {
+                    unknown[i as usize] += 1;
+                    unknown[j as usize] += 1;
+                }
+            }
+        }
+
+        (less, unknown, greater)
     }
 
     fn hash(a: u64, b: u64) -> u64 {
@@ -74,16 +84,16 @@ impl Poset {
     }
 
     fn normalize_mapping(&mut self) -> [u8; MAX_N] {
-        debug_assert!(self.check_counts());
-
         // can the element be ignored, because it is too large/small
         let mut dropped = [false; MAX_N];
         let mut n_less_dropped = 0;
 
+        let (mut less, _unknown, mut greater) = self.calculate_relations();
+
         for i in 0..self.n as usize {
-            if self.greater[i] > self.i {
+            if greater[i] > self.i {
                 dropped[i] = true;
-            } else if self.less[i] >= self.n - self.i {
+            } else if less[i] >= self.n - self.i {
                 dropped[i] = true;
                 n_less_dropped += 1;
             }
@@ -106,14 +116,14 @@ impl Poset {
 
         if new_n != self.n.into() {
             // recalculate less/greater for the new indices
-            self.less = [0; MAX_N];
-            self.greater = [0; MAX_N];
+            less = [0; MAX_N];
+            greater = [0; MAX_N];
 
             for i in 0..new_n {
                 for j in 0..new_n {
                     if self.is_less(new_indices[i], new_indices[j]) {
-                        self.less[new_indices[j] as usize] += 1;
-                        self.greater[new_indices[i] as usize] += 1;
+                        less[new_indices[j] as usize] += 1;
+                        greater[new_indices[i] as usize] += 1;
                     }
                 }
             }
@@ -124,9 +134,8 @@ impl Poset {
         for i in 0..new_n {
             let new_index = new_indices[i] as usize;
 
-            lessness[new_index] = MAX_N * MAX_N
-                - self.greater[new_index] as usize * MAX_N
-                - self.less[new_index] as usize;
+            lessness[new_index] =
+                MAX_N * MAX_N - greater[new_index] as usize * MAX_N - less[new_index] as usize;
         }
 
         let mut deg_hash = [0; MAX_N];
@@ -134,10 +143,7 @@ impl Poset {
 
         for i in 0..new_n {
             let i = new_indices[i];
-            let i_hash = Self::hash(
-                self.less[i as usize].into(),
-                self.greater[i as usize].into(),
-            );
+            let i_hash = Self::hash(less[i as usize].into(), greater[i as usize].into());
             deg_hash[i as usize] = i_hash;
             hash[i as usize] = i_hash;
         }
@@ -245,7 +251,6 @@ impl Poset {
         // dbg!(&self, &new);
         debug_assert!(new.is_closed(), "{new:?}");
         *self = new;
-        debug_assert!(self.check_counts());
 
         new_indices
     }
@@ -262,8 +267,6 @@ impl Poset {
         let byte = bit / 8;
         let mask = 1 << (bit % 8);
 
-        self.less[j as usize] += 1;
-        self.greater[i as usize] += 1;
         self.adjacency[byte as usize] |= mask;
     }
 
@@ -290,29 +293,6 @@ impl Poset {
         }
 
         true
-    }
-
-    fn check_counts(&self) -> bool {
-        let mut less = [0u8; MAX_N];
-        let mut greater = [0u8; MAX_N];
-        let mut unknown = [0u8; MAX_N];
-
-        for i in 0..self.n {
-            for j in (i + 1)..self.n {
-                if self.is_less(i, j) {
-                    less[j as usize] += 1;
-                    greater[i as usize] += 1;
-                } else if self.is_less(j, i) {
-                    less[i as usize] += 1;
-                    greater[j as usize] += 1;
-                } else {
-                    unknown[i as usize] += 1;
-                    unknown[j as usize] += 1;
-                }
-            }
-        }
-
-        self.less == less && self.greater == greater
     }
 
     /// adds i < j to the poset and normalize
@@ -369,35 +349,41 @@ impl Poset {
         if self.i == 0 || self.i == self.n - 1 {
             max_comparisons >= self.n - 1
         } else if self.i == 1 {
+            let (less, _unknown, greater) = self.calculate_relations();
+
             let mut num_groups = 0;
             let mut s = 0u32;
 
             for i in 0..self.n as usize {
-                if self.greater[i] == 0 {
+                if greater[i] == 0 {
                     num_groups += 1;
-                    s += 1 << self.less[i];
+                    s += 1 << less[i];
                 }
             }
 
             max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 3
         } else if self.i == self.n - 2 {
+            let (less, _unknown, greater) = self.calculate_relations();
+
             let mut num_groups = 0;
             let mut s = 0u32;
 
             for i in 0..self.n as usize {
-                if self.less[i] == 0 {
+                if less[i] == 0 {
                     num_groups += 1;
-                    s += 1 << self.greater[i];
+                    s += 1 << greater[i];
                 }
             }
 
             max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 3
         } else if self.n - 1 < KNOWN_MIN_VALUES.len() as u8 {
+            let (less, _unknown, greater) = self.calculate_relations();
+
             let mut comps = KNOWN_MIN_VALUES[self.n as usize - 1]
                 [(self.i as usize).min((self.n - self.i - 1) as usize)];
 
             for i in 0..self.n as usize {
-                if self.less[i] == 1 {
+                if less[i] == 1 {
                     comps -= 1;
                 }
 
@@ -407,7 +393,7 @@ impl Poset {
             }
 
             for i in 0..self.n - 1 {
-                if self.less[i as usize] < 2 {
+                if less[i as usize] < 2 {
                     continue;
                 }
 
@@ -416,7 +402,7 @@ impl Poset {
                         continue;
                     }
 
-                    if self.greater[j as usize] == 1 {
+                    if greater[j as usize] == 1 {
                         comps -= 1;
 
                         if comps <= max_comparisons {

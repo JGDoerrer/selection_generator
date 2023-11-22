@@ -4,7 +4,7 @@ use hashbrown::HashMap;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
-use crate::poset::{Poset, MAX_N};
+use crate::poset::Poset;
 
 pub struct Search<'a> {
     n: u8,
@@ -89,22 +89,12 @@ impl<'a> Search<'a> {
         if let Some(cost) = self.cache.get(&poset) {
             match cost {
                 Cost::Solved(_solved) => {
-                    // if *solved > max_comparisons {
-                    //     return Cost::Minimum(max_comparisons + 1);
-                    // } else {
-                    //     return Cost::Solved(*solved);
-                    // }
                     return *cost;
                 }
                 Cost::Minimum(min) => {
                     if *min > max_comparisons {
                         return *cost;
                     }
-                    //  else {
-                    //     // if *min < max_comparisons {
-                    //     // result = Cost::Minimum(*min)
-                    //     // }
-                    // }
                 }
             }
         }
@@ -114,7 +104,6 @@ impl<'a> Search<'a> {
         }
 
         if max_comparisons == 0 {
-            // self.cache.insert(poset, Cost::Minimum(1));
             return Cost::Minimum(1);
         }
 
@@ -156,6 +145,7 @@ impl<'a> Search<'a> {
 
         let mut result = Cost::Minimum(max_comparisons + 1);
 
+        // search all comparisons
         for (first, second) in pairs {
             if let Some(progress) = &progress {
                 progress.set_message(format!(
@@ -165,6 +155,7 @@ impl<'a> Search<'a> {
                 ));
             }
 
+            // search the first case of the comparison
             let first_result = self.search_rec(first, max_comparisons - 1, depth + 1);
 
             if !first_result.is_solved() || first_result.value() > max_comparisons - 1 {
@@ -174,6 +165,7 @@ impl<'a> Search<'a> {
                 continue;
             }
 
+            // search the second case of the comparison
             let second_result = self.search_rec(second, max_comparisons - 1, depth + 1);
 
             if !second_result.is_solved() || second_result.value() > max_comparisons - 1 {
@@ -183,12 +175,13 @@ impl<'a> Search<'a> {
                 continue;
             }
 
+            // take the max of the branches of the comparisons
             let new_result = first_result.value().max(second_result.value()) + 1;
 
-            // result = result.min(new_result);
-
+            // take the min of all comparisons
             if !result.is_solved() || new_result <= result.value() {
                 result = Cost::Solved(new_result);
+                // max_comparisons = new_result - 1; // breaks for n=12, i=5
                 max_comparisons = new_result;
             }
 
@@ -198,19 +191,11 @@ impl<'a> Search<'a> {
         }
 
         self.total_nodes += 1;
-        // if self.total_nodes % 10000 == 0 {
-        //     // dbg!(&poset, max_comparisons);
-        //     self.print_info();
-        // }
 
         if let Some(progress) = progress {
             progress.finish_and_clear();
             self.progress_bars.remove(&progress);
         }
-
-        // if !result.is_solved() {
-        //     result = Cost::Minimum(max_comparisons + 1);
-        // }
 
         // if let Some(cost) = self.cache.get(&poset) {
         //     let res = match (cost, result) {
@@ -228,16 +213,6 @@ impl<'a> Search<'a> {
         // } else {
         self.cache.insert(poset.clone(), result);
         // }
-
-        // if let Some(cost) = self.cache.get(&poset.dual()) {
-        //     if !cost.is_solved() {
-        //         self.cache.insert(poset.dual(), result);
-        //     }
-        // } else {
-        //     self.cache.insert(poset.dual(), result);
-        // }
-
-        // self.cache.insert(poset.dual(), result);
 
         result
     }
@@ -277,6 +252,7 @@ impl<'a> Search<'a> {
         pairs
     }
 
+    // heuristic priority of performing that comparison
     fn get_priority(poset: &Poset, i: u8, j: u8) -> u8 {
         let mut compares = 0;
 
@@ -294,20 +270,21 @@ impl<'a> Search<'a> {
         }
 
         let mut priority = 0;
+        let (less, _unknown, greater) = poset.calculate_relations();
 
         if compares == 0 {
             priority = 250;
         } else {
-            if poset.greater()[i as usize] >= 2 {
+            if greater[i as usize] >= 2 {
                 priority += 50;
             }
-            if poset.greater()[j as usize] >= 2 {
+            if greater[j as usize] >= 2 {
                 priority += 50;
             }
-            if poset.less()[i as usize] >= 2 {
+            if less[i as usize] >= 2 {
                 priority += 50;
             }
-            if poset.less()[j as usize] >= 2 {
+            if less[j as usize] >= 2 {
                 priority += 50;
             }
         }
@@ -319,19 +296,7 @@ impl<'a> Search<'a> {
 
     fn estimate_hardness(poset: &Poset) -> u8 {
         let mut hardness = 0;
-
-        let less = poset.less();
-        let greater = poset.greater();
-        let mut unknown = [0u8; MAX_N];
-
-        for i in 0..poset.n() {
-            for j in (i + 1)..poset.n() {
-                if !poset.has_order(i, j) {
-                    unknown[i as usize] += 1;
-                    unknown[j as usize] += 1;
-                }
-            }
-        }
+        let (less, unknown, greater) = poset.calculate_relations();
 
         for i in 0..poset.n() as usize {
             let d = greater[i].abs_diff(less[i]);
@@ -371,8 +336,7 @@ impl<'a> Search<'a> {
             return Some(false);
         }
 
-        let less = poset.less();
-        let greater = poset.greater();
+        let (less, _unknown, greater) = poset.calculate_relations();
 
         for i in start_i..poset.n() {
             if !(less[i as usize] == 0 && greater[i as usize] >= 2) {
