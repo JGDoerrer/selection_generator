@@ -128,7 +128,8 @@ impl Poset {
                 }
             }
         }
-        // a heuristic to sort the elements
+
+        // a heuristic to sort the elements by amount of element less/greater than it
         let mut lessness = [0; MAX_N];
 
         for i in 0..new_n {
@@ -137,7 +138,9 @@ impl Poset {
             lessness[new_index] = greater[new_index] as usize * MAX_N + less[new_index] as usize;
         }
 
+        // a hash for the amount of element less/greater than it
         let mut deg_hash = [0; MAX_N];
+
         let mut hash = [0; MAX_N];
 
         for i in 0..new_n {
@@ -161,7 +164,7 @@ impl Poset {
                         continue;
                     }
 
-                    if self.is_less(i, j) {
+                    if self.has_order(i, j) {
                         sum = sum.wrapping_add(hash[j as usize]);
                     }
                 }
@@ -208,12 +211,13 @@ impl Poset {
                 for i in i..new_n {
                     let mut sum = hash[new_indices[i] as usize];
 
+                    // sum hashes of lower neighbours
                     for j in 0..i {
                         if new_indices[i] == new_indices[j] {
                             continue;
                         }
 
-                        if self.is_less(new_indices[i], new_indices[j]) {
+                        if self.has_order(new_indices[i], new_indices[j]) {
                             sum = sum.wrapping_add(hash[new_indices[j] as usize]);
                         }
                     }
@@ -221,6 +225,7 @@ impl Poset {
                     sum_hash[new_indices[i] as usize] = sum;
                 }
 
+                // update hash
                 for i in i..new_n {
                     let i = new_indices[i];
                     hash[i as usize] = Self::hash(sum_hash[i as usize], deg_hash[i as usize]);
