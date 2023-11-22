@@ -134,8 +134,7 @@ impl Poset {
         for i in 0..new_n {
             let new_index = new_indices[i] as usize;
 
-            lessness[new_index] =
-                MAX_N * MAX_N - greater[new_index] as usize * MAX_N - less[new_index] as usize;
+            lessness[new_index] = greater[new_index] as usize * MAX_N + less[new_index] as usize;
         }
 
         let mut deg_hash = [0; MAX_N];
@@ -180,7 +179,6 @@ impl Poset {
             lessness[*a as usize]
                 .cmp(&lessness[*b as usize])
                 .then(hash[*a as usize].cmp(&hash[*b as usize]))
-                .reverse()
         });
         // new_indices[0..new_n].reverse();
 
@@ -232,7 +230,6 @@ impl Poset {
                 lessness[*a as usize]
                     .cmp(&lessness[*b as usize])
                     .then(hash[*a as usize].cmp(&hash[*b as usize]))
-                    .reverse()
             });
         }
         // new_indices[0..new_n].reverse();
