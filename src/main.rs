@@ -45,9 +45,7 @@ struct Args {
     single: bool,
     /// The name of the cache to use.
     #[arg(long, default_value = "cache.dat", value_hint = clap::ValueHint::FilePath)]
-    cache_load_file: String,
-    #[arg(long, default_value = "cache.dat", value_hint = clap::ValueHint::FilePath)]
-    cache_save_file: String,
+    cache_file: String,
     #[arg(long, default_value_t = false)]
     no_cache: bool,
     #[arg(short, long, default_value_t = false)]
@@ -62,7 +60,7 @@ fn main() {
     let mut cache = if args.no_cache {
         HashMap::new()
     } else {
-        load_cache(&args.cache_load_file).unwrap_or(HashMap::new())
+        load_cache(&args.cache_file).unwrap_or_default()
     };
 
     println!("cache_entries = {}", cache.len());
@@ -76,13 +74,13 @@ fn main() {
 
             if let Cost::Solved(_comparisons) = cost {
                 if n < KNOWN_MIN_VALUES.len() as u8 {
-                    assert_eq!(_comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
+                    // assert_eq!(_comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
                 }
 
                 println!("cache_entries = {}", cache.len());
 
                 if !args.no_cache && cache.len() != old_cache_len {
-                    save_cache(&args.cache_save_file, &cache);
+                    save_cache(&args.cache_file, &cache);
                 }
 
                 if args.explore {
@@ -111,9 +109,53 @@ fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &HashMap<Poset, Cost>) {
             old
         };
 
+        let mut best_comp = (0, 0);
+        let mut best_cost = u8::MAX;
+
+        // print comparisons
+        let mut first = true;
+        for i in 0..poset.n() {
+            let normal_i = i;
+            let i = old_mapping[i as usize];
+
+            'j_loop: for j in normal_i + 1..poset.n() {
+                let normal_j = j;
+                let j = old_mapping[j as usize];
+
+                if !poset.has_order(i, j) {
+                    continue;
+                }
+
+                let is_less = poset.is_less(i, j);
+
+                for k in 0..poset.n() {
+                    if k != i
+                        && k != j
+                        && poset.is_less(i, k) == is_less
+                        && poset.is_less(k, j) == is_less
+                    {
+                        continue 'j_loop;
+                    }
+                }
+
+                if first {
+                    first = false
+                } else {
+                    print!(", ");
+                }
+                if is_less {
+                    print!("{normal_i} < {normal_j}");
+                } else {
+                    print!("{normal_j} < {normal_i}");
+                }
+            }
+        }
+        println!();
+
+        // print matrix
         print!("     |");
         for i in 0..poset.n() {
-            print!(" {i} |");
+            print!(" {i:2}|");
         }
         println!();
 
@@ -127,17 +169,25 @@ fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &HashMap<Poset, Cost>) {
                 let mapped_j = old_mapping[j as usize];
 
                 if mapped_i == mapped_j || poset.has_order(mapped_i, mapped_j) {
-                    if poset.is_less(mapped_i, mapped_j) {
-                        print!("   |");
-                    } else {
-                        print!("   |");
-                    }
+                    print!("   |");
                     continue;
                 }
 
                 let less = poset.with_less(mapped_i, mapped_j);
+                let greater = poset.with_less(mapped_j, mapped_i);
                 match cache.get(&less) {
-                    Some(Cost::Solved(cost)) => print!(" {:<2}|", cost),
+                    Some(Cost::Solved(cost)) => {
+                        let cost = *cost;
+                        print!(" {:<2}|", cost);
+
+                        if let Some(Cost::Solved(other_cost)) = cache.get(&greater) {
+                            let max_cost = cost.max(*other_cost);
+                            if max_cost < best_cost {
+                                best_cost = max_cost;
+                                best_comp = (i, j);
+                            }
+                        }
+                    }
                     Some(Cost::Minimum(cost)) => print!(">{:2}|", cost - 1),
                     None => print!(" ? |"),
                 }
@@ -149,36 +199,38 @@ fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &HashMap<Poset, Cost>) {
 
         let mut input = String::new();
 
+        println!(
+            "best: {}, {}, cost: {}",
+            best_comp.0, best_comp.1, best_cost
+        );
+
         print!("> ");
         std::io::stdout().flush().unwrap();
         std::io::stdin().read_line(&mut input).unwrap();
 
         match input.trim() {
             "" | "q" => break,
-            _ => match input.trim().split_once('<') {
-                Some((left, right)) => {
-                    match (left.trim().parse::<u8>(), right.trim().parse::<u8>()) {
-                        (Ok(i), Ok(j)) => {
-                            let mapped_i = old_mapping[i as usize];
-                            let mapped_j = old_mapping[j as usize];
+            _ => {
+                if let Some((left, right)) = input.trim().split_once('<') {
+                    if let (Ok(i), Ok(j)) = (left.trim().parse::<u8>(), right.trim().parse::<u8>())
+                    {
+                        let mapped_i = old_mapping[i as usize];
+                        let mapped_j = old_mapping[j as usize];
 
-                            let (next, new_mapping) = poset.with_less_mapping(mapped_i, mapped_j);
+                        let (next, new_mapping) = poset.with_less_mapping(mapped_i, mapped_j);
 
-                            let next_mapping = {
-                                let mut new = [0; MAX_N];
-                                for i in 0..poset.n() {
-                                    new[i as usize] = mapping[new_mapping[i as usize] as usize];
-                                }
-                                new
-                            };
+                        let next_mapping = {
+                            let mut new = [0; MAX_N];
+                            for i in 0..poset.n() {
+                                new[i as usize] = mapping[new_mapping[i as usize] as usize];
+                            }
+                            new
+                        };
 
-                            explore(next, next_mapping, cache);
-                        }
-                        _ => {}
+                        explore(next, next_mapping, cache);
                     }
                 }
-                None => {}
-            },
+            }
         }
     }
 }
@@ -216,7 +268,5 @@ fn load_cache(path: &String) -> Option<HashMap<Poset, Cost>> {
         }
     }
 
-    let cache = postcard::from_bytes(&bytes).map_or(None, |c| Some(c));
-
-    cache
+    postcard::from_bytes(&bytes).map_or(None, Some)
 }

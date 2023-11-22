@@ -37,36 +37,6 @@ impl<'a> Search<'a> {
         }
     }
 
-    pub fn print_info(&self) {
-        // self.progress_bars
-        //     .println(format!(
-        //         "calculating n = {}, i = {}, current max = {}",
-        //         self.n, self.i, self.current_max
-        //     ))
-        //     .unwrap();
-
-        // self.progress_bars
-        //     .println(format!("nodes checked: {}", self.total_nodes))
-        //     .unwrap();
-
-        // self.progress_bars
-        //     .println(format!("cache entries: {}", self.cache.len()))
-        //     .unwrap();
-
-        let duration = Instant::now() - self.start;
-        let seconds = duration.as_secs_f32() % 60.0;
-        let minutes = (duration.as_secs() / 60) % 60;
-        let hours = (duration.as_secs() / (60 * 60)) % 24;
-        let days = duration.as_secs() / (60 * 60 * 24);
-
-        // self.progress_bars
-        //     .println(format!(
-        //         "time since start: {}d {}h {}m {}s",
-        //         days, hours, minutes, seconds
-        //     ))
-        //     .unwrap();
-    }
-
     pub fn search(&mut self) -> Cost {
         self.start = Instant::now();
 
@@ -118,7 +88,7 @@ impl<'a> Search<'a> {
     fn search_rec(&mut self, poset: Poset, mut max_comparisons: u8, depth: u8) -> Cost {
         if let Some(cost) = self.cache.get(&poset) {
             match cost {
-                Cost::Solved(solved) => {
+                Cost::Solved(_solved) => {
                     // if *solved > max_comparisons {
                     //     return Cost::Minimum(max_comparisons + 1);
                     // } else {
@@ -129,11 +99,12 @@ impl<'a> Search<'a> {
                 Cost::Minimum(min) => {
                     if *min > max_comparisons {
                         return *cost;
-                    } else {
-                        // if *min < max_comparisons {
-                        // result = Cost::Minimum(*min)
-                        // }
                     }
+                    //  else {
+                    //     // if *min < max_comparisons {
+                    //     // result = Cost::Minimum(*min)
+                    //     // }
+                    // }
                 }
             }
         }
@@ -147,18 +118,131 @@ impl<'a> Search<'a> {
             return Cost::Minimum(1);
         }
 
-        if let Some(false) = self.estimate_solvable(poset.clone(), max_comparisons, 0, 0, depth) {
+        if let Some(false) = self.estimate_solvable(poset.clone(), max_comparisons, 0, 0) {
+            let result = Cost::Minimum(max_comparisons + 1);
+
             if let Some(cost) = self.cache.get(&poset) {
-                if !cost.is_solved() && cost.value() < max_comparisons + 1 {
-                    self.cache.insert(poset, Cost::Minimum(max_comparisons + 1));
-                }
+                let res = match (cost, result) {
+                    (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
+                        Cost::Minimum(new_min.max(*old_min))
+                    }
+                    (Cost::Solved(old_solved), Cost::Solved(new_solved)) => {
+                        Cost::Solved(new_solved.min(*old_solved))
+                    }
+                    (Cost::Solved(_), Cost::Minimum(_)) => *cost,
+                    (Cost::Minimum(_), Cost::Solved(_)) => result,
+                };
+
+                self.cache.insert(poset.clone(), res);
             } else {
-                self.cache.insert(poset, Cost::Minimum(max_comparisons + 1));
+                self.cache.insert(poset.clone(), result);
             }
 
-            return Cost::Minimum(max_comparisons + 1);
+            return result;
         }
 
+        let pairs = self.get_comparison_pairs(&poset);
+
+        let progress = if depth <= self.n * 2 / 3 {
+            let progress = ProgressBar::new(pairs.len() as u64).with_style(
+                ProgressStyle::with_template("[{pos:2}/{len:2}] {msg} {wide_bar}").unwrap(),
+            );
+
+            let progress = self.progress_bars.add(progress.clone());
+            Some(progress)
+        } else {
+            None
+        };
+
+        let mut result = Cost::Minimum(max_comparisons + 1);
+
+        for (first, second) in pairs {
+            if let Some(progress) = &progress {
+                progress.set_message(format!(
+                    "max: {max_comparisons:2}, nodes: {:10}, cache: {:10}",
+                    self.total_nodes,
+                    self.cache.len()
+                ));
+            }
+
+            let first_result = self.search_rec(first, max_comparisons - 1, depth + 1);
+
+            if !first_result.is_solved() || first_result.value() > max_comparisons - 1 {
+                if let Some(progress) = &progress {
+                    progress.inc(1);
+                }
+                continue;
+            }
+
+            let second_result = self.search_rec(second, max_comparisons - 1, depth + 1);
+
+            if !second_result.is_solved() || second_result.value() > max_comparisons - 1 {
+                if let Some(progress) = &progress {
+                    progress.inc(1);
+                }
+                continue;
+            }
+
+            let new_result = first_result.value().max(second_result.value()) + 1;
+
+            // result = result.min(new_result);
+
+            if !result.is_solved() || new_result <= result.value() {
+                result = Cost::Solved(new_result);
+                max_comparisons = new_result;
+            }
+
+            if let Some(progress) = &progress {
+                progress.inc(1);
+            }
+        }
+
+        self.total_nodes += 1;
+        // if self.total_nodes % 10000 == 0 {
+        //     // dbg!(&poset, max_comparisons);
+        //     self.print_info();
+        // }
+
+        if let Some(progress) = progress {
+            progress.finish_and_clear();
+            self.progress_bars.remove(&progress);
+        }
+
+        // if !result.is_solved() {
+        //     result = Cost::Minimum(max_comparisons + 1);
+        // }
+
+        // if let Some(cost) = self.cache.get(&poset) {
+        //     let res = match (cost, result) {
+        //         (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
+        //             Cost::Minimum(new_min.max(*old_min))
+        //         }
+        //         (Cost::Solved(old_solved), Cost::Solved(new_solved)) => {
+        //             Cost::Solved(new_solved.min(*old_solved))
+        //         }
+        //         (Cost::Solved(_), Cost::Minimum(_)) => *cost,
+        //         (Cost::Minimum(_), Cost::Solved(_)) => result,
+        //     };
+
+        //     self.cache.insert(poset.clone(), res);
+        // } else {
+        self.cache.insert(poset.clone(), result);
+        // }
+
+        // if let Some(cost) = self.cache.get(&poset.dual()) {
+        //     if !cost.is_solved() {
+        //         self.cache.insert(poset.dual(), result);
+        //     }
+        // } else {
+        //     self.cache.insert(poset.dual(), result);
+        // }
+
+        // self.cache.insert(poset.dual(), result);
+
+        result
+    }
+
+    fn get_comparison_pairs(&self, poset: &Poset) -> Vec<(Poset, Poset)> {
         let mut comparisons = Vec::with_capacity(poset.n() as usize * poset.n() as usize);
 
         for i in 0..poset.n() {
@@ -171,7 +255,7 @@ impl<'a> Search<'a> {
             }
         }
 
-        comparisons.sort_by_cached_key(|(i, j)| Self::get_priority(&poset, *i, *j));
+        comparisons.sort_by_cached_key(|(i, j)| Self::get_priority(poset, *i, *j));
         comparisons.reverse();
 
         let mut pairs = Vec::with_capacity(comparisons.len());
@@ -190,88 +274,7 @@ impl<'a> Search<'a> {
                 pairs.push(pair);
             }
         }
-
-        let progress = if depth <= self.n * 2 / 3 {
-            let progress = ProgressBar::new(pairs.len() as u64).with_style(
-                ProgressStyle::with_template("[{pos:2}/{len:2}] {msg} {wide_bar}").unwrap(),
-            );
-            let progress = self.progress_bars.add(progress.clone());
-            Some(progress)
-        } else {
-            None
-        };
-
-        let mut result = Cost::Minimum(max_comparisons + 1);
-
-        for (first, second) in pairs {
-            if let Some(progress) = &progress {
-                progress.set_message(format!(
-                    "max: {max_comparisons:2}, nodes: {:10}, cache: {:10}",
-                    self.total_nodes,
-                    self.cache.len()
-                ));
-                progress.inc(1);
-            }
-
-            let first_result = self.search_rec(first, max_comparisons - 1, depth + 1);
-
-            if !first_result.is_solved() || first_result.value() > max_comparisons - 1 {
-                continue;
-            }
-
-            let second_result = self.search_rec(second, max_comparisons - 1, depth + 1);
-
-            if !second_result.is_solved() || second_result.value() > max_comparisons - 1 {
-                continue;
-            }
-
-            let new_result = first_result.value().max(second_result.value()) + 1;
-
-            // result = result.min(new_result);
-
-            if new_result <= max_comparisons {
-                result = Cost::Solved(new_result);
-                max_comparisons = new_result;
-            }
-        }
-
-        // self.total_nodes += 1;
-        // if self.total_nodes % 10000 == 0 {
-        //     // dbg!(&poset, max_comparisons);
-        //     self.print_info();
-        // }
-
-        if let Some(progress) = progress {
-            progress.finish_and_clear();
-            self.progress_bars.remove(&progress);
-        }
-
-        // if !result.is_solved() {
-        //     result = Cost::Minimum(max_comparisons + 1);
-        // }
-
-        // if let Some(cost) = self.cache.get(&poset) {
-        //     if !cost.is_solved() {
-        self.cache.insert(poset.clone(), result);
-        //     } else if result.is_solved() {
-        //         let result = Cost::Solved(result.value().min(cost.value()));
-        //         self.cache.insert(poset.clone(), result);
-        //     }
-        // } else {
-        //     self.cache.insert(poset.clone(), result);
-        // }
-
-        // if let Some(cost) = self.cache.get(&poset.dual()) {
-        //     if !cost.is_solved() {
-        //         self.cache.insert(poset.dual(), result);
-        //     }
-        // } else {
-        //     self.cache.insert(poset.dual(), result);
-        // }
-
-        // self.cache.insert(poset.dual(), result);
-
-        result
+        pairs
     }
 
     fn get_priority(poset: &Poset, i: u8, j: u8) -> u8 {
@@ -346,7 +349,6 @@ impl<'a> Search<'a> {
         max_comparisons: u8,
         start_i: u8,
         start_j: u8,
-        depth: u8,
     ) -> Option<bool> {
         if let Some(cost) = self.cache.get(&poset) {
             match *cost {
@@ -385,35 +387,31 @@ impl<'a> Search<'a> {
                     continue;
                 }
 
-                if let Some(false) = self.estimate_solvable(
-                    poset.with_less(i, j),
-                    max_comparisons,
-                    i,
-                    j + 1,
-                    depth + 1,
-                ) {
+                if let Some(false) =
+                    self.estimate_solvable(poset.with_less(i, j), max_comparisons, i, j + 1)
+                {
                     return Some(false);
                 }
             }
         }
 
-        if start_i != 0 && start_j != 0 {
-            let cost = self.search_rec(poset.clone(), max_comparisons, depth);
-            match cost {
-                Cost::Solved(solved) => {
-                    if solved <= max_comparisons {
-                        return Some(true);
-                    } else {
-                        return Some(false);
-                    }
-                }
-                Cost::Minimum(min) => {
-                    if min > max_comparisons {
-                        return Some(false);
-                    }
-                }
-            }
-        }
+        // if start_i != 0 && start_j != 0 {
+        //     let cost = self.search_rec(poset.clone(), max_comparisons, depth);
+        //     match cost {
+        //         Cost::Solved(solved) => {
+        //             if solved <= max_comparisons {
+        //                 return Some(true);
+        //             } else {
+        //                 return Some(false);
+        //             }
+        //         }
+        //         Cost::Minimum(min) => {
+        //             if min > max_comparisons {
+        //                 return Some(false);
+        //             }
+        //         }
+        //     }
+        // }
 
         None
     }
@@ -428,9 +426,6 @@ impl Cost {
     }
 
     pub fn is_solved(&self) -> bool {
-        match self {
-            Cost::Solved(_) => true,
-            _ => false,
-        }
+        matches!(self, Cost::Solved(_))
     }
 }

@@ -1,4 +1,4 @@
-use std::{collections::hash_map::DefaultHasher, fmt::Debug, hash::Hasher};
+use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
 
@@ -43,10 +43,6 @@ impl Poset {
 
     pub fn n(&self) -> u8 {
         self.n
-    }
-
-    pub fn i(&self) -> u8 {
-        self.i
     }
 
     pub fn less(&self) -> &[u8; MAX_N] {
@@ -100,7 +96,7 @@ impl Poset {
 
         for i in 0..self.n {
             if !dropped[i as usize] {
-                new_indices[new_n as usize] = i;
+                new_indices[new_n] = i;
                 new_n += 1;
             } else {
                 new_indices[b] = i;
@@ -271,17 +267,6 @@ impl Poset {
         self.adjacency[byte as usize] |= mask;
     }
 
-    /// should only be used by the topo sort
-    #[inline]
-    fn clear_bit(&mut self, i: u8, j: u8) {
-        debug_assert!(i != j);
-        let bit = self.get_bit_index(i, j);
-        let byte = bit / 8;
-        let mask = 1 << (bit % 8);
-
-        self.adjacency[byte as usize] &= !mask;
-    }
-
     /// is i < j?
     #[inline]
     pub fn is_less(&self, i: u8, j: u8) -> bool {
@@ -427,7 +412,7 @@ impl Poset {
                 }
 
                 'j_loop: for j in i + 1..self.n {
-                    if !self.is_less(j as u8, i as u8) {
+                    if !self.is_less(j, i) {
                         continue;
                     }
 
@@ -458,65 +443,6 @@ impl Poset {
             true
         }
     }
-
-    pub fn dual(&self) -> Self {
-        let mut dual = Poset::new(self.n, self.n - self.i - 1);
-
-        for i in 0..self.n {
-            for j in 0..self.n {
-                if self.is_less(i, j) {
-                    dual.set_bit(j, i); // add without normalizing
-                }
-            }
-        }
-
-        dual.normalize();
-
-        // debug_assert_eq!(dual, *self);
-        dual
-    }
-
-    pub fn topological_order(&self) -> Vec<u8> {
-        debug_assert!(self.check_counts());
-
-        let mut greater = self.greater.clone();
-
-        let mut roots = vec![];
-
-        let mut copy = self.clone();
-
-        for i in 0..self.n {
-            if greater[i as usize] == 0 {
-                roots.push(i);
-            }
-        }
-
-        let mut order = vec![];
-
-        while !roots.is_empty() {
-            // roots.sort_by(|i, j| self.less[*i as usize].cmp(&self.less[*j as usize]));
-
-            let root = roots.pop().unwrap();
-
-            order.push(root);
-
-            for j in 0..self.n {
-                if copy.is_less(j, root) {
-                    copy.clear_bit(j, root);
-
-                    // if greater[j as usize] > 0 {
-                    greater[j as usize] -= 1;
-                    // }
-
-                    if greater[j as usize] == 0 {
-                        roots.push(j);
-                    }
-                }
-            }
-        }
-
-        order
-    }
 }
 
 impl Debug for Poset {
@@ -530,20 +456,15 @@ impl Debug for Poset {
             })
             .collect();
         let comparisons: Vec<String> = (0..self.n)
-            .map(|i| {
-                let vecs: Vec<String> = (0..self.n)
-                    .map(|j| {
-                        if self.is_less(i, j) {
-                            vec![format!("{i} < {j}")]
-                        } else {
-                            vec![]
-                        }
-                    })
-                    .flatten()
-                    .collect();
-                vecs
+            .flat_map(|i| {
+                (0..self.n).flat_map(move |j| {
+                    if self.is_less(i, j) {
+                        vec![format!("{i} < {j}")]
+                    } else {
+                        vec![]
+                    }
+                })
             })
-            .flatten()
             .collect();
 
         f.debug_struct("Poset")
