@@ -13,11 +13,6 @@ pub struct Poset {
     n: u8,
     i: u8,
     /// The comparisons as an adjacency matrix
-    //   i 0 1 2
-    // j +------
-    // 0 | -
-    // 1 |   -
-    // 2 |     -
     adjacency: [u8; Self::BYTES],
 }
 
@@ -67,11 +62,15 @@ impl Poset {
         let mut hash: u64 = 9118271012717746669;
 
         hash = hash.wrapping_mul(a);
-        hash = hash.rotate_left(7);
+        hash = hash.wrapping_shl(7);
         hash = hash.wrapping_add(3032928155878307119);
         hash = hash.wrapping_mul(b);
-        hash = hash.rotate_right(9);
+        hash = hash.wrapping_shr(9);
         hash = hash.wrapping_add(16728691407311227577);
+        hash = hash.wrapping_shl(11);
+        hash = hash.wrapping_mul(1536811303);
+        hash = hash.wrapping_shr(15);
+        hash = hash.wrapping_add(2072583677);
 
         hash
     }
@@ -83,6 +82,7 @@ impl Poset {
         self.normalize_mapping();
     }
 
+    /// Normalizes the poset and returns a mapping from old to new indices, since they shift around
     fn normalize_mapping(&mut self) -> [u8; MAX_N] {
         // can the element be ignored, because it is too large/small
         let mut dropped = [false; MAX_N];
@@ -129,37 +129,24 @@ impl Poset {
             }
         }
 
-        // a heuristic to sort the elements by amount of element less/greater than it
-        let mut lessness = [0; MAX_N];
+        let mut in_out_degree = [0; MAX_N];
 
-        for i in 0..new_n {
-            let new_index = new_indices[i] as usize;
-
-            lessness[new_index] = greater[new_index] as usize * MAX_N + less[new_index] as usize;
+        for &i in new_indices.iter().take(new_n) {
+            let i = i as usize;
+            in_out_degree[i] = greater[i] as u64 * MAX_N as u64 + less[i] as u64;
         }
 
-        // a hash for the amount of element less/greater than it
-        let mut deg_hash = [0; MAX_N];
+        let mut hash = in_out_degree;
 
-        let mut hash = [0; MAX_N];
-
-        for i in 0..new_n {
-            let i = new_indices[i];
-            let i_hash = Self::hash(less[i as usize].into(), greater[i as usize].into());
-            deg_hash[i as usize] = i_hash;
-            hash[i as usize] = i_hash;
-        }
-
-        for _ in 0..3 {
+        for _ in 0..4 {
             let mut sum_hash = [0; MAX_N];
 
             for i in 0..new_n {
                 let i = new_indices[i];
                 let mut sum = hash[i as usize];
 
-                for j in 0..new_n {
-                    let j = new_indices[j];
-
+                // sum hashes of neighbours
+                for &j in new_indices.iter().take(new_n) {
                     if i == j {
                         continue;
                     }
@@ -172,22 +159,24 @@ impl Poset {
                 sum_hash[i as usize] = sum;
             }
 
-            for i in 0..new_n {
-                let i = new_indices[i];
-                hash[i as usize] = Self::hash(sum_hash[i as usize], deg_hash[i as usize]);
+            // calc new hash based on neighbours hashes
+            for &i in new_indices.iter().take(new_n) {
+                let i = i as usize;
+                hash[i] = Self::hash(sum_hash[i], in_out_degree[i]);
             }
         }
 
         new_indices[0..new_n].sort_by(|a, b| {
-            lessness[*a as usize]
-                .cmp(&lessness[*b as usize])
+            in_out_degree[*a as usize]
+                .cmp(&in_out_degree[*b as usize])
                 .then(hash[*a as usize].cmp(&hash[*b as usize]))
         });
-        // new_indices[0..new_n].reverse();
 
         let mut i = 1;
         while i < new_n {
-            if !(lessness[new_indices[i] as usize] == lessness[new_indices[i - 1] as usize]
+            // search for elements with same hashes
+            if !(in_out_degree[new_indices[i] as usize]
+                == in_out_degree[new_indices[i - 1] as usize]
                 && hash[new_indices[i] as usize] == hash[new_indices[i - 1] as usize])
             {
                 i += 1;
@@ -195,7 +184,8 @@ impl Poset {
             }
 
             while i < new_n
-                && lessness[new_indices[i] as usize] == lessness[new_indices[i - 1] as usize]
+                && in_out_degree[new_indices[i] as usize]
+                    == in_out_degree[new_indices[i - 1] as usize]
                 && hash[new_indices[i] as usize] == hash[new_indices[i - 1] as usize]
             {
                 i += 1;
@@ -205,39 +195,40 @@ impl Poset {
                 continue;
             }
 
-            for _ in 0..2 {
+            for _ in 0..3 {
                 let mut sum_hash = [0; MAX_N];
 
                 for i in i..new_n {
-                    let mut sum = hash[new_indices[i] as usize];
+                    let mapped_i = new_indices[i];
+                    let mut sum = hash[mapped_i as usize];
 
-                    // sum hashes of lower neighbours
-                    for j in 0..i {
-                        if new_indices[i] == new_indices[j] {
+                    // sum hashes of neighbours
+                    for &mapped_j in new_indices.iter().take(i) {
+                        if mapped_i == mapped_j {
                             continue;
                         }
 
-                        if self.has_order(new_indices[i], new_indices[j]) {
-                            sum = sum.wrapping_add(hash[new_indices[j] as usize]);
+                        if self.has_order(mapped_i, mapped_j) {
+                            sum = sum.wrapping_add(hash[mapped_j as usize]);
                         }
                     }
 
-                    sum_hash[new_indices[i] as usize] = sum;
+                    sum_hash[mapped_i as usize] = sum;
                 }
 
-                // update hash
-                for i in i..new_n {
-                    let i = new_indices[i];
-                    hash[i as usize] = Self::hash(sum_hash[i as usize], deg_hash[i as usize]);
+                // calc new hash based on neighbours hashes
+                for &i in new_indices.iter().take(new_n).skip(i) {
+                    let i = i as usize;
+                    hash[i] = Self::hash(sum_hash[i], in_out_degree[i]);
                 }
             }
+
             new_indices[i..new_n].sort_by(|a, b| {
-                lessness[*a as usize]
-                    .cmp(&lessness[*b as usize])
+                in_out_degree[*a as usize]
+                    .cmp(&in_out_degree[*b as usize])
                     .then(hash[*a as usize].cmp(&hash[*b as usize]))
             });
         }
-        // new_indices[0..new_n].reverse();
 
         let mut new = Poset::new(new_n as u8, self.i - n_less_dropped);
 
@@ -384,14 +375,13 @@ impl Poset {
             let mut comps = KNOWN_MIN_VALUES[self.n as usize - 1]
                 [(self.i as usize).min((self.n - self.i - 1) as usize)];
 
-            for i in 0..self.n as usize {
-                if less[i] == 1 {
-                    comps -= 1;
-                }
+            comps -= less[0..self.n as usize]
+                .iter()
+                .filter(|elem| **elem == 1)
+                .count() as u8;
 
-                if comps <= max_comparisons {
-                    return true;
-                }
+            if comps <= max_comparisons {
+                return true;
             }
 
             for i in 0..self.n - 1 {

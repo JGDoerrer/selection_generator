@@ -315,22 +315,22 @@ impl<'a> Search<'a> {
         start_i: u8,
         start_j: u8,
     ) -> Option<bool> {
-        if let Some(cost) = self.cache.get(&poset) {
-            match *cost {
-                Cost::Solved(solved) => {
-                    if solved <= max_comparisons {
-                        return Some(true);
-                    } else {
-                        return Some(false);
-                    }
-                }
-                Cost::Minimum(min) => {
-                    if min > max_comparisons {
-                        return Some(false);
-                    }
-                }
-            }
-        }
+        // if let Some(cost) = self.cache.get(&poset) {
+        //     match *cost {
+        //         Cost::Solved(solved) => {
+        //             if solved <= max_comparisons {
+        //                 return Some(true);
+        //             } else {
+        //                 return Some(false);
+        //             }
+        //         }
+        //         Cost::Minimum(min) => {
+        //             if min > max_comparisons {
+        //                 return Some(false);
+        //             }
+        //         }
+        //     }
+        // }
 
         if !poset.is_solvable_in(max_comparisons) {
             return Some(false);
