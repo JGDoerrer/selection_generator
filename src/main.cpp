@@ -31,54 +31,100 @@ class Statistics {
 };
 
 template <size_t maxN>
-optional<int> search(const Poset<maxN> &poset, unordered_map<Poset<maxN>, optional<int>> &cache,
-                     const int maxComparisons, const int comparisonCounter, Statistics &statistics) {
-  if (cache.find(poset) != cache.end()) {
-    ++statistics.hashMatches;
-    return cache[poset];
-  } else if (poset.canDetermineNSmallest()) {
-    return comparisonCounter;
-  } else if (0 == maxComparisons) {
-    return nullopt;
-  }
-
-  ++statistics.functionCalls;
-
+// returns pair<bool, int>
+//  bool: true: in second steht solution, false: bis Tiefe x erfolglos gesucht
+//  int: Lösung oder max. Suchtiefe
+// States: found Solution with depth x / not found Soltion
+optional<int> search(const Poset<maxN> &poset, unordered_set<Poset<maxN>> &cache1,
+                     unordered_map<Poset<maxN>, pair<int, int>> &cache2, const int maxComparisons,
+                     Statistics &statistics, const int depth = 0) {
   optional<int> result = nullopt;
-  for (int i = 0; i < poset.size(); ++i) {
-    for (int j = i + 1; j < poset.size(); ++j) {
-      if (poset.is(i, j) || poset.is(j, i)) {  // it holds arr[i] < arr[j]
-        continue;
-      }
-      Poset<maxN> posetLess = poset;
-      posetLess.addComparison(i, j);  // a < b
-      posetLess.normalize();
-      const optional<int> result1 = search(posetLess, cache, maxComparisons - 1, comparisonCounter + 1, statistics);
-      cache[posetLess] = result1;
-      if (result1.has_value()) {
-        Poset<maxN> posetGreater = poset;
-        posetGreater.addComparison(j, i);  // eig. a >= b?
-        posetGreater.normalize();
-        const optional<int> result2 =
-            search(posetGreater, cache, maxComparisons - 1, comparisonCounter + 1, statistics);
-        cache[posetGreater] = result2;
-        if (result2.has_value()) {
-          if (result.has_value()) {
-            result = min(result, max(result1, result2));
-          } else {
-            result = max(result1, result2);
+
+  Poset<maxN> temp = poset;
+  temp.comparisonsDone = 0;
+  if (cache1.find(poset) != cache1.end()) {
+    // if (cache[poset] != nullopt && depth < cache[poset].value() && poset.canDetermineNSmallest()) {
+    // }
+
+    // if ((nullopt != item) || (nullopt == item && poset.getMaxComparisonsDone() == maxComparisons)) {
+    // }
+    ++statistics.hashMatches;
+    result = nullopt;
+  } else if (cache2.find(temp) != cache2.end() && cache2[temp].second >= poset.comparisonsDone) {
+    ++statistics.hashMatches;
+    result = cache2[temp].first;
+  } else if (poset.canDetermineNSmallest()) {
+    result = depth;
+  } else if (depth == maxComparisons) {
+    result = nullopt;
+  } else {
+    ++statistics.functionCalls;
+
+    for (int i = 0; i < poset.size(); ++i) {
+      for (int j = i + 1; j < poset.size(); ++j) {
+        if (poset.is(i, j) || poset.is(j, i)) {  // it holds arr[i] < arr[j]
+          continue;
+        }
+        Poset<maxN> posetLess = poset.createNormPosetWithComp(i, j);  // a < b
+        optional<int> result1 = search(posetLess, cache1, cache2, maxComparisons, statistics, depth + 1);
+        if (result1.has_value()) {
+          Poset<maxN> posetGreater = poset.createNormPosetWithComp(j, i);  // eig. a >= b?
+          optional<int> result2 = search(posetGreater, cache1, cache2, maxComparisons, statistics, depth + 1);
+          if (result2.has_value()) {
+            if (result.has_value()) {
+              result = min(result, max(result1, result2));
+            } else {
+              result = max(result1, result2);
+            }
           }
         }
       }
     }
   }
 
+  // int old1 = posetLess.comparisonsDone;
+  // for (int kk = 0; kk < 15; ++kk) {
+  //   if (old1 == kk) continue;
+  //   posetLess.comparisonsDone = kk;
+  //   if (cache.find(posetLess) != cache.end()) {
+  //     cout << "\ncache size: " << cache.size() << endl;
+  //     std::cout << "found error at k = " << kk << endl;
+  //     if (!cache[posetLess].has_value()) {
+  //       cout << "nullopt" << endl;
+  //     } else {
+  //       cout << cache[posetLess].value() << endl;
+  //     }
+
+  //     posetLess.comparisonsDone = old1;
+  //     cout << posetLess << endl;
+  //     exit(0);
+  //   }
+  // }
+  // posetLess.comparisonsDone = old1;
+  // cache[posetLess] = result1;
+
+  // if (cache.find(posetLess) != cache.end()) {
+  //   const optional<int> item = cache[posetLess];
+  //   if ((item.has_value() && result1.has_value() && item.value() < result1.value()) ||
+  //       (item.has_value() && !result1.has_value())) {
+  //     result1 = item;
+  //     cout << "kann das überhaupt eintreten?" << endl;
+  //   }
+  // }
+
+  if (result == nullopt) {
+    cache1.insert(poset);
+  } else {
+    Poset<maxN> temp = poset;
+    temp.comparisonsDone = 0;
+    cache2[temp] = make_pair(result.value(), poset.comparisonsDone);
+  }
   return result;
 }
 
 template <size_t maxN>
-optional<int> startSearch(const int n, const int nthSmallest, unordered_map<Poset<maxN>, optional<int>> &cache,
-                          Statistics &statistics) {
+optional<int> startSearch(const int n, const int nthSmallest, unordered_set<Poset<maxN>> &cache1,
+                          unordered_map<Poset<maxN>, pair<int, int>> &cache2, Statistics &statistics) {
   if (0 == nthSmallest) {
     return n - 1;
   }
@@ -86,17 +132,19 @@ optional<int> startSearch(const int n, const int nthSmallest, unordered_map<Pose
   // could start from i = n - 1
   for (int i = 0; i < n * n; ++i) {
     cout << "\rtry: maxComparisons = " << i << flush;
-    Poset<maxN> poset{uint8_t(n), uint8_t(nthSmallest)};
-    int count = 0;
-    // for (int i = 0; i < n - 1; i += 2) {
-    //   ++count;
-    //   poset.addComparison(i, i + 1);  // WIR BRACUHEN HIER <=
-    // }
-    cache.clear();  // TODDDDDDDDDDDDDDDDDDDDDDDDDDDDOOOOOOOOOOOOOOOOOOOOOoo
-    const optional<int> comparisons = search(poset, cache, i, 0, statistics);
-    cache[poset] = comparisons;
+    Poset<maxN> poset{uint8_t(n), uint8_t(nthSmallest), uint8_t(i)};
+    if (2 <= i) {
+      // poset.addComparison(0, 1);
+      // for (int k = 0; k < n - 1 && poset.comparisonsDone <= i; k += 2) {
+      //   poset.addComparison(k, k + 1);
+      // }
+      poset.normalize();
+    }
+    cache1.clear();  // TODDDDDDDDDDDDDDDDDDDDDDDDDDDDOOOOOOOOOOOOOOOOOOOOO
+    cache2.clear();  // TODDDDDDDDDDDDDDDDDDDDDDDDDDDDOOOOOOOOOOOOOOOOOOOOO
+    const optional<int> comparisons = search(poset, cache1, cache2, i, statistics, poset.comparisonsDone);
     if (comparisons.has_value()) {
-      return comparisons.value() + count;
+      return comparisons.value();
     }
   }
   return {};
@@ -112,13 +160,15 @@ int main() {
       StopWatch watch{};
 
       Statistics statistics;
-      unordered_map<Poset<maxN>, optional<int>> cache;
-      const optional<int> comparisons = startSearch(n, nthSmallest, cache, statistics);
+      // unordered_map<pair<Poset<maxN>, int>, optional<int>> cache2;
+      unordered_set<Poset<maxN>> cache1;
+      unordered_map<Poset<maxN>, pair<int, int>> cache2;
+      const optional<int> comparisons = startSearch(n, nthSmallest, cache1, cache2, statistics);
 
       if (comparisons.has_value()) {
         cout << "\rtime '" << watch << "': n = " << n << ", i = " << nthSmallest
              << ", calls = " << statistics.functionCalls << ", hits = " << statistics.hashMatches
-             << ", entries = " << cache.size() << ", comparisons: " << comparisons.value() << endl;
+             << ", entries = " << cache1.size() + cache2.size() << ", comparisons: " << comparisons.value() << endl;
         if (comparisons != min_n_comparisons[n][nthSmallest]) {
           cerr << "Error, got " << comparisons.value() << ", but expected " << min_n_comparisons[n][nthSmallest]
                << endl;
@@ -132,6 +182,11 @@ int main() {
     cout << endl;
   }
 }
+
+template <size_t maxN>
+struct std::hash<pair<Poset<maxN>, int>> {
+  size_t operator()(const pair<Poset<maxN>, int> &pair) const { return get<0>(pair).hash() ^ get<1>(pair).hash(); }
+};
 
 // int main() {
 //   constexpr int maxN = 10;

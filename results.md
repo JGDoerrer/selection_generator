@@ -42,6 +42,6 @@ time '0.017s': n = 6, i = 1, calls = 2401, hits = 15130, entries = 3557, compari
 time '0.050s': n = 6, i = 2, calls = 5853, hits = 34783, entries = 6120, comparisons: 8
 
 time '0.000s': n = 7, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 6
-time '1.601s': n = 7, i = 1, calls = 23888, hits = 213598, entries = 49890, comparisons: 8
+time '3.016s': n = 7, i = 1, calls = 23610, hits = 210428, entries = 48797, comparisons: 8
 time '94.543s': n = 7, i = 2, calls = 218841, hits = 1825195, entries = 244388, comparisons: 10
 ```
