@@ -4,10 +4,9 @@
 
 #include <bits/stdc++.h>
 
+#include "poset.h"
 #include "util.h"
 using namespace std;
-
-#include "poset.h"
 
 const static int min_n_comparisons[15][15] = {
     /* i=1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16 */
@@ -31,77 +30,71 @@ class Statistics {
   int hashMatches = 0;
 };
 
-optional<int> search(const Poset &poset,
-                     unordered_map<Poset, optional<int>> &cache,
-                     const int maxComparisons, const int comparisonCounter,
-                     Statistics &statistics) {
-  optional<int> result = nullopt;
-
-  ++statistics.functionCalls;
-  // if (cache.find(poset) != cache.end()) {
-  //   ++statistics.hashMatches;
-  //   return cache[poset];
-  // }
-
-  if (poset.canDetermineNSmallest()) {
-    // cache[poset] =
-    result = comparisonCounter;
-    return result;
+template <size_t maxN>
+optional<int> search(const Poset<maxN> &poset, unordered_map<Poset<maxN>, optional<int>> &cache,
+                     const int maxComparisons, const int comparisonCounter, Statistics &statistics) {
+  if (cache.find(poset) != cache.end()) {
+    ++statistics.hashMatches;
+    return cache[poset];
+  } else if (poset.canDetermineNSmallest()) {
+    return comparisonCounter;
+  } else if (0 == maxComparisons) {
+    return nullopt;
   }
 
-  if (0 < maxComparisons) {
-    for (int i = 0; i < poset.size(); ++i) {
-      for (int j = i + 1; j < poset.size(); ++j) {
-        if (poset.is(i, j)) {  // it holds arr[i] < arr[j]
-          continue;
-        }
-        Poset posetLess = poset;
-        posetLess.addComparison(i, j);  // a < b
-        const optional<int> result1 =
-            search(posetLess, cache, maxComparisons - 1, comparisonCounter + 1,
-                   statistics);
-        if (result1.has_value()) {
-          Poset posetGreater = poset;
-          posetGreater.addComparison(j, i);  // eig. a >= b?
-          const optional<int> result2 =
-              search(posetGreater, cache, maxComparisons - 1,
-                     comparisonCounter + 1, statistics);
-          if (result2.has_value()) {
-            if (result.has_value()) {
-              result = min(result, max(result1, result2));
-            } else {
-              result = max(result1, result2);
-            }
+  ++statistics.functionCalls;
+
+  optional<int> result = nullopt;
+  for (int i = 0; i < poset.size(); ++i) {
+    for (int j = i + 1; j < poset.size(); ++j) {
+      if (poset.is(i, j) || poset.is(j, i)) {  // it holds arr[i] < arr[j]
+        continue;
+      }
+      Poset<maxN> posetLess = poset;
+      posetLess.addComparison(i, j);  // a < b
+      posetLess.normalize();
+      const optional<int> result1 = search(posetLess, cache, maxComparisons - 1, comparisonCounter + 1, statistics);
+      cache[posetLess] = result1;
+      if (result1.has_value()) {
+        Poset<maxN> posetGreater = poset;
+        posetGreater.addComparison(j, i);  // eig. a >= b?
+        posetGreater.normalize();
+        const optional<int> result2 =
+            search(posetGreater, cache, maxComparisons - 1, comparisonCounter + 1, statistics);
+        cache[posetGreater] = result2;
+        if (result2.has_value()) {
+          if (result.has_value()) {
+            result = min(result, max(result1, result2));
+          } else {
+            result = max(result1, result2);
           }
         }
       }
     }
   }
 
-  // // intentionally don't set cache for nullopt
-  // if (result != nullopt) {
-  //   cache[poset] = result;
-  // }
   return result;
 }
 
-optional<int> startSearch(unordered_map<Poset, optional<int>> &cache,
-                          const int n, const int nthSmallest,
-                          const int maxComparisons, Statistics &statistics) {
+template <size_t maxN>
+optional<int> startSearch(const int n, const int nthSmallest, unordered_map<Poset<maxN>, optional<int>> &cache,
+                          Statistics &statistics) {
   if (0 == nthSmallest) {
     return n - 1;
   }
 
   // could start from i = n - 1
-  for (int i = 0; i < maxComparisons; ++i) {
+  for (int i = 0; i < n * n; ++i) {
     cout << "\rtry: maxComparisons = " << i << flush;
-    Poset poset{n, nthSmallest};
+    Poset<maxN> poset{uint8_t(n), uint8_t(nthSmallest)};
     int count = 0;
-    for (int i = 0; i < n - 1; i += 2) {
-      ++count;
-      poset.addComparison(i, i + 1);  // WIR BRACUHEN HIER <=
-    }
+    // for (int i = 0; i < n - 1; i += 2) {
+    //   ++count;
+    //   poset.addComparison(i, i + 1);  // WIR BRACUHEN HIER <=
+    // }
+    cache.clear();  // TODDDDDDDDDDDDDDDDDDDDDDDDDDDDOOOOOOOOOOOOOOOOOOOOOoo
     const optional<int> comparisons = search(poset, cache, i, 0, statistics);
+    cache[poset] = comparisons;
     if (comparisons.has_value()) {
       return comparisons.value() + count;
     }
@@ -110,26 +103,25 @@ optional<int> startSearch(unordered_map<Poset, optional<int>> &cache,
 }
 
 int main() {
+  constexpr size_t maxN = 8;
+
   cout.setf(ios::fixed, ios::floatfield);
   cout.precision(3);
   for (int n = 1; n < maxN; ++n) {
     for (int nthSmallest = 0; nthSmallest < (n + 1) / 2; ++nthSmallest) {
       StopWatch watch{};
 
-      unordered_map<Poset, optional<int>> cache;
       Statistics statistics;
-      const optional<int> comparisons =
-          startSearch(cache, n, nthSmallest, globalMaxComparisons, statistics);
+      unordered_map<Poset<maxN>, optional<int>> cache;
+      const optional<int> comparisons = startSearch(n, nthSmallest, cache, statistics);
 
       if (comparisons.has_value()) {
         cout << "\rtime '" << watch << "': n = " << n << ", i = " << nthSmallest
-             << ", calls = " << statistics.functionCalls
-             << ", hits = " << statistics.hashMatches
-             << ", entries = " << cache.size()
-             << ", comparisons: " << comparisons.value() << endl;
+             << ", calls = " << statistics.functionCalls << ", hits = " << statistics.hashMatches
+             << ", entries = " << cache.size() << ", comparisons: " << comparisons.value() << endl;
         if (comparisons != min_n_comparisons[n][nthSmallest]) {
-          cerr << "Error, got " << comparisons.value() << ", but expected "
-               << min_n_comparisons[n][nthSmallest] << endl;
+          cerr << "Error, got " << comparisons.value() << ", but expected " << min_n_comparisons[n][nthSmallest]
+               << endl;
           exit(0);
         }
       } else {
@@ -141,6 +133,31 @@ int main() {
   }
 }
 
-// n = 5, i = 0: 1 rec calls, comparisons: 0 == 4
-// n = 5, i = 1: 3104699 rec calls, comparisons: 6 == 6
-// n = 5, i = 2: 4804392 rec calls, comparisons: 6 == 6
+// int main() {
+//   constexpr int maxN = 10;
+//   int n = 6;
+//   unordered_map<Poset<maxN>, optional<int>> cache;
+//   for (int i0 = 0; i0 < n; ++i0) {
+//     for (int j0 = 0; j0 < n; ++j0) {
+//       for (int i1 = 0; i1 < n; ++i1) {
+//         for (int j1 = 0; j1 < n; ++j1) {
+//           for (int i2 = 0; i2 < n; ++i2) {
+//             for (int j2 = 0; j2 < n; ++j2) {
+//               Poset<maxN> poset{n, 2};
+//               poset.addComparison(i0, j0);
+//               if (!(poset.is(i1, j1) || poset.is(j1, i1))) {
+//                 poset.addComparison(i1, j1);
+//                 if (!(poset.is(i2, j2) || poset.is(j2, i2))) {
+//                   poset.addComparison(i2, j2);
+//                   poset.normalize();
+//                   cache[poset] = 0;
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+//   cout << cache.size() << endl;
+// }

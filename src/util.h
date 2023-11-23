@@ -2,9 +2,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-constexpr int globalMaxComparisons = 10;
-const int maxN = 10;
-
 template <class T>
 struct is_map {
   static constexpr bool value = false;
@@ -165,23 +162,17 @@ T max(const vector<T> &vector) {
   return vector[maxIndex(vector)];
 }
 
-inline void printTime(
-    const std::chrono::_V2::steady_clock::time_point &startPoint,
-    const std::chrono::_V2::steady_clock::time_point &endPoint) {
-  std::cout << (std::chrono::duration_cast<std::chrono::milliseconds>(
-                    endPoint - startPoint)
-                    .count() /
-                1000.0)
+inline void printTime(const std::chrono::_V2::steady_clock::time_point &startPoint,
+                      const std::chrono::_V2::steady_clock::time_point &endPoint) {
+  std::cout << (std::chrono::duration_cast<std::chrono::milliseconds>(endPoint - startPoint).count() / 1000.0)
             << " seconds";
 }
 
-inline void measure(const std::string &message,
-                    const std::function<void()> &function) {
+inline void measure(const std::string &message, const std::function<void()> &function) {
   auto start = std::chrono::steady_clock::now();
   function();
   auto end = std::chrono::steady_clock::now();
-  auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
-                  .count();
+  auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
   std::cout << "time '" << message << "': " << (time / 1000.0) << " seconds";
 }
 
@@ -197,10 +188,6 @@ class StopWatch {
 
 ostream &operator<<(ostream &os, const StopWatch &watch) {
   const auto endPoint = std::chrono::steady_clock::now();
-  os << (chrono::duration_cast<chrono::milliseconds>(endPoint -
-                                                     watch.startPoint)
-             .count() /
-         1000.0)
-     << "s";
+  os << (chrono::duration_cast<chrono::milliseconds>(endPoint - watch.startPoint).count() / 1000.0) << "s";
   return os;
 }
