@@ -4,13 +4,12 @@
 #include "util.h"
 using namespace std;
 
-// TODO: explicit static cast
 template <size_t maxN>
 class Poset {
  private:
-  const uint8_t n;
-  const uint8_t nthSmallest;
-  bool comparisonTable[uint16_t(maxN) * uint16_t(maxN)];
+  uint8_t n;
+  uint8_t nthSmallest;
+  bool comparisonTable[maxN * maxN];
 
   inline void swap(const uint16_t i1, const uint16_t j1, const uint16_t i2, const uint16_t j2) {
     const bool temp = comparisonTable[i1 * n + j1];
@@ -69,35 +68,30 @@ class Poset {
   }
 
  public:
-  uint8_t comparisonsDone = 0;
-  Poset(const uint8_t n, const uint8_t nthSmallest, const uint8_t maxComparisonsDone)
-      : n(n), nthSmallest(nthSmallest) {
-    for (uint16_t i = 0; i < n * n; ++i) {
-      comparisonTable[i] = false;
-    }
+  Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest) {
+    std::memset(comparisonTable, false, n * n);
   };
 
-  Poset<maxN> createNormPosetWithComp(const uint16_t i, const uint16_t j) const {
+  Poset() : Poset(0, 0, 0) {}
+
+  Poset<maxN> add_relation(const uint16_t i, const uint16_t j) const {
     Poset<maxN> newPoset = *this;
     newPoset.addComparison(i, j);
     newPoset.normalize();
     return newPoset;
   };
 
-  uint8_t size() const { return n; }
+  // after func it holds: arr[i] < arr[j]
+  void addComparison(const uint16_t i, const uint16_t j) {
+    addComparisonTransitivRecursive(i, j);  // faster than iterative
+  }
 
-  uint8_t nthSmallestElement() const { return nthSmallest; }
+  uint8_t size() const { return n; }
 
   // true => arr[i] < arr[j]
   // ACHTUNG: is(a, b) == false IMPLIZIERT NICHT, dass arr[i] > arr[j]:
   // nur wenn arr[i] > arr[j] => false
   bool is(const uint16_t i, const uint16_t j) const { return get(i, j); }
-
-  // after func it holds: arr[i] < arr[j]
-  void addComparison(const uint16_t i, const uint16_t j) {
-    ++comparisonsDone;
-    addComparisonTransitivRecursive(i, j);  // faster than iterative
-  }
 
   // can one determine n smallest element with current comparisons
   bool canDetermineNSmallest() const {
@@ -117,19 +111,36 @@ class Poset {
     return false;
   }
 
+  // // Kante von (v) -> (w) g.d.w. a[v] < a[w]
+  // void visit(const int v, vector<int> &result, vector<bool> &visited) {
+  //   visited[v] = true;
+  //   for (uint8_t w = 0; w < n; ++w) {
+  //     if (is(v, w) && !visited[w]) {
+  //       visit(w, result, visited);
+  //     }
+  //   }
+  //   result.push_back(v);
+  // }
+
   void normalize() {
     // TODO: geht besser als O(n^3), bestes möglich evtl: O(n)
 
-    uint64_t rowSum[n], colSum[n];
+    // vector<bool> visited(n, false);
+    // vector<int> result{};
+    // for (int v = 0; v < n; ++v) {
+    //   if (!visited[v]) {
+    //     visit(v, result, visited);
+    //   }
+    // }
+    // // toposorting := std::reverse(result);
+
+    uint64_t rowSum[n];
     for (uint16_t i = 0; i < n; ++i) {
       rowSum[i] = 0;
-      colSum[i] = 0;
       // TODO: reinterpret case -> O(1)
       for (uint16_t j = 0; j < n; ++j) {
         if (get(i, j)) {
-          rowSum[i] = 2 * rowSum[i] + 1;
-        } else if (get(j, i)) {
-          colSum[i] = 2 * colSum[i] + 1;
+          ++rowSum[i];  // = 2 * rowSum[i] + 1;
         }
       }
     }
@@ -146,57 +157,54 @@ class Poset {
 
       if (fromY != maxPos) {
         // TODO: memcpy
-        const uint64_t temp = rowSum[fromY];
-        rowSum[fromY] = rowSum[maxPos];
-        rowSum[maxPos] = temp;
+        std::swap(rowSum[fromY], rowSum[maxPos]);
         swapRows(fromY, maxPos);
         swapCols(fromY, maxPos);
       }
     }
 
-    for (uint16_t fromX = 0; fromX < n; ++fromX) {
-      uint64_t maxVal = colSum[fromX];
-      uint16_t maxPos = fromX;
-      for (uint16_t x = fromX + 1; x < n && rowSum[fromX] == rowSum[x]; ++x) {
-        if (maxVal < colSum[x]) {
-          maxVal = colSum[x];
-          maxPos = x;
-        }
-      }
+    // uint64_t colSum[n];
+    // for (uint16_t i = 0; i < n; ++i) {
+    //   colSum[i] = 0;
+    //   // TODO: reinterpret case -> O(1)
+    //   for (uint16_t j = 0; j < n; ++j) {
+    //     if (get(j, i)) {
+    //       colSum[i]++;// = 2 * colSum[i] + 1;
+    //     }
+    //   }
+    // }
 
-      if (fromX != maxPos) {
-        const uint64_t temp = colSum[fromX];
-        colSum[fromX] = colSum[maxPos];
-        colSum[maxPos] = temp;
-        swapCols(fromX, maxPos);
-      }
-    }
+    // for (uint16_t fromX = 0; fromX < n; ++fromX) {
+    //   uint64_t maxVal = colSum[fromX];
+    //   uint16_t maxPos = fromX;
+    //   for (uint16_t x = fromX + 1; x < n && rowSum[fromX] == rowSum[x]; ++x) {
+    //     if (maxVal < colSum[x]) {
+    //       maxVal = colSum[x];
+    //       maxPos = x;
+    //     }
+    //   }
+
+    //   if (fromX != maxPos) {
+    //     std::swap(colSum[fromX], colSum[maxPos]);
+    //     swapCols(fromX, maxPos);
+    //   }
+    // }
   }
 
   bool operator==(const Poset<maxN> &poset) const {
-    if (n != poset.n || nthSmallest != nthSmallest) {
-      return false;
-    }
-    for (uint16_t i = 0; i < n * n; ++i) {
-      if (comparisonTable[i] != poset.comparisonTable[i]) {
-        return false;
-      }
-    }
-    if (comparisonsDone != poset.comparisonsDone) {
-      return false;
-    }
-    return true;
+    return n == poset.n && nthSmallest == nthSmallest &&
+           0 == std::memcmp(comparisonTable, poset.comparisonTable, n * n);
   }
 
   size_t hash() const {
-    // TODO: improve hash func
+    const int shift = 7;
     size_t result = 0;
-    result ^= std::hash<uint8_t>{}(n);
-    result ^= std::hash<uint8_t>{}(nthSmallest);
-    result ^= std::hash<uint8_t>{}(comparisonsDone);
+    result ^= n;
+    result ^= nthSmallest;
     for (uint16_t i = 0; i < n * n; ++i) {
       if (comparisonTable[i]) {
-        result ^= std::hash<uint16_t>{}(i);
+        result = (result << shift) | (result >> (8 * sizeof(size_t) - shift));
+        result ^= i;
       }
     }
     return result;

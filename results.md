@@ -22,26 +22,42 @@
 - wenn nein: untere Schranke ist `n`, sonst: Fall tritt nicht ein
 
 # Program Output
+With pair-optimisation:
 ```
-time '0.000s': n = 1, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 0
-
-time '0.000s': n = 2, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 1
-
-time '0.000s': n = 3, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 2
-time '0.000s': n = 3, i = 1, calls = 8, hits = 16, entries = 7, comparisons: 3
-
-time '0.000s': n = 4, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 3
-time '0.000s': n = 4, i = 1, calls = 27, hits = 87, entries = 29, comparisons: 4
-
-time '0.000s': n = 5, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 4
-time '0.000s': n = 5, i = 1, calls = 307, hits = 1432, entries = 332, comparisons: 6
-time '0.000s': n = 5, i = 2, calls = 280, hits = 1181, entries = 299, comparisons: 6
-
 time '0.000s': n = 6, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 5
-time '0.017s': n = 6, i = 1, calls = 2401, hits = 15130, entries = 3557, comparisons: 7
-time '0.050s': n = 6, i = 2, calls = 5853, hits = 34783, entries = 6120, comparisons: 8
+time '0.000s': n = 6, i = 1, calls = 115, hits = 546, entries = 16, comparisons: 7
+time '0.001s': n = 6, i = 2, calls = 608, hits = 3189, entries = 260, comparisons: 8
 
 time '0.000s': n = 7, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 6
-time '3.016s': n = 7, i = 1, calls = 23610, hits = 210428, entries = 48797, comparisons: 8
-time '94.543s': n = 7, i = 2, calls = 218841, hits = 1825195, entries = 244388, comparisons: 10
+time '0.014s': n = 7, i = 1, calls = 2598, hits = 23147, entries = 3488, comparisons: 8
+time '0.086s': n = 7, i = 2, calls = 18023, hits = 171447, entries = 1347, comparisons: 10
+time '0.090s': n = 7, i = 3, calls = 20208, hits = 182585, entries = 4612, comparisons: 10
+
+time '0.000s': n = 8, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 7
+time '0.068s': n = 8, i = 1, calls = 6668, hits = 83405, entries = 15120, comparisons: 9
+time '1.215s': n = 8, i = 2, calls = 142857, hits = 1905142, entries = 70118, comparisons: 11
+time '2.574s': n = 8, i = 3, calls = 337000, hits = 4432577, entries = 79261, comparisons: 12
+
+time '0.000s': n = 9, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 8
+time '9.877s': n = 9, i = 1, calls = 522635, hits = 10671008, entries = 130112, comparisons: 11
+time '41.368s': n = 9, i = 2, calls = 2617621, hits = 49400409, entries = 1621682, comparisons: 12
+```
+
+Without pair-optimisation:
+```
+time '0.000s': n = 6, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 5
+time '0.007s': n = 6, i = 1, calls = 2395, hits = 17131, entries = 1215, comparisons: 7
+time '0.015s': n = 6, i = 2, calls = 5141, hits = 35740, entries = 1550, comparisons: 8
+
+time '0.000s': n = 7, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 6
+time '0.146s': n = 7, i = 1, calls = 25356, hits = 286523, entries = 13833, comparisons: 8
+time '0.400s': n = 7, i = 2, calls = 78771, hits = 835263, entries = 14997, comparisons: 10
+time '0.468s': n = 7, i = 3, calls = 90375, hits = 962335, entries = 17444, comparisons: 10
+
+time '0.000s': n = 8, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 7
+time '3.372s': n = 8, i = 1, calls = 307396, hits = 5053822, entries = 189389, comparisons: 9
+time '10.951s': n = 8, i = 2, calls = 1119934, hits = 17205686, entries = 248841, comparisons: 11
+time '16.524s': n = 8, i = 3, calls = 1838967, hits = 27231485, entries = 266394, comparisons: 12
+
+time '0.000s': n = 9, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 8
 ```
