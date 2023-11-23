@@ -111,7 +111,7 @@ optional<int> search(const Poset<maxN> &poset, unordered_set<Poset<maxN>> &cache
   //     cout << "kann das überhaupt eintreten?" << endl;
   //   }
   // }
-
+// Todo: nauty c
   if (result == nullopt) {
     cache1.insert(poset);
   } else {
