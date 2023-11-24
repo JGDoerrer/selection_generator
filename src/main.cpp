@@ -8,6 +8,7 @@
 #include "util.h"
 using namespace std;
 
+// TODO: create make file, compile option `march native`
 // TODO: ACHTUNG: normalize kaputt (optional: wenn 0 kleiner als alle -> liste mit n - 1 Elementen)
 // TODO: Isomorphie-Test mit nauty-c
 

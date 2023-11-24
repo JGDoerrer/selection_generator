@@ -1,3 +1,18 @@
+# Installation
+Nauty Manual: [https://pallini.di.uniroma1.it/nug28.pdf]()
+```sh
+cd $project_folder$
+wget https://users.cecs.anu.edu.au/~bdm/nauty/nauty2_8_8.tar.gz
+tar xvzf nauty2_8_8.tar.gz
+rm nauty2_8_8.tar.gz
+cd nauty2_8_8
+./configure
+make
+cd ../src
+g++ -O3 nautyTest.cpp ../nauty2_8_8/nauty.a
+./a.out
+```
+
 # Annahmen
 - keine Duplikate in der Eingabe
 
