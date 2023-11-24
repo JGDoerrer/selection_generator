@@ -72,9 +72,13 @@ fn main() {
             let old_cache_len = cache.len();
             let cost = Search::new(n, i, &mut cache).search();
 
-            if let Cost::Solved(_comparisons) = cost {
+            if let Cost::Solved(comparisons) = cost {
                 if n < KNOWN_MIN_VALUES.len() as u8 {
-                    // assert_eq!(_comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
+                    // assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
+                    println!(
+                        "incorrect result: {comparisons}, expected {}",
+                        KNOWN_MIN_VALUES[n as usize - 1][i as usize]
+                    )
                 }
 
                 println!("cache_entries = {}", cache.len());
@@ -84,7 +88,15 @@ fn main() {
                 }
 
                 if args.explore {
-                    let mapping = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+                    let mapping = {
+                        let mut mapping = [0; MAX_N];
+                        mapping
+                            .iter_mut()
+                            .enumerate()
+                            .for_each(|(i, elem)| *elem = i as u8);
+                        mapping
+                    };
+
                     explore(Poset::new(n, i), mapping, &cache);
                     return;
                 }
@@ -268,5 +280,5 @@ fn load_cache(path: &String) -> Option<HashMap<Poset, Cost>> {
         }
     }
 
-    postcard::from_bytes(&bytes).map_or(None, Some)
+    postcard::from_bytes(&bytes).ok()
 }

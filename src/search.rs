@@ -4,7 +4,7 @@ use hashbrown::HashMap;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
-use crate::poset::Poset;
+use crate::poset::{Poset, MAX_N};
 
 pub struct Search<'a> {
     n: u8,
@@ -85,7 +85,7 @@ impl<'a> Search<'a> {
         unreachable!()
     }
 
-    fn search_rec(&mut self, poset: Poset, mut max_comparisons: u8, depth: u8) -> Cost {
+    fn search_rec(&mut self, poset: Poset, max_comparisons: u8, depth: u8) -> Cost {
         if let Some(cost) = self.cache.get(&poset) {
             match cost {
                 Cost::Solved(_solved) => {
@@ -107,7 +107,7 @@ impl<'a> Search<'a> {
             return Cost::Minimum(1);
         }
 
-        if let Some(false) = self.estimate_solvable(poset.clone(), max_comparisons, 0, 0) {
+        if let Some(false) = self.estimate_solvable(poset.clone(), max_comparisons, 0, 0, depth) {
             let result = Cost::Minimum(max_comparisons + 1);
 
             if let Some(cost) = self.cache.get(&poset) {
@@ -132,7 +132,7 @@ impl<'a> Search<'a> {
 
         let pairs = self.get_comparison_pairs(&poset);
 
-        let progress = if depth <= self.n * 2 / 3 {
+        let progress = if depth + self.n <= self.current_max + 1 {
             let progress = ProgressBar::new(pairs.len() as u64).with_style(
                 ProgressStyle::with_template("[{pos:2}/{len:2}] {msg} {wide_bar}").unwrap(),
             );
@@ -146,19 +146,20 @@ impl<'a> Search<'a> {
         let mut result = Cost::Minimum(max_comparisons + 1);
 
         // search all comparisons
+        let mut current_max = max_comparisons;
         for (first, second) in pairs {
             if let Some(progress) = &progress {
                 progress.set_message(format!(
-                    "max: {max_comparisons:2}, nodes: {:10}, cache: {:10}",
+                    "max: {current_max:2}, nodes: {:10}, cache: {:10}",
                     self.total_nodes,
                     self.cache.len()
                 ));
             }
 
             // search the first case of the comparison
-            let first_result = self.search_rec(first, max_comparisons - 1, depth + 1);
+            let first_result = self.search_rec(first, current_max - 1, depth + 1);
 
-            if !first_result.is_solved() || first_result.value() > max_comparisons - 1 {
+            if !first_result.is_solved() || first_result.value() > current_max - 1 {
                 if let Some(progress) = &progress {
                     progress.inc(1);
                 }
@@ -166,9 +167,9 @@ impl<'a> Search<'a> {
             }
 
             // search the second case of the comparison
-            let second_result = self.search_rec(second, max_comparisons - 1, depth + 1);
+            let second_result = self.search_rec(second, current_max - 1, depth + 1);
 
-            if !second_result.is_solved() || second_result.value() > max_comparisons - 1 {
+            if !second_result.is_solved() || second_result.value() > current_max - 1 {
                 if let Some(progress) = &progress {
                     progress.inc(1);
                 }
@@ -179,10 +180,10 @@ impl<'a> Search<'a> {
             let new_result = first_result.value().max(second_result.value()) + 1;
 
             // take the min of all comparisons
-            if !result.is_solved() || new_result <= result.value() {
-                result = Cost::Solved(new_result);
-                // max_comparisons = new_result - 1; // breaks for n=12, i=5
-                max_comparisons = new_result;
+            if !result.is_solved() || new_result <= current_max {
+                result = Cost::Solved(new_result.min(result.value()));
+                current_max = current_max.min(new_result); // breaks for n=12, i=5
+                                                           // current_max = new_result;
             }
 
             if let Some(progress) = &progress {
@@ -230,8 +231,9 @@ impl<'a> Search<'a> {
             }
         }
 
-        comparisons.sort_by_cached_key(|(i, j)| Self::get_priority(poset, *i, *j));
-        comparisons.reverse();
+        let (less, _unknown, greater) = poset.calculate_relations();
+
+        comparisons.sort_by_key(|(i, j)| Self::get_priority(*i, *j, &less, &greater));
 
         let mut pairs = Vec::with_capacity(comparisons.len());
 
@@ -249,47 +251,29 @@ impl<'a> Search<'a> {
                 pairs.push(pair);
             }
         }
+
         pairs
     }
 
     // heuristic priority of performing that comparison
-    fn get_priority(poset: &Poset, i: u8, j: u8) -> u8 {
-        let mut compares = 0;
-
-        for k in 0..poset.n() {
-            if k == i || k == j {
-                continue;
-            }
-
-            if poset.has_order(i, k) {
-                compares += 1;
-            }
-            if poset.has_order(j, k) {
-                compares += 1;
-            }
-        }
-
+    fn get_priority(i: u8, j: u8, less: &[u8; MAX_N], greater: &[u8; MAX_N]) -> u8 {
         let mut priority = 0;
-        let (less, _unknown, greater) = poset.calculate_relations();
 
-        if compares == 0 {
-            priority = 250;
-        } else {
-            if greater[i as usize] >= 2 {
-                priority += 50;
-            }
-            if greater[j as usize] >= 2 {
-                priority += 50;
-            }
-            if less[i as usize] >= 2 {
-                priority += 50;
-            }
-            if less[j as usize] >= 2 {
-                priority += 50;
-            }
+        if less[i as usize] == 1
+            || greater[j as usize] == 1
+            || greater[i as usize] == 1
+            || less[j as usize] == 1
+        {
+            priority += 10;
         }
 
-        priority += compares;
+        if less[i as usize] == 0
+            || greater[j as usize] == 0
+            || less[j as usize] == 0
+            || greater[i as usize] == 0
+        {
+            priority += 5;
+        }
 
         priority
     }
@@ -314,23 +298,24 @@ impl<'a> Search<'a> {
         max_comparisons: u8,
         start_i: u8,
         start_j: u8,
+        depth: u8,
     ) -> Option<bool> {
-        // if let Some(cost) = self.cache.get(&poset) {
-        //     match *cost {
-        //         Cost::Solved(solved) => {
-        //             if solved <= max_comparisons {
-        //                 return Some(true);
-        //             } else {
-        //                 return Some(false);
-        //             }
-        //         }
-        //         Cost::Minimum(min) => {
-        //             if min > max_comparisons {
-        //                 return Some(false);
-        //             }
-        //         }
-        //     }
-        // }
+        if let Some(cost) = self.cache.get(&poset) {
+            match *cost {
+                Cost::Solved(solved) => {
+                    if solved <= max_comparisons {
+                        return Some(true);
+                    } else {
+                        return Some(false);
+                    }
+                }
+                Cost::Minimum(min) => {
+                    if min > max_comparisons {
+                        return Some(false);
+                    }
+                }
+            }
+        }
 
         if !poset.is_solvable_in(max_comparisons) {
             return Some(false);
@@ -351,9 +336,13 @@ impl<'a> Search<'a> {
                     continue;
                 }
 
-                if let Some(false) =
-                    self.estimate_solvable(poset.with_less(i, j), max_comparisons, i, j + 1)
-                {
+                if let Some(false) = self.estimate_solvable(
+                    poset.with_less(i, j),
+                    max_comparisons,
+                    i,
+                    j + 1,
+                    depth + 1,
+                ) {
                     return Some(false);
                 }
             }
