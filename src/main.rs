@@ -75,10 +75,12 @@ fn main() {
             if let Cost::Solved(comparisons) = cost {
                 if n < KNOWN_MIN_VALUES.len() as u8 {
                     // assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
-                    println!(
-                        "incorrect result: {comparisons}, expected {}",
-                        KNOWN_MIN_VALUES[n as usize - 1][i as usize]
-                    )
+                    if comparisons != KNOWN_MIN_VALUES[n as usize - 1][i as usize] {
+                        println!(
+                            "incorrect result: {comparisons}, expected {}",
+                            KNOWN_MIN_VALUES[n as usize - 1][i as usize]
+                        )
+                    }
                 }
 
                 println!("cache_entries = {}", cache.len());
