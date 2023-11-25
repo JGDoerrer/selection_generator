@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::{fmt::Debug, mem::size_of};
 
 use serde::{Deserialize, Serialize};
 
@@ -13,12 +13,15 @@ pub struct Poset {
     n: u8,
     i: u8,
     /// The comparisons as an adjacency matrix
-    adjacency: [u8; Self::BYTES],
+    adjacency: [Word; Self::WORDS],
 }
+
+type Word = u64;
 
 impl Poset {
     const BITS: usize = MAX_N * MAX_N;
     const BYTES: usize = (Self::BITS + 7) / 8;
+    const WORDS: usize = (Self::BYTES + size_of::<Word>()) / size_of::<Word>();
 
     pub fn new(n: u8, i: u8) -> Self {
         debug_assert!(n < MAX_N as u8);
@@ -26,12 +29,43 @@ impl Poset {
         Poset {
             n,
             i,
-            adjacency: [0; Self::BYTES],
+            adjacency: [0; Self::WORDS],
         }
     }
 
     pub fn n(&self) -> u8 {
         self.n
+    }
+
+    #[inline]
+    fn get_bit_index(&self, i: u8, j: u8) -> u8 {
+        i + j * self.n
+    }
+
+    #[inline]
+    fn set_bit(&mut self, i: u8, j: u8) {
+        debug_assert!(i != j);
+        let bit = self.get_bit_index(i, j);
+        let word = bit / (8 * size_of::<Word>() as u8);
+        let mask = 1 << (bit % (8 * size_of::<Word>() as u8));
+
+        self.adjacency[word as usize] |= mask;
+    }
+
+    /// is i < j?
+    #[inline]
+    pub fn is_less(&self, i: u8, j: u8) -> bool {
+        let bit = self.get_bit_index(i, j);
+        let word = bit / (8 * size_of::<Word>() as u8);
+        let mask = 1 << (bit % (8 * size_of::<Word>() as u8));
+
+        (self.adjacency[word as usize] & mask) != 0
+    }
+
+    /// is either i < j or j < i?
+    #[inline]
+    pub fn has_order(&self, i: u8, j: u8) -> bool {
+        self.is_less(i, j) || self.is_less(j, i)
     }
 
     /// returns how many elements are less, unknown or greater than it
@@ -248,31 +282,6 @@ impl Poset {
         new_indices
     }
 
-    #[inline]
-    fn get_bit_index(&self, i: u8, j: u8) -> u8 {
-        i + j * self.n
-    }
-
-    #[inline]
-    fn set_bit(&mut self, i: u8, j: u8) {
-        debug_assert!(i != j);
-        let bit = self.get_bit_index(i, j);
-        let byte = bit / 8;
-        let mask = 1 << (bit % 8);
-
-        self.adjacency[byte as usize] |= mask;
-    }
-
-    /// is i < j?
-    #[inline]
-    pub fn is_less(&self, i: u8, j: u8) -> bool {
-        let bit = self.get_bit_index(i, j);
-        let byte = bit / 8;
-        let mask = 1 << (bit % 8);
-
-        (self.adjacency[byte as usize] & mask) > 0
-    }
-
     /// for debugging
     fn is_closed(&self) -> bool {
         for i in 0..self.n {
@@ -289,6 +298,7 @@ impl Poset {
     }
 
     /// adds i < j to the poset and normalize
+    #[inline]
     pub fn add_less(&mut self, i: u8, j: u8) {
         debug_assert!(!self.is_less(i, j));
         debug_assert!(!self.is_less(j, i));
@@ -329,12 +339,6 @@ impl Poset {
         let mapping = new.normalize_mapping();
 
         (new, mapping)
-    }
-
-    /// is either i < j or j < i?
-    #[inline]
-    pub fn has_order(&self, i: u8, j: u8) -> bool {
-        self.is_less(i, j) || self.is_less(j, i)
     }
 
     /// adapted from [https://www.cs.hut.fi/~cessu/selection/selgen.c.html]
