@@ -117,6 +117,9 @@ class Poset {
 
   // can one determine n smallest element with current comparisons
   bool canDetermineNSmallest() const {
+    if (0 == n) {
+      return true;
+    }
     for (uint16_t k = 0; k < n; ++k) {  // guess arr[k] is median
       uint8_t smaller = 0, bigger = 0;
       for (uint16_t i = 0; i < n; ++i) {
@@ -144,8 +147,71 @@ class Poset {
   //   result.push_back(v);
   // }
 
-#ifdef USE_NAUTY
   void normalize() {
+    // how many elements are less than it
+    std::vector<int> less(n, 0);
+    std::vector<int> greater(n, 0);
+
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n; ++j) {
+        if (getValue(i, j)) {
+          ++less[j];
+          ++greater[i];
+        }
+      }
+    }
+
+    // can the element be ignored, because it is too large/small
+    std::vector<int> dropped(n, false);
+    int n_less_dropped = 0;
+
+    for (int i = 0; i < n; ++i) {
+      if (greater[i] > nthSmallest) {
+        dropped[i] = true;
+      } else if (less[i] >= n - nthSmallest) {  // oder >= ???
+        dropped[i] = true;
+        ++n_less_dropped;
+      }
+    }
+
+    // maps the old indices to the new ones
+    std::vector<int> new_indices(n, 0);
+    int new_n = 0;
+    int b = n - 1;
+
+    for (int i = 0; i < n; ++i) {
+      if (!dropped[i]) {
+        new_indices[new_n++] = i;
+      } else {
+        new_indices[b--] = i;
+      }
+    }
+
+    // make the new poset
+    bool oldTb[n * n];
+    for (int i = 0; i < n * n; ++i) {
+      oldTb[i] = comparisonTable[i];
+    }
+    int oldN = n;
+
+    n = new_n;
+    nthSmallest -= n_less_dropped;
+
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n; ++j) {
+        if (oldTb[new_indices[i] * oldN + new_indices[j]]) {
+          setValue(i, j, true);
+        } else {
+          setValue(i, j, false);
+        }
+      }
+    }
+
+    post_normalize();
+  }
+
+#ifdef USE_NAUTY
+  void post_normalize() {
     const int m = SETWORDSNEEDED(n);
     nauty_check(WORDSIZE, m, n, NAUTYVERSIONID);
 
@@ -181,7 +247,11 @@ class Poset {
       map[lab[i]] = i;
     }
 
-    int i, j, min_idx;
+  TODO:
+    erstelle comaprsionTable neu = > schneller
+
+                                   int i,
+                             j, min_idx;
     for (i = 0; i < n - 1; ++i) {
       min_idx = i;
       for (j = i + 1; j < n; ++j) {
@@ -196,7 +266,7 @@ class Poset {
     }
   }
 #else
-  void normalize() {
+  void post_normalize() {
     // TODO: geht besser als O(n^3), bestes möglich evtl: O(n)
 
     // vector<bool> visited(n, false);
@@ -296,8 +366,7 @@ struct std::hash<Poset<maxN>> {
 
 template <size_t maxN>
 std::ostream &operator<<(std::ostream &os, const Poset<maxN> &poset) {
-  os << "n = " << (uint16_t)poset.n << ", nthSmallest = " << (uint16_t)poset.nthSmallest
-     << ", comparisonsDone = " << (uint16_t)poset.comparisonsDone;
+  os << "n = " << (uint16_t)poset.n << ", nthSmallest = " << (uint16_t)poset.nthSmallest;
   for (uint16_t i = 0; i < poset.n; ++i) {
     std::cout << '\n';
     for (uint16_t j = 0; j < poset.n; ++j) {

@@ -1,7 +1,7 @@
 // g++ -Ddev -Wall -Wextra -Wconversion -Wno-unknown-pragmas
 // -Wmaybe-uninitialized -Wshadow -fsanitize=undefined,address -D_GLIBCXX_DEBUG
 // -O2 -std=c++17 -g ./template.cpp -o program.out; ./program.out
-#define USE_NAUTY
+// #define USE_NAUTY
 constexpr bool USE_PAIR_MODE = false;
 
 #include <bits/stdc++.h>
@@ -10,10 +10,8 @@ constexpr bool USE_PAIR_MODE = false;
 #include "util.h"
 
 // TODO: create make file, compile option `march native`
-// TODO: ACHTUNG: normalize kaputt (optional: wenn 0 kleiner als alle -> liste mit n - 1 Elementen)
-// TODO: Isomorphie-Test mit nauty-c
+// TODO: ACHTUNG: post_normalize kaputt
 
-// TODO: cache nicht löschen nach iteration
 // TODO: custom ordering
 // TODO: swap Operationen, memcpy, fine-tuning
 // TODO: überall explicit static cast
@@ -127,8 +125,8 @@ std::optional<int> startSearch(const int n, const int nthSmallest,
       }
       poset.normalize();
     }
-    cache_maximumReeched.clear();  // TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    cache_solution.clear();        // TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // cache_maximumReeched.clear();
+    // cache_solution.clear();
     const bool is_possible = search(poset, cache_maximumReeched, cache_solution, i, statistics, comparisonsDone);
     if (is_possible) {
       return i;
@@ -146,6 +144,7 @@ struct std::hash<std::pair<Poset<maxN>, int>> {
 
 int main() {
   constexpr size_t maxN = 15;
+  constexpr size_t nBound = 0;
 #ifdef USE_NAUTY
   initNauty(maxN);
 #endif
@@ -163,12 +162,12 @@ int main() {
           startSearch(n, nthSmallest, cache_maximumReeched, cache_solution, statistics);
 
       if (comparisons.has_value()) {
-        if (n >= 6)
+        if (n >= nBound)
           std::cout << "\rtime '" << watch << "': n = " << n << ", i = " << nthSmallest << ", " << statistics
                     << ", entries = " << cache_maximumReeched.size() + cache_solution.size()
                     << ", comparisons: " << comparisons.value() << std::endl;
         if (comparisons != min_n_comparisons[n][nthSmallest]) {
-          std::cerr << "Error, got " << comparisons.value() << ", but expected " << min_n_comparisons[n][nthSmallest]
+          std::cerr << "Error: got " << comparisons.value() << ", but expected " << min_n_comparisons[n][nthSmallest]
                     << std::endl;
           exit(0);
         }
@@ -177,6 +176,6 @@ int main() {
         exit(0);
       }
     }
-    if (n >= 6) std::cout << std::endl;
+    if (n >= nBound) std::cout << std::endl;
   }
 }

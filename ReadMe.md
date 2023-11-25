@@ -37,6 +37,15 @@ g++ -O3 nautyTest.cpp ../nauty2_8_8/nauty.a
 - wenn nein: untere Schranke ist `n`, sonst: Fall tritt nicht ein
 
 # Program Output
+Rust:
+```
+...
+found solution for n = 9, i = 4, comparisons = 14
+time since start: 0d 0h 0m 18.30282s
+cache_entries = 17149
+...
+```
+
 With pair-optimisation, Nauty:
 ```
 time '0.000s': n = 8, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 7
