@@ -37,42 +37,28 @@ g++ -O3 nautyTest.cpp ../nauty2_8_8/nauty.a
 - wenn nein: untere Schranke ist `n`, sonst: Fall tritt nicht ein
 
 # Program Output
-With pair-optimisation:
+With pair-optimisation, Nauty:
 ```
-time '0.000s': n = 6, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 5
-time '0.000s': n = 6, i = 1, calls = 115, hits = 546, entries = 16, comparisons: 7
-time '0.001s': n = 6, i = 2, calls = 608, hits = 3189, entries = 260, comparisons: 8
-
-time '0.000s': n = 7, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 6
-time '0.014s': n = 7, i = 1, calls = 2598, hits = 23147, entries = 3488, comparisons: 8
-time '0.086s': n = 7, i = 2, calls = 18023, hits = 171447, entries = 1347, comparisons: 10
-time '0.090s': n = 7, i = 3, calls = 20208, hits = 182585, entries = 4612, comparisons: 10
-
 time '0.000s': n = 8, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 7
-time '0.068s': n = 8, i = 1, calls = 6668, hits = 83405, entries = 15120, comparisons: 9
-time '1.215s': n = 8, i = 2, calls = 142857, hits = 1905142, entries = 70118, comparisons: 11
-time '2.574s': n = 8, i = 3, calls = 337000, hits = 4432577, entries = 79261, comparisons: 12
+time '0.052s': n = 8, i = 1, calls = 2166, hits = 25071, entries = 3858, comparisons: 9
+time '0.580s': n = 8, i = 2, calls = 31289, hits = 254611, entries = 10423, comparisons: 11
+time '0.625s': n = 8, i = 3, calls = 50713, hits = 328686, entries = 8487, comparisons: 12
 
 time '0.000s': n = 9, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 8
-time '9.877s': n = 9, i = 1, calls = 522635, hits = 10671008, entries = 130112, comparisons: 11
-time '41.368s': n = 9, i = 2, calls = 2617621, hits = 49400409, entries = 1621682, comparisons: 12
+time '1.817s': n = 9, i = 1, calls = 63522, hits = 989771, entries = 52380, comparisons: 11
+time '7.409s': n = 9, i = 2, calls = 345845, hits = 3577103, entries = 99155, comparisons: 12
+time '33.365s': n = 9, i = 3, calls = 2794813, hits = 14884652, entries = 134791, comparisons: 14
+time '26.390s': n = 9, i = 4, calls = 2459714, hits = 11151854, entries = 128926, comparisons: 14
 ```
 
-Without pair-optimisation:
+Without pair-optimisation, Nauty:
 ```
-time '0.000s': n = 6, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 5
-time '0.007s': n = 6, i = 1, calls = 2395, hits = 17131, entries = 1215, comparisons: 7
-time '0.015s': n = 6, i = 2, calls = 5141, hits = 35740, entries = 1550, comparisons: 8
-
-time '0.000s': n = 7, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 6
-time '0.146s': n = 7, i = 1, calls = 25356, hits = 286523, entries = 13833, comparisons: 8
-time '0.400s': n = 7, i = 2, calls = 78771, hits = 835263, entries = 14997, comparisons: 10
-time '0.468s': n = 7, i = 3, calls = 90375, hits = 962335, entries = 17444, comparisons: 10
-
 time '0.000s': n = 8, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 7
-time '3.372s': n = 8, i = 1, calls = 307396, hits = 5053822, entries = 189389, comparisons: 9
-time '10.951s': n = 8, i = 2, calls = 1119934, hits = 17205686, entries = 248841, comparisons: 11
-time '16.524s': n = 8, i = 3, calls = 1838967, hits = 27231485, entries = 266394, comparisons: 12
+time '0.157s': n = 8, i = 1, calls = 6674, hits = 81141, entries = 6643, comparisons: 9
+time '1.523s': n = 8, i = 2, calls = 108545, hits = 653420, entries = 15479, comparisons: 11
+time '2.967s': n = 8, i = 3, calls = 385152, hits = 1283968, entries = 19463, comparisons: 12
 
 time '0.000s': n = 9, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 8
+time '3.068s': n = 9, i = 1, calls = 105602, hits = 1648032, entries = 67358, comparisons: 11
+time '9.717s': n = 9, i = 2, calls = 564781, hits = 4988731, entries = 108041, comparisons: 12
 ```

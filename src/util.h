@@ -1,6 +1,5 @@
 #pragma once
 #include <bits/stdc++.h>
-using namespace std;
 
 template <class T>
 struct is_map {
@@ -8,7 +7,7 @@ struct is_map {
 };
 
 template <class Key, class Value>
-struct is_map<map<Key, Value>> {
+struct is_map<std::map<Key, Value>> {
   static constexpr bool value = true;
 };
 
@@ -18,7 +17,7 @@ struct is_stack {
 };
 
 template <class T>
-struct is_stack<stack<T>> {
+struct is_stack<std::stack<T>> {
   static constexpr bool value = true;
 };
 
@@ -28,7 +27,7 @@ struct is_queue {
 };
 
 template <class T>
-struct is_queue<queue<T>> {
+struct is_queue<std::queue<T>> {
   static constexpr bool value = true;
 };
 
@@ -38,7 +37,7 @@ struct is_pair {
 };
 
 template <class F, class G>
-struct is_pair<pair<F, G>> {
+struct is_pair<std::pair<F, G>> {
   static constexpr bool value = true;
 };
 
@@ -48,12 +47,12 @@ struct is_set {
 };
 
 template <class T>
-struct is_set<set<T>> {
+struct is_set<std::set<T>> {
   static constexpr bool value = true;
 };
 
 template <typename T>
-ostream &printContainer(ostream &os, T container) {
+std::ostream &printContainer(std::ostream &os, T container) {
   if constexpr (is_map<T>::value) {
     os << '[';
     bool isNotFirst = false;
@@ -100,42 +99,42 @@ ostream &printContainer(ostream &os, T container) {
 }
 
 template <typename F, typename G>
-ostream &operator<<(ostream &os, const map<F, G> &container) {
+std::ostream &operator<<(std::ostream &os, const std::map<F, G> &container) {
   return printContainer(os, container);
 }
 
 template <typename T>
-ostream &operator<<(ostream &os, const stack<T> &container) {
+std::ostream &operator<<(std::ostream &os, const std::stack<T> &container) {
   return printContainer(os, container);
 }
 
 template <typename T>
-ostream &operator<<(ostream &os, const queue<T> &container) {
+std::ostream &operator<<(std::ostream &os, const std::queue<T> &container) {
   return printContainer(os, container);
 }
 
 template <typename T>
-ostream &operator<<(ostream &os, const vector<T> &container) {
+std::ostream &operator<<(std::ostream &os, const std::vector<T> &container) {
   return printContainer(os, container);
 }
 
 template <typename T>
-ostream &operator<<(ostream &os, const list<T> &container) {
+std::ostream &operator<<(std::ostream &os, const std::list<T> &container) {
   return printContainer(os, container);
 }
 
 template <typename F, typename G>
-ostream &operator<<(ostream &os, const pair<F, G> &container) {
+std::ostream &operator<<(std::ostream &os, const std::pair<F, G> &container) {
   return printContainer(os, container);
 }
 
 template <typename F, typename G>
-ostream &operator<<(ostream &os, const set<F, G> &container) {
+std::ostream &operator<<(std::ostream &os, const std::set<F, G> &container) {
   return printContainer(os, container);
 }
 
 template <typename T>
-size_t minIndex(const vector<T> &vector) {
+size_t minIndex(const std::vector<T> &vector) {
   size_t minIndex = 0;
   for (size_t i = 1; i < vector.size(); ++i) {
     if (vector[i] < vector[minIndex]) minIndex = i;
@@ -144,7 +143,7 @@ size_t minIndex(const vector<T> &vector) {
 }
 
 template <typename T>
-size_t maxIndex(const vector<T> &vector) {
+size_t maxIndex(const std::vector<T> &vector) {
   size_t maxIndex = 0;
   for (size_t i = 1; i < vector.size(); ++i) {
     if (vector[maxIndex] < vector[i]) maxIndex = i;
@@ -153,12 +152,12 @@ size_t maxIndex(const vector<T> &vector) {
 }
 
 template <typename T>
-T min(const vector<T> &vector) {
+T min(const std::vector<T> &vector) {
   return vector[minIndex(vector)];
 }
 
 template <typename T>
-T max(const vector<T> &vector) {
+T max(const std::vector<T> &vector) {
   return vector[maxIndex(vector)];
 }
 
@@ -183,11 +182,11 @@ class StopWatch {
  public:
   StopWatch() : startPoint(std::chrono::steady_clock::now()) {}
 
-  friend ostream &operator<<(ostream &os, const StopWatch &watch);
+  friend std::ostream &operator<<(std::ostream &os, const StopWatch &watch);
 };
 
-ostream &operator<<(ostream &os, const StopWatch &watch) {
+std::ostream &operator<<(std::ostream &os, const StopWatch &watch) {
   const auto endPoint = std::chrono::steady_clock::now();
-  os << (chrono::duration_cast<chrono::milliseconds>(endPoint - watch.startPoint).count() / 1000.0) << "s";
+  os << (std::chrono::duration_cast<std::chrono::milliseconds>(endPoint - watch.startPoint).count() / 1000.0) << "s";
   return os;
 }

@@ -1,8 +1,30 @@
 #pragma once
 #include <bits/stdc++.h>
 
-#include "util.h"
-using namespace std;
+// #include "util.h"
+
+#ifdef USE_NAUTY
+#include "../nauty2_8_8/nauty.h"
+
+DYNALLSTAT(graph, g, g_sz);
+DYNALLSTAT(int, lab, lab_sz);
+DYNALLSTAT(int, ptn, ptn_sz);
+DYNALLSTAT(graph, result, result_sz);
+DYNALLSTAT(int, orbits, orbits_sz);
+DYNALLSTAT(int, map, map_sz);
+
+void initNauty(const int maxN) {
+  const int m = SETWORDSNEEDED(maxN);
+  nauty_check(WORDSIZE, m, maxN, NAUTYVERSIONID);
+
+  DYNALLOC1(int, lab, lab_sz, maxN, "malloc");
+  DYNALLOC1(int, ptn, ptn_sz, maxN, "malloc");
+  DYNALLOC1(int, orbits, orbits_sz, maxN, "malloc");
+  DYNALLOC1(int, map, map_sz, maxN, "malloc");
+  DYNALLOC2(graph, g, g_sz, m, maxN, "malloc");
+  DYNALLOC2(graph, result, result_sz, m, maxN, "malloc");
+}
+#endif
 
 template <size_t maxN>
 class Poset {
@@ -29,18 +51,18 @@ class Poset {
     }
   }
 
-  inline void set(const uint16_t i, const uint16_t j, const bool value) { comparisonTable[i * n + j] = value; }
+  inline void setValue(const uint16_t i, const uint16_t j, const bool value) { comparisonTable[i * n + j] = value; }
 
-  inline bool get(const uint16_t i, const uint16_t j) const { return comparisonTable[i * n + j]; }
+  inline bool getValue(const uint16_t i, const uint16_t j) const { return comparisonTable[i * n + j]; }
 
   void addComparisonTransitivRecursive(const uint16_t i, const uint16_t j) {
-    if (false == get(i, j)) {
-      set(i, j, true);
+    if (false == getValue(i, j)) {
+      setValue(i, j, true);
 
       for (uint16_t k = 0; k < n; ++k) {
-        if (get(j, k) && !get(i, k)) {
+        if (getValue(j, k) && !getValue(i, k)) {
           addComparisonTransitivRecursive(i, k);
-        } else if (get(k, i) && !get(k, j)) {
+        } else if (getValue(k, i) && !getValue(k, j)) {
           addComparisonTransitivRecursive(k, j);
         }
       }
@@ -48,18 +70,18 @@ class Poset {
   }
 
   inline void addComparisonTransitivIterative(const uint16_t i, const uint16_t j) {
-    queue<pair<uint16_t, uint16_t>> queue;
+    std::queue<std::pair<uint16_t, uint16_t>> queue;
     queue.push({i, j});
     while (0 != queue.size()) {
       const auto &[i1, j1] = queue.front();
       queue.pop();
 
-      if (false == get(i1, j1)) {
-        set(i1, j1, true);
+      if (false == getValue(i1, j1)) {
+        setValue(i1, j1, true);
         for (uint16_t k = 0; k < n; ++k) {
-          if (get(j1, k) && !get(i1, k)) {
+          if (getValue(j1, k) && !getValue(i1, k)) {
             queue.push({i1, k});
-          } else if (get(k, i1) && !get(k, j1)) {
+          } else if (getValue(k, i1) && !getValue(k, j1)) {
             queue.push({k, j1});
           }
         }
@@ -91,16 +113,16 @@ class Poset {
   // true => arr[i] < arr[j]
   // ACHTUNG: is(a, b) == false IMPLIZIERT NICHT, dass arr[i] > arr[j]:
   // nur wenn arr[i] > arr[j] => false
-  bool is(const uint16_t i, const uint16_t j) const { return get(i, j); }
+  bool is(const uint16_t i, const uint16_t j) const { return getValue(i, j); }
 
   // can one determine n smallest element with current comparisons
   bool canDetermineNSmallest() const {
     for (uint16_t k = 0; k < n; ++k) {  // guess arr[k] is median
       uint8_t smaller = 0, bigger = 0;
       for (uint16_t i = 0; i < n; ++i) {
-        if (get(i, k)) {
+        if (getValue(i, k)) {
           ++smaller;
-        } else if (get(k, i)) {
+        } else if (getValue(k, i)) {
           ++bigger;
         }
       }
@@ -122,6 +144,58 @@ class Poset {
   //   result.push_back(v);
   // }
 
+#ifdef USE_NAUTY
+  void normalize() {
+    const int m = SETWORDSNEEDED(n);
+    nauty_check(WORDSIZE, m, n, NAUTYVERSIONID);
+
+    EMPTYGRAPH(g, m, n);
+    for (uint16_t i = 0; i < n; ++i) {
+      for (uint16_t j = 0; j < n; ++j) {
+        if (getValue(i, j)) {
+          ADDONEARC(g, i, j, m);
+        }
+      }
+    }
+
+    for (uint8_t i = 0; i < n; ++i) {
+      lab[i] = i;
+    }
+
+    for (uint8_t i = 0; i < n; ++i) {
+      ptn[i] = 1;  // hier 0 oder 1?
+    }
+    ptn[n - 1] = 0;
+
+    EMPTYGRAPH(result, m, n);
+
+    DEFAULTOPTIONS_GRAPH(options);
+    options.getcanon = TRUE;
+    options.digraph = TRUE;
+
+    statsblk stats;
+    densenauty(g, lab, ptn, orbits, &options, &stats, m, n, result);
+    assert(stats.errstatus == 0);
+
+    for (uint8_t i = 0; i < n; ++i) {
+      map[lab[i]] = i;
+    }
+
+    int i, j, min_idx;
+    for (i = 0; i < n - 1; ++i) {
+      min_idx = i;
+      for (j = i + 1; j < n; ++j) {
+        if (map[j] < map[min_idx]) min_idx = j;
+      }
+
+      if (min_idx != i) {
+        std::swap(map[i], map[min_idx]);
+        swapCols(i, min_idx);
+        swapRows(i, min_idx);
+      }
+    }
+  }
+#else
   void normalize() {
     // TODO: geht besser als O(n^3), bestes möglich evtl: O(n)
 
@@ -139,7 +213,7 @@ class Poset {
       rowSum[i] = 0;
       // TODO: reinterpret case -> O(1)
       for (uint16_t j = 0; j < n; ++j) {
-        if (get(i, j)) {
+        if (getValue(i, j)) {
           ++rowSum[i];  // = 2 * rowSum[i] + 1;
         }
       }
@@ -168,7 +242,7 @@ class Poset {
     //   colSum[i] = 0;
     //   // TODO: reinterpret case -> O(1)
     //   for (uint16_t j = 0; j < n; ++j) {
-    //     if (get(j, i)) {
+    //     if (getValue(j, i)) {
     //       colSum[i]++;// = 2 * colSum[i] + 1;
     //     }
     //   }
@@ -190,6 +264,7 @@ class Poset {
     //   }
     // }
   }
+#endif
 
   bool operator==(const Poset<maxN> &poset) const {
     return n == poset.n && nthSmallest == nthSmallest &&
@@ -211,7 +286,7 @@ class Poset {
   }
 
   template <size_t maxN2>
-  friend ostream &operator<<(ostream &os, const Poset<maxN2> &poset);
+  friend std::ostream &operator<<(std::ostream &os, const Poset<maxN2> &poset);
 };
 
 template <size_t maxN>
@@ -220,13 +295,13 @@ struct std::hash<Poset<maxN>> {
 };
 
 template <size_t maxN>
-ostream &operator<<(ostream &os, const Poset<maxN> &poset) {
+std::ostream &operator<<(std::ostream &os, const Poset<maxN> &poset) {
   os << "n = " << (uint16_t)poset.n << ", nthSmallest = " << (uint16_t)poset.nthSmallest
      << ", comparisonsDone = " << (uint16_t)poset.comparisonsDone;
   for (uint16_t i = 0; i < poset.n; ++i) {
-    cout << '\n';
+    std::cout << '\n';
     for (uint16_t j = 0; j < poset.n; ++j) {
-      cout << poset.get(i, j) << " ";
+      std::cout << poset.getValue(i, j) << " ";
     }
   }
   return os;

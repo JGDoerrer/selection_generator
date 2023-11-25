@@ -1,12 +1,13 @@
 // g++ -Ddev -Wall -Wextra -Wconversion -Wno-unknown-pragmas
 // -Wmaybe-uninitialized -Wshadow -fsanitize=undefined,address -D_GLIBCXX_DEBUG
 // -O2 -std=c++17 -g ./template.cpp -o program.out; ./program.out
+#define USE_NAUTY
+constexpr bool USE_PAIR_MODE = false;
 
 #include <bits/stdc++.h>
 
 #include "poset.h"
 #include "util.h"
-using namespace std;
 
 // TODO: create make file, compile option `march native`
 // TODO: ACHTUNG: normalize kaputt (optional: wenn 0 kleiner als alle -> liste mit n - 1 Elementen)
@@ -17,8 +18,6 @@ using namespace std;
 // TODO: swap Operationen, memcpy, fine-tuning
 // TODO: überall explicit static cast
 // TODO: Multi-Threading
-
-constexpr bool USE_PAIR_MODE = false;
 
 const static int min_n_comparisons[15][15] = {
     /* i=1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16 */
@@ -41,7 +40,7 @@ struct Statistics {
   int hashMatches = 0;
 };
 
-ostream &operator<<(ostream &os, const Statistics &stats) {
+std::ostream &operator<<(std::ostream &os, const Statistics &stats) {
   os << "calls = " << stats.functionCalls << ", hits = " << stats.hashMatches;
   return os;
 }
@@ -53,8 +52,8 @@ template <size_t maxN>
 /// @param cache_solution enhält alle Posets, für die bereits eine Lösung gefunden wurde; z.B. wenn
 ///                       cache_solution[poset] = 2, dann kann poset IN 2 Schrittem gelöst werden
 /// @return true, wenn Median in poset in max. `maxComparisons` gefunden werden kann
-bool search(const Poset<maxN> &poset, unordered_map<Poset<maxN>, int> &cache_maximumReeched,
-            unordered_map<Poset<maxN>, int> &cache_solution, const int maxComparisons, Statistics &statistics,
+bool search(const Poset<maxN> &poset, std::unordered_map<Poset<maxN>, int> &cache_maximumReeched,
+            std::unordered_map<Poset<maxN>, int> &cache_solution, const int maxComparisons, Statistics &statistics,
             const int comparisonsDone = 0) {
   bool result = false;
 
@@ -105,14 +104,15 @@ bool search(const Poset<maxN> &poset, unordered_map<Poset<maxN>, int> &cache_max
 }
 
 template <size_t maxN>
-optional<int> startSearch(const int n, const int nthSmallest, unordered_map<Poset<maxN>, int> &cache_maximumReeched,
-                          unordered_map<Poset<maxN>, int> &cache_solution, Statistics &statistics) {
+std::optional<int> startSearch(const int n, const int nthSmallest,
+                               std::unordered_map<Poset<maxN>, int> &cache_maximumReeched,
+                               std::unordered_map<Poset<maxN>, int> &cache_solution, Statistics &statistics) {
   if (0 == nthSmallest) {
     return n - 1;
   }
 
   for (int i = n - 1; i < n * n; ++i) {
-    cout << "\rtry: maxComparisons = " << i << flush;
+    std::cout << "\rtry: maxComparisons = " << i << std::flush;
     int comparisonsDone = 0;
     Poset<maxN> poset{uint8_t(n), uint8_t(nthSmallest)};
     if (2 <= i) {
@@ -138,41 +138,45 @@ optional<int> startSearch(const int n, const int nthSmallest, unordered_map<Pose
 }
 
 template <size_t maxN>
-struct std::hash<pair<Poset<maxN>, int>> {
+struct std::hash<std::pair<Poset<maxN>, int>> {
   size_t operator()(const pair<Poset<maxN>, int> &pair) const {
     return hash<Poset<maxN>>{}(get<0>(pair)) ^ hash<int>{}(get<1>(pair));
   }
 };
 
 int main() {
-  constexpr size_t maxN = 10;
+  constexpr size_t maxN = 15;
+#ifdef USE_NAUTY
+  initNauty(maxN);
+#endif
 
-  cout.setf(ios::fixed, ios::floatfield);
-  cout.precision(3);
+  std::cout.setf(std::ios::fixed, std::ios::floatfield);
+  std::cout.precision(3);
   for (int n = 1; n < maxN; ++n) {
     for (int nthSmallest = 0; nthSmallest < (n + 1) / 2; ++nthSmallest) {
       StopWatch watch{};
 
       Statistics statistics;
-      unordered_map<Poset<maxN>, int> cache_maximumReeched;
-      unordered_map<Poset<maxN>, int> cache_solution;
-      const optional<int> comparisons = startSearch(n, nthSmallest, cache_maximumReeched, cache_solution, statistics);
+      std::unordered_map<Poset<maxN>, int> cache_maximumReeched;
+      std::unordered_map<Poset<maxN>, int> cache_solution;
+      const std::optional<int> comparisons =
+          startSearch(n, nthSmallest, cache_maximumReeched, cache_solution, statistics);
 
       if (comparisons.has_value()) {
         if (n >= 6)
-          cout << "\rtime '" << watch << "': n = " << n << ", i = " << nthSmallest << ", " << statistics
-               << ", entries = " << cache_maximumReeched.size() + cache_solution.size()
-               << ", comparisons: " << comparisons.value() << endl;
+          std::cout << "\rtime '" << watch << "': n = " << n << ", i = " << nthSmallest << ", " << statistics
+                    << ", entries = " << cache_maximumReeched.size() + cache_solution.size()
+                    << ", comparisons: " << comparisons.value() << std::endl;
         if (comparisons != min_n_comparisons[n][nthSmallest]) {
-          cerr << "Error, got " << comparisons.value() << ", but expected " << min_n_comparisons[n][nthSmallest]
-               << endl;
+          std::cerr << "Error, got " << comparisons.value() << ", but expected " << min_n_comparisons[n][nthSmallest]
+                    << std::endl;
           exit(0);
         }
       } else {
-        cerr << "Error, maxComparisons exceeded" << endl;
+        std::cerr << "Error, maxComparisons exceeded" << std::endl;
         exit(0);
       }
     }
-    if (n >= 6) cout << endl;
+    if (n >= 6) std::cout << std::endl;
   }
 }
