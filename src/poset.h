@@ -1,7 +1,7 @@
 #pragma once
 #include <bits/stdc++.h>
 
-// #include "util.h"
+#include "util.h"
 
 #ifdef USE_NAUTY
 #include "../nauty2_8_8/nauty.h"
@@ -11,7 +11,6 @@ DYNALLSTAT(int, lab, lab_sz);
 DYNALLSTAT(int, ptn, ptn_sz);
 DYNALLSTAT(graph, result, result_sz);
 DYNALLSTAT(int, orbits, orbits_sz);
-DYNALLSTAT(int, map, map_sz);
 
 void initNauty(const int maxN) {
   const int m = SETWORDSNEEDED(maxN);
@@ -20,7 +19,6 @@ void initNauty(const int maxN) {
   DYNALLOC1(int, lab, lab_sz, maxN, "malloc");
   DYNALLOC1(int, ptn, ptn_sz, maxN, "malloc");
   DYNALLOC1(int, orbits, orbits_sz, maxN, "malloc");
-  DYNALLOC1(int, map, map_sz, maxN, "malloc");
   DYNALLOC2(graph, g, g_sz, m, maxN, "malloc");
   DYNALLOC2(graph, result, result_sz, m, maxN, "malloc");
 }
@@ -199,11 +197,7 @@ class Poset {
 
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) {
-        if (oldTb[new_indices[i] * oldN + new_indices[j]]) {
-          setValue(i, j, true);
-        } else {
-          setValue(i, j, false);
-        }
+        setValue(i, j, oldTb[new_indices[i] * oldN + new_indices[j]]);
       }
     }
 
@@ -229,7 +223,7 @@ class Poset {
     }
 
     for (uint8_t i = 0; i < n; ++i) {
-      ptn[i] = 1;  // hier 0 oder 1?
+      ptn[i] = 0;  // hier 0 oder 1?
     }
     ptn[n - 1] = 0;
 
@@ -243,23 +237,15 @@ class Poset {
     densenauty(g, lab, ptn, orbits, &options, &stats, m, n, result);
     assert(stats.errstatus == 0);
 
-    for (uint8_t i = 0; i < n; ++i) {
-      map[lab[i]] = i;
+    // make the new poset
+    bool oldTb[n * n];
+    for (int i = 0; i < n * n; ++i) {
+      oldTb[i] = comparisonTable[i];
     }
 
-    // TODO: erstelle comaprsionTable neu => schneller
-
-    int i, j, min_idx;
-    for (i = 0; i < n - 1; ++i) {
-      min_idx = i;
-      for (j = i + 1; j < n; ++j) {
-        if (map[j] < map[min_idx]) min_idx = j;
-      }
-
-      if (min_idx != i) {
-        std::swap(map[i], map[min_idx]);
-        swapCols(i, min_idx);
-        swapRows(i, min_idx);
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n; ++j) {
+        setValue(i, j, oldTb[lab[i] * n + lab[j]]);
       }
     }
   }

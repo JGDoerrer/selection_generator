@@ -46,40 +46,32 @@ time since start: 0d 0h 0m 9.324393s
 ...
 ```
 
-Ohne nauty:
-```
-time '20.869s': n = 9, i = 3, calls = 1189770, hits = 29240161, entries = 642345, comparisons: 14
-time '48.006s': n = 9, i = 4, calls = 2474876, hits = 58721753, entries = 1566708, comparisons: 14
-```
-
 C++:
 Mit Nauty:
 ```
-time '0.000s': n = 9, i = 0, calls = 0, hits = 0, entries = 1383, comparisons: 8
-time '0.011s': n = 9, i = 1, calls = 82, hits = 1510, entries = 1239, comparisons: 11
-time '0.051s': n = 9, i = 2, calls = 6373, hits = 8987, entries = 1463, comparisons: 12
-time '1.387s': n = 9, i = 3, calls = 490422, hits = 275684, entries = 5901, comparisons: 14
-time '2.228s': n = 9, i = 4, calls = 903977, hits = 563969, entries = 11912, comparisons: 14
+...
+time '0.000s': n = 9, i = 0, calls = 0, hits = 0, cache = (258 + 1201 = 1459), comparisons: 8
+time '0.012s': n = 9, i = 1, calls = 58, hits = 1591, cache = (267 + 1238 = 1505), comparisons: 11
+time '0.059s': n = 9, i = 2, calls = 510, hits = 13646, cache = (303 + 1558 = 1861), comparisons: 12
+time '0.767s': n = 9, i = 3, calls = 9640, hits = 245092, cache = (1341 + 5979 = 7320), comparisons: 14
+time '1.032s': n = 9, i = 4, calls = 16472, hits = 414086, cache = (2486 + 14407 = 16893), comparisons: 14
 
-time '0.000s': n = 10, i = 0, calls = 0, hits = 0, entries = 11912, comparisons: 9
-time '0.007s': n = 10, i = 1, calls = 36, hits = 426, entries = 11077, comparisons: 12
-time '0.586s': n = 10, i = 2, calls = 133718, hits = 71212, entries = 12220, comparisons: 14
-time '4.058s': n = 10, i = 3, calls = 1138077, hits = 639919, entries = 21542, comparisons: 15
-time '42.193s': n = 10, i = 4, calls = 18686475, hits = 8403543, entries = 73907, comparisons: 16
+time '0.000s': n = 10, i = 0, calls = 0, hits = 0, cache = (2486 + 14407 = 16893), comparisons: 9
+time '0.007s': n = 10, i = 1, calls = 9, hits = 334, cache = (2488 + 14412 = 16900), comparisons: 12
+time '0.345s': n = 10, i = 2, calls = 1306, hits = 43870, cache = (2636 + 15258 = 17894), comparisons: 14
+time '2.218s': n = 10, i = 3, calls = 13870, hits = 468299, cache = (3208 + 25134 = 28342), comparisons: 15
+time '10.399s': n = 10, i = 4, calls = 91850, hits = 2959530, cache = (7436 + 79396 = 86832), comparisons: 16
 
-time '0.000s': n = 11, i = 0, calls = 0, hits = 0, entries = 73907, comparisons: 10
-time '0.040s': n = 11, i = 1, calls = 74, hits = 1467, entries = 68871, comparisons: 13
-time '1.595s': n = 11, i = 2, calls = 163649, hits = 95085, entries = 70243, comparisons: 15
-time '78.254s': n = 11, i = 3, calls = 26293192, hits = 9238534, entries = 127267, comparisons: 17
+time '0.000s': n = 11, i = 0, calls = 0, hits = 0, cache = (7436 + 79396 = 86832), comparisons: 10
+time '0.041s': n = 11, i = 1, calls = 34, hits = 1366, cache = (7440 + 79421 = 86861), comparisons: 13
+time '1.517s': n = 11, i = 2, calls = 2126, hits = 89572, cache = (7570 + 80853 = 88423), comparisons: 15
+time '41.588s': n = 11, i = 3, calls = 134177, hits = 5344767, cache = (15175 + 152130 = 167305), comparisons: 17
+time '211.426s': n = 11, i = 4, calls = 1030173, hits = 40542832, cache = (58834 + 647374 = 706208), comparisons: 18
 ```
 
-Ohne Korrektheitsprüfung (die eigentlich nötig ist):
+Ohne nauty:
 ```
-time '401.387s': n = 11, i = 4, calls = 158932254, hits = 69168443, entries = 391589, comparisons: 18
-time '1181.766s': n = 11, i = 5, calls = 560583279, hits = 245805272, entries = 964590, comparisons: 18
-
-time '0.000s': n = 12, i = 0, calls = 0, hits = 0, entries = 964590, comparisons: 11
-time '0.039s': n = 12, i = 1, calls = 701, hits = 443, entries = 964596, comparisons: 14
-time '1.306s': n = 12, i = 2, calls = 151801, hits = 57464, entries = 965069, comparisons: 17
-time '69.142s': n = 12, i = 3, calls = 12920604, hits = 6102451, entries = 1007559, comparisons: 18
+...
+time '20.869s': n = 9, i = 3, calls = 1189770, hits = 29240161, entries = 642345, comparisons: 14
+time '48.006s': n = 9, i = 4, calls = 2474876, hits = 58721753, entries = 1566708, comparisons: 14
 ```

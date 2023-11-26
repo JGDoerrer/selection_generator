@@ -210,6 +210,7 @@ std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, c
     return foundSolution;
   } else {
     std::cout << "found also solution with -1" << std::endl;
+    exit(0);
   }
 
   return {};
@@ -258,8 +259,9 @@ int main() {
       if (comparisons.has_value()) {
         if (n >= nBound)
           std::cout << "\rtime '" << watch << "': n = " << n << ", i = " << nthSmallest << ", " << statistics
-                    << ", entries = " << cache_upperBound.size() + cache_lowerBound.size()
-                    << ", comparisons: " << comparisons.value() << std::endl;
+                    << ", cache = (" << cache_upperBound.size() << " + "
+                    << cache_lowerBound.size() << " = " << cache_upperBound.size() + cache_lowerBound.size()
+                    << "), comparisons: " << comparisons.value() << std::endl;
         if (comparisons != min_n_comparisons[n][nthSmallest]) {
           std::cerr << "Error: got " << comparisons.value() << ", but expected " << min_n_comparisons[n][nthSmallest]
                     << std::endl;
