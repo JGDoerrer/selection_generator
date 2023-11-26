@@ -3,9 +3,6 @@
 
 #include "normalizer.h"
 
-// TODO: prepared multithreading
-Normalizer<15> norm;
-
 template <size_t maxN>
 class Poset {
  private:
@@ -58,13 +55,6 @@ class Poset {
 
   Poset() : Poset(0, 0, 0) {}
 
-  Poset<maxN> add_relation(const uint16_t i, const uint16_t j) const {
-    Poset<maxN> newPoset = *this;
-    newPoset.addComparison(i, j);
-    newPoset.normalize();
-    return newPoset;
-  };
-
   // after func it holds: arr[i] < arr[j]
   void addComparison(const uint16_t i, const uint16_t j) {
     addComparisonTransitivRecursive(i, j);  // faster than iterative
@@ -97,8 +87,6 @@ class Poset {
     }
     return false;
   }
-
-  void normalize() { norm.normalize(*this); }
 
   bool operator==(const Poset<maxN> &poset) const {
     return n == poset.n && nthSmallest == poset.nthSmallest &&

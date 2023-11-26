@@ -6,7 +6,7 @@ SRCS=main.cpp
 OBJS=$(SRCS:.cpp=.o)
 TARGET=output.out
 
-main: $(OBJS)
+normal: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 	$(RM) $(OBJS)
 	./$(TARGET)
@@ -16,8 +16,13 @@ nauty: $(OBJS)
 	$(RM) $(OBJS)
 	./$(TARGET)
 
-debug: $(OBJS)
+debugNormal: $(OBJS)
 	$(CXX) $(CXXFLAGS) $(CXXFLAGS_DEBUG) -o $(TARGET) $(OBJS)
+	$(RM) $(OBJS)
+	./$(TARGET)
+
+debugNauty: $(OBJS)
+	$(CXX) $(CXXFLAGS) $(CXXFLAGS_DEBUG) -DUSE_NAUTY -o $(TARGET) $(OBJS) ../nauty2_8_8/nauty.a
 	$(RM) $(OBJS)
 	./$(TARGET)
 

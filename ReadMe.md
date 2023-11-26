@@ -6,11 +6,10 @@ wget https://users.cecs.anu.edu.au/~bdm/nauty/nauty2_8_8.tar.gz
 tar xvzf nauty2_8_8.tar.gz
 rm nauty2_8_8.tar.gz
 cd nauty2_8_8
-./configure
+./configure --enable-tls
 make
 cd ../src
-g++ -O3 nautyTest.cpp ../nauty2_8_8/nauty.a
-./a.out
+make nauty
 ```
 
 # Annahmen
@@ -40,22 +39,27 @@ g++ -O3 nautyTest.cpp ../nauty2_8_8/nauty.a
 C++:
 ```
 ...
-time '0.000s': n = 9, i = 0, calls = 0, hits = 0, cache = (258 + 1201 = 1459), comparisons: 8
-time '0.009s': n = 9, i = 1, calls = 58, hits = 1591, cache = (267 + 1238 = 1505), comparisons: 11
-time '0.046s': n = 9, i = 2, calls = 510, hits = 13646, cache = (303 + 1558 = 1861), comparisons: 12
-time '0.600s': n = 9, i = 3, calls = 9640, hits = 245092, cache = (1341 + 5979 = 7320), comparisons: 14
-time '0.787s': n = 9, i = 4, calls = 16472, hits = 414086, cache = (2486 + 14407 = 16893), comparisons: 14
+time '0.000s': n = 9, i = 0, calls = 0, hits = 0, cache = (266 + 1213 = 1479), comparisons: 8
+time '0.010s': n = 9, i = 1, calls = 53, hits = 1452, cache = (276 + 1250 = 1526), comparisons: 11
+time '0.049s': n = 9, i = 2, calls = 437, hits = 11727, cache = (302 + 1527 = 1829), comparisons: 12
+time '0.594s': n = 9, i = 3, calls = 7834, hits = 199667, cache = (1003 + 5532 = 6535), comparisons: 14
+time '1.028s': n = 9, i = 4, calls = 16519, hits = 414119, cache = (2168 + 13947 = 16115), comparisons: 14
 
-time '0.000s': n = 10, i = 0, calls = 0, hits = 0, cache = (2486 + 14407 = 16893), comparisons: 9
-time '0.005s': n = 10, i = 1, calls = 9, hits = 334, cache = (2488 + 14412 = 16900), comparisons: 12
-time '0.281s': n = 10, i = 2, calls = 1306, hits = 43870, cache = (2636 + 15258 = 17894), comparisons: 14
-time '1.682s': n = 10, i = 3, calls = 13870, hits = 468299, cache = (3208 + 25134 = 28342), comparisons: 15
-time '8.097s': n = 10, i = 4, calls = 91850, hits = 2959530, cache = (7436 + 79396 = 86832), comparisons: 16
+time '0.000s': n = 10, i = 0, calls = 0, hits = 0, cache = (2168 + 13947 = 16115), comparisons: 9
+time '0.006s': n = 10, i = 1, calls = 9, hits = 332, cache = (2170 + 13952 = 16122), comparisons: 12
+time '0.301s': n = 10, i = 2, calls = 1168, hits = 39113, cache = (2293 + 14742 = 17035), comparisons: 14
+time '1.881s': n = 10, i = 3, calls = 12088, hits = 405880, cache = (2827 + 23219 = 26046), comparisons: 15
+time '7.705s': n = 10, i = 4, calls = 70922, hits = 2283108, cache = (6089 + 68186 = 74275), comparisons: 16
 
-time '0.000s': n = 11, i = 0, calls = 0, hits = 0, cache = (7436 + 79396 = 86832), comparisons: 10
-time '0.035s': n = 11, i = 1, calls = 34, hits = 1366, cache = (7440 + 79421 = 86861), comparisons: 13
-time '1.224s': n = 11, i = 2, calls = 2126, hits = 89572, cache = (7570 + 80853 = 88423), comparisons: 15
-time '32.738s': n = 11, i = 3, calls = 134177, hits = 5344767, cache = (15175 + 152130 = 167305), comparisons: 17
-time '165.682s': n = 11, i = 4, calls = 1030173, hits = 40542832, cache = (58834 + 647374 = 706208), comparisons: 18
-...
+time '0.000s': n = 11, i = 0, calls = 0, hits = 0, cache = (6089 + 68186 = 74275), comparisons: 10
+time '0.040s': n = 11, i = 1, calls = 35, hits = 1351, cache = (6094 + 68211 = 74305), comparisons: 13
+time '1.242s': n = 11, i = 2, calls = 1801, hits = 75489, cache = (6204 + 69451 = 75655), comparisons: 15
+time '29.333s': n = 11, i = 3, calls = 100514, hits = 3995027, cache = (10876 + 125602 = 136478), comparisons: 17
+time '213.733s': n = 11, i = 4, calls = 1059549, hits = 41419058, cache = (56968 + 632129 = 689097), comparisons: 18
+time '262.824s': n = 11, i = 5, calls = 1647805, hits = 63416786, cache = (108502 + 1488856 = 1597358), comparisons: 18
+
+time '0.000s': n = 12, i = 0, calls = 0, hits = 0, cache = (108502 + 1488856 = 1597358), comparisons: 11
+time '0.089s': n = 12, i = 1, calls = 21, hits = 1010, cache = (108505 + 1488867 = 1597372), comparisons: 14
+time '16.276s': n = 12, i = 2, calls = 9117, hits = 461013, cache = (109234 + 1494450 = 1603684), comparisons: 17
+time '118.978s': n = 12, i = 3, calls = 172686, hits = 8580873, cache = (113111 + 1619369 = 1732480), comparisons: 18
 ```

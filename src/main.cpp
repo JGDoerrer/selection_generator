@@ -4,6 +4,8 @@
 #include "cache.h"
 #include "poset.h"
 #include "util.h"
+// ===================
+#include "normalizer.h"
 
 // TODO: Heuristiken:
 //        kann Poset in x Schritten gelöst werden -> vorzeitiger Abbruch
@@ -17,11 +19,35 @@
 
 constexpr size_t globalMaxComparisons = 25;
 constexpr size_t globalMaxN = 15;
-std::array<std::array<std::array<std::array<std::pair<int, int>, globalMaxN>, globalMaxN>, globalMaxComparisons>,
-           globalMaxN>
-    randomDataTable;
+constexpr size_t threadCount = 1;
 
-const static int min_n_comparisons[15][15] = {
+const auto randomDataTable = ([]() {
+  std::array<std::array<std::array<std::array<std::pair<int, int>, globalMaxN>, globalMaxN>, globalMaxComparisons>,
+             globalMaxN>
+      randomDataTable;
+  auto rng = std::default_random_engine{1234};
+
+  for (int n = 0; n < globalMaxN; ++n) {
+    for (int comparison = 0; comparison < globalMaxComparisons; ++comparison) {
+      std::vector<std::pair<int, int>> items;
+      for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+          items.push_back({i, j});
+        }
+      }
+      std::shuffle(items.begin(), items.end(), rng);
+      int pos = 0;
+      for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+          randomDataTable[n][comparison][i][j] = items[pos++];
+        }
+      }
+    }
+  }
+  return randomDataTable;
+})();
+
+const int min_n_comparisons[15][15] = {
     /* i=1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16 */
     /* n= 0 */ {},
     /* n= 1 */ {},
@@ -37,6 +63,10 @@ const static int min_n_comparisons[15][15] = {
     /* n=11 */ {10, 13, 15, 17, 18, 18, 18, 17, 15, 13, 10},
     /* n=12 */ {11, 14, 17, 18, 19, 21, 21, 19, 18, 17, 14, 11}};
 
+std::array<Normalizer<globalMaxN>, 230> norm;  // TODO: only Debug
+
+enum SearchResult : uint8_t { FoundSolution, NoSolution, Unknown };
+
 struct Statistics {
   size_t functionCalls = 0;
   size_t hashMatches = 0;
@@ -47,7 +77,13 @@ std::ostream &operator<<(std::ostream &os, const Statistics &stats) {
   return os;
 }
 
-enum SearchResult : uint8_t { FoundSolution, NoSolution, Unknown };
+template <size_t maxN>
+Poset<maxN> createPosetWithComparison(const int normalizerIndex, Poset<maxN> poset, const uint16_t i,
+                                      const uint16_t j) {
+  poset.addComparison(i, j);
+  norm[normalizerIndex].normalize(poset);
+  return poset;
+};
 
 template <size_t maxN>
 /// @param cache_lowerBound enthält alle Posets, für die mit max. `maxComparisons` Schritten keine Lösung bestimmt
@@ -57,52 +93,54 @@ template <size_t maxN>
 ///                         cache_upperBound[poset] = 2, dann kann poset IN 2 Schrittem gelöst werden
 /// @return true, wenn Median in poset in max. `maxComparisons` gefunden werden kann
 SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
-                    Cache<Poset<maxN>, int> cache_lowerBound[globalMaxN],
-                    Cache<Poset<maxN>, int> cache_upperBound[globalMaxN], const int maxComparisons,
-                    const int maxMultiThreading, const std::atomic<bool> &atomicBreak, Statistics &statistics,
-                    const int comparisonsDone) {
+                    Cache<Poset<maxN>, uint8_t> cache_lowerBound[globalMaxN],
+                    Cache<Poset<maxN>, uint8_t> cache_upperBound[globalMaxN], const uint8_t remainingComparisons,
+                    const bool multiThreading, const std::atomic<bool> &atomicBreak, Statistics &statistics,
+                    const int normalizerIndex = 229) {
   SearchResult result = NoSolution;
   if (atomicBreak) {
     return Unknown;
   } else if (cache_lowerBound[poset.size()].checkCondition(
-                 poset, [=](const int item) { return maxComparisons - comparisonsDone <= item; })) {
+                 poset, [=](const uint8_t item) { return remainingComparisons <= item; })) {
     ++statistics.hashMatches;
     return NoSolution;
   } else if (cache_upperBound[poset.size()].checkCondition(
-                 poset, [=](const int item) { return maxComparisons - comparisonsDone >= item; })) {
+                 poset, [=](const uint8_t item) { return remainingComparisons >= item; })) {
     ++statistics.hashMatches;
     return FoundSolution;
   } else if (poset.canDetermineNSmallest()) {
     result = FoundSolution;
-  } else if (comparisonsDone == maxComparisons) {
+  } else if (0 == remainingComparisons) {
     result = NoSolution;
   } else {
     ++statistics.functionCalls;
 
-    const auto recursiveSearch = [&](const std::atomic<bool> &breakCondition, const int i, const int j) {
+    const auto recursiveSearch = [&](const std::atomic<bool> &breakCondition, const int i, const int j,
+                                     const int normalizerIndex1) {
       SearchResult searchResult =
-          search(threadpool, poset.add_relation(i, j), cache_lowerBound, cache_upperBound, maxComparisons,
-                 maxMultiThreading, breakCondition, statistics, comparisonsDone + 1);
+          search(threadpool, createPosetWithComparison(normalizerIndex1, poset, i, j), cache_lowerBound,
+                 cache_upperBound, remainingComparisons - 1, false, breakCondition, statistics, normalizerIndex1);
       if (searchResult == FoundSolution) {
-        searchResult = search(threadpool, poset.add_relation(j, i), cache_lowerBound, cache_upperBound, maxComparisons,
-                              maxMultiThreading, breakCondition, statistics, comparisonsDone + 1);
+        searchResult =
+            search(threadpool, createPosetWithComparison(normalizerIndex1, poset, j, i), cache_lowerBound,
+                   cache_upperBound, remainingComparisons - 1, false, breakCondition, statistics, normalizerIndex1);
       }
       return searchResult;
     };
 
-    if (comparisonsDone == maxMultiThreading) {
+    if (multiThreading) {
       std::atomic<bool> breakCondition(false);
 
-      const auto temp2 = [&](const int i, const int j) {
-        if (FoundSolution == recursiveSearch(breakCondition, i, j)) {
-          breakCondition = true;
-        }
-      };
-
+      int normalizerIndex1 = 0;
       for (int i = 0; i < poset.size(); ++i) {
         for (int j = i + 1; j < poset.size(); ++j) {
           if (!poset.is(i, j) && !poset.is(j, i)) {
-            threadpool.push_task(temp2, i, j);
+            threadpool.push_task([&recursiveSearch, &breakCondition, i, j, normalizerIndex1]() {
+              if (FoundSolution == recursiveSearch(breakCondition, i, j, normalizerIndex1)) {
+                breakCondition = true;
+              }
+            });
+            ++normalizerIndex1;
           }
         }
       }
@@ -119,9 +157,9 @@ SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
     } else {
       for (int i = 0; i < poset.size() && result != FoundSolution; ++i) {
         for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
-          const auto [new_i, new_j] = randomDataTable[poset.size()][comparisonsDone][i][j];
+          const auto [new_i, new_j] = randomDataTable[poset.size()][remainingComparisons][i][j];
           if (!poset.is(new_i, new_j) && !poset.is(new_j, new_i)) {
-            result = recursiveSearch(atomicBreak, new_i, new_j);
+            result = recursiveSearch(atomicBreak, new_i, new_j, normalizerIndex);
           }
         }
       }
@@ -129,21 +167,19 @@ SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
   }
 
   if (result == FoundSolution) {
-    cache_upperBound[poset.size()].insertIfCondition(poset, maxComparisons - comparisonsDone, [=](const int item) {
-      return maxComparisons - comparisonsDone < item;
-    });
+    cache_upperBound[poset.size()].insertIfCondition(poset, remainingComparisons,
+                                                     [=](const uint8_t item) { return remainingComparisons < item; });
   } else if (result == NoSolution) {
-    cache_lowerBound[poset.size()].insertIfCondition(poset, maxComparisons - comparisonsDone, [=](const int item) {
-      return maxComparisons - comparisonsDone > item;
-    });
+    cache_lowerBound[poset.size()].insertIfCondition(poset, remainingComparisons,
+                                                     [=](const uint8_t item) { return remainingComparisons > item; });
   }
   return result;
 }
 
 template <size_t maxN>
 std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, const int nthSmallest,
-                               Cache<Poset<maxN>, int> cache_lowerBound[globalMaxN],
-                               Cache<Poset<maxN>, int> cache_upperBound[globalMaxN], Statistics &statistics) {
+                               Cache<Poset<maxN>, uint8_t> cache_lowerBound[globalMaxN],
+                               Cache<Poset<maxN>, uint8_t> cache_upperBound[globalMaxN], Statistics &statistics) {
   if (0 == nthSmallest || n <= 2) {
     return n - 1;
   }
@@ -159,10 +195,10 @@ std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, c
       ++comparisonsDone;
       poset.addComparison(k, k + 1);
     }
-    poset.normalize();
+    norm[0].normalize(poset);
 
-    const SearchResult is_possible =
-        search(threadpool, poset, cache_lowerBound, cache_upperBound, i, 0, atomicBreak, statistics, comparisonsDone);
+    const SearchResult is_possible = search(threadpool, poset, cache_lowerBound, cache_upperBound, i - comparisonsDone,
+                                            1 != threadCount, atomicBreak, statistics);
     if (is_possible == FoundSolution) {
       foundSolution = i;
       break;
@@ -173,10 +209,11 @@ std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, c
   Poset<maxN> poset{uint8_t(n), uint8_t(nthSmallest)};
   int comparisonsDone = 1;
   poset.addComparison(0, 1);
-  poset.normalize();
+  norm[0].normalize(poset);
 
-  const SearchResult is_possible = search(threadpool, poset, cache_lowerBound, cache_upperBound, foundSolution - 1, 0,
-                                          atomicBreak, statistics, comparisonsDone);
+  const SearchResult is_possible =
+      search(threadpool, poset, cache_lowerBound, cache_upperBound, foundSolution - 1 - comparisonsDone,
+             1 != threadCount, atomicBreak, statistics);
   if (is_possible == NoSolution) {
     return foundSolution;
   } else {
@@ -188,36 +225,15 @@ std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, c
 }
 
 int main() {
-  constexpr size_t maxComparisons = globalMaxComparisons;
-  constexpr size_t maxN = globalMaxN;
   constexpr size_t nBound = 9;
-
-  auto rng = std::default_random_engine{1234};
-  for (int n = 0; n < maxN; ++n) {
-    for (int comparison = 0; comparison < maxComparisons; ++comparison) {
-      std::vector<std::pair<int, int>> items;
-      for (int i = 0; i < n; ++i) {
-        for (int j = i + 1; j < n; ++j) {
-          items.push_back({i, j});
-        }
-      }
-      std::shuffle(items.begin(), items.end(), rng);
-      int pos = 0;
-      for (int i = 0; i < n; ++i) {
-        for (int j = i + 1; j < n; ++j) {
-          randomDataTable[n][comparison][i][j] = items[pos++];
-        }
-      }
-    }
-  }
 
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
   std::cout.precision(3);
 
-  BS::thread_pool_light threadpool;
-  Cache<Poset<maxN>, int> cache_lowerBound[globalMaxN];
-  Cache<Poset<maxN>, int> cache_upperBound[globalMaxN];
-  for (int n = 1; n < maxN; ++n) {
+  BS::thread_pool_light threadpool(threadCount);
+  Cache<Poset<globalMaxN>, uint8_t> cache_lowerBound[globalMaxN];
+  Cache<Poset<globalMaxN>, uint8_t> cache_upperBound[globalMaxN];
+  for (int n = 1; n < globalMaxN; ++n) {
     for (int nthSmallest = 0; nthSmallest < (n + 1) / 2; ++nthSmallest) {
       StopWatch watch{};
 
@@ -225,18 +241,18 @@ int main() {
       const std::optional<int> comparisons =
           startSearch(threadpool, n, nthSmallest, cache_lowerBound, cache_upperBound, statistics);
 
-      int cache_upper_size = 0;
-      int cache_lower_size = 0;
+      int cache_upper_size = 0, cache_lower_size = 0;
       for (int i = 0; i < globalMaxN; ++i) {
         cache_upper_size += cache_upperBound[i].size();
         cache_lower_size += cache_lowerBound[i].size();
       }
 
       if (comparisons.has_value()) {
-        if (n >= nBound)
+        if (n >= nBound) {
           std::cout << "\rtime '" << watch << "': n = " << n << ", i = " << nthSmallest << ", " << statistics
                     << ", cache = (" << cache_upper_size << " + " << cache_lower_size << " = "
                     << cache_upper_size + cache_lower_size << "), comparisons: " << comparisons.value() << std::endl;
+        }
         if (comparisons != min_n_comparisons[n][nthSmallest]) {
           std::cerr << "Error: got " << comparisons.value() << ", but expected " << min_n_comparisons[n][nthSmallest]
                     << std::endl;
