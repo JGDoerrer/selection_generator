@@ -247,11 +247,9 @@ class Poset {
       map[lab[i]] = i;
     }
 
-  TODO:
-    erstelle comaprsionTable neu = > schneller
+    // TODO: erstelle comaprsionTable neu => schneller
 
-                                   int i,
-                             j, min_idx;
+    int i, j, min_idx;
     for (i = 0; i < n - 1; ++i) {
       min_idx = i;
       for (j = i + 1; j < n; ++j) {

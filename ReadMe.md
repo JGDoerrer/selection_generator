@@ -48,26 +48,47 @@ cache_entries = 17149
 
 With pair-optimisation, Nauty:
 ```
-time '0.000s': n = 8, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 7
-time '0.052s': n = 8, i = 1, calls = 2166, hits = 25071, entries = 3858, comparisons: 9
-time '0.580s': n = 8, i = 2, calls = 31289, hits = 254611, entries = 10423, comparisons: 11
-time '0.625s': n = 8, i = 3, calls = 50713, hits = 328686, entries = 8487, comparisons: 12
+time '0.000s': n = 9, i = 0, calls = 0, hits = 0, entries = 664, comparisons: 8
+time '0.007s': n = 9, i = 1, calls = 2179, hits = 921, entries = 686, comparisons: 11
+time '0.046s': n = 9, i = 2, calls = 7676, hits = 9095, entries = 882, comparisons: 12
+time '0.891s': n = 9, i = 3, calls = 289797, hits = 200544, entries = 4396, comparisons: 14
+time '1.421s': n = 9, i = 4, calls = 539208, hits = 375196, entries = 9164, comparisons: 14
 
-time '0.000s': n = 9, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 8
-time '1.817s': n = 9, i = 1, calls = 63522, hits = 989771, entries = 52380, comparisons: 11
-time '7.409s': n = 9, i = 2, calls = 345845, hits = 3577103, entries = 99155, comparisons: 12
-time '33.365s': n = 9, i = 3, calls = 2794813, hits = 14884652, entries = 134791, comparisons: 14
-time '26.390s': n = 9, i = 4, calls = 2459714, hits = 11151854, entries = 128926, comparisons: 14
+time '0.000s': n = 10, i = 0, calls = 0, hits = 0, entries = 9164, comparisons: 9
+time '0.005s': n = 10, i = 1, calls = 1319, hits = 285, entries = 9168, comparisons: 12
+time '0.121s': n = 10, i = 2, calls = 28786, hits = 16187, entries = 9427, comparisons: 14
+time '1.419s': n = 10, i = 3, calls = 367950, hits = 242425, entries = 12406, comparisons: 15
+time '13.687s': n = 10, i = 4, calls = 4991376, hits = 2916645, entries = 37135, comparisons: 16
+
+time '0.000s': n = 11, i = 0, calls = 0, hits = 0, entries = 37135, comparisons: 10
+time '0.029s': n = 11, i = 1, calls = 905, hits = 1537, entries = 37164, comparisons: 13
+time '1.119s': n = 11, i = 2, calls = 194185, hits = 90883, entries = 38188, comparisons: 15
+time '35.316s': n = 11, i = 3, calls = 9559597, hits = 4631519, entries = 75261, comparisons: 17
+time '401.387s': n = 11, i = 4, calls = 158932254, hits = 69168443, entries = 391589, comparisons: 18
+time '1181.766s': n = 11, i = 5, calls = 560583279, hits = 245805272, entries = 964590, comparisons: 18
+
+time '0.000s': n = 12, i = 0, calls = 0, hits = 0, entries = 964590, comparisons: 11
+time '0.039s': n = 12, i = 1, calls = 701, hits = 443, entries = 964596, comparisons: 14
+time '1.306s': n = 12, i = 2, calls = 151801, hits = 57464, entries = 965069, comparisons: 17
+time '69.142s': n = 12, i = 3, calls = 12920604, hits = 6102451, entries = 1007559, comparisons: 18
 ```
 
 Without pair-optimisation, Nauty:
 ```
-time '0.000s': n = 8, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 7
-time '0.157s': n = 8, i = 1, calls = 6674, hits = 81141, entries = 6643, comparisons: 9
-time '1.523s': n = 8, i = 2, calls = 108545, hits = 653420, entries = 15479, comparisons: 11
-time '2.967s': n = 8, i = 3, calls = 385152, hits = 1283968, entries = 19463, comparisons: 12
+time '0.000s': n = 9, i = 0, calls = 0, hits = 0, entries = 2147, comparisons: 8
+time '0.168s': n = 9, i = 1, calls = 98726, hits = 16145, entries = 2189, comparisons: 11
+time '0.309s': n = 9, i = 2, calls = 115053, hits = 44272, entries = 2668, comparisons: 12
+time '3.814s': n = 9, i = 3, calls = 1805009, hits = 670576, entries = 7515, comparisons: 14
+time '11.035s': n = 9, i = 4, calls = 6147501, hits = 2466426, entries = 18560, comparisons: 14
 
-time '0.000s': n = 9, i = 0, calls = 0, hits = 0, entries = 0, comparisons: 8
-time '3.068s': n = 9, i = 1, calls = 105602, hits = 1648032, entries = 67358, comparisons: 11
-time '9.717s': n = 9, i = 2, calls = 564781, hits = 4988731, entries = 108041, comparisons: 12
+time '0.000s': n = 10, i = 0, calls = 0, hits = 0, entries = 18560, comparisons: 9
+time '0.078s': n = 10, i = 1, calls = 29490, hits = 5418, entries = 18597, comparisons: 12
+time '2.789s': n = 10, i = 2, calls = 1131476, hits = 271045, entries = 20071, comparisons: 14
+time '26.592s': n = 10, i = 3, calls = 11811882, hits = 3713443, entries = 38126, comparisons: 15
+time '245.871s': n = 10, i = 4, calls = 132577505, hits = 44515853, entries = 114513, comparisons: 16
+
+time '0.000s': n = 11, i = 0, calls = 0, hits = 0, entries = 114513, comparisons: 10
+time '0.300s': n = 11, i = 1, calls = 83001, hits = 13564, entries = 114572, comparisons: 13
+time '15.251s': n = 11, i = 2, calls = 5354596, hits = 1009827, entries = 117320, comparisons: 15
+time '383.775s': n = 11, i = 3, calls = 166932146, hits = 42084813, entries = 205042, comparisons: 17
 ```

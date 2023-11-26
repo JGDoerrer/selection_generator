@@ -1,21 +1,27 @@
 // g++ -Ddev -Wall -Wextra -Wconversion -Wno-unknown-pragmas
 // -Wmaybe-uninitialized -Wshadow -fsanitize=undefined,address -D_GLIBCXX_DEBUG
 // -O2 -std=c++17 -g ./template.cpp -o program.out; ./program.out
-// #define USE_NAUTY
+#define USE_NAUTY
 constexpr bool USE_PAIR_MODE = false;
 
 #include <bits/stdc++.h>
 
+#include "BS_thread_pool.hpp"
 #include "poset.h"
 #include "util.h"
 
+// TODO: Heuristiken:
+//        kann Poset in x Schritten gelöst werden -> vorzeitiger Abbruch
+//        custom ordering
+
+// TODO: josua less test überarbeiten
+// TODO: multithreading implementieren
+// TODO: multithreading nauty
 // TODO: create make file, compile option `march native`
 // TODO: ACHTUNG: post_normalize kaputt
 
-// TODO: custom ordering
 // TODO: swap Operationen, memcpy, fine-tuning
 // TODO: überall explicit static cast
-// TODO: Multi-Threading
 
 const static int min_n_comparisons[15][15] = {
     /* i=1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16 */
@@ -34,14 +40,16 @@ const static int min_n_comparisons[15][15] = {
     /* n=12 */ {11, 14, 17, 18, 19, 21, 21, 19, 18, 17, 14, 11}};
 
 struct Statistics {
-  int functionCalls = 0;
-  int hashMatches = 0;
+  size_t functionCalls = 0;
+  size_t hashMatches = 0;
 };
 
 std::ostream &operator<<(std::ostream &os, const Statistics &stats) {
   os << "calls = " << stats.functionCalls << ", hits = " << stats.hashMatches;
   return os;
 }
+
+enum SearchResult : uint8_t { FoundSolution, NoSolution, Unknown };
 
 template <size_t maxN>
 /// @param cache_maximumReeched enthält alle Posets, für die mit max. `maxComparisons` Schritten keine Lösung bestimmt
@@ -50,59 +58,105 @@ template <size_t maxN>
 /// @param cache_solution enhält alle Posets, für die bereits eine Lösung gefunden wurde; z.B. wenn
 ///                       cache_solution[poset] = 2, dann kann poset IN 2 Schrittem gelöst werden
 /// @return true, wenn Median in poset in max. `maxComparisons` gefunden werden kann
-bool search(const Poset<maxN> &poset, std::unordered_map<Poset<maxN>, int> &cache_maximumReeched,
-            std::unordered_map<Poset<maxN>, int> &cache_solution, const int maxComparisons, Statistics &statistics,
-            const int comparisonsDone = 0) {
-  bool result = false;
+SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
+                    std::unordered_map<Poset<maxN>, int> &cache_maximumReeched, std::mutex &mutex_cache_maximumReeched,
+                    std::unordered_map<Poset<maxN>, int> &cache_solution, std::mutex &mutex_cache_solution,
+                    const int maxComparisons, const int maxMultiThreading, const std::atomic<bool> &atomicBreak,
+                    Statistics &statistics, const int comparisonsDone) {
+  if (atomicBreak) {
+    return Unknown;
+  }
 
-  if (cache_maximumReeched.find(poset) != cache_maximumReeched.end() &&
-      maxComparisons - comparisonsDone <= cache_maximumReeched[poset]) {
+  SearchResult result = NoSolution;
+
+  mutex_cache_maximumReeched.lock();
+  const bool temp1 = cache_maximumReeched.find(poset) != cache_maximumReeched.end() &&
+                     maxComparisons - comparisonsDone <= cache_maximumReeched[poset];
+  mutex_cache_maximumReeched.unlock();
+
+  if (temp1) {
     ++statistics.hashMatches;
-    result = false;
-  } else if (cache_solution.find(poset) != cache_solution.end() && comparisonsDone <= cache_solution[poset]) {
-    ++statistics.hashMatches;
-    result = true;
-  } else if (poset.canDetermineNSmallest()) {
-    result = true;
-  } else if (comparisonsDone == maxComparisons) {
-    result = false;
+    result = NoSolution;
   } else {
-    ++statistics.functionCalls;
+    mutex_cache_solution.lock();
+    const bool temp2 = cache_solution.find(poset) != cache_solution.end() && comparisonsDone <= cache_solution[poset];
+    mutex_cache_solution.unlock();
 
-    // TODO: custom ordering
-    for (int i = 0; i < poset.size() && !result; ++i) {
-      for (int j = i + 1; j < poset.size() && !result; ++j) {
-        if (poset.is(i, j) || poset.is(j, i)) {
-          continue;
+    if (temp2) {
+      ++statistics.hashMatches;
+      result = FoundSolution;
+    } else if (poset.canDetermineNSmallest()) {
+      result = FoundSolution;
+    } else if (comparisonsDone == maxComparisons) {
+      result = NoSolution;
+    } else {
+      ++statistics.functionCalls;
+
+      // TODO: custom ordering
+      const auto temp = [&](std::atomic<bool> &breakCondition, const int i, const int j) {
+        const SearchResult result1 = search(
+            threadpool, poset.add_relation(i, j), cache_maximumReeched, mutex_cache_maximumReeched, cache_solution,
+            mutex_cache_solution, maxComparisons, maxMultiThreading, breakCondition, statistics, comparisonsDone + 1);
+        if (result1 == FoundSolution) {
+          const SearchResult result2 = search(
+              threadpool, poset.add_relation(j, i), cache_maximumReeched, mutex_cache_maximumReeched, cache_solution,
+              mutex_cache_solution, maxComparisons, maxMultiThreading, breakCondition, statistics, comparisonsDone + 1);
+          if (result2 == FoundSolution) {
+            breakCondition = true;
+          }
         }
-        const bool result1 = search(poset.add_relation(i, j), cache_maximumReeched, cache_solution, maxComparisons,
-                                    statistics, comparisonsDone + 1);
-        if (result1) {
-          const bool result2 = search(poset.add_relation(j, i), cache_maximumReeched, cache_solution, maxComparisons,
-                                      statistics, comparisonsDone + 1);
-          if (result2) {
-            result = true;
+      };
+
+      if (comparisonsDone == maxMultiThreading) {
+        std::atomic<bool> breakCondition(false);
+        std::vector<std::future<void>> futures;
+        for (int i = 0; i < poset.size(); ++i) {
+          for (int j = i + 1; j < poset.size(); ++j) {
+            if (!poset.is(i, j) && !poset.is(j, i)) {
+              futures.push_back(std::async(std::launch::async, temp, std::ref(breakCondition), i, j));
+              // threadpool.submit(temp, std::ref(breakCondition), i, j);
+            }
+          }
+        }
+        for (auto &fut : futures) fut.wait();
+        // threadpool.wait_for_tasks();
+
+        if (breakCondition) {
+          result = FoundSolution;
+        }
+      } else {
+        std::atomic<bool> breakCondition(false);
+        for (int i = 0; i < poset.size() && result == NoSolution; ++i) {
+          for (int j = i + 1; j < poset.size() && result == NoSolution; ++j) {
+            if (!poset.is(i, j) && !poset.is(j, i)) {
+              temp(breakCondition, i, j);
+              if (breakCondition) {
+                result = FoundSolution;
+              }
+            }
           }
         }
       }
     }
   }
 
-  if (result == false) {
-    if (cache_maximumReeched.find(poset) == cache_maximumReeched.end() ||
-        cache_maximumReeched[poset] < maxComparisons - comparisonsDone) {
-      cache_maximumReeched[poset] = maxComparisons - comparisonsDone;
-    }
-  } else {
-    if (cache_solution.find(poset) == cache_solution.end() || comparisonsDone < cache_solution[poset]) {
+  if (result == FoundSolution) {
+    mutex_cache_solution.lock();
+    if (cache_solution.find(poset) == cache_solution.end() || comparisonsDone < cache_solution[poset])
       cache_solution[poset] = comparisonsDone;
-    }
+    mutex_cache_solution.unlock();
+  } else {
+    mutex_cache_maximumReeched.lock();
+    if (cache_maximumReeched.find(poset) == cache_maximumReeched.end() ||
+        cache_maximumReeched[poset] < maxComparisons - comparisonsDone)
+      cache_maximumReeched[poset] = maxComparisons - comparisonsDone;
+    mutex_cache_maximumReeched.unlock();
   }
   return result;
 }
 
 template <size_t maxN>
-std::optional<int> startSearch(const int n, const int nthSmallest,
+std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, const int nthSmallest,
                                std::unordered_map<Poset<maxN>, int> &cache_maximumReeched,
                                std::unordered_map<Poset<maxN>, int> &cache_solution, Statistics &statistics) {
   if (0 == nthSmallest) {
@@ -125,22 +179,20 @@ std::optional<int> startSearch(const int n, const int nthSmallest,
       }
       poset.normalize();
     }
-    // cache_maximumReeched.clear();
-    // cache_solution.clear();
-    const bool is_possible = search(poset, cache_maximumReeched, cache_solution, i, statistics, comparisonsDone);
-    if (is_possible) {
+
+    std::mutex mutex_cache_maximumReeched;
+    std::mutex mutex_cache_solution;
+    std::atomic<bool> atomicBreak(false);
+
+    const SearchResult is_possible =
+        search(threadpool, poset, cache_maximumReeched, mutex_cache_maximumReeched, cache_solution,
+               mutex_cache_solution, i, comparisonsDone - 1, atomicBreak, statistics, comparisonsDone);
+    if (is_possible == FoundSolution) {
       return i;
     }
   }
   return {};
 }
-
-template <size_t maxN>
-struct std::hash<std::pair<Poset<maxN>, int>> {
-  size_t operator()(const pair<Poset<maxN>, int> &pair) const {
-    return hash<Poset<maxN>>{}(get<0>(pair)) ^ hash<int>{}(get<1>(pair));
-  }
-};
 
 int main() {
   constexpr size_t maxN = 15;
@@ -151,20 +203,21 @@ int main() {
 
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
   std::cout.precision(3);
+
+  BS::thread_pool_light threadpool;
+  std::unordered_map<Poset<maxN>, int> cache_maximumReeched, cache_solution;
   for (int n = 1; n < maxN; ++n) {
     for (int nthSmallest = 0; nthSmallest < (n + 1) / 2; ++nthSmallest) {
       StopWatch watch{};
 
       Statistics statistics;
-      std::unordered_map<Poset<maxN>, int> cache_maximumReeched;
-      std::unordered_map<Poset<maxN>, int> cache_solution;
       const std::optional<int> comparisons =
-          startSearch(n, nthSmallest, cache_maximumReeched, cache_solution, statistics);
+          startSearch(threadpool, n, nthSmallest, cache_maximumReeched, cache_solution, statistics);
 
       if (comparisons.has_value()) {
         if (n >= nBound)
           std::cout << "\rtime '" << watch << "': n = " << n << ", i = " << nthSmallest << ", " << statistics
-                    << ", entries = " << cache_maximumReeched.size() + cache_solution.size()
+                    << ", entries = " << cache_solution.size() + cache_maximumReeched.size()
                     << ", comparisons: " << comparisons.value() << std::endl;
         if (comparisons != min_n_comparisons[n][nthSmallest]) {
           std::cerr << "Error: got " << comparisons.value() << ", but expected " << min_n_comparisons[n][nthSmallest]
