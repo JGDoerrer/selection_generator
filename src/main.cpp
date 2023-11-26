@@ -1,8 +1,7 @@
 // g++ -Ddev -Wall -Wextra -Wconversion -Wno-unknown-pragmas
 // -Wmaybe-uninitialized -Wshadow -fsanitize=undefined,address -D_GLIBCXX_DEBUG
 // -O2 -std=c++17 -g ./template.cpp -o program.out; ./program.out
-#define USE_NAUTY
-constexpr bool USE_PAIR_MODE = false;
+// #define USE_NAUTY
 
 #include <bits/stdc++.h>
 
@@ -159,38 +158,51 @@ template <size_t maxN>
 std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, const int nthSmallest,
                                std::unordered_map<Poset<maxN>, int> &cache_maximumReeched,
                                std::unordered_map<Poset<maxN>, int> &cache_solution, Statistics &statistics) {
-  if (0 == nthSmallest) {
+  if (0 == nthSmallest || n <= 2) {
     return n - 1;
   }
 
+  int foundSolution;
+  std::mutex mutex_cache_maximumReeched;
+  std::mutex mutex_cache_solution;
+  std::atomic<bool> atomicBreak(false);
+
   for (int i = n - 1; i < n * n; ++i) {
     std::cout << "\rtry: maxComparisons = " << i << std::flush;
-    int comparisonsDone = 0;
     Poset<maxN> poset{uint8_t(n), uint8_t(nthSmallest)};
-    if (2 <= i) {
-      if constexpr (USE_PAIR_MODE) {
-        for (int k = 0; k < n - 1 && comparisonsDone < i; k += 2) {
-          ++comparisonsDone;
-          poset.addComparison(k, k + 1);
-        }
-      } else {
-        ++comparisonsDone;
-        poset.addComparison(0, 1);
-      }
-      poset.normalize();
+    int comparisonsDone = 0;
+    for (int k = 0; k < n - 1 && comparisonsDone < i; k += 2) {
+      ++comparisonsDone;
+      poset.addComparison(k, k + 1);
     }
-
-    std::mutex mutex_cache_maximumReeched;
-    std::mutex mutex_cache_solution;
-    std::atomic<bool> atomicBreak(false);
+    poset.normalize();
 
     const SearchResult is_possible =
         search(threadpool, poset, cache_maximumReeched, mutex_cache_maximumReeched, cache_solution,
-               mutex_cache_solution, i, comparisonsDone - 1, atomicBreak, statistics, comparisonsDone);
+               mutex_cache_solution, i, 0, atomicBreak, statistics, comparisonsDone);
     if (is_possible == FoundSolution) {
-      return i;
+      foundSolution = i;
+      break;
     }
   }
+
+  cache_solution.clear();
+
+  std::cout << "\rvalidate solution: " << foundSolution << "      " << std::flush;
+  Poset<maxN> poset{uint8_t(n), uint8_t(nthSmallest)};
+  int comparisonsDone = 1;
+  poset.addComparison(0, 1);
+  poset.normalize();
+
+  const SearchResult is_possible =
+      search(threadpool, poset, cache_maximumReeched, mutex_cache_maximumReeched, cache_solution, mutex_cache_solution,
+             foundSolution - 1, 0, atomicBreak, statistics, comparisonsDone);
+  if (is_possible == NoSolution) {
+    return foundSolution;
+  } else {
+    std::cout << "found also solution with -1" << std::endl;
+  }
+
   return {};
 }
 
