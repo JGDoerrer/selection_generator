@@ -1,6 +1,3 @@
-// g++ -Ddev -Wall -Wextra -Wconversion -Wno-unknown-pragmas
-// -Wmaybe-uninitialized -Wshadow -fsanitize=undefined,address -D_GLIBCXX_DEBUG
-// -O2 -std=c++17 -g ./template.cpp -o program.out; ./program.out
 // #define USE_NAUTY
 
 #include <bits/stdc++.h>
@@ -11,7 +8,6 @@
 
 // TODO: Heuristiken:
 //        kann Poset in x Schritten gelöst werden -> vorzeitiger Abbruch
-//        custom ordering
 
 // TODO: josua less test überarbeiten
 // TODO: multithreading implementieren
@@ -21,6 +17,12 @@
 
 // TODO: swap Operationen, memcpy, fine-tuning
 // TODO: überall explicit static cast
+
+constexpr size_t globalMaxComparisons = 25;
+constexpr size_t globalMaxN = 15;
+std::array<std::array<std::array<std::array<std::pair<int, int>, globalMaxN>, globalMaxN>, globalMaxComparisons>,
+           globalMaxN>
+    randomDataTable;
 
 const static int min_n_comparisons[15][15] = {
     /* i=1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16 */
@@ -91,7 +93,6 @@ SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
   } else {
     ++statistics.functionCalls;
 
-    // TODO: custom ordering
     const auto temp1 = [&](const std::atomic<bool> &breakCondition, const int i, const int j) {
       SearchResult searchResult = search(threadpool, poset.add_relation(i, j), cache_lowerBound, mutex_cache_lowerBound,
                                          cache_upperBound, mutex_cache_upperBound, maxComparisons, maxMultiThreading,
@@ -104,15 +105,13 @@ SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
       return searchResult;
     };
 
-    // Ich weiß: wenn cache_sol[poset] = 5, dann kann dieses poset in <= 5 Vergleichen gelöst werden.
-
     const auto temp2 = [&](std::atomic<bool> &breakCondition, const int i, const int j) {
       if (FoundSolution == temp1(breakCondition, i, j)) {
         breakCondition = true;
       }
     };
 
-    if (false && comparisonsDone == maxMultiThreading) {
+    if (comparisonsDone == maxMultiThreading) {
       std::atomic<bool> breakCondition(false);
 
       // std::vector<std::future<void>> futures;
@@ -139,8 +138,9 @@ SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
     } else {
       for (int i = 0; i < poset.size() && result != FoundSolution; ++i) {
         for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
-          if (!poset.is(i, j) && !poset.is(j, i)) {
-            result = temp1(atomicBreak, i, j);
+          const auto [new_i, new_j] = randomDataTable[poset.size()][comparisonsDone][i][j];
+          if (!poset.is(new_i, new_j) && !poset.is(new_j, new_i)) {
+            result = temp1(atomicBreak, new_i, new_j);
           }
         }
       }
@@ -190,7 +190,7 @@ std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, c
 
     const SearchResult is_possible =
         search(threadpool, poset, cache_lowerBound, mutex_cache_lowerBound, cache_upperBound, mutex_cache_upperBound, i,
-               comparisonsDone, atomicBreak, statistics, comparisonsDone);
+               0, atomicBreak, statistics, comparisonsDone);
     if (is_possible == FoundSolution) {
       foundSolution = i;
       break;
@@ -205,24 +205,42 @@ std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, c
 
   const SearchResult is_possible =
       search(threadpool, poset, cache_lowerBound, mutex_cache_lowerBound, cache_upperBound, mutex_cache_upperBound,
-             foundSolution - 1, comparisonsDone, atomicBreak, statistics, comparisonsDone);
+             foundSolution - 1, 0, atomicBreak, statistics, comparisonsDone);
   if (is_possible == NoSolution) {
     return foundSolution;
   } else {
     std::cout << "found also solution with -1" << std::endl;
   }
 
-
-
   return {};
 }
 
 int main() {
-  constexpr size_t maxN = 15;
+  constexpr size_t maxComparisons = globalMaxComparisons;
+  constexpr size_t maxN = globalMaxN;
   constexpr size_t nBound = 8;
 #ifdef USE_NAUTY
   initNauty(maxN);
 #endif
+
+  auto rng = std::default_random_engine{1234};
+  for (int n = 0; n < maxN; ++n) {
+    for (int comparison = 0; comparison < maxComparisons; ++comparison) {
+      std::vector<std::pair<int, int>> items;
+      for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+          items.push_back({i, j});
+        }
+      }
+      std::shuffle(items.begin(), items.end(), rng);
+      int pos = 0;
+      for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+          randomDataTable[n][comparison][i][j] = items[pos++];
+        }
+      }
+    }
+  }
 
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
   std::cout.precision(3);
