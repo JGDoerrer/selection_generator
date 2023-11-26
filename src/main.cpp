@@ -1,5 +1,3 @@
-// #define USE_NAUTY
-
 #include <bits/stdc++.h>
 
 #include "BS_thread_pool.hpp"
@@ -11,7 +9,7 @@
 //        kann Poset in x Schritten gelöst werden -> vorzeitiger Abbruch
 
 // TODO: multithreading implementieren
-// TODO: multithreading nauty
+// TODO: multithreading nauty testen
 // TODO: ACHTUNG: post_normalize kaputt
 
 // TODO: swap Operationen, memcpy, fine-tuning
@@ -81,7 +79,7 @@ SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
   } else {
     ++statistics.functionCalls;
 
-    const auto temp1 = [&](const std::atomic<bool> &breakCondition, const int i, const int j) {
+    const auto recursiveSearch = [&](const std::atomic<bool> &breakCondition, const int i, const int j) {
       SearchResult searchResult =
           search(threadpool, poset.add_relation(i, j), cache_lowerBound, cache_upperBound, maxComparisons,
                  maxMultiThreading, breakCondition, statistics, comparisonsDone + 1);
@@ -92,21 +90,19 @@ SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
       return searchResult;
     };
 
-    const auto temp2 = [&](std::atomic<bool> &breakCondition, const int i, const int j) {
-      if (FoundSolution == temp1(breakCondition, i, j)) {
-        breakCondition = true;
-      }
-    };
-
     if (comparisonsDone == maxMultiThreading) {
       std::atomic<bool> breakCondition(false);
 
-      // std::vector<std::future<void>> futures;
+      const auto temp2 = [&](const int i, const int j) {
+        if (FoundSolution == recursiveSearch(breakCondition, i, j)) {
+          breakCondition = true;
+        }
+      };
+
       for (int i = 0; i < poset.size(); ++i) {
         for (int j = i + 1; j < poset.size(); ++j) {
           if (!poset.is(i, j) && !poset.is(j, i)) {
-            // futures.push_back(std::async(std::launch::async, temp, std::ref(breakCondition), i, j));
-            threadpool.push_task(temp2, std::ref(breakCondition), i, j);
+            threadpool.push_task(temp2, i, j);
           }
         }
       }
@@ -115,8 +111,6 @@ SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
       //     breakCondition = true;
       //   }
       // }
-      // std::cout << std::endl << "futures.size(): " << futures.size() << std::endl;
-      // for (auto &fut : futures) fut.wait();
       threadpool.wait_for_tasks();
 
       if (breakCondition) {
@@ -127,7 +121,7 @@ SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
         for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
           const auto [new_i, new_j] = randomDataTable[poset.size()][comparisonsDone][i][j];
           if (!poset.is(new_i, new_j) && !poset.is(new_j, new_i)) {
-            result = temp1(atomicBreak, new_i, new_j);
+            result = recursiveSearch(atomicBreak, new_i, new_j);
           }
         }
       }
@@ -197,9 +191,6 @@ int main() {
   constexpr size_t maxComparisons = globalMaxComparisons;
   constexpr size_t maxN = globalMaxN;
   constexpr size_t nBound = 9;
-#ifdef USE_NAUTY
-  initNauty(maxN);
-#endif
 
   auto rng = std::default_random_engine{1234};
   for (int n = 0; n < maxN; ++n) {

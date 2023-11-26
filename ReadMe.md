@@ -36,46 +36,26 @@ g++ -O3 nautyTest.cpp ../nauty2_8_8/nauty.a
 - berechne mittels brute-force ohne Paar-Bildung, ob mit weniger als `n` möglich (also `...`, `n - 2`, `n - 1`)
 - wenn nein: untere Schranke ist `n`, sonst: Fall tritt nicht ein
 
-# Program Output
-Rust:
-```
-...
-found solution for n = 10, i = 4, comparisons = 16
-cache entries: 85055
-time since start: 0d 0h 0m 9.324393s
-...
-```
-
+# Program Results
 C++:
-Mit Nauty:
 ```
 ...
 time '0.000s': n = 9, i = 0, calls = 0, hits = 0, cache = (258 + 1201 = 1459), comparisons: 8
-time '0.012s': n = 9, i = 1, calls = 58, hits = 1591, cache = (267 + 1238 = 1505), comparisons: 11
-time '0.059s': n = 9, i = 2, calls = 510, hits = 13646, cache = (303 + 1558 = 1861), comparisons: 12
-time '0.767s': n = 9, i = 3, calls = 9640, hits = 245092, cache = (1341 + 5979 = 7320), comparisons: 14
-time '1.032s': n = 9, i = 4, calls = 16472, hits = 414086, cache = (2486 + 14407 = 16893), comparisons: 14
+time '0.009s': n = 9, i = 1, calls = 58, hits = 1591, cache = (267 + 1238 = 1505), comparisons: 11
+time '0.046s': n = 9, i = 2, calls = 510, hits = 13646, cache = (303 + 1558 = 1861), comparisons: 12
+time '0.600s': n = 9, i = 3, calls = 9640, hits = 245092, cache = (1341 + 5979 = 7320), comparisons: 14
+time '0.787s': n = 9, i = 4, calls = 16472, hits = 414086, cache = (2486 + 14407 = 16893), comparisons: 14
 
 time '0.000s': n = 10, i = 0, calls = 0, hits = 0, cache = (2486 + 14407 = 16893), comparisons: 9
-time '0.007s': n = 10, i = 1, calls = 9, hits = 334, cache = (2488 + 14412 = 16900), comparisons: 12
-time '0.345s': n = 10, i = 2, calls = 1306, hits = 43870, cache = (2636 + 15258 = 17894), comparisons: 14
-time '2.218s': n = 10, i = 3, calls = 13870, hits = 468299, cache = (3208 + 25134 = 28342), comparisons: 15
-time '10.399s': n = 10, i = 4, calls = 91850, hits = 2959530, cache = (7436 + 79396 = 86832), comparisons: 16
+time '0.005s': n = 10, i = 1, calls = 9, hits = 334, cache = (2488 + 14412 = 16900), comparisons: 12
+time '0.281s': n = 10, i = 2, calls = 1306, hits = 43870, cache = (2636 + 15258 = 17894), comparisons: 14
+time '1.682s': n = 10, i = 3, calls = 13870, hits = 468299, cache = (3208 + 25134 = 28342), comparisons: 15
+time '8.097s': n = 10, i = 4, calls = 91850, hits = 2959530, cache = (7436 + 79396 = 86832), comparisons: 16
 
 time '0.000s': n = 11, i = 0, calls = 0, hits = 0, cache = (7436 + 79396 = 86832), comparisons: 10
-time '0.041s': n = 11, i = 1, calls = 34, hits = 1366, cache = (7440 + 79421 = 86861), comparisons: 13
-time '1.517s': n = 11, i = 2, calls = 2126, hits = 89572, cache = (7570 + 80853 = 88423), comparisons: 15
-time '41.588s': n = 11, i = 3, calls = 134177, hits = 5344767, cache = (15175 + 152130 = 167305), comparisons: 17
-time '211.426s': n = 11, i = 4, calls = 1030173, hits = 40542832, cache = (58834 + 647374 = 706208), comparisons: 18
+time '0.035s': n = 11, i = 1, calls = 34, hits = 1366, cache = (7440 + 79421 = 86861), comparisons: 13
+time '1.224s': n = 11, i = 2, calls = 2126, hits = 89572, cache = (7570 + 80853 = 88423), comparisons: 15
+time '32.738s': n = 11, i = 3, calls = 134177, hits = 5344767, cache = (15175 + 152130 = 167305), comparisons: 17
+time '165.682s': n = 11, i = 4, calls = 1030173, hits = 40542832, cache = (58834 + 647374 = 706208), comparisons: 18
 ...
-```
-
-Ohne nauty:
-```
-...
-time '0.000s': n = 9, i = 0, calls = 0, hits = 0, cache = (1949 + 57697 = 59646), comparisons: 8
-time '0.079s': n = 9, i = 1, calls = 4006, hits = 110311, cache = (2219 + 60796 = 63015), comparisons: 11
-time '2.745s': n = 9, i = 2, calls = 139589, hits = 3704729, cache = (2311 + 149540 = 151851), comparisons: 12
-time '29.610s': n = 9, i = 3, calls = 1161245, hits = 28243728, cache = (13783 + 632464 = 646247), comparisons: 14
-time '51.650s': n = 9, i = 4, calls = 2292517, hits = 53847495, cache = (28838 + 1550259 = 1579097), comparisons: 14
 ```
