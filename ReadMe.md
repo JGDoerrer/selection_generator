@@ -40,13 +40,20 @@ g++ -O3 nautyTest.cpp ../nauty2_8_8/nauty.a
 Rust:
 ```
 ...
-found solution for n = 9, i = 4, comparisons = 14
-time since start: 0d 0h 0m 9.493829s
-cache_entries = 15811
+found solution for n = 10, i = 4, comparisons = 16
+cache entries: 85055
+time since start: 0d 0h 0m 9.324393s
 ...
 ```
 
+Ohne nauty:
+```
+time '20.869s': n = 9, i = 3, calls = 1189770, hits = 29240161, entries = 642345, comparisons: 14
+time '48.006s': n = 9, i = 4, calls = 2474876, hits = 58721753, entries = 1566708, comparisons: 14
+```
+
 C++:
+Mit Nauty:
 ```
 time '0.000s': n = 9, i = 0, calls = 0, hits = 0, entries = 1383, comparisons: 8
 time '0.011s': n = 9, i = 1, calls = 82, hits = 1510, entries = 1239, comparisons: 11
@@ -66,7 +73,7 @@ time '1.595s': n = 11, i = 2, calls = 163649, hits = 95085, entries = 70243, com
 time '78.254s': n = 11, i = 3, calls = 26293192, hits = 9238534, entries = 127267, comparisons: 17
 ```
 
-mit paar-optimierung (die wir nicht verwenden dürfen):
+Ohne Korrektheitsprüfung (die eigentlich nötig ist):
 ```
 time '401.387s': n = 11, i = 4, calls = 158932254, hits = 69168443, entries = 391589, comparisons: 18
 time '1181.766s': n = 11, i = 5, calls = 560583279, hits = 245805272, entries = 964590, comparisons: 18

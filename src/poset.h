@@ -335,14 +335,15 @@ class Poset {
 #endif
 
   bool operator==(const Poset<maxN> &poset) const {
-    return n == poset.n && nthSmallest == nthSmallest &&
-           0 == std::memcmp(comparisonTable, poset.comparisonTable, n * n);
+    return n == poset.n && nthSmallest == poset.nthSmallest &&
+           0 == std::memcmp(comparisonTable, poset.comparisonTable, n * poset.n);
   }
 
   size_t hash() const {
-    const int shift = 7;
+    constexpr int shift = 7;
     size_t result = 0;
     result ^= n;
+    result = (result << shift) | (result >> (8 * sizeof(size_t) - shift));
     result ^= nthSmallest;
     for (uint16_t i = 0; i < n * n; ++i) {
       if (comparisonTable[i]) {

@@ -204,6 +204,8 @@ class [[nodiscard]] thread_pool_light {
     waiting = false;
   }
 
+  bool isReady() { return !tasks_running && tasks.empty(); }
+
  private:
   // ========================
   // Private member functions
