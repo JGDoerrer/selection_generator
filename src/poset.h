@@ -87,123 +87,6 @@ class Poset {
     }
   }
 
- public:
-  Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest) {
-    std::memset(comparisonTable, false, n * n);
-  };
-
-  Poset() : Poset(0, 0, 0) {}
-
-  Poset<maxN> add_relation(const uint16_t i, const uint16_t j) const {
-    Poset<maxN> newPoset = *this;
-    newPoset.addComparison(i, j);
-    newPoset.normalize();
-    return newPoset;
-  };
-
-  // after func it holds: arr[i] < arr[j]
-  void addComparison(const uint16_t i, const uint16_t j) {
-    addComparisonTransitivRecursive(i, j);  // faster than iterative
-  }
-
-  uint8_t size() const { return n; }
-
-  // true => arr[i] < arr[j]
-  // ACHTUNG: is(a, b) == false IMPLIZIERT NICHT, dass arr[i] > arr[j]:
-  // nur wenn arr[i] > arr[j] => false
-  bool is(const uint16_t i, const uint16_t j) const { return getValue(i, j); }
-
-  // can one determine n smallest element with current comparisons
-  bool canDetermineNSmallest() const {
-    if (0 == n) {
-      return true;
-    }
-    for (uint16_t k = 0; k < n; ++k) {  // guess arr[k] is median
-      uint8_t smaller = 0, bigger = 0;
-      for (uint16_t i = 0; i < n; ++i) {
-        if (getValue(i, k)) {
-          ++smaller;
-        } else if (getValue(k, i)) {
-          ++bigger;
-        }
-      }
-      if (1 + smaller + bigger == n && smaller == nthSmallest) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  // // Kante von (v) -> (w) g.d.w. a[v] < a[w]
-  // void visit(const int v, vector<int> &result, vector<bool> &visited) {
-  //   visited[v] = true;
-  //   for (uint8_t w = 0; w < n; ++w) {
-  //     if (is(v, w) && !visited[w]) {
-  //       visit(w, result, visited);
-  //     }
-  //   }
-  //   result.push_back(v);
-  // }
-
-  void normalize() {
-    // how many elements are less than it
-    std::vector<int> less(n, 0);
-    std::vector<int> greater(n, 0);
-
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        if (getValue(i, j)) {
-          ++less[j];
-          ++greater[i];
-        }
-      }
-    }
-
-    // can the element be ignored, because it is too large/small
-    std::vector<int> dropped(n, false);
-    int n_less_dropped = 0;
-
-    for (int i = 0; i < n; ++i) {
-      if (greater[i] > nthSmallest) {
-        dropped[i] = true;
-      } else if (less[i] >= n - nthSmallest) {  // oder >= ???
-        dropped[i] = true;
-        ++n_less_dropped;
-      }
-    }
-
-    // maps the old indices to the new ones
-    std::vector<int> new_indices(n, 0);
-    int new_n = 0;
-    int b = n - 1;
-
-    for (int i = 0; i < n; ++i) {
-      if (!dropped[i]) {
-        new_indices[new_n++] = i;
-      } else {
-        new_indices[b--] = i;
-      }
-    }
-
-    // make the new poset
-    bool oldTb[n * n];
-    for (int i = 0; i < n * n; ++i) {
-      oldTb[i] = comparisonTable[i];
-    }
-    int oldN = n;
-
-    n = new_n;
-    nthSmallest -= n_less_dropped;
-
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        setValue(i, j, oldTb[new_indices[i] * oldN + new_indices[j]]);
-      }
-    }
-
-    post_normalize();
-  }
-
 #ifdef USE_NAUTY
   void post_normalize() {
     const int m = SETWORDSNEEDED(n);
@@ -251,16 +134,7 @@ class Poset {
   }
 #else
   void post_normalize() {
-    // TODO: geht besser als O(n^3), bestes möglich evtl: O(n)
-
-    // vector<bool> visited(n, false);
-    // vector<int> result{};
-    // for (int v = 0; v < n; ++v) {
-    //   if (!visited[v]) {
-    //     visit(v, result, visited);
-    //   }
-    // }
-    // // toposorting := std::reverse(result);
+    // TODO: geht besser
 
     uint64_t rowSum[n];
     for (uint16_t i = 0; i < n; ++i) {
@@ -319,6 +193,105 @@ class Poset {
     // }
   }
 #endif
+
+ public:
+  Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest) {
+    std::memset(comparisonTable, false, n * n);
+  };
+
+  Poset() : Poset(0, 0, 0) {}
+
+  Poset<maxN> add_relation(const uint16_t i, const uint16_t j) const {
+    Poset<maxN> newPoset = *this;
+    newPoset.addComparison(i, j);
+    newPoset.normalize();
+    return newPoset;
+  };
+
+  // after func it holds: arr[i] < arr[j]
+  void addComparison(const uint16_t i, const uint16_t j) {
+    addComparisonTransitivRecursive(i, j);  // faster than iterative
+  }
+
+  uint8_t size() const { return n; }
+
+  // true => arr[i] < arr[j]
+  // ACHTUNG: is(a, b) == false IMPLIZIERT NICHT, dass arr[i] > arr[j]:
+  // nur wenn arr[i] > arr[j] => false
+  bool is(const uint16_t i, const uint16_t j) const { return getValue(i, j); }
+
+  // can one determine n smallest element with current comparisons
+  bool canDetermineNSmallest() const {
+    if (0 == n) {
+      return true;
+    }
+    for (uint16_t k = 0; k < n; ++k) {  // guess arr[k] is median
+      uint8_t smaller = 0, bigger = 0;
+      for (uint16_t i = 0; i < n; ++i) {
+        if (getValue(i, k)) {
+          ++smaller;
+        } else if (getValue(k, i)) {
+          ++bigger;
+        }
+      }
+      if (1 + smaller + bigger == n && smaller == nthSmallest) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void normalize() {
+    // how many elements are less than it
+    uint8_t less[n], greater[n];
+    std::memset(less, 0, n);
+    std::memset(greater, 0, n);
+    for (uint8_t i = 0; i < n; ++i) {
+      for (uint8_t j = 0; j < n; ++j) {
+        if (getValue(i, j)) {
+          ++less[j];
+          ++greater[i];
+        }
+      }
+    }
+
+    // can the element be ignored, because it is too large/small
+    uint8_t n_less_dropped = 0;
+
+    // maps the old indices to the new ones
+    uint8_t new_indices[n];
+    uint8_t new_n = 0;
+    uint8_t b = n - 1;
+
+    for (int i = 0; i < n; ++i) {
+      if (nthSmallest < greater[i]) {
+        new_indices[b--] = i;
+      } else if ((n - 1) - nthSmallest < less[i]) {
+        ++n_less_dropped;
+        new_indices[b--] = i;
+      } else {
+        new_indices[new_n++] = i;
+      }
+    }
+
+    // make the new poset
+    bool oldTb[n * n];
+    for (uint16_t i = 0; i < n * n; ++i) {
+      oldTb[i] = comparisonTable[i];
+    }
+    const uint8_t oldN = n;
+
+    n = new_n;
+    nthSmallest -= n_less_dropped;
+
+    for (uint8_t i = 0; i < n; ++i) {
+      for (uint8_t j = 0; j < n; ++j) {
+        setValue(i, j, oldTb[new_indices[i] * oldN + new_indices[j]]);
+      }
+    }
+
+    post_normalize();
+  }
 
   bool operator==(const Poset<maxN> &poset) const {
     return n == poset.n && nthSmallest == poset.nthSmallest &&
