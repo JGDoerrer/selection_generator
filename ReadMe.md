@@ -41,8 +41,8 @@ Rust:
 ```
 ...
 found solution for n = 9, i = 4, comparisons = 14
-time since start: 0d 0h 0m 18.30282s
-cache_entries = 17149
+time since start: 0d 0h 0m 9.493829s
+cache_entries = 15811
 ...
 ```
 
