@@ -86,6 +86,14 @@ impl<'a> Search<'a> {
     }
 
     fn search_rec(&mut self, poset: Poset, max_comparisons: u8, depth: u8) -> Cost {
+        if poset.n() == 1 {
+            return Cost::Solved(0);
+        }
+
+        if max_comparisons == 0 {
+            return Cost::Minimum(1);
+        }
+
         if let Some(cost) = self.cache.get(&poset) {
             match cost {
                 Cost::Solved(_solved) => {
@@ -99,40 +107,32 @@ impl<'a> Search<'a> {
             }
         }
 
-        if poset.n() == 1 {
-            return Cost::Solved(0);
-        }
-
-        if max_comparisons == 0 {
-            return Cost::Minimum(1);
-        }
-
         if let Some(false) = self.estimate_solvable(poset.clone(), max_comparisons, 0, 0, depth) {
             let result = Cost::Minimum(max_comparisons + 1);
 
-            if let Some(cost) = self.cache.get(&poset) {
-                let res = match (cost, result) {
-                    (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
-                        Cost::Minimum(new_min.max(*old_min))
-                    }
-                    (Cost::Solved(old_solved), Cost::Solved(new_solved)) => {
-                        Cost::Solved(new_solved.min(*old_solved))
-                    }
-                    (Cost::Solved(_), Cost::Minimum(_)) => *cost,
-                    (Cost::Minimum(_), Cost::Solved(_)) => result,
-                };
+            // if let Some(cost) = self.cache.get(&poset) {
+            //     let res = match (cost, result) {
+            //         (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
+            //             Cost::Minimum(new_min.max(*old_min))
+            //         }
+            //         (Cost::Solved(old_solved), Cost::Solved(new_solved)) => {
+            //             Cost::Solved(new_solved.min(*old_solved))
+            //         }
+            //         (Cost::Solved(_), Cost::Minimum(_)) => *cost,
+            //         (Cost::Minimum(_), Cost::Solved(_)) => result,
+            //     };
 
-                self.cache.insert(poset.clone(), res);
-            } else {
-                self.cache.insert(poset.clone(), result);
-            }
+            //     self.cache.insert(poset.clone(), res);
+            // } else {
+            self.cache.insert(poset.clone(), result);
+            // }
 
             return result;
         }
 
         let pairs = self.get_comparison_pairs(&poset);
 
-        let progress = if depth + self.n <= self.current_max + 1 {
+        let progress = if self.current_max - depth >= 10 {
             let progress = ProgressBar::new(pairs.len() as u64).with_style(
                 ProgressStyle::with_template("[{pos:2}/{len:2}] {msg} {wide_bar}").unwrap(),
             );
@@ -180,10 +180,9 @@ impl<'a> Search<'a> {
             let new_result = first_result.value().max(second_result.value()) + 1;
 
             // take the min of all comparisons
-            if !result.is_solved() || new_result <= current_max {
-                result = Cost::Solved(new_result.min(result.value()));
-                current_max = current_max.min(new_result); // breaks for n=12, i=5
-                                                           // current_max = new_result;
+            if !result.is_solved() || new_result < current_max {
+                current_max = new_result;
+                result = Cost::Solved(new_result);
             }
 
             if let Some(progress) = &progress {
@@ -247,9 +246,7 @@ impl<'a> Search<'a> {
                 (greater, less)
             };
 
-            if !pairs.contains(&pair) {
-                pairs.push(pair);
-            }
+            pairs.push(pair);
         }
 
         pairs
@@ -303,11 +300,7 @@ impl<'a> Search<'a> {
         if let Some(cost) = self.cache.get(&poset) {
             match *cost {
                 Cost::Solved(solved) => {
-                    if solved <= max_comparisons {
-                        return Some(true);
-                    } else {
-                        return Some(false);
-                    }
+                    return Some(solved <= max_comparisons);
                 }
                 Cost::Minimum(min) => {
                     if min > max_comparisons {

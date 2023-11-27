@@ -1,5 +1,6 @@
-use std::{fmt::Debug, mem::size_of};
+use std::{fmt::Debug, os::raw::c_int};
 
+use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use serde::{Deserialize, Serialize};
 
 use crate::KNOWN_MIN_VALUES;
@@ -13,23 +14,17 @@ pub struct Poset {
     n: u8,
     i: u8,
     /// The comparisons as an adjacency matrix
-    adjacency: [Word; Self::WORDS],
+    adjacency: [u16; MAX_N],
 }
 
-type Word = u64;
-
 impl Poset {
-    const BITS: usize = MAX_N * MAX_N;
-    const BYTES: usize = (Self::BITS + 7) / 8;
-    const WORDS: usize = (Self::BYTES + size_of::<Word>()) / size_of::<Word>();
-
     pub fn new(n: u8, i: u8) -> Self {
         debug_assert!(n < MAX_N as u8);
 
         Poset {
             n,
             i,
-            adjacency: [0; Self::WORDS],
+            adjacency: [0; MAX_N],
         }
     }
 
@@ -38,28 +33,18 @@ impl Poset {
     }
 
     #[inline]
-    fn get_bit_index(&self, i: u8, j: u8) -> u8 {
-        i + j * self.n
-    }
-
-    #[inline]
     fn set_bit(&mut self, i: u8, j: u8) {
-        debug_assert!(i != j);
-        let bit = self.get_bit_index(i, j);
-        let word = bit / (8 * size_of::<Word>() as u8);
-        let mask = 1 << (bit % (8 * size_of::<Word>() as u8));
+        let mask = 1 << j;
 
-        self.adjacency[word as usize] |= mask;
+        self.adjacency[i as usize] |= mask;
     }
 
     /// is i < j?
     #[inline]
     pub fn is_less(&self, i: u8, j: u8) -> bool {
-        let bit = self.get_bit_index(i, j);
-        let word = bit / (8 * size_of::<Word>() as u8);
-        let mask = 1 << (bit % (8 * size_of::<Word>() as u8));
+        let mask = 1 << j;
 
-        (self.adjacency[word as usize] & mask) != 0
+        (self.adjacency[i as usize] & mask) != 0
     }
 
     /// is either i < j or j < i?
@@ -109,20 +94,153 @@ impl Poset {
         hash
     }
 
-    /// adapted from [https://www.cs.hut.fi/~cessu/selection/selgen.c.html]
-    ///
-    /// This is important, as is maps isomorphic posets to the same one (hopefully), which reduces the search space dramatically
-    fn normalize(&mut self) {
-        self.normalize_mapping();
+    fn canonify(&mut self) {
+        self.reduce_elements();
+        self.canonify_mapping();
     }
 
-    /// Normalizes the poset and returns a mapping from old to new indices, since they shift around
-    fn normalize_mapping(&mut self) -> [u8; MAX_N] {
+    /// Canonifies the poset and returns a mapping from old to new indices, since they shift around
+    fn canonify_mapping(&mut self) -> [u8; MAX_N] {
+        let n = self.n as usize;
+
+        let (less, _unknown, greater) = self.calculate_relations();
+
+        let mut in_out_degree = [0; MAX_N];
+
+        for i in 0..n {
+            in_out_degree[i] = greater[i] as u64 * MAX_N as u64 + less[i] as u64;
+        }
+
+        let mut hash = in_out_degree;
+
+        for _ in 0..3 {
+            let mut sum_hash = [0; MAX_N];
+
+            for i in 0..self.n {
+                let mut sum = hash[i as usize];
+
+                // sum hashes of neighbours
+                for j in 0..self.n {
+                    if i == j {
+                        continue;
+                    }
+
+                    if self.has_order(i, j) {
+                        sum = sum.wrapping_add(hash[j as usize]);
+                    }
+                }
+
+                sum_hash[i as usize] = sum;
+            }
+
+            // calc new hash based on neighbours hashes
+            for i in 0..self.n {
+                let i = i as usize;
+                hash[i] = Self::hash(sum_hash[i], in_out_degree[i]);
+            }
+        }
+
+        let mut new_indices: [u8; MAX_N] = (0..MAX_N as u8).collect::<Vec<_>>().try_into().unwrap();
+
+        new_indices[0..n].sort_by(|a, b| {
+            in_out_degree[*a as usize]
+                .cmp(&in_out_degree[*b as usize])
+                .then(hash[*a as usize].cmp(&hash[*b as usize]))
+        });
+
+        let mut i = 1;
+
+        i += new_indices
+            .iter()
+            .take(n)
+            .take_while(|i| in_out_degree[**i as usize] == 0)
+            .count()
+            + 1;
+
+        while i < n {
+            // search for elements with same hashes
+
+            let index = new_indices[i] as usize;
+            let next_index = new_indices[i - 1] as usize;
+
+            if !(in_out_degree[index] == in_out_degree[next_index]
+                && hash[index] == hash[next_index])
+            {
+                i += 1;
+                continue;
+            }
+
+            while i < n
+                && (in_out_degree[index] == in_out_degree[next_index]
+                    && hash[index] == hash[next_index])
+            {
+                i += 1;
+            }
+
+            if i == n {
+                continue;
+            }
+
+            for _ in 0..3 {
+                let mut sum_hash = [0; MAX_N];
+
+                for i in i..n {
+                    let mapped_i = new_indices[i];
+                    let mut sum = hash[mapped_i as usize];
+
+                    // sum hashes of neighbours
+                    for &mapped_j in new_indices.iter().take(i) {
+                        if mapped_i == mapped_j {
+                            continue;
+                        }
+
+                        if self.has_order(mapped_i, mapped_j) {
+                            sum = sum.wrapping_add(hash[mapped_j as usize]);
+                        }
+                    }
+
+                    sum_hash[mapped_i as usize] = sum;
+                }
+
+                // calc new hash based on neighbours hashes
+                for &i in new_indices.iter().take(n).skip(i) {
+                    let i = i as usize;
+                    hash[i] = Self::hash(sum_hash[i], in_out_degree[i]);
+                }
+            }
+
+            new_indices[i..n].sort_by(|a, b| {
+                in_out_degree[*a as usize]
+                    .cmp(&in_out_degree[*b as usize])
+                    .then(hash[*a as usize].cmp(&hash[*b as usize]))
+            });
+        }
+
+        let mut new = Poset::new(self.n, self.i);
+
+        // make the new poset
+        for i in 0..new.n {
+            for j in 0..new.n {
+                if self.is_less(new_indices[i as usize], new_indices[j as usize]) {
+                    new.set_bit(i, j)
+                }
+            }
+        }
+
+        // dbg!(&self, &new);
+        debug_assert!(new.is_closed(), "{new:?}");
+        *self = new;
+
+        new_indices
+    }
+
+    /// Removes elements, that are known to be too large/small
+    fn reduce_elements(&mut self) -> [u8; MAX_N] {
         // can the element be ignored, because it is too large/small
         let mut dropped = [false; MAX_N];
         let mut n_less_dropped = 0;
 
-        let (mut less, _unknown, mut greater) = self.calculate_relations();
+        let (less, _unknown, greater) = self.calculate_relations();
 
         for i in 0..self.n as usize {
             if greater[i] > self.i {
@@ -148,120 +266,8 @@ impl Poset {
             }
         }
 
-        if new_n != self.n.into() {
-            // recalculate less/greater for the new indices
-            less = [0; MAX_N];
-            greater = [0; MAX_N];
-
-            for i in 0..new_n {
-                for j in 0..new_n {
-                    if self.is_less(new_indices[i], new_indices[j]) {
-                        less[new_indices[j] as usize] += 1;
-                        greater[new_indices[i] as usize] += 1;
-                    }
-                }
-            }
-        }
-
-        let mut in_out_degree = [0; MAX_N];
-
-        for &i in new_indices.iter().take(new_n) {
-            let i = i as usize;
-            in_out_degree[i] = greater[i] as u64 * MAX_N as u64 + less[i] as u64;
-        }
-
-        let mut hash = in_out_degree;
-
-        for _ in 0..4 {
-            let mut sum_hash = [0; MAX_N];
-
-            for i in 0..new_n {
-                let i = new_indices[i];
-                let mut sum = hash[i as usize];
-
-                // sum hashes of neighbours
-                for &j in new_indices.iter().take(new_n) {
-                    if i == j {
-                        continue;
-                    }
-
-                    if self.has_order(i, j) {
-                        sum = sum.wrapping_add(hash[j as usize]);
-                    }
-                }
-
-                sum_hash[i as usize] = sum;
-            }
-
-            // calc new hash based on neighbours hashes
-            for &i in new_indices.iter().take(new_n) {
-                let i = i as usize;
-                hash[i] = Self::hash(sum_hash[i], in_out_degree[i]);
-            }
-        }
-
-        new_indices[0..new_n].sort_by(|a, b| {
-            in_out_degree[*a as usize]
-                .cmp(&in_out_degree[*b as usize])
-                .then(hash[*a as usize].cmp(&hash[*b as usize]))
-        });
-
-        let mut i = 1;
-        while i < new_n {
-            // search for elements with same hashes
-            if !(in_out_degree[new_indices[i] as usize]
-                == in_out_degree[new_indices[i - 1] as usize]
-                && hash[new_indices[i] as usize] == hash[new_indices[i - 1] as usize])
-            {
-                i += 1;
-                continue;
-            }
-
-            while i < new_n
-                && in_out_degree[new_indices[i] as usize]
-                    == in_out_degree[new_indices[i - 1] as usize]
-                && hash[new_indices[i] as usize] == hash[new_indices[i - 1] as usize]
-            {
-                i += 1;
-            }
-
-            if i == new_n {
-                continue;
-            }
-
-            for _ in 0..3 {
-                let mut sum_hash = [0; MAX_N];
-
-                for i in i..new_n {
-                    let mapped_i = new_indices[i];
-                    let mut sum = hash[mapped_i as usize];
-
-                    // sum hashes of neighbours
-                    for &mapped_j in new_indices.iter().take(i) {
-                        if mapped_i == mapped_j {
-                            continue;
-                        }
-
-                        if self.has_order(mapped_i, mapped_j) {
-                            sum = sum.wrapping_add(hash[mapped_j as usize]);
-                        }
-                    }
-
-                    sum_hash[mapped_i as usize] = sum;
-                }
-
-                // calc new hash based on neighbours hashes
-                for &i in new_indices.iter().take(new_n).skip(i) {
-                    let i = i as usize;
-                    hash[i] = Self::hash(sum_hash[i], in_out_degree[i]);
-                }
-            }
-
-            new_indices[i..new_n].sort_by(|a, b| {
-                in_out_degree[*a as usize]
-                    .cmp(&in_out_degree[*b as usize])
-                    .then(hash[*a as usize].cmp(&hash[*b as usize]))
-            });
+        if self.n == new_n as u8 {
+            return new_indices;
         }
 
         let mut new = Poset::new(new_n as u8, self.i - n_less_dropped);
@@ -280,6 +286,66 @@ impl Poset {
         *self = new;
 
         new_indices
+    }
+
+    fn canonify_nauty(&mut self) {
+        let n = self.n as usize;
+
+        let mut options = optionblk {
+            getcanon: TRUE,
+            defaultptn: FALSE,
+            digraph: TRUE,
+            ..Default::default()
+        };
+        let mut stats = statsblk::default();
+
+        let mut labels: [c_int; 64] = (0..64 as c_int).collect::<Vec<_>>().try_into().unwrap();
+
+        let mut ptn = [c_int::from(1); 64];
+        ptn[n - 1] = 0;
+        let mut zeroes2 = [c_int::from(0); 64];
+
+        // use nauty_Traces_sys::bit as bitmask for the adjacency matrix.
+        // E.g. (g[i] & bit[j]) != 0 checks whether there is an edge i -> j.
+        let mut dg = [0; 64];
+        for (i, mask) in dg.iter_mut().enumerate().take(n) {
+            for j in 0..n {
+                if self.is_less(i as u8, j as u8) {
+                    *mask |= nauty_Traces_sys::bit[j];
+                }
+            }
+        }
+
+        let mut canonical = [0; 64];
+
+        unsafe {
+            densenauty(
+                dg.as_mut_ptr(),
+                labels.as_mut_ptr(),
+                ptn.as_mut_ptr(),
+                zeroes2.as_mut_ptr(),
+                &mut options,
+                &mut stats,
+                1 as c_int,
+                n as c_int,
+                canonical.as_mut_ptr(),
+            );
+        }
+
+        let mut new = Poset::new(self.n, self.i);
+
+        // make the new poset
+        for i in 0..new.n {
+            for j in 0..new.n {
+                if canonical[i as usize] & nauty_Traces_sys::bit[j as usize] != 0 {
+                    new.set_bit(i, j)
+                }
+            }
+        }
+
+        // dbg!(&self, &new);
+        // dbg!(labels);
+        *self = new;
     }
 
     /// for debugging
@@ -304,7 +370,7 @@ impl Poset {
         debug_assert!(!self.is_less(j, i));
 
         self.add_and_close(i, j);
-        self.normalize();
+        self.canonify();
 
         debug_assert!(self.is_closed(), "{self:?}");
     }
@@ -336,7 +402,7 @@ impl Poset {
         let mut new = self.clone();
 
         new.add_and_close(i, j);
-        let mapping = new.normalize_mapping();
+        let mapping = new.canonify_mapping();
 
         (new, mapping)
     }
@@ -506,7 +572,7 @@ mod test {
                         let mut poset = Poset::new(n, i);
                         poset.add_and_close(j, k); // just adding without normalizing
                         poset.add_and_close(l, m);
-                        poset.normalize();
+                        poset.canonify();
                         hashset.insert(poset);
                     }
                 }
