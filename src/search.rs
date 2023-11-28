@@ -41,8 +41,8 @@ impl<'a> Search<'a> {
         }
     }
 
-    fn search_cache(&self, poset: &Poset) -> Option<Cost> {
-        self.cache.get(poset).map(|c| *c)
+    fn search_cache(&mut self, poset: &Poset) -> Option<Cost> {
+        self.cache.get_and_do_stuff(poset).map(|c| *c)
     }
 
     fn insert_cache(&mut self, poset: Poset, new_cost: Cost) {
@@ -73,20 +73,20 @@ impl<'a> Search<'a> {
             let res = match self.search_rec(Poset::new(self.n, self.i), max, 0) {
                 Cost::Solved(solved) => solved,
                 Cost::Minimum(_) => {
-                    println!(
-                        "found no solution for n = {}, i = {}, comparisons = {max}",
-                        self.n, self.i
-                    );
+                    // println!(
+                    //     "found no solution for n = {}, i = {}, comparisons = {max}",
+                    //     self.n, self.i
+                    // );
 
-                    let duration = Instant::now() - self.start;
-                    let seconds = duration.as_secs_f32() % 60.0;
-                    let minutes = (duration.as_secs() / 60) % 60;
-                    let hours = (duration.as_secs() / (60 * 60)) % 24;
-                    let days = duration.as_secs() / (60 * 60 * 24);
-                    println!(
-                        "time since start: {}d {}h {}m {}s",
-                        days, hours, minutes, seconds
-                    );
+                    // let duration = Instant::now() - self.start;
+                    // let seconds = duration.as_secs_f32() % 60.0;
+                    // let minutes = (duration.as_secs() / 60) % 60;
+                    // let hours = (duration.as_secs() / (60 * 60)) % 24;
+                    // let days = duration.as_secs() / (60 * 60 * 24);
+                    // println!(
+                    //     "time since start: {}d {}h {}m {}s",
+                    //     days, hours, minutes, seconds
+                    // );
                     continue;
                 }
             };

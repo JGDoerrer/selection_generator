@@ -8,13 +8,19 @@ use crate::KNOWN_MIN_VALUES;
 pub const MAX_N: usize = 15;
 
 /// A partially ordered set with <
-#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Poset {
     /// The number of elements
     n: u8,
     i: u8,
     /// The comparisons as an adjacency matrix
     adjacency: [u16; MAX_N],
+}
+
+impl Default for Poset {
+    fn default() -> Self {
+        Poset::new(0, 0)
+    }
 }
 
 impl Poset {
@@ -113,7 +119,7 @@ impl Poset {
 
         let mut hash = in_out_degree;
 
-        for _ in 0..1 {
+        for _ in 0..2 {
             let mut sum_hash = [0; MAX_N];
 
             for i in 0..self.n {

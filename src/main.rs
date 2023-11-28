@@ -77,8 +77,6 @@ fn main() {
                     assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
                 }
 
-                println!("cache_entries = {}", cache.len());
-
                 if !args.no_cache && cache.len() != old_cache_len {
                     save_cache(&args.cache_file, &cache);
                 }
