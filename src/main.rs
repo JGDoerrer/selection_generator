@@ -1,5 +1,4 @@
 use clap::Parser;
-use hashbrown::HashMap;
 use search::Cost;
 use std::{
     fs::OpenOptions,
@@ -8,8 +7,9 @@ use std::{
 
 use poset::{Poset, MAX_N};
 
-use crate::search::Search;
+use crate::{cache::Cache, search::Search};
 
+mod cache;
 mod poset;
 mod search;
 
@@ -58,7 +58,7 @@ fn main() {
     let start_n = args.n.unwrap_or(1);
 
     let mut cache = if args.no_cache {
-        HashMap::new()
+        Cache::default()
     } else {
         load_cache(&args.cache_file).unwrap_or_default()
     };
@@ -75,12 +75,6 @@ fn main() {
             if let Cost::Solved(comparisons) = cost {
                 if n < KNOWN_MIN_VALUES.len() as u8 {
                     assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
-                    if comparisons != KNOWN_MIN_VALUES[n as usize - 1][i as usize] {
-                        println!(
-                            "incorrect result: {comparisons}, expected {}",
-                            KNOWN_MIN_VALUES[n as usize - 1][i as usize]
-                        )
-                    }
                 }
 
                 println!("cache_entries = {}", cache.len());
@@ -113,7 +107,7 @@ fn main() {
     }
 }
 
-fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &HashMap<Poset, Cost>) {
+fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &Cache) {
     loop {
         let old_mapping = {
             let mut old = [0; MAX_N];
@@ -249,7 +243,7 @@ fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &HashMap<Poset, Cost>) {
     }
 }
 
-fn save_cache(path: &String, cache: &HashMap<Poset, Cost>) {
+fn save_cache(path: &String, cache: &Cache) {
     let mut file = OpenOptions::new()
         .create(true)
         .write(true)
@@ -262,7 +256,7 @@ fn save_cache(path: &String, cache: &HashMap<Poset, Cost>) {
     file.write_all(&bytes).unwrap();
 }
 
-fn load_cache(path: &String) -> Option<HashMap<Poset, Cost>> {
+fn load_cache(path: &String) -> Option<Cache> {
     let mut file = match OpenOptions::new().read(true).open(path) {
         Ok(file) => file,
         Err(err) => {

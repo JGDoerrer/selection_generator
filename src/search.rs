@@ -1,17 +1,20 @@
 use std::time::Instant;
 
-use hashbrown::HashMap;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
-use crate::poset::{Poset, MAX_N};
+use crate::{
+    cache::Cache,
+    poset::{Poset, MAX_N},
+};
 
 pub struct Search<'a> {
     n: u8,
     i: u8,
     current_max: u8,
-    cache: &'a mut HashMap<Poset, Cost>,
+    cache: &'a mut Cache,
     total_nodes: u64,
+    cache_hits: u64,
     start: Instant,
     progress_bars: MultiProgress,
 }
@@ -25,45 +28,51 @@ pub enum Cost {
 }
 
 impl<'a> Search<'a> {
-    pub fn new(n: u8, i: u8, cache: &'a mut HashMap<Poset, Cost>) -> Self {
+    pub fn new(n: u8, i: u8, cache: &'a mut Cache) -> Self {
         Search {
             n,
             i,
             current_max: 0,
             cache,
             total_nodes: 0,
+            cache_hits: 0,
             start: Instant::now(),
             progress_bars: MultiProgress::new(),
+        }
+    }
+
+    fn search_cache(&self, poset: &Poset) -> Option<Cost> {
+        self.cache.get(poset).map(|c| *c)
+    }
+
+    fn insert_cache(&mut self, poset: Poset, new_cost: Cost) {
+        if let Some(cost) = self.cache.get(&poset) {
+            let res = match (cost, new_cost) {
+                (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
+                    Cost::Minimum(new_min.max(*old_min))
+                }
+                (Cost::Solved(old_solved), Cost::Solved(new_solved)) => {
+                    Cost::Solved(new_solved.min(*old_solved))
+                }
+                (Cost::Solved(_), Cost::Minimum(_)) => *cost,
+                (Cost::Minimum(_), Cost::Solved(_)) => new_cost,
+            };
+
+            self.cache.insert(poset.clone(), res);
+        } else {
+            self.cache.insert(poset, new_cost);
         }
     }
 
     pub fn search(&mut self) -> Cost {
         self.start = Instant::now();
 
-        for max in 0..u8::MAX {
+        for max in self.n..u8::MAX {
             self.current_max = max;
-            match self.search_rec(Poset::new(self.n, self.i), max, 0) {
-                cost @ Cost::Solved(comps) => {
-                    // self.print_info();
-                    println!(
-                        "found solution for n = {}, i = {}, comparisons = {comps}",
-                        self.n, self.i
-                    );
-                    println!("cache entries: {}", self.cache.len());
-                    let duration = Instant::now() - self.start;
-                    let seconds = duration.as_secs_f32() % 60.0;
-                    let minutes = (duration.as_secs() / 60) % 60;
-                    let hours = (duration.as_secs() / (60 * 60)) % 24;
-                    let days = duration.as_secs() / (60 * 60 * 24);
-                    println!(
-                        "time since start: {}d {}h {}m {}s",
-                        days, hours, minutes, seconds
-                    );
 
-                    // assert_eq!(comps, max);
-                    return cost;
-                }
-                _cost => {
+            let res = match self.search_rec(Poset::new(self.n, self.i), max, 0) {
+                Cost::Solved(solved) => solved,
+                Cost::Minimum(_) => {
                     println!(
                         "found no solution for n = {}, i = {}, comparisons = {max}",
                         self.n, self.i
@@ -78,8 +87,28 @@ impl<'a> Search<'a> {
                         "time since start: {}d {}h {}m {}s",
                         days, hours, minutes, seconds
                     );
+                    continue;
                 }
-            }
+            };
+
+            println!(
+                "found solution for n = {}, i = {}, comparisons = {}",
+                self.n, self.i, res
+            );
+            println!("cache entries: {}", self.cache.len());
+            println!("cache hits: {}", self.cache_hits);
+            let duration = Instant::now() - self.start;
+            let seconds = duration.as_secs_f32() % 60.0;
+            let minutes = (duration.as_secs() / 60) % 60;
+            let hours = (duration.as_secs() / (60 * 60)) % 24;
+            let days = duration.as_secs() / (60 * 60 * 24);
+            println!(
+                "time since start: {}d {}h {}m {}s",
+                days, hours, minutes, seconds
+            );
+
+            // assert_eq!(comps, max);
+            return Cost::Solved(res);
         }
 
         unreachable!()
@@ -94,14 +123,19 @@ impl<'a> Search<'a> {
             return Cost::Minimum(1);
         }
 
-        if let Some(cost) = self.cache.get(&poset) {
+        if let Some(cost) = self.search_cache(&poset) {
+            self.cache_hits += 1;
             match cost {
-                Cost::Solved(_solved) => {
-                    return *cost;
+                Cost::Solved(solved) => {
+                    return if solved > max_comparisons {
+                        Cost::Minimum(solved)
+                    } else {
+                        cost
+                    }
                 }
                 Cost::Minimum(min) => {
-                    if *min > max_comparisons {
-                        return *cost;
+                    if min > max_comparisons {
+                        return cost;
                     }
                 }
             }
@@ -110,29 +144,14 @@ impl<'a> Search<'a> {
         if let Some(false) = self.estimate_solvable(poset.clone(), max_comparisons, 0, 0, depth) {
             let result = Cost::Minimum(max_comparisons + 1);
 
-            // if let Some(cost) = self.cache.get(&poset) {
-            //     let res = match (cost, result) {
-            //         (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
-            //             Cost::Minimum(new_min.max(*old_min))
-            //         }
-            //         (Cost::Solved(old_solved), Cost::Solved(new_solved)) => {
-            //             Cost::Solved(new_solved.min(*old_solved))
-            //         }
-            //         (Cost::Solved(_), Cost::Minimum(_)) => *cost,
-            //         (Cost::Minimum(_), Cost::Solved(_)) => result,
-            //     };
-
-            //     self.cache.insert(poset.clone(), res);
-            // } else {
-            self.cache.insert(poset.clone(), result);
-            // }
+            self.insert_cache(poset.clone(), result);
 
             return result;
         }
 
         let pairs = self.get_comparison_pairs(&poset);
 
-        let progress = if self.current_max - depth >= 10 {
+        let progress = if depth < 8 {
             let progress = ProgressBar::new(pairs.len() as u64).with_style(
                 ProgressStyle::with_template("[{pos:2}/{len:2}] {msg} {wide_bar}").unwrap(),
             );
@@ -197,22 +216,7 @@ impl<'a> Search<'a> {
             self.progress_bars.remove(&progress);
         }
 
-        // if let Some(cost) = self.cache.get(&poset) {
-        //     let res = match (cost, result) {
-        //         (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
-        //             Cost::Minimum(new_min.max(*old_min))
-        //         }
-        //         (Cost::Solved(old_solved), Cost::Solved(new_solved)) => {
-        //             Cost::Solved(new_solved.min(*old_solved))
-        //         }
-        //         (Cost::Solved(_), Cost::Minimum(_)) => *cost,
-        //         (Cost::Minimum(_), Cost::Solved(_)) => result,
-        //     };
-
-        //     self.cache.insert(poset.clone(), res);
-        // } else {
-        self.cache.insert(poset.clone(), result);
-        // }
+        self.insert_cache(poset, result);
 
         result
     }
@@ -246,7 +250,9 @@ impl<'a> Search<'a> {
                 (greater, less)
             };
 
-            pairs.push(pair);
+            if !pairs.contains(&pair) {
+                pairs.push(pair);
+            }
         }
 
         pairs
@@ -297,8 +303,9 @@ impl<'a> Search<'a> {
         start_j: u8,
         depth: u8,
     ) -> Option<bool> {
-        if let Some(cost) = self.cache.get(&poset) {
-            match *cost {
+        if let Some(cost) = self.search_cache(&poset) {
+            self.cache_hits += 1;
+            match cost {
                 Cost::Solved(solved) => {
                     return Some(solved <= max_comparisons);
                 }

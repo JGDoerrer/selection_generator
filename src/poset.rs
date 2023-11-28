@@ -113,7 +113,7 @@ impl Poset {
 
         let mut hash = in_out_degree;
 
-        for _ in 0..3 {
+        for _ in 0..1 {
             let mut sum_hash = [0; MAX_N];
 
             for i in 0..self.n {
@@ -148,73 +148,75 @@ impl Poset {
                 .then(hash[*a as usize].cmp(&hash[*b as usize]))
         });
 
-        let mut i = 1;
+        // let mut i = 1;
 
-        i += new_indices
-            .iter()
-            .take(n)
-            .take_while(|i| in_out_degree[**i as usize] == 0)
-            .count()
-            + 1;
+        // i += new_indices
+        //     .iter()
+        //     .take(n)
+        //     .take_while(|i| in_out_degree[**i as usize] == 0)
+        //     .count()
+        //     + 1;
 
-        while i < n {
-            // search for elements with same hashes
+        // while i < n {
+        //     // search for elements with same hashes
 
-            let index = new_indices[i] as usize;
-            let next_index = new_indices[i - 1] as usize;
+        //     let index = new_indices[i] as usize;
+        //     let next_index = new_indices[i - 1] as usize;
 
-            if !(in_out_degree[index] == in_out_degree[next_index]
-                && hash[index] == hash[next_index])
-            {
-                i += 1;
-                continue;
-            }
+        //     if !(in_out_degree[index] == in_out_degree[next_index]
+        //         && hash[index] == hash[next_index])
+        //     {
+        //         i += 1;
+        //         continue;
+        //     }
 
-            while i < n
-                && (in_out_degree[index] == in_out_degree[next_index]
-                    && hash[index] == hash[next_index])
-            {
-                i += 1;
-            }
+        //     while i < n
+        //         && (in_out_degree[index] == in_out_degree[next_index]
+        //             && hash[index] == hash[next_index])
+        //     {
+        //         i += 1;
+        //     }
 
-            if i == n {
-                continue;
-            }
+        //     if i == n {
+        //         continue;
+        //     }
 
-            for _ in 0..3 {
-                let mut sum_hash = [0; MAX_N];
+        //     unreachable!();
 
-                for i in i..n {
-                    let mapped_i = new_indices[i];
-                    let mut sum = hash[mapped_i as usize];
+        //     for _ in 0..3 {
+        //         let mut sum_hash = [0; MAX_N];
 
-                    // sum hashes of neighbours
-                    for &mapped_j in new_indices.iter().take(i) {
-                        if mapped_i == mapped_j {
-                            continue;
-                        }
+        //         for i in i..n {
+        //             let mapped_i = new_indices[i];
+        //             let mut sum = hash[mapped_i as usize];
 
-                        if self.has_order(mapped_i, mapped_j) {
-                            sum = sum.wrapping_add(hash[mapped_j as usize]);
-                        }
-                    }
+        //             // sum hashes of neighbours
+        //             for &mapped_j in new_indices.iter().take(i) {
+        //                 if mapped_i == mapped_j {
+        //                     continue;
+        //                 }
 
-                    sum_hash[mapped_i as usize] = sum;
-                }
+        //                 if self.has_order(mapped_i, mapped_j) {
+        //                     sum = sum.wrapping_add(hash[mapped_j as usize]);
+        //                 }
+        //             }
 
-                // calc new hash based on neighbours hashes
-                for &i in new_indices.iter().take(n).skip(i) {
-                    let i = i as usize;
-                    hash[i] = Self::hash(sum_hash[i], in_out_degree[i]);
-                }
-            }
+        //             sum_hash[mapped_i as usize] = sum;
+        //         }
 
-            new_indices[i..n].sort_by(|a, b| {
-                in_out_degree[*a as usize]
-                    .cmp(&in_out_degree[*b as usize])
-                    .then(hash[*a as usize].cmp(&hash[*b as usize]))
-            });
-        }
+        //         // calc new hash based on neighbours hashes
+        //         for &i in new_indices.iter().take(n).skip(i) {
+        //             let i = i as usize;
+        //             hash[i] = Self::hash(sum_hash[i], in_out_degree[i]);
+        //         }
+        //     }
+
+        //     new_indices[i..n].sort_by(|a, b| {
+        //         in_out_degree[*a as usize]
+        //             .cmp(&in_out_degree[*b as usize])
+        //             .then(hash[*a as usize].cmp(&hash[*b as usize]))
+        //     });
+        // }
 
         let mut new = Poset::new(self.n, self.i);
 
