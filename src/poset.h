@@ -48,6 +48,28 @@ class Poset {
     }
   }
 
+  // Kante von (v) -> (w) g.d.w. a[v] < a[w]
+  void visit(const int v, std::vector<bool> &visited) const {
+    visited[v] = true;
+    for (uint8_t w = 0; w < n; ++w) {
+      if ((is(v, w) || is(w, v)) && !visited[w]) {
+        visit(w, visited);
+      }
+    }
+  }
+
+  uint8_t numberConnectedComponents() const {
+    std::vector<bool> visited(n, false);
+    uint8_t components = 0;
+    for (uint8_t v = 0; v < n; ++v) {
+      if (!visited[v]) {
+        ++components;
+        visit(v, visited);
+      }
+    }
+    return components;
+  }
+
  public:
   Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest) {
     std::memset(comparisonTable, false, n * n);
@@ -86,6 +108,17 @@ class Poset {
       }
     }
     return false;
+  }
+
+  inline bool hasEnoughComparisons(const uint8_t remainingComparisons) const {
+    if (0 == remainingComparisons) {
+      return false;
+    }
+    // very rarely used, senseless???
+    if (remainingComparisons + 1 < numberConnectedComponents()) {
+      return false;
+    }
+    return true;
   }
 
   bool operator==(const Poset<maxN> &poset) const {

@@ -7,9 +7,6 @@
 // ===================
 #include "normalizer.h"
 
-// TODO: Heuristiken:
-//        kann Poset in x Schritten gelöst werden -> vorzeitiger Abbruch
-
 // TODO: multithreading implementieren
 // TODO: multithreading nauty testen
 // TODO: ACHTUNG: post_normalize kaputt
@@ -19,7 +16,7 @@
 
 constexpr size_t globalMaxComparisons = 25;
 constexpr size_t globalMaxN = 15;
-constexpr size_t threadCount = 1;
+constexpr size_t threadCount = 20;
 
 const auto randomDataTable = ([]() {
   std::array<std::array<std::array<std::array<std::pair<int, int>, globalMaxN>, globalMaxN>, globalMaxComparisons>,
@@ -85,17 +82,17 @@ Poset<maxN> createPosetWithComparison(const int normalizerIndex, Poset<maxN> pos
   return poset;
 };
 
-template <size_t maxN>
 /// @param cache_lowerBound enthält alle Posets, für die mit max. `maxComparisons` Schritten keine Lösung bestimmt
 ///                         werden kann; z.B. wenn cache_lowerBound[poset] = 2, dann: benötige MEHR ALS 2 Schritte,
 ///                         um Poset zu lösen
 /// @param cache_upperBound enhält alle Posets, für die bereits eine Lösung gefunden wurde; z.B. wenn
 ///                         cache_upperBound[poset] = 2, dann kann poset IN 2 Schrittem gelöst werden
 /// @return true, wenn Median in poset in max. `maxComparisons` gefunden werden kann
+template <size_t maxN>
 SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
                     Cache<Poset<maxN>, uint8_t> cache_lowerBound[globalMaxN],
                     Cache<Poset<maxN>, uint8_t> cache_upperBound[globalMaxN], const uint8_t remainingComparisons,
-                    const bool multiThreading, const std::atomic<bool> &atomicBreak, Statistics &statistics,
+                    const uint8_t multiThreadingLevel, const std::atomic<bool> &atomicBreak, Statistics &statistics,
                     const int normalizerIndex = 229) {
   SearchResult result = NoSolution;
   if (atomicBreak) {
@@ -110,32 +107,32 @@ SearchResult search(BS::thread_pool_light &threadpool, const Poset<maxN> &poset,
     return FoundSolution;
   } else if (poset.canDetermineNSmallest()) {
     result = FoundSolution;
-  } else if (0 == remainingComparisons) {
+  } else if (!poset.hasEnoughComparisons(remainingComparisons)) {
     result = NoSolution;
   } else {
     ++statistics.functionCalls;
 
     const auto recursiveSearch = [&](const std::atomic<bool> &breakCondition, const int i, const int j,
                                      const int normalizerIndex1) {
-      SearchResult searchResult =
-          search(threadpool, createPosetWithComparison(normalizerIndex1, poset, i, j), cache_lowerBound,
-                 cache_upperBound, remainingComparisons - 1, false, breakCondition, statistics, normalizerIndex1);
+      SearchResult searchResult = search(threadpool, createPosetWithComparison(normalizerIndex1, poset, i, j),
+                                         cache_lowerBound, cache_upperBound, remainingComparisons - 1,
+                                         multiThreadingLevel, breakCondition, statistics, normalizerIndex1);
       if (searchResult == FoundSolution) {
-        searchResult =
-            search(threadpool, createPosetWithComparison(normalizerIndex1, poset, j, i), cache_lowerBound,
-                   cache_upperBound, remainingComparisons - 1, false, breakCondition, statistics, normalizerIndex1);
+        searchResult = search(threadpool, createPosetWithComparison(normalizerIndex1, poset, j, i), cache_lowerBound,
+                              cache_upperBound, remainingComparisons - 1, multiThreadingLevel, breakCondition,
+                              statistics, normalizerIndex1);
       }
       return searchResult;
     };
 
-    if (multiThreading) {
+    if (remainingComparisons == multiThreadingLevel) {
       std::atomic<bool> breakCondition(false);
 
       int normalizerIndex1 = 0;
       for (int i = 0; i < poset.size(); ++i) {
         for (int j = i + 1; j < poset.size(); ++j) {
           if (!poset.is(i, j) && !poset.is(j, i)) {
-            threadpool.push_task([&recursiveSearch, &breakCondition, i, j, normalizerIndex1]() {
+            threadpool.push_task([&]() {
               if (FoundSolution == recursiveSearch(breakCondition, i, j, normalizerIndex1)) {
                 breakCondition = true;
               }
@@ -184,6 +181,8 @@ std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, c
     return n - 1;
   }
 
+  const uint8_t multiLevel = 0;
+
   int foundSolution;
   std::atomic<bool> atomicBreak(false);
 
@@ -196,9 +195,8 @@ std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, c
       poset.addComparison(k, k + 1);
     }
     norm[0].normalize(poset);
-
     const SearchResult is_possible = search(threadpool, poset, cache_lowerBound, cache_upperBound, i - comparisonsDone,
-                                            1 != threadCount, atomicBreak, statistics);
+                                            multiLevel, atomicBreak, statistics);
     if (is_possible == FoundSolution) {
       foundSolution = i;
       break;
@@ -211,9 +209,8 @@ std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, c
   poset.addComparison(0, 1);
   norm[0].normalize(poset);
 
-  const SearchResult is_possible =
-      search(threadpool, poset, cache_lowerBound, cache_upperBound, foundSolution - 1 - comparisonsDone,
-             1 != threadCount, atomicBreak, statistics);
+  const SearchResult is_possible = search(threadpool, poset, cache_lowerBound, cache_upperBound,
+                                          foundSolution - 1 - comparisonsDone, multiLevel, atomicBreak, statistics);
   if (is_possible == NoSolution) {
     return foundSolution;
   } else {
@@ -224,8 +221,91 @@ std::optional<int> startSearch(BS::thread_pool_light &threadpool, const int n, c
   return {};
 }
 
+template <size_t maxN>
+SearchResult searchIterative(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+  SearchResult result = NoSolution;
+  if (poset.canDetermineNSmallest()) {
+    result = FoundSolution;
+  } else if (0 != remainingComparisons) {
+    for (int i = 0; i < poset.size() && result != FoundSolution; ++i) {
+      for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
+        if (!poset.is(i, j) && !poset.is(j, i)) {
+          result = searchIterative(createPosetWithComparison(0, poset, i, j), remainingComparisons - 1);
+          if (result == FoundSolution) {
+            result = searchIterative(createPosetWithComparison(0, poset, j, i), remainingComparisons - 1);
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+template <size_t maxN>
+SearchResult searchIterative2(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+  std::vector<Poset<maxN>> solutions;
+
+  for (int i = 0; i < poset.size() && result != FoundSolution; ++i) {
+    for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
+      if (!poset.is(i, j) && !poset.is(j, i)) {
+        solutions.push_back(createPosetWithComparison(0, ));
+      }
+    }
+  }
+
+  SearchResult result = NoSolution;
+  if (poset.canDetermineNSmallest()) {
+    result = FoundSolution;
+  } else if (0 != remainingComparisons) {
+    for (int i = 0; i < poset.size() && result != FoundSolution; ++i) {
+      for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
+        if (!poset.is(i, j) && !poset.is(j, i)) {
+          solutions.push_back(poset);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+template <size_t maxN>
+std::optional<int> startSearchIterative(const int n, const int nthSmallest) {
+  // Der Fall `0 == nthSmallest` ist bereits bekannt
+  if (0 == nthSmallest || n <= 2) {
+    return n - 1;
+  }
+
+  // `maxDepth` gibt die maximale Suchtiefe an. Diese wird, solange kein Ergebnis gefunden wurde, iterativ erhöht
+  for (int maxDepth = n - 1; maxDepth < n * n; ++maxDepth) {
+    int comparisonsDone = 0;
+    Poset<maxN> poset{n, nthSmallest};  // erstelle ein leeres Poset
+    for (int k = 0; k < n - 1 && comparisonsDone < maxDepth; k += 2) {
+      poset.addComparison(k, k + 1);  // bilde inital Paar und vergleiche diese
+      ++comparisonsDone;  // reduziere unsere maximale Suchtiefe, da bereits ein Vergleich durchgeführt wurde
+    }
+    // Suche, ob durch hinzufügen von maximal `maxDepth` Vergleichen, das Poset gelöst werden kann
+    if (FoundSolution == searchIterative(poset, maxDepth - comparisonsDone)) {
+      // Bis jetzt ist bekannt, dass mit dem "Paare-Trick" das i-kleinste Element in dem Poset in `maxDepth`-Schritten
+      // eindeutig gelöst werden kann. Da der Trick mit den Paaren nicht bewiesen ist, führe anschließend noch eine
+      // normale Suche mit Tiefe `maxDepth - 1` durch. Wenn diese in `NoSolution` resultiert, ist die Lösung gefunden
+      // (anderenfalls hätten wir den "Paare-Trick" widerlegt)
+      Poset<maxN> poset{n, nthSmallest};
+      // da irgendwelche 2 Elemente am Anfang verglichen werden, wähle o.B.d.A `0` und `1`
+      int comparisonsDone = 1;
+      poset.addComparison(0, 1);
+
+      if (NoSolution == searchIterative(poset, maxDepth - comparisonsDone - 1)) {
+        return maxDepth;
+      }
+
+      std::cout << "Error: \"Paare-Trick\" widerlegt" << std::endl;
+      return {};
+    }
+  }
+}
+
 int main() {
-  constexpr size_t nBound = 9;
+  constexpr size_t nBound = 6;
 
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
   std::cout.precision(3);
@@ -233,11 +313,13 @@ int main() {
   BS::thread_pool_light threadpool(threadCount);
   Cache<Poset<globalMaxN>, uint8_t> cache_lowerBound[globalMaxN];
   Cache<Poset<globalMaxN>, uint8_t> cache_upperBound[globalMaxN];
+
   for (int n = 1; n < globalMaxN; ++n) {
     for (int nthSmallest = 0; nthSmallest < (n + 1) / 2; ++nthSmallest) {
       StopWatch watch{};
 
       Statistics statistics;
+      // const std::optional<int> comparisons = startSearchIterative<globalMaxN>(n, nthSmallest);
       const std::optional<int> comparisons =
           startSearch(threadpool, n, nthSmallest, cache_lowerBound, cache_upperBound, statistics);
 
