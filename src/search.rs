@@ -42,7 +42,7 @@ impl<'a> Search<'a> {
     }
 
     fn search_cache(&mut self, poset: &Poset) -> Option<Cost> {
-        self.cache.get_and_do_stuff(poset).map(|c| *c)
+        self.cache.get_and_do_stuff(poset).copied()
     }
 
     fn insert_cache(&mut self, poset: Poset, new_cost: Cost) {
@@ -58,7 +58,7 @@ impl<'a> Search<'a> {
                 (Cost::Minimum(_), Cost::Solved(_)) => new_cost,
             };
 
-            self.cache.insert(poset.clone(), res);
+            self.cache.insert(poset, res);
         } else {
             self.cache.insert(poset, new_cost);
         }
@@ -91,8 +91,9 @@ impl<'a> Search<'a> {
                 }
             };
 
+            println!();
             println!(
-                "found solution for n = {}, i = {}, comparisons = {}",
+                "found solution for n = {}, i = {}: comparisons = {}",
                 self.n, self.i, res
             );
             println!("cache entries: {}", self.cache.len());
@@ -141,22 +142,22 @@ impl<'a> Search<'a> {
             }
         }
 
-        if let Some(false) = self.estimate_solvable(poset.clone(), max_comparisons, 0, 0, depth) {
+        if let Some(false) = self.estimate_solvable(poset, max_comparisons, 0, 0, depth) {
             let result = Cost::Minimum(max_comparisons + 1);
 
-            self.insert_cache(poset.clone(), result);
+            self.insert_cache(poset, result);
 
             return result;
         }
 
         let pairs = self.get_comparison_pairs(&poset);
 
-        let progress = if depth < 8 {
+        let progress = if depth + 2 < self.n {
             let progress = ProgressBar::new(pairs.len() as u64).with_style(
                 ProgressStyle::with_template("[{pos:2}/{len:2}] {msg} {wide_bar}").unwrap(),
             );
 
-            let progress = self.progress_bars.add(progress.clone());
+            let progress = self.progress_bars.add(progress);
             Some(progress)
         } else {
             None
@@ -199,10 +200,8 @@ impl<'a> Search<'a> {
             let new_result = first_result.value().max(second_result.value()) + 1;
 
             // take the min of all comparisons
-            if !result.is_solved() || new_result < current_max {
-                current_max = new_result;
-                result = Cost::Solved(new_result);
-            }
+            result = Cost::Solved(new_result.min(result.value()));
+            current_max = result.value();
 
             if let Some(progress) = &progress {
                 progress.inc(1);
@@ -234,9 +233,9 @@ impl<'a> Search<'a> {
             }
         }
 
-        let (less, _unknown, greater) = poset.calculate_relations();
+        // let (less, _unknown, greater) = poset.calculate_relations();
 
-        comparisons.sort_by_key(|(i, j)| Self::get_priority(*i, *j, &less, &greater));
+        // comparisons.sort_by_key(|(i, j)| Self::get_priority(*i, *j, &less, &greater));
 
         let mut pairs = Vec::with_capacity(comparisons.len());
 
@@ -301,7 +300,7 @@ impl<'a> Search<'a> {
         max_comparisons: u8,
         start_i: u8,
         start_j: u8,
-        depth: u8,
+        _depth: u8,
     ) -> Option<bool> {
         if let Some(cost) = self.search_cache(&poset) {
             self.cache_hits += 1;
@@ -341,7 +340,7 @@ impl<'a> Search<'a> {
                     max_comparisons,
                     i,
                     j + 1,
-                    depth + 1,
+                    _depth + 1,
                 ) {
                     return Some(false);
                 }
@@ -349,7 +348,7 @@ impl<'a> Search<'a> {
         }
 
         // if start_i != 0 && start_j != 0 {
-        //     let cost = self.search_rec(poset.clone(), max_comparisons, depth);
+        //     let cost = self.search_rec(poset, max_comparisons, _depth);
         //     match cost {
         //         Cost::Solved(solved) => {
         //             if solved <= max_comparisons {

@@ -1,8 +1,8 @@
-use std::{collections::hash_map::DefaultHasher, hash::Hash, hash::Hasher};
+use std::{collections::hash_map::DefaultHasher, hash::Hash, hash::Hasher, mem::size_of};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{poset::Poset, search::Cost};
+use crate::{poset::Poset, search::Cost, KNOWN_MIN_VALUES};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Entry {
@@ -13,7 +13,7 @@ pub struct Entry {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Cache {
-    arrays: Box<[[Option<Entry>; 16]]>,
+    arrays: Box<[[Option<Entry>; Self::ROW_LEN]]>,
     len: usize,
 }
 
@@ -27,16 +27,17 @@ impl Default for Entry {
     }
 }
 
-impl Default for Cache {
-    fn default() -> Self {
+impl Cache {
+    const ROW_LEN: usize = 32;
+
+    pub fn new(max_bytes: usize) -> Self {
+        let len = max_bytes / (Self::ROW_LEN * size_of::<Entry>());
         Cache {
-            arrays: vec![[None; 16]; 1 << 24].into_boxed_slice(),
+            arrays: vec![[None; Self::ROW_LEN]; len].into_boxed_slice(),
             len: 0,
         }
     }
-}
 
-impl Cache {
     pub fn get(&self, poset: &Poset) -> Option<&Cost> {
         let mut hasher = DefaultHasher::new();
         poset.hash(&mut hasher);
@@ -44,11 +45,9 @@ impl Cache {
 
         let row = &self.arrays[hash as usize % self.arrays.len()];
 
-        for i in 0..row.len() {
-            if let Some(entry) = &row[i] {
-                if entry.poset == *poset {
-                    return Some(&entry.cost);
-                }
+        for entry in row.iter().flatten() {
+            if entry.poset == *poset {
+                return Some(&entry.cost);
             }
         }
 
@@ -67,17 +66,12 @@ impl Cache {
             .position(|entry| entry.is_some_and(|entry| entry.poset == *poset));
 
         if let Some(index) = index {
-            for i in 0..row.len() {
-                if i != index {
-                    if let Some(entry) = &mut row[i] {
-                        entry.priority -= 1;
-                    }
-                }
-            }
-
             let entry = row.get_mut(index).unwrap().as_mut().unwrap();
 
-            entry.priority += 1;
+            let priority = KNOWN_MIN_VALUES[poset.n() as usize]
+                [poset.i().min(poset.n() - poset.i()) as usize] as i16;
+
+            entry.priority = entry.priority.saturating_add(priority);
 
             Some(&entry.cost)
         } else {
@@ -91,44 +85,70 @@ impl Cache {
         let hash = hasher.finish();
 
         let row = &mut self.arrays[hash as usize % self.arrays.len()];
-        let index = row
-            .iter()
-            .position(|entry| entry.is_some_and(|entry| entry.poset == poset));
 
-        if let Some(index) = index {
-            row[index] = Some(Entry {
-                poset,
-                cost,
-                priority: 0,
-            });
-        } else {
-            let index = row.iter().position(|entry| entry.is_none());
+        let mut lowest_prio = i16::MAX;
+        let mut lowest_prio_index = 0;
+        let mut lowest_unsolved_prio = i16::MAX;
+        let mut lowest_unsolved_prio_index = None;
+        let mut match_index = None;
+        let mut free_index = None;
 
-            if let Some(index) = index {
-                self.len += 1;
-                row[index] = Some(Entry {
-                    poset,
-                    cost,
-                    priority: 0,
-                });
-            } else {
-                let mut lowest_prio = i16::MAX;
-                let mut index = 0;
-
-                for i in 0..row.len() {
-                    if row[i].unwrap().priority < lowest_prio {
-                        index = i;
-                        lowest_prio = row[i].unwrap().priority;
+        for (i, entry) in row.iter().enumerate() {
+            if let Some(entry) = entry {
+                if !entry.cost.is_solved() {
+                    if entry.priority < lowest_unsolved_prio {
+                        lowest_unsolved_prio = entry.priority;
+                        lowest_unsolved_prio_index = Some(i);
                     }
                 }
-
-                row[index] = Some(Entry {
-                    poset,
-                    cost,
-                    priority: 0,
-                });
+                if entry.priority < lowest_prio {
+                    lowest_prio = entry.priority;
+                    lowest_prio_index = i;
+                }
+                if entry.poset == poset {
+                    match_index = Some(i);
+                }
+            } else {
+                free_index = Some(i);
             }
         }
+
+        let index = match match_index {
+            Some(i) => i,
+            None => match free_index {
+                Some(i) => {
+                    self.len += 1;
+                    i
+                }
+                None => match lowest_unsolved_prio_index {
+                    Some(i) => {
+                        let _old_entry = row[i].unwrap();
+                        i
+                    }
+                    None => {
+                        let _old_entry = row[lowest_prio_index].unwrap();
+                        lowest_prio_index
+                    }
+                },
+            },
+        };
+
+        for (i, entry) in row.iter_mut().enumerate() {
+            if i != index {
+                if let Some(entry) = entry {
+                    entry.priority = entry.priority.saturating_sub(1);
+                }
+            }
+        }
+
+        let priority = KNOWN_MIN_VALUES[poset.n() as usize]
+            [poset.i().min(poset.n() - poset.i()) as usize] as i16;
+
+        row[index] = Some(Entry {
+            poset,
+            cost,
+            priority,
+        });
     }
 
     pub fn len(&self) -> usize {

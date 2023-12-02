@@ -43,13 +43,18 @@ struct Args {
     /// Do only a single calculation
     #[arg(short, long, default_value_t = false, requires("i"))]
     single: bool,
-    /// The name of the cache to use.
+    /// The name of the cache file to use.
     #[arg(long, default_value = "cache.dat", value_hint = clap::ValueHint::FilePath)]
     cache_file: String,
+    /// Dont use a cache file
     #[arg(long, default_value_t = false)]
     no_cache: bool,
+    /// Explore the cache interactively
     #[arg(short, long, default_value_t = false)]
     explore: bool,
+    /// The max amount of bytes of the cache
+    #[arg(long, default_value_t = 1 << 33)]
+    max_cache_size: usize,
 }
 
 fn main() {
@@ -58,9 +63,9 @@ fn main() {
     let start_n = args.n.unwrap_or(1);
 
     let mut cache = if args.no_cache {
-        Cache::default()
+        Cache::new(args.max_cache_size)
     } else {
-        load_cache(&args.cache_file).unwrap_or_default()
+        load_cache(&args.cache_file).unwrap_or_else(|| Cache::new(args.max_cache_size))
     };
 
     println!("cache_entries = {}", cache.len());

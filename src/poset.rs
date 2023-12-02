@@ -38,6 +38,10 @@ impl Poset {
         self.n
     }
 
+    pub fn i(&self) -> u8 {
+        self.i
+    }
+
     #[inline]
     fn set_bit(&mut self, i: u8, j: u8) {
         let mask = 1 << j;
@@ -400,14 +404,14 @@ impl Poset {
 
     /// returns a clone of the poset, with i < j added
     pub fn with_less(&self, i: u8, j: u8) -> Self {
-        let mut new = self.clone();
+        let mut new = *self;
         new.add_less(i, j);
         new
     }
 
     /// returns a clone of the poset, with i < j added
     pub fn with_less_mapping(&self, i: u8, j: u8) -> (Self, [u8; MAX_N]) {
-        let mut new = self.clone();
+        let mut new = *self;
 
         new.add_and_close(i, j);
         let mapping = new.canonify_mapping();
