@@ -90,7 +90,7 @@ Im folgenden sei `maxN` die Größe des größten Posets, `n` die Größe eines 
   - wenn das `i`-kleinste Element gesucht ist und bereits bekannt, dass ein Element größer als z.B. alle anderen ist, kann dieses Element entfernt werden => dadurch ändert sich potentiell die Größe vom Poset
   - überführe das Poset anschließend mittels `nauty` in eine kanonische Normalform
 - wenn ein Poset (als Graph dargestellt) `k` Zusammenhangskomponenten hat, braucht man mindestens noch `k - 1` Vergleiche zum lösen
-- randomisiere die Reihenfolge, in der `i`, `j` in der Suche ausgewählt werden -> oder sortiere diese nach Ihren Erfolgschancen (Code Josua)
+- randomisiere die Reihenfolge, in der `i`, `j` in der Brute-Force-Suche ausgewählt werden (alternativ: sortiere diese nach Ihren Erfolgschancen; funktioniert ok, in der Praxis jedoch langsam)
 - wenn `i == 0`, werden immer `n - 1` Vergleiche benötigt
 
 ## weitere Überlegungen / Arbeitspunkte
@@ -102,30 +102,32 @@ Im folgenden sei `maxN` die Größe des größten Posets, `n` die Größe eines 
 C++:
 ```
 ...
-time '0.000s': n = 9, i = 0, calls = 0, hits = 0, cache = (266 + 1213 = 1479), comparisons: 8
-time '0.010s': n = 9, i = 1, calls = 53, hits = 1452, cache = (276 + 1250 = 1526), comparisons: 11
-time '0.049s': n = 9, i = 2, calls = 437, hits = 11727, cache = (302 + 1527 = 1829), comparisons: 12
-time '0.594s': n = 9, i = 3, calls = 7834, hits = 199667, cache = (1003 + 5532 = 6535), comparisons: 14
-time '1.028s': n = 9, i = 4, calls = 16519, hits = 414119, cache = (2168 + 13947 = 16115), comparisons: 14
+time '0.000s': n = 9, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (1213 + 266 = 1479), comparisons: 8
+time '0.011s': n = 9, i = 1, (cache_l: 1107, cache_u: 296, noSol: 2, bruteForce: 51), cache = (1250 + 276 = 1526), comparisons: 11
+time '0.048s': n = 9, i = 2, (cache_l: 9980, cache_u: 1689, noSol: 3, bruteForce: 434), cache = (1527 + 302 = 1829), comparisons: 12
+time '0.574s': n = 9, i = 3, (cache_l: 166793, cache_u: 32796, noSol: 28, bruteForce: 7830), cache = (5532 + 1003 = 6535), comparisons: 14
+time '1.023s': n = 9, i = 4, (cache_l: 345220, cache_u: 67959, noSol: 165, bruteForce: 16470), cache = (13947 + 2168 = 16115), comparisons: 14
 
-time '0.000s': n = 10, i = 0, calls = 0, hits = 0, cache = (2168 + 13947 = 16115), comparisons: 9
-time '0.006s': n = 10, i = 1, calls = 9, hits = 332, cache = (2170 + 13952 = 16122), comparisons: 12
-time '0.301s': n = 10, i = 2, calls = 1168, hits = 39113, cache = (2293 + 14742 = 17035), comparisons: 14
-time '1.881s': n = 10, i = 3, calls = 12088, hits = 405880, cache = (2827 + 23219 = 26046), comparisons: 15
-time '7.705s': n = 10, i = 4, calls = 70922, hits = 2283108, cache = (6089 + 68186 = 74275), comparisons: 16
+time '0.000s': n = 10, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (13947 + 2168 = 16115), comparisons: 9
+time '0.006s': n = 10, i = 1, (cache_l: 288, cache_u: 44, noSol: 0, bruteForce: 9), cache = (13952 + 2170 = 16122), comparisons: 12
+time '0.308s': n = 10, i = 2, (cache_l: 33265, cache_u: 5799, noSol: 2, bruteForce: 1166), cache = (14742 + 2293 = 17035), comparisons: 14
+time '1.891s': n = 10, i = 3, (cache_l: 354104, cache_u: 51522, noSol: 35, bruteForce: 12080), cache = (23219 + 2827 = 26046), comparisons: 15
+time '7.674s': n = 10, i = 4, (cache_l: 1987672, cache_u: 294806, noSol: 259, bruteForce: 70902), cache = (68186 + 6089 = 74275), comparisons: 16
 
-time '0.000s': n = 11, i = 0, calls = 0, hits = 0, cache = (6089 + 68186 = 74275), comparisons: 10
-time '0.040s': n = 11, i = 1, calls = 35, hits = 1351, cache = (6094 + 68211 = 74305), comparisons: 13
-time '1.242s': n = 11, i = 2, calls = 1801, hits = 75489, cache = (6204 + 69451 = 75655), comparisons: 15
-time '29.333s': n = 11, i = 3, calls = 100514, hits = 3995027, cache = (10876 + 125602 = 136478), comparisons: 17
-time '213.733s': n = 11, i = 4, calls = 1059549, hits = 41419058, cache = (56968 + 632129 = 689097), comparisons: 18
-time '262.824s': n = 11, i = 5, calls = 1647805, hits = 63416786, cache = (108502 + 1488856 = 1597358), comparisons: 18
+time '0.000s': n = 11, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (68186 + 6089 = 74275), comparisons: 10
+time '0.040s': n = 11, i = 1, (cache_l: 1209, cache_u: 106, noSol: 1, bruteForce: 34), cache = (68211 + 6094 = 74305), comparisons: 13
+time '1.257s': n = 11, i = 2, (cache_l: 66498, cache_u: 8889, noSol: 3, bruteForce: 1798), cache = (69451 + 6204 = 75655), comparisons: 15
+time '29.950s': n = 11, i = 3, (cache_l: 3561350, cache_u: 432256, noSol: 157, bruteForce: 100475), cache = (125602 + 10876 = 136478), comparisons: 17
+time '209.416s': n = 11, i = 4, (cache_l: 36740850, cache_u: 4671095, noSol: 2342, bruteForce: 1059365), cache = (632129 + 56968 = 689097), comparisons: 18
+time '258.693s': n = 11, i = 5, (cache_l: 56598245, cache_u: 6790147, noSol: 6074, bruteForce: 1646963), cache = (1488856 + 108502 = 1597358), comparisons: 18
 
-time '0.000s': n = 12, i = 0, calls = 0, hits = 0, cache = (108502 + 1488856 = 1597358), comparisons: 11
-time '0.089s': n = 12, i = 1, calls = 21, hits = 1010, cache = (108505 + 1488867 = 1597372), comparisons: 14
-time '16.276s': n = 12, i = 2, calls = 9117, hits = 461013, cache = (109234 + 1494450 = 1603684), comparisons: 17
-time '118.978s': n = 12, i = 3, calls = 172686, hits = 8580873, cache = (113111 + 1619369 = 1732480), comparisons: 18
+time '0.000s': n = 12, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (1488856 + 108502 = 1597358), comparisons: 11
+time '0.086s': n = 12, i = 1, (cache_l: 970, cache_u: 40, noSol: 0, bruteForce: 21), cache = (1488867 + 108505 = 1597372), comparisons: 14
+time '15.905s': n = 12, i = 2, (cache_l: 410763, cache_u: 49849, noSol: 9, bruteForce: 9108), cache = (1494450 + 109234 = 1603684), comparisons: 17
+time '111.794s': n = 12, i = 3, (cache_l: 7878258, cache_u: 700743, noSol: 181, bruteForce: 172647), cache = (1619369 + 113111 = 1732480), comparisons: 18
+...
 ```
+ACHTUNG: mit n = 12, i = 4 ist der "Paare-Trick" widerlegt
 
 # Poset-Datenstruktur
 |     | 0 | 1 | 2 | 3 | ... |
