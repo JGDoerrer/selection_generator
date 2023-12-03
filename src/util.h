@@ -185,8 +185,19 @@ class StopWatch {
   friend std::ostream &operator<<(std::ostream &os, const StopWatch &watch);
 };
 
+std::ostream &operator<<(std::ostream &os, const std::chrono::nanoseconds &nanos) {
+  os << (std::chrono::duration_cast<std::chrono::milliseconds>(nanos).count() / 1000.0) << "s";
+  return os;
+}
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const std::chrono::duration<T> &duration) {
+  os << (std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() / 1000.0) << "s";
+  return os;
+}
+
 std::ostream &operator<<(std::ostream &os, const StopWatch &watch) {
   const auto endPoint = std::chrono::steady_clock::now();
-  os << (std::chrono::duration_cast<std::chrono::milliseconds>(endPoint - watch.startPoint).count() / 1000.0) << "s";
+  os << endPoint - watch.startPoint;
   return os;
 }

@@ -8,7 +8,7 @@ class Poset {
  private:
   uint8_t n;
   uint8_t nthSmallest;
-  bool comparisonTable[maxN * maxN];
+  std::vector<bool> comparisonTable;
 
   inline void setValue(const uint16_t i, const uint16_t j, const bool value) { comparisonTable[i * n + j] = value; }
 
@@ -71,11 +71,7 @@ class Poset {
   }
 
  public:
-  Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest) {
-    std::memset(comparisonTable, false, n * n);
-  };
-
-  Poset() : Poset(0, 0, 0) {}
+  Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest), comparisonTable(n * n, false) {}
 
   // after func it holds: arr[i] < arr[j]
   void addComparison(const uint16_t i, const uint16_t j) {
@@ -122,8 +118,7 @@ class Poset {
   }
 
   bool operator==(const Poset<maxN> &poset) const {
-    return n == poset.n && nthSmallest == poset.nthSmallest &&
-           0 == std::memcmp(comparisonTable, poset.comparisonTable, n * poset.n);
+    return n == poset.n && nthSmallest == poset.nthSmallest && comparisonTable == poset.comparisonTable;
   }
 
   size_t hash() const {

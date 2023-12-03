@@ -92,10 +92,7 @@ class Normalizer {
 
 #ifdef USE_NAUTY
     // make the new poset
-    bool oldTb[poset.n * poset.n];
-    for (uint16_t i = 0; i < poset.n * poset.n; ++i) {
-      oldTb[i] = poset.comparisonTable[i];
-    }
+    std::vector<bool> oldTb(poset.comparisonTable);
     const uint8_t oldN = poset.n;
 
     poset.n = new_n;
@@ -126,6 +123,7 @@ class Normalizer {
     densenauty(g, lab, ptn, orbits, &options, &stats, m, poset.n, result);
     assert(stats.errstatus == 0);
 
+    poset.comparisonTable.resize(poset.n * poset.n);
     for (uint8_t i = 0; i < poset.n; ++i) {
       for (uint8_t j = 0; j < poset.n; ++j) {
         poset.setValue(i, j, oldTb[new_indices[lab[i]] * oldN + new_indices[lab[j]]]);
