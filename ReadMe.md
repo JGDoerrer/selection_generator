@@ -102,29 +102,30 @@ Im folgenden sei `maxN` die Größe des größten Posets, `n` die Größe eines 
 C++:
 ```
 ...
-time '0.000s': n = 9, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (1213 + 266 = 1479), comparisons: 8
-time '0.011s': n = 9, i = 1, (cache_l: 1107, cache_u: 296, noSol: 2, bruteForce: 51), cache = (1250 + 276 = 1526), comparisons: 11
-time '0.048s': n = 9, i = 2, (cache_l: 9980, cache_u: 1689, noSol: 3, bruteForce: 434), cache = (1527 + 302 = 1829), comparisons: 12
-time '0.574s': n = 9, i = 3, (cache_l: 166793, cache_u: 32796, noSol: 28, bruteForce: 7830), cache = (5532 + 1003 = 6535), comparisons: 14
-time '1.023s': n = 9, i = 4, (cache_l: 345220, cache_u: 67959, noSol: 165, bruteForce: 16470), cache = (13947 + 2168 = 16115), comparisons: 14
+time '0.000s + 0.000s = 0.000s': n = 9, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (863 + 162 = 1025), comparisons: 8
+time '0.003s + 0.003s = 0.006s': n = 9, i = 1, (cache_l: 777, cache_u: 113, noSol: 1, bruteForce: 35), cache = (874 + 166 = 1040), comparisons: 11
+time '0.031s + 0.024s = 0.056s': n = 9, i = 2, (cache_l: 13593, cache_u: 1680, noSol: 17, bruteForce: 604), cache = (1166 + 196 = 1362), comparisons: 12
+time '0.406s + 0.070s = 0.476s': n = 9, i = 3, (cache_l: 165951, cache_u: 28630, noSol: 74, bruteForce: 7847), cache = (4803 + 738 = 5541), comparisons: 14
+time '0.803s + 0.063s = 0.866s': n = 9, i = 4, (cache_l: 343522, cache_u: 64198, noSol: 219, bruteForce: 16350), cache = (12655 + 1833 = 14488), comparisons: 14
 
-time '0.000s': n = 10, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (13947 + 2168 = 16115), comparisons: 9
-time '0.006s': n = 10, i = 1, (cache_l: 288, cache_u: 44, noSol: 0, bruteForce: 9), cache = (13952 + 2170 = 16122), comparisons: 12
-time '0.308s': n = 10, i = 2, (cache_l: 33265, cache_u: 5799, noSol: 2, bruteForce: 1166), cache = (14742 + 2293 = 17035), comparisons: 14
-time '1.891s': n = 10, i = 3, (cache_l: 354104, cache_u: 51522, noSol: 35, bruteForce: 12080), cache = (23219 + 2827 = 26046), comparisons: 15
-time '7.674s': n = 10, i = 4, (cache_l: 1987672, cache_u: 294806, noSol: 259, bruteForce: 70902), cache = (68186 + 6089 = 74275), comparisons: 16
+time '0.000s + 0.000s = 0.000s': n = 10, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (12655 + 1833 = 14488), comparisons: 9
+time '0.002s + 0.008s = 0.010s': n = 10, i = 1, (cache_l: 670, cache_u: 24, noSol: 1, bruteForce: 20), cache = (12663 + 1835 = 14498), comparisons: 12
+time '0.017s + 0.204s = 0.222s': n = 10, i = 2, (cache_l: 26060, cache_u: 1744, noSol: 31, bruteForce: 824), cache = (13012 + 1843 = 14855), comparisons: 14
+time '0.622s + 0.544s = 1.167s': n = 10, i = 3, (cache_l: 272107, cache_u: 29321, noSol: 177, bruteForce: 9243), cache = (17699 + 2082 = 19781), comparisons: 15
+time '2.600s + 1.597s = 4.198s': n = 10, i = 4, (cache_l: 1329330, cache_u: 162412, noSol: 839, bruteForce: 47152), cache = (43196 + 3317 = 46513), comparisons: 16
 
-time '0.000s': n = 11, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (68186 + 6089 = 74275), comparisons: 10
-time '0.040s': n = 11, i = 1, (cache_l: 1209, cache_u: 106, noSol: 1, bruteForce: 34), cache = (68211 + 6094 = 74305), comparisons: 13
-time '1.257s': n = 11, i = 2, (cache_l: 66498, cache_u: 8889, noSol: 3, bruteForce: 1798), cache = (69451 + 6204 = 75655), comparisons: 15
-time '29.950s': n = 11, i = 3, (cache_l: 3561350, cache_u: 432256, noSol: 157, bruteForce: 100475), cache = (125602 + 10876 = 136478), comparisons: 17
-time '209.416s': n = 11, i = 4, (cache_l: 36740850, cache_u: 4671095, noSol: 2342, bruteForce: 1059365), cache = (632129 + 56968 = 689097), comparisons: 18
-time '258.693s': n = 11, i = 5, (cache_l: 56598245, cache_u: 6790147, noSol: 6074, bruteForce: 1646963), cache = (1488856 + 108502 = 1597358), comparisons: 18
+time '0.000s + 0.000s = 0.000s': n = 11, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (43196 + 3317 = 46513), comparisons: 10
+time '0.015s + 0.023s = 0.039s': n = 11, i = 1, (cache_l: 1194, cache_u: 68, noSol: 1, bruteForce: 34), cache = (43206 + 3323 = 46529), comparisons: 13
+time '0.476s + 0.762s = 1.238s': n = 11, i = 2, (cache_l: 85330, cache_u: 7773, noSol: 40, bruteForce: 2410), cache = (44297 + 3434 = 47731), comparisons: 15
+time '17.432s + 3.886s = 21.319s': n = 11, i = 3, (cache_l: 3140524, cache_u: 348143, noSol: 557, bruteForce: 90450), cache = (89516 + 6734 = 96250), comparisons: 17
+time '184.454s + 9.229s = 193.683s': n = 11, i = 4, (cache_l: 37361556, cache_u: 4620047, noSol: 3975, bruteForce: 1085444), cache = (590603 + 51481 = 642084), comparisons: 18
+time '223.366s + 7.408s = 230.775s': n = 11, i = 5, (cache_l: 55443680, cache_u: 6538462, noSol: 8155, bruteForce: 1614247), cache = (1414082 + 99829 = 1513911), comparisons: 18
 
-time '0.000s': n = 12, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (1488856 + 108502 = 1597358), comparisons: 11
-time '0.086s': n = 12, i = 1, (cache_l: 970, cache_u: 40, noSol: 0, bruteForce: 21), cache = (1488867 + 108505 = 1597372), comparisons: 14
-time '15.905s': n = 12, i = 2, (cache_l: 410763, cache_u: 49849, noSol: 9, bruteForce: 9108), cache = (1494450 + 109234 = 1603684), comparisons: 17
-time '111.794s': n = 12, i = 3, (cache_l: 7878258, cache_u: 700743, noSol: 181, bruteForce: 172647), cache = (1619369 + 113111 = 1732480), comparisons: 18
+time '0.000s + 0.000s = 0.000s': n = 12, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (1414082 + 99829 = 1513911), comparisons: 11
+time '0.032s + 0.093s = 0.125s': n = 12, i = 1, (cache_l: 1561, cache_u: 24, noSol: 1, bruteForce: 32), cache = (1414094 + 99832 = 1513926), comparisons: 14
+time '1.221s + 8.163s = 9.384s': n = 12, i = 2, (cache_l: 219521, cache_u: 19037, noSol: 64, bruteForce: 4771), cache = (1416170 + 99979 = 1516149), comparisons: 17
+time '48.769s + 29.038s = 77.807s': n = 12, i = 3, (cache_l: 6034354, cache_u: 444381, noSol: 1191, bruteForce: 134227), cache = (1496994 + 102029 = 1599023), comparisons: 18
+try: upper comparisonBound = 20 ~20min?
 ...
 ```
 ACHTUNG: mit n = 12, i = 4 ist der "Paare-Trick" widerlegt
