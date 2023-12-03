@@ -11,13 +11,22 @@ class Cache {
  public:
   inline bool checkCondition(const F &key, const std::function<bool(const G)> &condition) {
     const std::lock_guard<std::mutex> lock(mutex_cache);
-    return cache.find(key) != cache.end() && condition(cache.at(key));
+    const auto temp = cache.find(key);
+    return temp != cache.end() && condition(temp->second);
+  }
+
+  inline void insert(const F &key, const G &newValue) {
+    const std::lock_guard<std::mutex> lock(mutex_cache);
+    cache[key] = newValue;
   }
 
   inline void insertIfCondition(const F &key, const G &newValue, const std::function<bool(const G)> &condition) {
     const std::lock_guard<std::mutex> lock(mutex_cache);
-    if (cache.find(key) == cache.end() || condition(cache.at(key))) {
+    const auto temp = cache.find(key);
+    if (temp == cache.end()) {
       cache[key] = newValue;
+    } else if (condition(temp->second)) {
+      temp->second = newValue;
     }
   }
 
