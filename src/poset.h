@@ -80,6 +80,8 @@ class Poset {
 
   uint8_t size() const { return n; }
 
+  uint8_t nth() const { return nthSmallest; }
+
   // true => arr[i] < arr[j]
   // ACHTUNG: is(a, b) == false IMPLIZIERT NICHT, dass arr[i] > arr[j]:
   // nur wenn arr[i] > arr[j] => false

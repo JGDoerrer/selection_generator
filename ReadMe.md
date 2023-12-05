@@ -98,38 +98,6 @@ Im folgenden sei `maxN` die Größe des größten Posets, `n` die Größe eines 
 - Mache eine Rückwärtssuche für `q`-Vergleiche (z.B. `q` = 4) und befülle die beiden caches inital. In der Suche können sich die letzten `q` Ebenen im Suchbaum gespart werden, da entweder das Poset im cache vorhanden ist oder wenn nicht unmöglich zu lösen in `q`-Vergleichen -> Problem: nur führ sehr kleine `q` möglich
 - speichere zu den aktuell in der Tiefensuche verwendeten Posets extra Informationen, anstatt neu zu berechnen (jedoch nicht in Caches)
 
-# Program Results
-C++:
-```
-...
-time '0.000s + 0.000s = 0.000s': n = 9, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (863 + 162 = 1025), comparisons: 8
-time '0.003s + 0.003s = 0.006s': n = 9, i = 1, (cache_l: 777, cache_u: 113, noSol: 1, bruteForce: 35), cache = (874 + 166 = 1040), comparisons: 11
-time '0.031s + 0.024s = 0.056s': n = 9, i = 2, (cache_l: 13593, cache_u: 1680, noSol: 17, bruteForce: 604), cache = (1166 + 196 = 1362), comparisons: 12
-time '0.406s + 0.070s = 0.476s': n = 9, i = 3, (cache_l: 165951, cache_u: 28630, noSol: 74, bruteForce: 7847), cache = (4803 + 738 = 5541), comparisons: 14
-time '0.803s + 0.063s = 0.866s': n = 9, i = 4, (cache_l: 343522, cache_u: 64198, noSol: 219, bruteForce: 16350), cache = (12655 + 1833 = 14488), comparisons: 14
-
-time '0.000s + 0.000s = 0.000s': n = 10, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (12655 + 1833 = 14488), comparisons: 9
-time '0.002s + 0.008s = 0.010s': n = 10, i = 1, (cache_l: 670, cache_u: 24, noSol: 1, bruteForce: 20), cache = (12663 + 1835 = 14498), comparisons: 12
-time '0.017s + 0.204s = 0.222s': n = 10, i = 2, (cache_l: 26060, cache_u: 1744, noSol: 31, bruteForce: 824), cache = (13012 + 1843 = 14855), comparisons: 14
-time '0.622s + 0.544s = 1.167s': n = 10, i = 3, (cache_l: 272107, cache_u: 29321, noSol: 177, bruteForce: 9243), cache = (17699 + 2082 = 19781), comparisons: 15
-time '2.600s + 1.597s = 4.198s': n = 10, i = 4, (cache_l: 1329330, cache_u: 162412, noSol: 839, bruteForce: 47152), cache = (43196 + 3317 = 46513), comparisons: 16
-
-time '0.000s + 0.000s = 0.000s': n = 11, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (43196 + 3317 = 46513), comparisons: 10
-time '0.015s + 0.023s = 0.039s': n = 11, i = 1, (cache_l: 1194, cache_u: 68, noSol: 1, bruteForce: 34), cache = (43206 + 3323 = 46529), comparisons: 13
-time '0.476s + 0.762s = 1.238s': n = 11, i = 2, (cache_l: 85330, cache_u: 7773, noSol: 40, bruteForce: 2410), cache = (44297 + 3434 = 47731), comparisons: 15
-time '17.432s + 3.886s = 21.319s': n = 11, i = 3, (cache_l: 3140524, cache_u: 348143, noSol: 557, bruteForce: 90450), cache = (89516 + 6734 = 96250), comparisons: 17
-time '184.454s + 9.229s = 193.683s': n = 11, i = 4, (cache_l: 37361556, cache_u: 4620047, noSol: 3975, bruteForce: 1085444), cache = (590603 + 51481 = 642084), comparisons: 18
-time '223.366s + 7.408s = 230.775s': n = 11, i = 5, (cache_l: 55443680, cache_u: 6538462, noSol: 8155, bruteForce: 1614247), cache = (1414082 + 99829 = 1513911), comparisons: 18
-
-time '0.000s + 0.000s = 0.000s': n = 12, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (1414082 + 99829 = 1513911), comparisons: 11
-time '0.032s + 0.093s = 0.125s': n = 12, i = 1, (cache_l: 1561, cache_u: 24, noSol: 1, bruteForce: 32), cache = (1414094 + 99832 = 1513926), comparisons: 14
-time '1.221s + 8.163s = 9.384s': n = 12, i = 2, (cache_l: 219521, cache_u: 19037, noSol: 64, bruteForce: 4771), cache = (1416170 + 99979 = 1516149), comparisons: 17
-time '48.769s + 29.038s = 77.807s': n = 12, i = 3, (cache_l: 6034354, cache_u: 444381, noSol: 1191, bruteForce: 134227), cache = (1496994 + 102029 = 1599023), comparisons: 18
-try: upper comparisonBound = 20 ~20min?
-...
-```
-ACHTUNG: mit n = 12, i = 4 ist der "Paare-Trick" widerlegt
-
 # Poset-Datenstruktur
 |     | 0 | 1 | 2 | 3 | ... |
 | -   | - | - | - | - |  -  |
@@ -142,3 +110,152 @@ ACHTUNG: mit n = 12, i = 4 ist der "Paare-Trick" widerlegt
 - Einträge mit `f` sind immer false
 - wenn Eintrag `(0, 2) == true` gilt list[0] < list[2]
 - => dann kann nicht `(2, 0) == true` gelten
+
+# Program Output
+C++:
+```
+...
+time '0.000s + 0.000s = 0.000s': n = 9, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (1044 + 219 = 1263), comparisons: 8
+time '0.000s + 0.000s = 0.000s': n = 9, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (1044 + 219 = 1263), comparisons: 11
+time '0.000s + 0.000s = 0.000s': n = 9, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (1044 + 219 = 1263), comparisons: 12
+# search with Pair-Optimisation & maxComparisons = 13 -> NoSolution in 0.269s
+# search with maxComparisons = 13 -> NoSolution in 0.165s
+time '0.269s + 0.165s = 0.434s': n = 9, i = 3, (cache_l: 123818, cache_u: 25754, noSol: 8, bruteForce: 6002), cache = (4864 + 870 = 5734), comparisons: 14
+# search with Pair-Optimisation & maxComparisons = 15 -> FoundSolution in 0.000s
+# search with Pair-Optimisation & maxComparisons = 14 -> FoundSolution in 0.346s
+# search with Pair-Optimisation & maxComparisons = 13 -> NoSolution in 0.082s
+# search with maxComparisons = 13 -> NoSolution in 0.116s
+time '0.428s + 0.116s = 0.545s': n = 9, i = 4, (cache_l: 190295, cache_u: 44617, noSol: 7, bruteForce: 9268), cache = (11406 + 1691 = 13097), comparisons: 14
+
+time '0.000s + 0.000s = 0.000s': n = 10, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (11406 + 1691 = 13097), comparisons: 9
+time '0.000s + 0.000s = 0.000s': n = 10, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (11406 + 1691 = 13097), comparisons: 12
+time '0.000s + 0.000s = 0.000s': n = 10, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (11406 + 1691 = 13097), comparisons: 14
+# search with Pair-Optimisation & maxComparisons = 14 -> NoSolution in 0.238s
+# search with maxComparisons = 14 -> NoSolution in 1.354s
+time '0.238s + 1.354s = 1.593s': n = 10, i = 3, (cache_l: 308065, cache_u: 43176, noSol: 5, bruteForce: 10553), cache = (19450 + 2155 = 21605), comparisons: 15
+# search with Pair-Optimisation & maxComparisons = 16 -> FoundSolution in 0.181s
+# search with Pair-Optimisation & maxComparisons = 15 -> NoSolution in 1.696s
+# search with maxComparisons = 15 -> NoSolution in 4.924s
+time '1.878s + 4.924s = 6.803s': n = 10, i = 4, (cache_l: 1875883, cache_u: 279524, noSol: 41, bruteForce: 68037), cache = (65602 + 5595 = 71197), comparisons: 16
+
+time '0.000s + 0.000s = 0.000s': n = 11, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (65602 + 5595 = 71197), comparisons: 10
+time '0.000s + 0.000s = 0.000s': n = 11, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (65602 + 5595 = 71197), comparisons: 13
+time '0.000s + 0.000s = 0.000s': n = 11, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (65602 + 5595 = 71197), comparisons: 15
+# search with Pair-Optimisation & maxComparisons = 18 -> FoundSolution in 1.199s
+# search with Pair-Optimisation & maxComparisons = 17 -> FoundSolution in 2.656s
+# search with Pair-Optimisation & maxComparisons = 16 -> NoSolution in 7.111s
+# search with maxComparisons = 16 -> NoSolution in 10.749s
+time '10.967s + 10.749s = 21.716s': n = 11, i = 3, (cache_l: 2868695, cache_u: 378266, noSol: 28, bruteForce: 82523), cache = (119490 + 10255 = 129745), comparisons: 17
+# search with Pair-Optimisation & maxComparisons = 17 -> NoSolution in 67.619s
+# search with maxComparisons = 17 -> NoSolution in 34.669s
+time '67.619s + 34.669s = 102.289s': n = 11, i = 4, (cache_l: 19653011, cache_u: 2339754, noSol: 308, bruteForce: 565760), cache = (479281 + 31544 = 510825), comparisons: 18
+# search with Pair-Optimisation & maxComparisons = 19 -> FoundSolution in 2.139s
+# search with Pair-Optimisation & maxComparisons = 18 -> FoundSolution in 56.272s
+# search with Pair-Optimisation & maxComparisons = 17 -> NoSolution in 33.809s
+# search with maxComparisons = 17 -> NoSolution in 36.656s
+time '92.221s + 36.656s = 128.878s': n = 11, i = 5, (cache_l: 30085265, cache_u: 3915540, noSol: 127, bruteForce: 883085), cache = (1094857 + 61112 = 1155969), comparisons: 18
+
+time '0.000s + 0.000s = 0.000s': n = 12, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (1094857 + 61112 = 1155969), comparisons: 11
+time '0.000s + 0.000s = 0.000s': n = 12, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (1094857 + 61112 = 1155969), comparisons: 14
+# search with Pair-Optimisation & maxComparisons = 16 -> NoSolution in 0.681s
+# search with maxComparisons = 16 -> NoSolution in 13.902s
+time '0.681s + 13.902s = 14.584s': n = 12, i = 2, (cache_l: 405364, cache_u: 49858, noSol: 12, bruteForce: 9099), cache = (1101291 + 61807 = 1163098), comparisons: 17
+# search with Pair-Optimisation & maxComparisons = 19 -> FoundSolution in 0.003s
+# search with Pair-Optimisation & maxComparisons = 18 -> FoundSolution in 14.092s
+# search with Pair-Optimisation & maxComparisons = 17 -> NoSolution in 2.664s
+# search with maxComparisons = 17 -> NoSolution in 67.648s
+time '16.760s + 67.648s = 84.409s': n = 12, i = 3, (cache_l: 6276184, cache_u: 579414, noSol: 56, bruteForce: 137414), cache = (1204968 + 65377 = 1270345), comparisons: 18
+# search with Pair-Optimisation & maxComparisons = 22 -> FoundSolution in 0.065s
+# search with Pair-Optimisation & maxComparisons = 21 -> FoundSolution in 15.201s
+# search with Pair-Optimisation & maxComparisons = 20 -> FoundSolution in 3.602s
+# search with Pair-Optimisation & maxComparisons = 19 -> NoSolution in 482.740s
+# search with maxComparisons = 19 -> FoundSolution in 935.443s
+# search with Pair-Optimisation & maxComparisons = 18 -> NoSolution in 0.000s
+# search with maxComparisons = 18 -> NoSolution in 0.568s
+time '501.610s + 936.012s = 1437.622s': n = 12, i = 4, (cache_l: 192046780, cache_u: 18939768, noSol: 1458, bruteForce: 4485921), cache = (3927728 + 201904 = 4129632), comparisons: 19
+# search with Pair-Optimisation & maxComparisons = 20 -> FoundSolution in 53.172s
+# search with Pair-Optimisation & maxComparisons = 19 -> NoSolution in 611.049s
+# search with maxComparisons = 19
+```
+
+# (theoretische) Schranken
+```
+n = 1, t = 0: 0
+
+n = 2, t = 0: 1
+
+n = 3, t = 0: 2
+n = 3, t = 1: 3
+
+n = 4, t = 0: 3
+n = 4, t = 1: 4
+
+n = 5, t = 0: 4
+n = 5, t = 1: 6
+n = 5, t = 2: 6
+
+n = 6, t = 0: 5
+n = 6, t = 1: 7
+n = 6, t = 2: 8
+
+n = 7, t = 0: 6
+n = 7, t = 1: 8
+n = 7, t = 2: 9 - 10
+n = 7, t = 3: 9 - 12
+
+n = 8, t = 0: 7
+n = 8, t = 1: 9
+n = 8, t = 2: 11
+n = 8, t = 3: 11 - 13
+
+n = 9, t = 0: 8
+n = 9, t = 1: 11
+n = 9, t = 2: 12
+n = 9, t = 3: 13 - 14
+n = 9, t = 4: 12 - 16
+
+n = 10, t = 0: 9
+n = 10, t = 1: 12
+n = 10, t = 2: 14
+n = 10, t = 3: 14 - 15
+n = 10, t = 4: 14 - 17
+
+n = 11, t = 0: 10
+n = 11, t = 1: 13
+n = 11, t = 2: 15
+n = 11, t = 3: 16 - 19
+n = 11, t = 4: 16 - 18
+n = 11, t = 5: 15 - 20
+
+n = 12, t = 0: 11
+n = 12, t = 1: 14
+n = 12, t = 2: 16 - 17
+n = 12, t = 3: 17 - 20
+n = 12, t = 4: 18 - 23
+n = 12, t = 5: 17 - 21
+
+n = 13, t = 0: 12
+n = 13, t = 1: 15
+n = 13, t = 2: 17 - 18
+n = 13, t = 3: 19 - 21
+n = 13, t = 4: 19 - 24
+n = 13, t = 5: 19 - 26
+n = 13, t = 6: 18 - 24
+
+n = 14, t = 0: 13
+n = 14, t = 1: 16
+n = 14, t = 2: 19
+n = 14, t = 3: 20 - 22
+n = 14, t = 4: 21 - 25
+n = 14, t = 5: 21 - 28
+n = 14, t = 6: 20 - 27
+
+n = 15, t = 0: 14
+n = 15, t = 1: 17
+n = 15, t = 2: 20
+n = 15, t = 3: 22 - 23
+n = 15, t = 4: 22 - 26
+n = 15, t = 5: 23 - 29
+n = 15, t = 6: 22 - 30
+n = 15, t = 7: 21 - 35
+```
