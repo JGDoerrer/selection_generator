@@ -8,7 +8,7 @@ use crate::{poset::Poset, search::Cost, KNOWN_MIN_VALUES};
 pub struct Entry {
     poset: Poset,
     cost: Cost,
-    priority: i16,
+    priority: i32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -17,18 +17,8 @@ pub struct Cache {
     len: usize,
 }
 
-impl Default for Entry {
-    fn default() -> Self {
-        Entry {
-            poset: Poset::new(0, 0),
-            cost: Cost::Minimum(0),
-            priority: 0,
-        }
-    }
-}
-
 impl Cache {
-    const ROW_LEN: usize = 32;
+    const ROW_LEN: usize = 8;
 
     pub fn new(max_bytes: usize) -> Self {
         let len = max_bytes / (Self::ROW_LEN * size_of::<Entry>());
@@ -38,7 +28,7 @@ impl Cache {
         }
     }
 
-    pub fn get(&self, poset: &Poset) -> Option<&Cost> {
+    pub fn get(&self, poset: &Poset) -> Option<Cost> {
         let mut hasher = DefaultHasher::new();
         poset.hash(&mut hasher);
         let hash = hasher.finish();
@@ -47,14 +37,14 @@ impl Cache {
 
         for entry in row.iter().flatten() {
             if entry.poset == *poset {
-                return Some(&entry.cost);
+                return Some(entry.cost);
             }
         }
 
         None
     }
 
-    pub fn get_and_do_stuff(&mut self, poset: &Poset) -> Option<&Cost> {
+    pub fn get_and_do_stuff(&mut self, poset: &Poset) -> Option<Cost> {
         let mut hasher = DefaultHasher::new();
         poset.hash(&mut hasher);
         let hash = hasher.finish();
@@ -67,13 +57,13 @@ impl Cache {
 
         if let Some(index) = index {
             let entry = row.get_mut(index).unwrap().as_mut().unwrap();
-
+            let cost = entry.cost;
             let priority = KNOWN_MIN_VALUES[poset.n() as usize]
-                [poset.i().min(poset.n() - poset.i()) as usize] as i16;
+                [poset.i().min(poset.n() - poset.i()) as usize] as i32;
 
             entry.priority = entry.priority.saturating_add(priority);
 
-            Some(&entry.cost)
+            Some(cost)
         } else {
             None
         }
@@ -86,9 +76,9 @@ impl Cache {
 
         let row = &mut self.arrays[hash as usize % self.arrays.len()];
 
-        let mut lowest_prio = i16::MAX;
+        let mut lowest_prio = i32::MAX;
         let mut lowest_prio_index = 0;
-        let mut lowest_unsolved_prio = i16::MAX;
+        let mut lowest_unsolved_prio = i32::MAX;
         let mut lowest_unsolved_prio_index = None;
         let mut match_index = None;
         let mut free_index = None;
@@ -142,7 +132,7 @@ impl Cache {
         }
 
         let priority = KNOWN_MIN_VALUES[poset.n() as usize]
-            [poset.i().min(poset.n() - poset.i()) as usize] as i16;
+            [poset.i().min(poset.n() - poset.i()) as usize] as i32;
 
         row[index] = Some(Entry {
             poset,

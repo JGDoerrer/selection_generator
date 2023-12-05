@@ -188,11 +188,10 @@ fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &Cache) {
                 let greater = poset.with_less(mapped_j, mapped_i);
                 match cache.get(&less) {
                     Some(Cost::Solved(cost)) => {
-                        let cost = *cost;
                         print!(" {:<2}|", cost);
 
                         if let Some(Cost::Solved(other_cost)) = cache.get(&greater) {
-                            let max_cost = cost.max(*other_cost);
+                            let max_cost = cost.max(other_cost);
                             if max_cost < best_cost {
                                 best_cost = max_cost;
                                 best_comp = (i, j);

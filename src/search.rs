@@ -42,19 +42,19 @@ impl<'a> Search<'a> {
     }
 
     fn search_cache(&mut self, poset: &Poset) -> Option<Cost> {
-        self.cache.get_and_do_stuff(poset).copied()
+        self.cache.get_and_do_stuff(poset)
     }
 
     fn insert_cache(&mut self, poset: Poset, new_cost: Cost) {
         if let Some(cost) = self.cache.get(&poset) {
             let res = match (cost, new_cost) {
                 (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
-                    Cost::Minimum(new_min.max(*old_min))
+                    Cost::Minimum(new_min.max(old_min))
                 }
                 (Cost::Solved(old_solved), Cost::Solved(new_solved)) => {
-                    Cost::Solved(new_solved.min(*old_solved))
+                    Cost::Solved(new_solved.min(old_solved))
                 }
-                (Cost::Solved(_), Cost::Minimum(_)) => *cost,
+                (Cost::Solved(_), Cost::Minimum(_)) => cost,
                 (Cost::Minimum(_), Cost::Solved(_)) => new_cost,
             };
 
@@ -177,7 +177,14 @@ impl<'a> Search<'a> {
             }
 
             // search the first case of the comparison
-            let first_result = self.search_rec(first, current_max - 1, depth + 1);
+            let mut first_result = Cost::Minimum(current_max);
+            for i in 0..=current_max - 1 {
+                first_result = self.search_rec(first, i, depth + 1);
+
+                if first_result.is_solved() || first_result.value() > current_max - 1 {
+                    break;
+                }
+            }
 
             if !first_result.is_solved() || first_result.value() > current_max - 1 {
                 if let Some(progress) = &progress {
@@ -187,7 +194,14 @@ impl<'a> Search<'a> {
             }
 
             // search the second case of the comparison
-            let second_result = self.search_rec(second, current_max - 1, depth + 1);
+            let mut second_result = Cost::Minimum(current_max);
+            for i in first_result.value()..=current_max - 1 {
+                second_result = self.search_rec(second, i, depth + 1);
+
+                if second_result.is_solved() || second_result.value() > current_max - 1 {
+                    break;
+                }
+            }
 
             if !second_result.is_solved() || second_result.value() > current_max - 1 {
                 if let Some(progress) = &progress {
