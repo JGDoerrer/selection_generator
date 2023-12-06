@@ -355,7 +355,7 @@ const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nano
   }
 }
 
-int main() {
+int main2() {
   constexpr size_t nBound = 9;
 
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
@@ -417,44 +417,45 @@ int main() {
 //   }
 // }
 
-// std::unordered_set<Poset<globalMaxN>> posets;
-// int stat1 = 0;
-// void rec(std::vector<bool> &temp, const int n, const int k, int pos) {
-//   if (-1 == pos) {
-//     Poset<globalMaxN> poset(n, k);
+std::unordered_set<Poset<globalMaxN>> posets[10];
+template <size_t maxN>
+int search(const Poset<maxN> &poset) {
+  int level = 1000;
+  if (poset.canDetermineNSmallest()) {
+    level = 0;
+  } else {
+    for (int i = 0; i < poset.size(); ++i) {
+      for (int j = i + 1; j < poset.size(); ++j) {
+        if (!poset.is(i, j) && !poset.is(j, i)) {
+          Poset<maxN> poset1 = poset, poset2 = poset;
+          poset1.addComparison(i, j);
+          poset2.addComparison(j, i);
 
-//     int p1 = 0;
-//     for (int i = 0; i < n; ++i)
-//       for (int j = i + 1; j < n; ++j)
-//         if (temp[p1++]) {
-//           poset.addComparison(i, j);
-//         }
+          int m1 = search(poset1);
+          int m2 = search(poset2);
+          level = std::min(level, std::max(m1, m2) + 1);
+        }
+      }
+    }
+  }
+  if (level <= 2) {
+    Poset<maxN> poset1 = poset;
+    norm[0].normalize(poset1);
+    posets[poset1.size()].insert(poset1);
+  }
+  return level;
+}
 
-//     ++stat1;
-//     if (!poset.canDetermineNSmallest()) {
-//       for (int i = 0; i < n; ++i)
-//         for (int j = i + 1; j < n; ++j)
-//           if (!poset.is(i, j)) {
-//             Poset<globalMaxN> poset2 = createPosetWithComparison(0, poset, i, j);
-//             if (poset2.canDetermineNSmallest()) {
-//               posets.insert(poset);
-//             }
-//           }
-//     }
-//   } else {
-//     temp[pos] = false;
-//     rec(temp, n, k, pos - 1);
-//     temp[pos] = true;
-//     rec(temp, n, k, pos - 1);
-//   }
-// }
-
-// int main() {
-//   int n = 4;
-//   int k = 1;
-//   std::vector<bool> temp(n * (n - 1) / 2, 0);
-//   rec(temp, n, k, n * (n - 1) / 2);
-//   std::cout << posets.size() << std::endl;
-//   std::cout << stat1 << std::endl;
-//   for (auto poset : posets) std::cout << poset << std::endl;
-//
+int main() {
+  int n = 5;
+  int k = 1;
+  Poset<globalMaxN> poset{n, k};  // erstelle ein leeres Poset
+  search(poset);
+  for (int i = 0; i < 10; ++i) {
+    if (0 != posets[i].size()) {
+      std::cout << posets[i].size() << " posets mit größe " << i << std::endl;
+      // for (auto poset : posets[i]) std::cout << poset << std::endl;
+    }
+  }
+  // std::cout << posets.size() << std::endl;
+}
