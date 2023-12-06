@@ -119,6 +119,20 @@ class Poset {
     return true;
   }
 
+  // how many elements are less than it
+  void getLessGreater(uint8_t less[], uint8_t greater[]) const {
+    std::memset(less, 0, n);
+    std::memset(greater, 0, n);
+    for (uint8_t i = 0; i < n; ++i) {
+      for (uint8_t j = 0; j < n; ++j) {
+        if (getValue(i, j)) {
+          ++less[j];
+          ++greater[i];
+        }
+      }
+    }
+  }
+
   bool operator==(const Poset<maxN> &poset) const {
     return n == poset.n && nthSmallest == poset.nthSmallest && comparisonTable == poset.comparisonTable;
   }

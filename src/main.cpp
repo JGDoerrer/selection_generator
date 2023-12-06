@@ -228,17 +228,9 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
           }
         }
 
-        uint8_t less[poset.size()], greater[poset.size()];
-        std::memset(less, 0, poset.size());
-        std::memset(greater, 0, poset.size());
-        for (uint8_t i = 0; i < poset.size(); ++i) {
-          for (uint8_t j = 0; j < poset.size(); ++j) {
-            if (poset.is(i, j)) {
-              ++less[j];
-              ++greater[i];
-            }
-          }
-        }
+        uint8_t less[poset.size()];
+        uint8_t greater[poset.size()];
+        poset.getLessGreater(less, greater);
 
         std::sort(temp.begin(), temp.end(), [&](const std::pair<int, int> &a, const std::pair<int, int> &b) {
           return greater[a.first] + less[a.second] > greater[b.first] + less[b.second];
@@ -355,7 +347,7 @@ const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nano
   }
 }
 
-int main2() {
+int main() {
   constexpr size_t nBound = 9;
 
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
@@ -446,7 +438,7 @@ int search(const Poset<maxN> &poset) {
   return level;
 }
 
-int main() {
+int main2() {
   int n = 5;
   int k = 1;
   Poset<globalMaxN> poset{n, k};  // erstelle ein leeres Poset
