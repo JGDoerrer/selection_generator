@@ -239,6 +239,10 @@ impl Poset {
             }
         }
 
+        if new.i > new.n / 2 {
+            new = new.dual();
+        }
+
         // dbg!(&self, &new);
         debug_assert!(new.is_closed(), "{new:?}");
         *self = new;
@@ -503,6 +507,83 @@ impl Poset {
             true
         }
     }
+
+    /// Assumes self is normalized
+    pub fn dual(&self) -> Self {
+        let mut dual = Poset::new(self.n, self.n - self.i - 1);
+        for i in 0..self.n {
+            for j in 0..self.n {
+                if self.is_less(i, j) {
+                    dual.set_bit(j, i);
+                }
+            }
+        }
+
+        dual
+    }
+
+    pub fn compatible_posets(&self) -> u32 {
+        todo!()
+    }
+
+    fn get_connected(&self) -> Vec<Vec<u8>> {
+        let mut visited = [false; MAX_N];
+        let mut parts = vec![];
+
+        for i in 0..self.n {
+            if visited[i as usize] {
+                continue;
+            }
+
+            let part = self.get_connected_part(i);
+
+            for &j in &part {
+                visited[j as usize] = true;
+            }
+
+            parts.push(part);
+        }
+
+        parts
+    }
+
+    fn get_connected_part(&self, i: u8) -> Vec<u8> {
+        let mut connected = [false; MAX_N];
+
+        connected[i as usize] = true;
+
+        loop {
+            let new_connected = connected
+                .iter()
+                .enumerate()
+                .filter(|(j, is_connected)| {
+                    !**is_connected
+                        && connected
+                            .iter()
+                            .enumerate()
+                            .any(|(k, c)| *c && self.has_order(*j as u8, k as u8))
+                })
+                .map(|(j, _)| j)
+                .collect::<Vec<_>>();
+
+            let has_new = !new_connected.is_empty();
+
+            for j in new_connected {
+                connected[j] = true;
+            }
+
+            if !has_new {
+                break;
+            }
+        }
+
+        connected
+            .iter()
+            .enumerate()
+            .filter(|(_, connected)| **connected)
+            .map(|(i, _)| i as u8)
+            .collect()
+    }
 }
 
 impl Debug for Poset {
@@ -599,5 +680,61 @@ mod test {
         // This doesn't work yet
         dbg!(&hashset);
         assert_eq!(hashset.len(), 4);
+    }
+
+    #[test]
+    fn test_connected_1() {
+        let mut poset = Poset::new(10, 4);
+
+        poset.set_bit(0, 1);
+        poset.set_bit(1, 2);
+        poset.set_bit(0, 2);
+        poset.set_bit(3, 4);
+        poset.set_bit(4, 5);
+        poset.set_bit(3, 5);
+
+        let mapping = poset.canonify_mapping();
+
+        let connected_1 =
+            poset.get_connected_part(mapping.iter().position(|i| *i == 1).unwrap() as u8);
+        assert_eq!(connected_1.len(), 3);
+
+        assert!(connected_1.contains(&(mapping.iter().position(|i| *i == 0).unwrap() as u8)));
+        assert!(connected_1.contains(&(mapping.iter().position(|i| *i == 1).unwrap() as u8)));
+        assert!(connected_1.contains(&(mapping.iter().position(|i| *i == 2).unwrap() as u8)));
+    }
+
+    #[test]
+    fn test_connected_2() {
+        let mut poset = Poset::new(10, 4);
+
+        poset.set_bit(0, 1);
+        poset.set_bit(1, 2);
+        poset.set_bit(0, 2);
+        poset.set_bit(3, 4);
+        poset.set_bit(4, 5);
+        poset.set_bit(3, 5);
+
+        let mapping = poset.canonify_mapping();
+
+        let connected = poset.get_connected();
+
+        assert_eq!(connected.len(), 6);
+        assert!(connected
+            .iter()
+            .find(
+                |part| part.contains(&(mapping.iter().position(|i| *i == 0).unwrap() as u8))
+                    && part.contains(&(mapping.iter().position(|i| *i == 1).unwrap() as u8))
+                    && part.contains(&(mapping.iter().position(|i| *i == 2).unwrap() as u8))
+            )
+            .is_some());
+        assert!(connected
+            .iter()
+            .find(
+                |part| part.contains(&(mapping.iter().position(|i| *i == 3).unwrap() as u8))
+                    && part.contains(&(mapping.iter().position(|i| *i == 4).unwrap() as u8))
+                    && part.contains(&(mapping.iter().position(|i| *i == 5).unwrap() as u8))
+            )
+            .is_some());
     }
 }

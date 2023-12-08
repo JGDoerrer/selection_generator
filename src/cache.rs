@@ -6,9 +6,9 @@ use crate::{poset::Poset, search::Cost, KNOWN_MIN_VALUES};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Entry {
-    poset: Poset,
-    cost: Cost,
-    priority: i32,
+    pub poset: Poset,
+    pub cost: Cost,
+    pub priority: i32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -143,5 +143,57 @@ impl Cache {
 
     pub fn len(&self) -> usize {
         self.len
+    }
+
+    pub fn iter(&self) -> CacheIterator {
+        CacheIterator {
+            cache: &self,
+            row: 0,
+            index: 0,
+        }
+    }
+
+    pub fn counts(&self) -> Vec<u64> {
+        let mut counts = vec![0; 50]; // i hope this is enough
+
+        for row in self.arrays.iter() {
+            for entry in row.iter().flatten() {
+                counts[entry.cost.value() as usize] += 1;
+            }
+        }
+
+        while counts.last().copied() == Some(0) {
+            counts.pop();
+        }
+
+        counts
+    }
+}
+
+pub struct CacheIterator<'a> {
+    cache: &'a Cache,
+    row: usize,
+    index: usize,
+}
+
+impl<'a> Iterator for CacheIterator<'a> {
+    type Item = Entry;
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut next = self.cache.arrays[self.row]
+            .iter()
+            .skip(self.index)
+            .flatten()
+            .next();
+
+        while next.is_none() && self.row < self.cache.arrays.len() {
+            self.row += 1;
+            next = self.cache.arrays[self.row]
+                .iter()
+                .skip(self.index)
+                .flatten()
+                .next();
+        }
+
+        next.copied()
     }
 }

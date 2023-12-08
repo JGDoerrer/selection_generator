@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::{collections::hash_map::DefaultHasher, hash::Hash, hash::Hasher, time::Instant};
 
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
@@ -13,7 +13,7 @@ pub struct Search<'a> {
     i: u8,
     current_max: u8,
     cache: &'a mut Cache,
-    total_nodes: u64,
+    total_posets: u64,
     cache_hits: u64,
     start: Instant,
     progress_bars: MultiProgress,
@@ -34,7 +34,7 @@ impl<'a> Search<'a> {
             i,
             current_max: 0,
             cache,
-            total_nodes: 0,
+            total_posets: 0,
             cache_hits: 0,
             start: Instant::now(),
             progress_bars: MultiProgress::new(),
@@ -108,6 +108,13 @@ impl<'a> Search<'a> {
                 days, hours, minutes, seconds
             );
 
+            println!("poset counts by number of comparisons: ");
+            let counts = self.cache.counts();
+
+            for (i, count) in counts.iter().enumerate() {
+                println!("{i:2}: {count:12}");
+            }
+
             // assert_eq!(comps, max);
             return Cost::Solved(res);
         }
@@ -170,21 +177,14 @@ impl<'a> Search<'a> {
         for (first, second) in pairs {
             if let Some(progress) = &progress {
                 progress.set_message(format!(
-                    "max: {current_max:2}, nodes: {:10}, cache: {:10}",
-                    self.total_nodes,
+                    "max: {current_max:2}, total: {:10}, cache: {:10}",
+                    self.total_posets,
                     self.cache.len()
                 ));
             }
 
             // search the first case of the comparison
-            let mut first_result = Cost::Minimum(current_max);
-            for i in 0..=current_max - 1 {
-                first_result = self.search_rec(first, i, depth + 1);
-
-                if first_result.is_solved() || first_result.value() > current_max - 1 {
-                    break;
-                }
-            }
+            let first_result = self.search_rec(first, current_max - 1, depth + 1);
 
             if !first_result.is_solved() || first_result.value() > current_max - 1 {
                 if let Some(progress) = &progress {
@@ -194,14 +194,7 @@ impl<'a> Search<'a> {
             }
 
             // search the second case of the comparison
-            let mut second_result = Cost::Minimum(current_max);
-            for i in first_result.value()..=current_max - 1 {
-                second_result = self.search_rec(second, i, depth + 1);
-
-                if second_result.is_solved() || second_result.value() > current_max - 1 {
-                    break;
-                }
-            }
+            let second_result = self.search_rec(second, current_max - 1, depth + 1);
 
             if !second_result.is_solved() || second_result.value() > current_max - 1 {
                 if let Some(progress) = &progress {
@@ -222,7 +215,7 @@ impl<'a> Search<'a> {
             }
         }
 
-        self.total_nodes += 1;
+        self.total_posets += 1;
 
         if let Some(progress) = progress {
             progress.finish_and_clear();

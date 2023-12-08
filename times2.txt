@@ -1,0 +1,271 @@
+commit 81e6b81b1ddb640b49a41225cea1b5a6d75d6821
+
+found solution for n = 1, i = 0, comparisons = 0
+cache entries: 0
+cache hits: 0
+time since start: 0d 0h 0m 0.000004886s
+
+found solution for n = 2, i = 0, comparisons = 1
+cache entries: 1
+cache hits: 0
+time since start: 0d 0h 0m 0.000074115s
+
+found solution for n = 3, i = 0, comparisons = 2
+cache entries: 2
+cache hits: 2
+time since start: 0d 0h 0m 0.000066024s
+
+found solution for n = 3, i = 1, comparisons = 3
+cache entries: 5
+cache hits: 2
+time since start: 0d 0h 0m 0.00016527s
+
+found solution for n = 4, i = 0, comparisons = 3
+cache entries: 6
+cache hits: 2
+time since start: 0d 0h 0m 0.000098031s
+
+found solution for n = 4, i = 1, comparisons = 4
+cache entries: 10
+cache hits: 13
+time since start: 0d 0h 0m 0.000321521s
+
+found solution for n = 5, i = 0, comparisons = 4
+cache entries: 11
+cache hits: 2
+time since start: 0d 0h 0m 0.000086173s
+
+found solution for n = 5, i = 1, comparisons = 6
+cache entries: 17
+cache hits: 73
+time since start: 0d 0h 0m 0.000802704s
+
+found solution for n = 5, i = 2, comparisons = 6
+cache entries: 36
+cache hits: 99
+time since start: 0d 0h 0m 0.001615178s
+
+found solution for n = 6, i = 0, comparisons = 5
+cache entries: 37
+cache hits: 2
+time since start: 0d 0h 0m 0.000111723s
+
+found solution for n = 6, i = 1, comparisons = 7
+cache entries: 47
+cache hits: 75
+time since start: 0d 0h 0m 0.001335513s
+
+found solution for n = 6, i = 2, comparisons = 8
+cache entries: 90
+cache hits: 421
+time since start: 0d 0h 0m 0.00515914s
+
+found solution for n = 7, i = 0, comparisons = 6
+cache entries: 91
+cache hits: 2
+time since start: 0d 0h 0m 0.000096833s
+
+found solution for n = 7, i = 1, comparisons = 8
+cache entries: 105
+cache hits: 107
+time since start: 0d 0h 0m 0.001558521s
+
+found solution for n = 7, i = 2, comparisons = 10
+cache entries: 223
+cache hits: 1607
+time since start: 0d 0h 0m 0.011033687s
+
+found solution for n = 7, i = 3, comparisons = 10
+cache entries: 499
+cache hits: 3248
+time since start: 0d 0h 0m 0.022595944s
+
+found solution for n = 8, i = 0, comparisons = 7
+cache entries: 500
+cache hits: 2
+time since start: 0d 0h 0m 0.000116768s
+
+found solution for n = 8, i = 1, comparisons = 9
+cache entries: 518
+cache hits: 122
+time since start: 0d 0h 0m 0.001578219s
+
+found solution for n = 8, i = 2, comparisons = 11
+cache entries: 743
+cache hits: 2503
+time since start: 0d 0h 0m 0.0294099s
+
+found solution for n = 8, i = 3, comparisons = 12
+cache entries: 1769
+cache hits: 17556
+time since start: 0d 0h 0m 0.09206251s
+
+found solution for n = 9, i = 0, comparisons = 8
+cache entries: 1770
+cache hits: 2
+time since start: 0d 0h 0m 0.000129043s
+
+found solution for n = 9, i = 1, comparisons = 11
+cache entries: 1802
+cache hits: 609
+time since start: 0d 0h 0m 0.009622541s
+
+found solution for n = 9, i = 2, comparisons = 12
+cache entries: 2106
+cache hits: 3511
+time since start: 0d 0h 0m 0.029493704s
+
+found solution for n = 9, i = 3, comparisons = 14
+cache entries: 6532
+cache hits: 98866
+time since start: 0d 0h 0m 0.3492054s
+
+found solution for n = 9, i = 4, comparisons = 14
+cache entries: 15515
+cache hits: 172182
+time since start: 0d 0h 0m 0.64002407s
+
+found solution for n = 10, i = 0, comparisons = 9
+cache entries: 15516
+cache hits: 2
+time since start: 0d 0h 0m 0.000150717s
+
+found solution for n = 10, i = 1, comparisons = 12
+cache entries: 15554
+cache hits: 431
+time since start: 0d 0h 0m 0.005492121s
+
+found solution for n = 10, i = 2, comparisons = 14
+cache entries: 16954
+cache hits: 26582
+time since start: 0d 0h 0m 0.150476s
+
+found solution for n = 10, i = 3, comparisons = 15
+cache entries: 27005
+cache hits: 179266
+time since start: 0d 0h 0m 0.63406444s
+
+found solution for n = 10, i = 4, comparisons = 16
+cache entries: 83959
+cache hits: 1407216
+time since start: 0d 0h 0m 3.878079s
+
+found solution for n = 11, i = 0, comparisons = 10
+cache entries: 83960
+cache hits: 2
+time since start: 0d 0h 0m 0.00016731s
+
+found solution for n = 11, i = 1, comparisons = 13
+cache entries: 84010
+cache hits: 587
+time since start: 0d 0h 0m 0.008438154s
+
+found solution for n = 11, i = 2, comparisons = 15
+cache entries: 85430
+cache hits: 19543
+time since start: 0d 0h 0m 0.12571613s
+
+found solution for n = 11, i = 3, comparisons = 17
+cache entries: 138216
+cache hits: 1462546
+time since start: 0d 0h 0m 4.225964s
+
+found solution for n = 11, i = 4, comparisons = 18
+cache entries: 510802
+cache hits: 11621405
+time since start: 0d 0h 0m 34.327095s
+
+found solution for n = 11, i = 5, comparisons = 18
+cache entries: 1228095
+cache hits: 19126975
+time since start: 0d 0h 1m 1.9430923s
+
+found solution for n = 12, i = 0, comparisons = 11
+cache entries: 1228096
+cache hits: 2
+time since start: 0d 0h 0m 0.000258762s
+
+found solution for n = 12, i = 1, comparisons = 14
+cache entries: 1228160
+cache hits: 869
+time since start: 0d 0h 0m 0.01686478s
+
+found solution for n = 12, i = 2, comparisons = 17
+cache entries: 1234178
+cache hits: 151578
+time since start: 0d 0h 0m 0.6203178s
+
+found solution for n = 12, i = 3, comparisons = 18
+cache entries: 1318360
+cache hits: 1947775
+time since start: 0d 0h 0m 7.038253s
+
+found solution for n = 12, i = 4, comparisons = 19
+cache entries: 3508197
+cache hits: 108388340
+time since start: 0d 0h 6m 21.127655s
+
+found solution for n = 12, i = 5, comparisons = 20
+cache entries: 10607207
+cache hits: 244895128
+time since start: 0d 0h 17m 25.023926s
+
+found solution for n = 13, i = 0, comparisons = 12
+cache entries: 10607208
+cache hits: 2
+time since start: 0d 0h 0m 0.000290391s
+
+found solution for n = 13, i = 1, comparisons = 15
+cache entries: 10607293
+cache hits: 927
+time since start: 0d 0h 0m 0.017309308s
+
+found solution for n = 13, i = 2, comparisons = 18
+cache entries: 10615560
+cache hits: 118545
+time since start: 0d 0h 0m 0.7321959s
+
+found solution for n = 13, i = 3, comparisons = 20
+cache entries: 11555803
+cache hits: 23654840
+time since start: 0d 0h 1m 31.586288s
+
+found solution for n = 13, i = 4, comparisons = 21
+cache entries: 31926540
+cache hits: 590875306
+time since start: 0d 0h 50m 8.401611s
+
+found solution for n = 13, i = 5, comparisons = 22
+cache entries: 189523208
+cache hits: 11569022919
+time since start: 0d 19h 12m 17.84375s
+
+found solution for n = 13, i = 6, comparisons = 23
+cache entries: 268404498
+cache hits: 97990380495
+time since start: 6d 6h 34m 8.5625s
+
+found solution for n = 14, i = 0, comparisons = 13
+cache entries: 268404498
+cache hits: 9
+time since start: 0d 0h 0m 0.006539251s
+
+found solution for n = 14, i = 1, comparisons = 16
+cache entries: 268404498
+cache hits: 4549
+time since start: 0d 0h 0m 0.15567847s
+
+found solution for n = 14, i = 2, comparisons = 19
+cache entries: 268404514
+cache hits: 451486
+time since start: 0d 0h 0m 2.7745712s
+
+found solution for n = 14, i = 3, comparisons = 21
+cache entries: 268405799
+cache hits: 59345143
+time since start: 0d 0h 4m 25.373657s
+
+found solution for n = 14, i = 4, comparisons = 23
+cache entries: 268434230
+cache hits: 6440423067
+time since start: 0d 8h 41m 53.615234s
