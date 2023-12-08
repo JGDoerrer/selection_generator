@@ -71,6 +71,103 @@ class Poset {
   }
 
  public:
+  inline bool isRedundant(const uint16_t i, const uint16_t j) const {
+    for (uint16_t k = 0; k < n; ++k) {
+      if (is(i, k) && is(k, j)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // invariant: Sei M = poset.removeComparison(i, j), dann gilt für alle m in M : m.addComparison(i, j) == poset
+  // speichert in `result` alle möglichen Posets, die nach Aufruf von `addComparison(i, j)`, dem aktuellen entsprechen
+  // TODO: dedupliziere Posets (normalisieren)
+  inline std::unordered_set<Poset<maxN>> removeComparison(const uint16_t i, const uint16_t j) const {
+    std::unordered_set<Poset<maxN>> result;
+    std::unordered_set<Poset<maxN>> temp;
+    std::queue<std::tuple<uint16_t, uint16_t, Poset<maxN>>> queue;
+    queue.push({i, j, *this});
+    while (0 != queue.size()) {
+      auto [i1, j1, poset] = queue.front();
+      queue.pop();
+
+      if (true == poset.getValue(i1, j1)) {
+        poset.setValue(i1, j1, false);
+
+        if (temp.contains(poset)) continue;
+        temp.insert(poset);
+
+        bool success = true;
+        // füge item zur Ergebnismenge hinzu, wenn ALLE vorhandenen relationen transitiv keine nicht vorhandenen
+        // Relationen erzeugen
+        for (uint8_t in = 0; in < n; ++in) {
+          for (uint8_t jn = 0; jn < n; ++jn) {
+            if (poset.is(in, jn)) {
+              for (uint16_t k = 0; k < n; ++k) {
+                if (poset.is(jn, k) && !poset.is(in, k)) {
+                  success = false;
+                } else if (poset.is(k, in) && !poset.is(k, jn)) {
+                  success = false;
+                }
+              }
+            }
+          }
+        }
+        if (success) {
+          result.insert(poset);
+        }
+
+        for (uint8_t in = 0; in < n; ++in) {
+          for (uint8_t jn = 0; jn < n; ++jn) {
+            if (poset.is(in, jn)) {
+              Poset<maxN> poset3 = poset;
+              poset3.setValue(in, jn, false);
+              poset3.addComparison(i, j);
+              if (*this == poset3) {
+                queue.push({in, jn, poset});
+              }
+            }
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  // inline void removeAllTransitivComparisonsRecursiv(Normalizer<maxN> &normalizer,
+  //                                                   std::unordered_set<Poset<maxN>> &result) const {
+  //   for (uint8_t i = 0; i < n; ++i) {
+  //     for (uint8_t j = 0; j < n; ++j) {
+  //       if (is(i, j) && isRedundant(i, j)) {
+  //         Poset<maxN> poset2 = *this;
+  //         poset2.setValue(i, j, false);
+  //         normalizer.normalize(poset2);
+
+  //         if (!result.contains(poset2)) {
+  //           result.insert(poset2);
+  //           removeAllTransitivComparisonsRecursiv(normalizer, result);
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+
+  // // inline bool canDetermineNSmallestWOTransitiv(const uint16_t i, const uint16_t j) const {
+  // //   Poset temp{n, nthSmallest};
+  // //   for (int i1 = 0; i1 < n; ++i1) {
+  // //     for (int j1 = 0; j1 < n; ++j1) {
+  // //       if (is(i1, j1) && (i != i1 || j != j1)) {
+  // //         temp.addComparison(i1, j1);
+  // //       }
+  // //     }
+  // //   }
+  // //   return temp.canDetermineNSmallest();
+  // // }
+
+  // iterator for all "ones"
+
   Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest), comparisonTable(n * n, false) {}
 
   // after func it holds: arr[i] < arr[j]
