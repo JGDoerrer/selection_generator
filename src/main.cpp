@@ -22,7 +22,7 @@ constexpr bool TOP_TO_BOTTOM_SEARCH = false;
 
 // siehe Section 5.3.3
 // https://doc.lagout.org/science/0_Computer%20Science/2_Algorithms/The%20Art%20of%20Computer%20Programming%20%28vol.%203_%20Sorting%20and%20Searching%29%20%282nd%20ed.%29%20%5BKnuth%201998-05-04%5D.pdf
-int getUpperBound(const int n, int t) {
+int upper_bound(const int n, int t) {
   t += 1;  // offset in Programm vs Paper
   if (t > (n + 1) / 2) {
     throw std::invalid_argument("it should hold t <= (n + 1) / 2");
@@ -56,7 +56,7 @@ double nCr(const int n, int k) {
   return result;
 }
 
-int getLowerBound(const int n, int t) {
+int lower_bound(const int n, int t) {
   t += 1;  // offset in Programm vs Paper
   if (t > (n + 1) / 2) {
     throw std::invalid_argument("it should hold t <= (n + 1) / 2");
@@ -161,11 +161,11 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
   SearchResult result = NoSolution;
   if (atomicBreak) {
     return Unknown;
-  } else if (cache_lowerBound[poset.size()].checkCondition(
+  } else if (cache_lowerBound[poset.size()].check(
                  poset, [=](const uint8_t item) { return remainingComparisons <= item; })) {
     ++statistics.hashMatchLowerBound;
     return NoSolution;
-  } else if (cache_upperBound[poset.size()].checkCondition(
+  } else if (cache_upperBound[poset.size()].check(
                  poset, [=](const uint8_t item) { return remainingComparisons >= item; })) {
     ++statistics.hashMatchUpperBound;
     return FoundSolution;
@@ -197,7 +197,7 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
       int normalizerIndex1 = 0;
       for (int i = 0; i < poset.size(); ++i) {
         for (int j = i + 1; j < poset.size(); ++j) {
-          if (!poset.is(i, j) && !poset.is(j, i)) {
+          if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
             threadpool.push_task([&]() {
               if (FoundSolution == recursiveSearch(breakCondition, i, j, normalizerIndex1)) {
                 breakCondition = true;
@@ -222,7 +222,7 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
         std::vector<std::pair<int, int>> temp;
         for (int i = 0; i < poset.size(); ++i) {
           for (int j = i + 1; j < poset.size(); ++j) {
-            if (!poset.is(i, j) && !poset.is(j, i)) {
+            if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
               temp.push_back({i, j});
             }
           }
@@ -246,7 +246,7 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
         for (int i = 0; i < poset.size() && result != FoundSolution; ++i) {
           for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
             const auto [new_i, new_j] = randomDataTable[poset.size()][remainingComparisons][i][j];
-            if (!poset.is(new_i, new_j) && !poset.is(new_j, new_i)) {
+            if (!poset.is_less(new_i, new_j) && !poset.is_less(new_j, new_i)) {
               result = recursiveSearch(atomicBreak, new_i, new_j, normalizerIndex);
             }
           }
@@ -256,10 +256,10 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
   }
 
   if (result == NoSolution) {
-    cache_lowerBound[poset.size()].insertIfCondition(poset, remainingComparisons,
+    cache_lowerBound[poset.size()].insert_if(poset, remainingComparisons,
                                                      [=](const uint8_t item) { return remainingComparisons > item; });
   } else if (result == FoundSolution) {
-    cache_upperBound[poset.size()].insertIfCondition(poset, remainingComparisons,
+    cache_upperBound[poset.size()].insert_if(poset, remainingComparisons,
                                                      [=](const uint8_t item) { return remainingComparisons < item; });
   }
   return result;
@@ -309,8 +309,8 @@ const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nano
     Cache<Poset<maxN>, uint8_t> cache_lowerBound[globalMaxN], Cache<Poset<maxN>, uint8_t> cache_upperBound[globalMaxN],
     Statistics &statistics) {
   std::chrono::nanoseconds searchDuration{}, validateDuration{};
-  const int lower = getLowerBound(n, nthSmallest);
-  const int upper = getUpperBound(n, nthSmallest);
+  const int lower = lower_bound(n, nthSmallest);
+  const int upper = upper_bound(n, nthSmallest);
   if (lower == upper) {
     return {lower, searchDuration, validateDuration};
   }

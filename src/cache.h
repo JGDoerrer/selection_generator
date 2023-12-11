@@ -9,7 +9,7 @@ class Cache {
   std::mutex mutex_cache;
 
  public:
-  inline bool checkCondition(const F &key, const std::function<bool(const G)> &condition) {
+  inline bool check(const F &key, const std::function<bool(const G)> &condition) {
     const std::lock_guard<std::mutex> lock(mutex_cache);
     const auto temp = cache.find(key);
     return temp != cache.end() && condition(temp->second);
@@ -20,7 +20,7 @@ class Cache {
     cache[key] = newValue;
   }
 
-  inline void insertIfCondition(const F &key, const G &newValue, const std::function<bool(const G)> &condition) {
+  inline void insert_if(const F &key, const G &newValue, const std::function<bool(const G)> &condition) {
     const std::lock_guard<std::mutex> lock(mutex_cache);
     const auto temp = cache.find(key);
     if (temp == cache.end()) {

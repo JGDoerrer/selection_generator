@@ -57,7 +57,7 @@ class Normalizer {
     poset.comparisonTable.resize(new_n * new_n);
     for (uint8_t i = 0; i < new_n; ++i) {
       for (uint8_t j = 0; j < new_n; ++j) {
-        poset.setValue(i, j, oldTb[new_indices[i] * oldN + new_indices[j]]);
+        poset.set_less(i, j, oldTb[new_indices[i] * oldN + new_indices[j]]);
       }
     }
   }
@@ -68,9 +68,9 @@ class Normalizer {
       poset.nthSmallest = poset.n - 1 - poset.nthSmallest;
       for (uint8_t i = 0; i < poset.n; ++i) {
         for (uint8_t j = i + 1; j < poset.n; ++j) {
-          const bool temp = poset.getValue(i, j);
-          poset.setValue(i, j, poset.getValue(j, i));
-          poset.setValue(j, i, temp);
+          const bool temp = poset.is_less(i, j);
+          poset.set_less(i, j, poset.is_less(j, i));
+          poset.set_less(j, i, temp);
         }
       }
     }
@@ -80,7 +80,7 @@ class Normalizer {
     EMPTYGRAPH(g, m, poset.n);
     for (uint16_t i = 0; i < poset.n; ++i) {
       for (uint16_t j = 0; j < poset.n; ++j) {
-        if (poset.getValue(i, j)) {
+        if (poset.is_less(i, j)) {
           ADDONEARC(g, i, j, m);
         }
       }
@@ -105,7 +105,7 @@ class Normalizer {
     std::vector<bool> oldTb(poset.comparisonTable);
     for (uint8_t i = 0; i < poset.n; ++i) {
       for (uint8_t j = 0; j < poset.n; ++j) {
-        poset.setValue(i, j, oldTb[lab[i] * poset.n + lab[j]]);
+        poset.set_less(i, j, oldTb[lab[i] * poset.n + lab[j]]);
       }
     }
   }
@@ -138,7 +138,7 @@ class Normalizer {
       std::vector<bool> oldTb(poset.comparisonTable);
       for (uint8_t i = 0; i < poset.n; ++i) {
         for (uint8_t j = 0; j < poset.n; ++j) {
-          poset.setValue(i, j, oldTb[rowSum[i].second * poset.n + rowSum[j].second]);
+          poset.set_less(i, j, oldTb[rowSum[i].second * poset.n + rowSum[j].second]);
         }
       }
     }

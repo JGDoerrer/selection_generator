@@ -52,7 +52,7 @@ struct is_set<std::set<T>> {
 };
 
 template <typename T>
-std::ostream &printContainer(std::ostream &os, T container) {
+std::ostream &print_container(std::ostream &os, T container) {
   if constexpr (is_map<T>::value) {
     os << '[';
     bool isNotFirst = false;
@@ -100,68 +100,40 @@ std::ostream &printContainer(std::ostream &os, T container) {
 
 template <typename F, typename G>
 std::ostream &operator<<(std::ostream &os, const std::map<F, G> &container) {
-  return printContainer(os, container);
+  return print_container(os, container);
 }
 
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const std::stack<T> &container) {
-  return printContainer(os, container);
+  return print_container(os, container);
 }
 
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const std::queue<T> &container) {
-  return printContainer(os, container);
+  return print_container(os, container);
 }
 
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const std::vector<T> &container) {
-  return printContainer(os, container);
+  return print_container(os, container);
 }
 
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const std::list<T> &container) {
-  return printContainer(os, container);
+  return print_container(os, container);
 }
 
 template <typename F, typename G>
 std::ostream &operator<<(std::ostream &os, const std::pair<F, G> &container) {
-  return printContainer(os, container);
+  return print_container(os, container);
 }
 
 template <typename F, typename G>
 std::ostream &operator<<(std::ostream &os, const std::set<F, G> &container) {
-  return printContainer(os, container);
+  return print_container(os, container);
 }
 
-template <typename T>
-size_t minIndex(const std::vector<T> &vector) {
-  size_t minIndex = 0;
-  for (size_t i = 1; i < vector.size(); ++i) {
-    if (vector[i] < vector[minIndex]) minIndex = i;
-  }
-  return minIndex;
-}
-
-template <typename T>
-size_t maxIndex(const std::vector<T> &vector) {
-  size_t maxIndex = 0;
-  for (size_t i = 1; i < vector.size(); ++i) {
-    if (vector[maxIndex] < vector[i]) maxIndex = i;
-  }
-  return maxIndex;
-}
-
-template <typename T>
-T min(const std::vector<T> &vector) {
-  return vector[minIndex(vector)];
-}
-
-template <typename T>
-T max(const std::vector<T> &vector) {
-  return vector[maxIndex(vector)];
-}
-
-inline void printTime(const std::chrono::_V2::steady_clock::time_point &startPoint,
+inline void print_time(const std::chrono::_V2::steady_clock::time_point &startPoint,
                       const std::chrono::_V2::steady_clock::time_point &endPoint) {
   std::cout << (std::chrono::duration_cast<std::chrono::milliseconds>(endPoint - startPoint).count() / 1000.0)
             << " seconds";
