@@ -6,26 +6,57 @@
 // ===================
 #include "normalizer.h"
 
-// ACHTUNG: bis jetzt nur ein Pfad, aber alle nötig
-// void findEquivalents2(const Poset<globalMaxN> &poset, std::unordered_set<Poset<globalMaxN>> &result, const bool
-// begin) {
-//   for (int i = 0; i < poset.size(); ++i) {
-//     for (int j = 0; j < poset.size(); ++j) {
-//       if (poset.is_less(i, j)) {
-//         if (poset.isRedundant(i, j) || (begin && poset.canDetermineNSmallestWOTransitiv(i, j))) {
-//           Poset<globalMaxN> poset2 = poset;
-//           poset2.removeComparison(i, j);
-//           norm[0].normalize(poset2);
+enum SearchResult : uint8_t { FoundSolution, NoSolution, Unknown };
 
-//           if (!result.contains(poset2)) {
-//             result.insert(poset2);
-//             findEquivalents2(poset2, result, begin);
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
+// Attention: not working
+template <size_t maxN>
+SearchResult search(Normalizer<maxN> &normalizer, const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+  const Poset<maxN> poset_empty{poset.size(), poset.nth()};
+  if (poset == poset_empty) {
+    return FoundSolution;
+  } else if (0 == remainingComparisons) {
+    return NoSolution;
+  }
+
+  std::unordered_set<Poset<maxN>> predecessors;
+  for (int i = 0; i < poset.size(); ++i) {
+    for (int j = 0; j < poset.size(); ++j) {
+      if (poset.is_less(i, j)) {
+        std::unordered_set<Poset<maxN>> possible_solutions = poset.removeComparison(normalizer, i, j);
+        predecessors.merge(possible_solutions);
+      }
+    }
+  }
+
+  SearchResult result = NoSolution;
+  for (const Poset<maxN> &predecessor : predecessors) {
+    if (FoundSolution == search(normalizer, predecessor, remainingComparisons - 1)) {
+      return FoundSolution;
+    }
+  }
+
+  return result;
+}
+
+template <size_t maxN>
+std::optional<int> startSearchBackward(const int n, const int k) {
+  Normalizer<maxN> normalizer{};
+  for (int maxDepth = n - 1; maxDepth < n * n; ++maxDepth) {
+    Poset<maxN> poset{(uint8_t)n, (uint8_t)k};
+    for (int i = 0; i < n; ++i) {
+      for (int j = i + 1; j < n; ++j) {
+        poset.addComparison(i, j);
+      }
+    }
+    if (FoundSolution == search(normalizer, poset, maxDepth)) {
+      std::cout << "found solution with maxDepth = " << maxDepth << std::endl;
+      return maxDepth;
+    } else {
+      std::cout << "found nix with maxDepth = " << maxDepth << std::endl;
+    }
+  }
+  return {};
+}
 
 template <size_t maxN>
 void test(Poset<maxN> &poset, const bool debug) {
@@ -74,7 +105,7 @@ void test(Poset<maxN> &poset, const bool debug) {
 template <size_t maxN>
 int main_template() {
   int k = 0;  // sollte unabhängig von k sein
-  if constexpr (true) {
+  if constexpr (false) {
     for (int n = 2; n < 16; ++n) {
       Poset<maxN> poset{(uint8_t)n, (uint8_t)k};
       for (int i = 0; i < n; ++i) {
@@ -85,7 +116,7 @@ int main_template() {
 
       test(poset, false);
     }
-  } else {
+  } else if constexpr (false) {
     int n = 6;
     Poset<maxN> poset{(uint8_t)n, (uint8_t)k};
     poset.addComparison(0, 2);
@@ -97,6 +128,8 @@ int main_template() {
     poset.addComparison(2, 3);
 
     test(poset, true);
+  } else {
+    startSearchBackward<maxN>(5, 2);
   }
 
   std::cout << "success" << std::endl;
