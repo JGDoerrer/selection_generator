@@ -134,7 +134,7 @@ std::ostream &operator<<(std::ostream &os, const std::set<F, G> &container) {
 }
 
 inline void print_time(const std::chrono::_V2::steady_clock::time_point &startPoint,
-                      const std::chrono::_V2::steady_clock::time_point &endPoint) {
+                       const std::chrono::_V2::steady_clock::time_point &endPoint) {
   std::cout << (std::chrono::duration_cast<std::chrono::milliseconds>(endPoint - startPoint).count() / 1000.0)
             << " seconds";
 }
@@ -173,3 +173,19 @@ std::ostream &operator<<(std::ostream &os, const StopWatch &watch) {
   os << endPoint - watch.startPoint;
   return os;
 }
+
+// template<>
+// struct std::hash<uint16_t> {
+//   size_t operator()(const uint16_t value) const { return value; }
+// };
+
+// template <typename T, typename G>
+// struct std::hash<std::pair<T, G>> {
+//   size_t operator()(const std::pair<T, G> &pair) const { return std::hash<T>(pair.first) ^ std::hash<G>(pair.second);
+//   }
+// };
+
+template <>
+struct std::hash<std::pair<uint16_t, uint16_t>> {
+  size_t operator()(const std::pair<uint16_t, uint16_t> &pair) const { return pair.first ^ pair.second; }
+};

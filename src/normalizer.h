@@ -26,6 +26,12 @@ class Normalizer {
   int ptn[maxN];
   int orbits[maxN];
 
+ public:
+  Normalizer() {
+    assert(maxN <= WORDSIZE);
+    nauty_check(WORDSIZE, m, maxN, NAUTYVERSIONID);
+  }
+
   inline void reduceN(Poset<maxN> &poset) {
     uint8_t less[poset.n];
     uint8_t greater[poset.n];
@@ -110,12 +116,6 @@ class Normalizer {
     }
   }
 
- public:
-  Normalizer() {
-    assert(maxN <= WORDSIZE);
-    nauty_check(WORDSIZE, m, maxN, NAUTYVERSIONID);
-  }
-
   void normalize(Poset<maxN> &poset) {
     reduceN(poset);
     reduceNthSmallest(poset);
@@ -124,6 +124,7 @@ class Normalizer {
       // use nauty
       canonifyNauty(poset);
     } else {
+      // use mix
       uint8_t less[poset.n];
       uint8_t greater[poset.n];
       poset.getLessGreater(less, greater);

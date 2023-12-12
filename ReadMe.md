@@ -39,7 +39,7 @@ SearchResult search(const Poset<maxN> &poset, const uint8_t remainingComparisons
 }
 
 template <size_t maxN>
-std::optional<int> startSearchIterative(const int n, const int nthSmallest) {
+std::optional<int> startSearch(const int n, const int nthSmallest) {
   // Der Fall `0 == nthSmallest` ist bereits bekannt
   if (0 == nthSmallest || n <= 2) {
     return n - 1;
@@ -54,7 +54,7 @@ std::optional<int> startSearchIterative(const int n, const int nthSmallest) {
       ++comparisonsDone;  // reduziere unsere maximale Suchtiefe, da bereits ein Vergleich durchgeführt wurde
     }
     // Suche, ob durch hinzufügen von maximal `maxDepth` Vergleichen, das Poset gelöst werden kann
-    if (FoundSolution == searchIterative(poset, maxDepth - comparisonsDone)) {
+    if (FoundSolution == search(poset, maxDepth - comparisonsDone)) {
       // Bis jetzt ist bekannt, dass mit dem "Paare-Trick" das i-kleinste Element in dem Poset in `maxDepth`-Schritten
       // eindeutig gelöst werden kann. Da der Trick mit den Paaren nicht bewiesen ist, führe anschließend noch eine
       // normale Suche mit Tiefe `maxDepth - 1` durch. Wenn diese in `NoSolution` resultiert, ist die Lösung gefunden
@@ -64,7 +64,7 @@ std::optional<int> startSearchIterative(const int n, const int nthSmallest) {
       int comparisonsDone = 1;
       poset.addComparison(0, 1);
 
-      if (NoSolution == searchIterative(poset, maxDepth - comparisonsDone - 1)) {
+      if (NoSolution == search(poset, maxDepth - comparisonsDone - 1)) {
         return maxDepth;
       }
 
