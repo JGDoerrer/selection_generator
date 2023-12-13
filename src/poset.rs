@@ -1,4 +1,4 @@
-use std::{fmt::Debug, os::raw::c_int};
+use std::{fmt::Debug, ops::Deref, os::raw::c_int};
 
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use serde::{Deserialize, Serialize};
@@ -6,6 +6,8 @@ use serde::{Deserialize, Serialize};
 use crate::KNOWN_MIN_VALUES;
 
 pub const MAX_N: usize = 15;
+
+pub type PosetIndex = u8;
 
 /// A partially ordered set with <
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -43,7 +45,7 @@ impl Poset {
     }
 
     #[inline]
-    fn set_bit(&mut self, i: u8, j: u8) {
+    fn set_bit(&mut self, i: PosetIndex, j: PosetIndex) {
         let mask = 1 << j;
 
         self.adjacency[i as usize] |= mask;
@@ -51,7 +53,7 @@ impl Poset {
 
     /// is i < j?
     #[inline]
-    pub fn is_less(&self, i: u8, j: u8) -> bool {
+    pub fn is_less(&self, i: PosetIndex, j: PosetIndex) -> bool {
         let mask = 1 << j;
 
         (self.adjacency[i as usize] & mask) != 0
@@ -59,7 +61,7 @@ impl Poset {
 
     /// is either i < j or j < i?
     #[inline]
-    pub fn has_order(&self, i: u8, j: u8) -> bool {
+    pub fn has_order(&self, i: PosetIndex, j: PosetIndex) -> bool {
         self.is_less(i, j) || self.is_less(j, i)
     }
 
@@ -106,11 +108,11 @@ impl Poset {
 
     fn canonify(&mut self) {
         self.reduce_elements();
-        self.canonify_mapping();
+        self.canonify_nauty();
     }
 
     /// Canonifies the poset and returns a mapping from old to new indices, since they shift around
-    fn canonify_mapping(&mut self) -> [u8; MAX_N] {
+    fn canonify_mapping(&mut self) -> [PosetIndex; MAX_N] {
         let n = self.n as usize;
 
         let (less, _unknown, greater) = self.calculate_relations();
@@ -150,7 +152,10 @@ impl Poset {
             }
         }
 
-        let mut new_indices: [u8; MAX_N] = (0..MAX_N as u8).collect::<Vec<_>>().try_into().unwrap();
+        let mut new_indices: [PosetIndex; MAX_N] = (0..MAX_N as PosetIndex)
+            .collect::<Vec<_>>()
+            .try_into()
+            .unwrap();
 
         new_indices[0..n].sort_by(|a, b| {
             in_out_degree[*a as usize]
@@ -251,7 +256,7 @@ impl Poset {
     }
 
     /// Removes elements, that are known to be too large/small
-    fn reduce_elements(&mut self) -> [u8; MAX_N] {
+    fn reduce_elements(&mut self) -> [PosetIndex; MAX_N] {
         // can the element be ignored, because it is too large/small
         let mut dropped = [false; MAX_N];
         let mut n_less_dropped = 0;
@@ -302,6 +307,94 @@ impl Poset {
         *self = new;
 
         new_indices
+    }
+
+    fn remove_elements(&mut self, to_remove: Vec<PosetIndex>) {
+        if to_remove.is_empty() {
+            return;
+        }
+
+        // maps the old indices to the new ones
+        let mut new_indices = [0; MAX_N];
+        let mut new_n = 0;
+        let mut b = self.n as usize;
+
+        for i in 0..self.n {
+            if !to_remove.contains(&i) {
+                new_indices[new_n] = i;
+                new_n += 1;
+            } else {
+                b -= 1;
+                new_indices[b] = i;
+            }
+        }
+
+        if self.n == new_n as u8 {
+            return;
+        }
+
+        let mut new = Poset::new(new_n as u8, self.i.min(new_n as u8));
+
+        // make the new poset
+        for i in 0..new.n {
+            for j in 0..new.n {
+                if self.is_less(new_indices[i as usize], new_indices[j as usize]) {
+                    new.set_bit(i, j)
+                }
+            }
+        }
+
+        // dbg!(&self, &new);
+        debug_assert!(new.is_closed(), "{new:?}");
+        *self = new;
+    }
+
+    fn remove_elements_ordered_with(&mut self, i: PosetIndex) {
+        let mut dropped = [false; MAX_N];
+        let mut n_less_dropped = 0;
+
+        for j in 0..self.n {
+            if self.is_less(i, j) {
+                dropped[j as usize] = true;
+            } else if self.is_less(j, i) {
+                dropped[j as usize] = true;
+                n_less_dropped += 1;
+            }
+        }
+
+        // maps the old indices to the new ones
+        let mut new_indices = [0; MAX_N];
+        let mut new_n = 0;
+        let mut b = self.n as usize;
+
+        for j in 0..self.n {
+            if self.has_order(i, j) {
+                b -= 1;
+                new_indices[b] = j;
+            } else {
+                new_indices[new_n] = j;
+                new_n += 1;
+            }
+        }
+
+        if self.n == new_n as u8 {
+            return;
+        }
+
+        let mut new = Poset::new(new_n as u8, self.i - n_less_dropped);
+
+        // make the new poset
+        for i in 0..new.n {
+            for j in 0..new.n {
+                if self.is_less(new_indices[i as usize], new_indices[j as usize]) {
+                    new.set_bit(i, j)
+                }
+            }
+        }
+
+        // dbg!(&self, &new);
+        debug_assert!(new.is_closed(), "{new:?}");
+        *self = new;
     }
 
     fn canonify_nauty(&mut self) {
@@ -381,7 +474,7 @@ impl Poset {
 
     /// adds i < j to the poset and normalize
     #[inline]
-    pub fn add_less(&mut self, i: u8, j: u8) {
+    pub fn add_less(&mut self, i: PosetIndex, j: PosetIndex) {
         debug_assert!(!self.is_less(i, j));
         debug_assert!(!self.is_less(j, i));
 
@@ -392,7 +485,7 @@ impl Poset {
     }
 
     /// adds i < j and makes sure, that i < j && j < k => i < k is true
-    pub fn add_and_close(&mut self, i: u8, j: u8) {
+    pub fn add_and_close(&mut self, i: PosetIndex, j: PosetIndex) {
         self.set_bit(i, j);
         for k in 0..self.n {
             if i != k && j != k {
@@ -407,14 +500,14 @@ impl Poset {
     }
 
     /// returns a clone of the poset, with i < j added
-    pub fn with_less(&self, i: u8, j: u8) -> Self {
+    pub fn with_less(&self, i: PosetIndex, j: PosetIndex) -> Self {
         let mut new = *self;
         new.add_less(i, j);
         new
     }
 
     /// returns a clone of the poset, with i < j added
-    pub fn with_less_mapping(&self, i: u8, j: u8) -> (Self, [u8; MAX_N]) {
+    pub fn with_less_mapping(&self, i: PosetIndex, j: PosetIndex) -> (Self, [PosetIndex; MAX_N]) {
         let mut new = *self;
 
         new.add_and_close(i, j);
@@ -522,11 +615,92 @@ impl Poset {
         dual
     }
 
-    pub fn compatible_posets(&self) -> u32 {
-        todo!()
+    pub fn compatible_posets(&self) -> usize {
+        if self.n == 1 {
+            return 1;
+        }
+
+        (0..self.n)
+            .map(|i| {
+                let mut reduced = *self;
+                reduced.remove_elements_ordered_with(i);
+                let reduced = reduced;
+
+                let (less, _unknown, greater) = reduced.calculate_relations();
+                let parts = reduced.connected_parts();
+                // how can the parts be split in less/greater than i
+                let splits = parts
+                    .iter()
+                    .map(|part| {
+                        let mut splits = vec![];
+
+                        let mut sums = vec![0];
+
+                        for less in part.iter().map(|j| less[*j as usize] as usize) {
+                            let mut new = sums.iter().map(|s| s + less).collect();
+                            sums.append(&mut new);
+                        }
+                        sums.sort();
+                        sums.dedup();
+
+                        for i in 0..=part.len() {
+                            if sums.contains(&i) {
+                                splits.push((i, part.len() - i));
+                            }
+                        }
+
+                        let mut sums = vec![0];
+
+                        for greater in part.iter().map(|j| greater[*j as usize] as usize) {
+                            let mut new = sums.iter().map(|s| s + greater).collect();
+                            sums.append(&mut new);
+                        }
+                        sums.sort();
+                        sums.dedup();
+
+                        for i in 0..=part.len() {
+                            if sums.contains(&(part.len() - i)) {
+                                splits.push((i, part.len() - i));
+                            }
+                        }
+
+                        splits.sort();
+                        splits.dedup();
+
+                        splits
+                    })
+                    .collect::<Vec<_>>();
+
+                // do splits exists, with sum (i, n-i)?
+                let compatible = (0..splits.iter().map(|splits| splits.len()).product())
+                    .map(|j| {
+                        let mut index = j;
+                        splits
+                            .iter()
+                            .map(|split| {
+                                let item = split[index % split.len()];
+                                index /= split.len();
+                                item
+                            })
+                            .reduce(|acc, e| (acc.0 + e.0, acc.1 + e.1))
+                            .unwrap()
+                    })
+                    .filter(|(less, greater)| *less == reduced.i as usize)
+                    .count();
+
+                compatible
+            })
+            .sum()
     }
 
-    fn get_connected(&self) -> Vec<Vec<u8>> {
+    /// Returns all elements, which have an order with i
+    fn ordered_with(&self, i: PosetIndex) -> Vec<u8> {
+        (0..self.n)
+            .filter(|j| i == *j || self.has_order(i, *j))
+            .collect()
+    }
+
+    fn connected_parts(&self) -> Vec<Vec<PosetIndex>> {
         let mut visited = [false; MAX_N];
         let mut parts = vec![];
 
@@ -535,7 +709,7 @@ impl Poset {
                 continue;
             }
 
-            let part = self.get_connected_part(i);
+            let part = self.connected_part(i);
 
             for &j in &part {
                 visited[j as usize] = true;
@@ -547,7 +721,8 @@ impl Poset {
         parts
     }
 
-    fn get_connected_part(&self, i: u8) -> Vec<u8> {
+    /// Returns all elements connected with i
+    fn connected_part(&self, i: PosetIndex) -> Vec<PosetIndex> {
         let mut connected = [false; MAX_N];
 
         connected[i as usize] = true;
@@ -561,7 +736,7 @@ impl Poset {
                         && connected
                             .iter()
                             .enumerate()
-                            .any(|(k, c)| *c && self.has_order(*j as u8, k as u8))
+                            .any(|(k, c)| *c && self.has_order(*j as PosetIndex, k as PosetIndex))
                 })
                 .map(|(j, _)| j)
                 .collect::<Vec<_>>();
@@ -578,11 +753,17 @@ impl Poset {
         }
 
         connected
-            .iter()
+            .into_iter()
             .enumerate()
-            .filter(|(_, connected)| **connected)
+            .filter(|(_, connected)| *connected)
             .map(|(i, _)| i as u8)
             .collect()
+    }
+
+    fn singles(&self) -> usize {
+        (0..self.n)
+            .filter(|i| !(0..self.n).any(|j| self.has_order(*i, j)))
+            .count()
     }
 }
 
@@ -620,6 +801,8 @@ impl Debug for Poset {
 #[cfg(test)]
 mod test {
     use std::collections::HashSet;
+
+    use crate::search::Search;
 
     use super::*;
 
@@ -695,8 +878,7 @@ mod test {
 
         let mapping = poset.canonify_mapping();
 
-        let connected_1 =
-            poset.get_connected_part(mapping.iter().position(|i| *i == 1).unwrap() as u8);
+        let connected_1 = poset.connected_part(mapping.iter().position(|i| *i == 1).unwrap() as u8);
         assert_eq!(connected_1.len(), 3);
 
         assert!(connected_1.contains(&(mapping.iter().position(|i| *i == 0).unwrap() as u8)));
@@ -717,7 +899,7 @@ mod test {
 
         let mapping = poset.canonify_mapping();
 
-        let connected = poset.get_connected();
+        let connected = poset.connected_parts();
 
         assert_eq!(connected.len(), 6);
         assert!(connected
@@ -736,5 +918,26 @@ mod test {
                     && part.contains(&(mapping.iter().position(|i| *i == 5).unwrap() as u8))
             )
             .is_some());
+    }
+
+    #[test]
+    fn test_compatible_posets() {
+        assert_eq!(Poset::new(10, 4).compatible_posets(), 2100); // 10 * (10 choose 4)
+    }
+
+    #[test]
+    fn test() {
+        for n in 1..15 {
+            for i in 0..(n + 1) / 2 {
+                let poset = Poset::new(n, i);
+                println!(
+                    "n={}, i={}, c={}, {}",
+                    n,
+                    i,
+                    (poset.compatible_posets() as f32).log2().ceil(),
+                    KNOWN_MIN_VALUES[n as usize - 1][i as usize]
+                );
+            }
+        }
     }
 }

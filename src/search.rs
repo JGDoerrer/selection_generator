@@ -327,6 +327,10 @@ impl<'a> Search<'a> {
             return Some(false);
         }
 
+        if max_comparisons < (poset.compatible_posets().max(1) as f32).log2().ceil() as u8 {
+            return Some(false);
+        }
+
         let (less, _unknown, greater) = poset.calculate_relations();
 
         for i in start_i..poset.n() {
