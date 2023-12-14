@@ -118,5 +118,5 @@ Im folgenden sei `maxN` die Größe des größten Posets, `n` die Größe eines 
 ## Literatur
 - [C-implementation Oksanen](https://www.cs.hut.fi/~cessu/selection/)
 - [The Art of Computer Programming (TAOCP)](https://www-cs-faculty.stanford.edu/~knuth/taocp.html#vol3), [online pdf](https://doc.lagout.org/science/0_Computer%20Science/2_Algorithms/The%20Art%20of%20Computer%20Programming%20%28vol.%203_%20Sorting%20and%20Searching%29%20%282nd%20ed.%29%20%5BKnuth%201998-05-04%5D.pdf)
-- [Lower Bounds for Sorting](https://arxiv.org/pdf/2206.05597.pdf)
+- [Lower Bounds for Sorting](https://arxiv.org/pdf/2206.05597.pdf), [reorderGraphCanonically](https://github.com/CodeCrafter47/sortinglowerbounds/blob/92865960ba465e4b6e068b400da82ff3f12af803/src/expandedPoset.cpp#L65)
 - [Nauty Manual](https://pallini.di.uniroma1.it/nug28.pdf)
