@@ -4,4 +4,4 @@ mv nauty2_8_8/ ..
 cd ../nauty2_8_8
 ./configure --enable-tls
 make
-cd ../src
+cd ..

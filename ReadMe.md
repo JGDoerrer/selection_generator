@@ -11,7 +11,7 @@ Für die Rückwärtssuche: `make backwardSearch`
 
 # Nekton
 > vpn nicht vergessen
-```bash
+```sh
 > ssh [username]@nekton.informatik.uni-stuttgart.de
 ```
 
