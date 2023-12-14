@@ -1,5 +1,6 @@
-use std::{fmt::Debug, ops::Deref, os::raw::c_int};
+use std::{collections::HashSet, fmt::Debug, ops::Deref, os::raw::c_int};
 
+use bit_set::BitSet;
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use serde::{Deserialize, Serialize};
 
@@ -349,16 +350,17 @@ impl Poset {
         *self = new;
     }
 
-    fn remove_elements_ordered_with(&mut self, i: PosetIndex) {
+    /// Removes elements, that are in relation with i
+    fn remove_elements_ordered_with(&mut self, i: PosetIndex) -> [PosetIndex; MAX_N] {
         let mut dropped = [false; MAX_N];
         let mut n_less_dropped = 0;
 
         for j in 0..self.n {
-            if self.is_less(i, j) {
+            if self.is_less(i, j) || j == i {
                 dropped[j as usize] = true;
             } else if self.is_less(j, i) {
                 dropped[j as usize] = true;
-                n_less_dropped += 1;
+                // n_less_dropped += 1;
             }
         }
 
@@ -368,17 +370,13 @@ impl Poset {
         let mut b = self.n as usize;
 
         for j in 0..self.n {
-            if self.has_order(i, j) {
+            if dropped[j as usize] {
                 b -= 1;
                 new_indices[b] = j;
             } else {
                 new_indices[new_n] = j;
                 new_n += 1;
             }
-        }
-
-        if self.n == new_n as u8 {
-            return;
         }
 
         let mut new = Poset::new(new_n as u8, self.i - n_less_dropped);
@@ -395,6 +393,7 @@ impl Poset {
         // dbg!(&self, &new);
         debug_assert!(new.is_closed(), "{new:?}");
         *self = new;
+        new_indices
     }
 
     fn canonify_nauty(&mut self) {
@@ -620,77 +619,140 @@ impl Poset {
             return 1;
         }
 
-        (0..self.n)
-            .map(|i| {
-                let mut reduced = *self;
-                reduced.remove_elements_ordered_with(i);
-                let reduced = reduced;
+        let mut all_less_subsets = HashSet::new();
+        let mut all_greater_subsets = HashSet::new();
 
-                let (less, _unknown, greater) = reduced.calculate_relations();
-                let parts = reduced.connected_parts();
-                // how can the parts be split in less/greater than i
-                let splits = parts
+        // let mut sum = 0;
+        for i in 0..self.n {
+            // assume the ith element is the solution
+            let mut reduced = *self;
+            let mapping = reduced.remove_elements_ordered_with(i);
+            let reverse_map: Vec<_> = (0..self.n)
+                .map(|i| mapping.iter().position(|j| i == *j).unwrap())
+                .collect();
+
+            let reduced = reduced;
+
+            let (less, _unknown, greater) = reduced.calculate_relations();
+
+            // calculate subsets of increasing size
+
+            // start with all minimal elements
+            let mut less_subsets = HashSet::new();
+            for j in 0..self.n {
+                if less[j as usize] == 0 {
+                    let mut bitset = BitSet::new();
+                    bitset.insert(j as usize);
+                    less_subsets.insert(bitset);
+                }
+            }
+
+            for _ in 1..reduced.i {
+                less_subsets = less_subsets
+                    .into_iter()
+                    .flat_map(|subset| {
+                        // add an element to the subset
+                        (0..reduced.n).filter_map(move |j| {
+                            if !subset.contains(j as usize)
+                                && subset.iter().all(|i| !reduced.is_less(j, i as u8))
+                            {
+                                let mut new_subset = subset.clone();
+                                new_subset.insert(j as usize);
+                                Some(new_subset)
+                            } else {
+                                None
+                            }
+                        })
+                    })
+                    .collect();
+            }
+            less_subsets.insert(BitSet::new());
+
+            // start with all maximal elements
+            let mut greater_subsets = HashSet::new();
+            for j in 0..self.n {
+                if greater[j as usize] == 0 {
+                    let mut bitset = BitSet::new();
+                    bitset.insert(j as usize);
+                    greater_subsets.insert(bitset);
+                }
+            }
+
+            for _ in 1..(reduced.n - reduced.i) {
+                greater_subsets = greater_subsets
                     .iter()
-                    .map(|part| {
-                        let mut splits = vec![];
-
-                        let mut sums = vec![0];
-
-                        for less in part.iter().map(|j| less[*j as usize] as usize) {
-                            let mut new = sums.iter().map(|s| s + less).collect();
-                            sums.append(&mut new);
-                        }
-                        sums.sort();
-                        sums.dedup();
-
-                        for i in 0..=part.len() {
-                            if sums.contains(&i) {
-                                splits.push((i, part.len() - i));
+                    .flat_map(|subset| {
+                        // add an element to the subset
+                        (0..reduced.n).filter_map(|j| {
+                            if !subset.contains(j as usize)
+                                && subset.iter().all(|i| !reduced.is_less(i as u8, j))
+                            {
+                                let mut new_subset = subset.clone();
+                                new_subset.insert(j as usize);
+                                Some(new_subset)
+                            } else {
+                                None
                             }
-                        }
-
-                        let mut sums = vec![0];
-
-                        for greater in part.iter().map(|j| greater[*j as usize] as usize) {
-                            let mut new = sums.iter().map(|s| s + greater).collect();
-                            sums.append(&mut new);
-                        }
-                        sums.sort();
-                        sums.dedup();
-
-                        for i in 0..=part.len() {
-                            if sums.contains(&(part.len() - i)) {
-                                splits.push((i, part.len() - i));
-                            }
-                        }
-
-                        splits.sort();
-                        splits.dedup();
-
-                        splits
+                        })
                     })
-                    .collect::<Vec<_>>();
+                    .collect();
+            }
+            greater_subsets.insert(BitSet::new());
 
-                // do splits exists, with sum (i, n-i)?
-                let compatible = (0..splits.iter().map(|splits| splits.len()).product())
-                    .map(|j| {
-                        let mut index = j;
-                        splits
-                            .iter()
-                            .map(|split| {
-                                let item = split[index % split.len()];
-                                index /= split.len();
-                                item
-                            })
-                            .reduce(|acc, e| (acc.0 + e.0, acc.1 + e.1))
-                            .unwrap()
-                    })
-                    .filter(|(less, greater)| *less == reduced.i as usize)
-                    .count();
+            // let compatible = less_subsets
+            //     .iter()
+            //     .filter(|s| s.iter().count() == reduced.i as usize)
+            //     .map(|s| {
+            //         greater_subsets
+            //             .iter()
+            //             .filter(|t| {
+            //                 s.is_disjoint_with(t)
+            //                     && s.iter().count() + t.iter().count() == reduced.n as usize
+            //             })
+            //             .count()
+            //     })
+            //     .sum::<usize>();
+            all_less_subsets.extend(
+                less_subsets
+                    .into_iter()
+                    .filter(|s| s.len() == reduced.i as usize)
+                    .map(|s| {
+                        let mut new_subset = BitSet::new();
 
-                compatible
+                        for mapped_i in s.iter().map(|i| reverse_map[i]) {
+                            new_subset.insert(mapped_i);
+                        }
+
+                        new_subset
+                    }),
+            );
+            all_greater_subsets.extend(
+                greater_subsets
+                    .into_iter()
+                    .filter(|s| s.len() == (reduced.n - reduced.i) as usize)
+                    .map(|s| {
+                        let mut new_subset = BitSet::new();
+                        for mapped_i in s.iter().map(|i| reverse_map[i]) {
+                            new_subset.insert(mapped_i);
+                        }
+
+                        new_subset
+                    }),
+            );
+
+            // sum += compatible;
+        }
+
+        all_less_subsets
+            .iter()
+            .filter(|s| s.len() == self.i as usize)
+            .map(|s| {
+                all_greater_subsets
+                    .iter()
+                    .filter(|t| s.is_disjoint(t) && s.len() + t.len() == self.n as usize - 1)
+                    .count()
             })
-            .sum()
+            .sum::<usize>()
     }
 
     /// Returns all elements, which have an order with i
@@ -801,8 +863,6 @@ impl Debug for Poset {
 #[cfg(test)]
 mod test {
     use std::collections::HashSet;
-
-    use crate::search::Search;
 
     use super::*;
 
@@ -922,12 +982,31 @@ mod test {
 
     #[test]
     fn test_compatible_posets() {
-        assert_eq!(Poset::new(10, 4).compatible_posets(), 2100); // 10 * (10 choose 4)
+        assert_eq!(Poset::new(10, 4).compatible_posets(), 1260); // 10 * (9 choose 4)
+        let mut poset = Poset::new(10, 4);
+        poset.add_and_close(0, 1);
+        poset.add_and_close(0, 2);
+        poset.add_and_close(0, 3);
+        poset.add_and_close(0, 4);
+        poset.add_and_close(0, 5);
+        poset.canonify();
+        assert_eq!(poset.compatible_posets(), 630);
+
+        let mut poset = Poset::new(8, 1);
+        poset.add_and_close(2, 0);
+        poset.add_and_close(3, 0);
+        poset.add_and_close(4, 0);
+        poset.add_and_close(5, 1);
+        poset.add_and_close(6, 1);
+        poset.add_and_close(7, 1);
+        poset.canonify();
+        dbg!(poset);
+        // assert_eq!(poset.compatible_posets(), 1);
     }
 
     #[test]
     fn test() {
-        for n in 1..15 {
+        for n in 5..15 {
             for i in 0..(n + 1) / 2 {
                 let poset = Poset::new(n, i);
                 println!(
@@ -935,7 +1014,11 @@ mod test {
                     n,
                     i,
                     (poset.compatible_posets() as f32).log2().ceil(),
+                    poset.compatible_posets()
+                );
+                assert!(
                     KNOWN_MIN_VALUES[n as usize - 1][i as usize]
+                        > (poset.compatible_posets() as f32).log2().ceil() as u8
                 );
             }
         }

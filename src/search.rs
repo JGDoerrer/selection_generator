@@ -108,12 +108,12 @@ impl<'a> Search<'a> {
                 days, hours, minutes, seconds
             );
 
-            println!("poset counts by number of comparisons: ");
-            let counts = self.cache.counts();
+            // println!("poset counts by number of comparisons: ");
+            // let counts = self.cache.counts();
 
-            for (i, count) in counts.iter().enumerate() {
-                println!("{i:2}: {count:12}");
-            }
+            // for (i, count) in counts.iter().enumerate() {
+            //     println!("{i:2}: {count:12}");
+            // }
 
             // assert_eq!(comps, max);
             return Cost::Solved(res);
@@ -327,7 +327,11 @@ impl<'a> Search<'a> {
             return Some(false);
         }
 
-        if max_comparisons < (poset.compatible_posets().max(1) as f32).log2().ceil() as u8 {
+        if poset.n() >= 5
+            && max_comparisons < (poset.compatible_posets().max(1) as f32).log2().floor() as u8 - 1
+        {
+            // dbg!(poset, max_comparisons, poset.compatible_posets());
+
             return Some(false);
         }
 
