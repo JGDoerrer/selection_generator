@@ -17,12 +17,12 @@ CXXFLAGS+=-Wall -Wextra -Wconversion -Wno-unknown-pragmas -Wmaybe-uninitialized 
 endif
 
 forwardSearch: ${OBJ_FORWARD}
-	$(CXX) $(CXXFLAGS) ${OBJ_FORWARD} -o $(TARGET) ${LDFLAGS}
-	./$(TARGET)
+	$(CXX) $(CXXFLAGS) ${OBJ_FORWARD} -o build/$(TARGET) ${LDFLAGS}
+	./build/$(TARGET)
 
 backwardSearch: ${OBJ_BACKWARD}
-	$(CXX) $(CXXFLAGS) ${OBJ_BACKWARD} -o $(TARGET) ${LDFLAGS}
-	./$(TARGET)
+	$(CXX) $(CXXFLAGS) ${OBJ_BACKWARD} -o build/$(TARGET) ${LDFLAGS}
+	./build/$(TARGET)
 
 build/%.o : %.cpp
 	mkdir -p ${dir $@}
