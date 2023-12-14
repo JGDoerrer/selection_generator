@@ -7,8 +7,10 @@
 
 ## Installation
 - run `sh setup.sh` in the project folder once
-- run `make forwardSearch` for the forwardSearch
-- run `make backwardSearch` for the backwardSearch
+- `make -B forwardSearch`
+- `make -B forwardSearch opt=debug`
+- `make -B backwardSearch`
+- `make -B backwardSearch opt=debug`
 
 ## Nekton-Server
 im Uni VPN: `ssh [username]@nekton.informatik.uni-stuttgart.de`
