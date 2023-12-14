@@ -2,13 +2,7 @@
 Nauty Manual: [https://pallini.di.uniroma1.it/nug28.pdf]()
 ```sh
 cd $project_folder$
-wget https://users.cecs.anu.edu.au/~bdm/nauty/nauty2_8_8.tar.gz
-tar xvzf nauty2_8_8.tar.gz
-rm nauty2_8_8.tar.gz
-cd nauty2_8_8
-./configure --enable-tls
-make
-cd ../src
+sh setup.sh
 ```
 
 Für die Vorwärtssuche: `make forwardSearch`
@@ -16,6 +10,7 @@ Für die Vorwärtssuche: `make forwardSearch`
 Für die Rückwärtssuche: `make backwardSearch`
 
 # Nekton
+> vpn nicht vergessen
 ```bash
 > ssh [username]@nekton.informatik.uni-stuttgart.de
 ```
