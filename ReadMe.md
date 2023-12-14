@@ -9,7 +9,15 @@ cd nauty2_8_8
 ./configure --enable-tls
 make
 cd ../src
-make
+```
+
+Für die Vorwärtssuche: `make forwardSearch`
+
+Für die Rückwärtssuche: `make backwardSearch`
+
+# Nekton
+```bash
+> ssh [username]@nekton.informatik.uni-stuttgart.de
 ```
 
 # Annahmen

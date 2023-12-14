@@ -10,8 +10,6 @@ class Poset {
   uint8_t nthSmallest;
   std::vector<bool> comparisonTable;
 
-  inline void set_less(const uint16_t i, const uint16_t j, const bool value) { comparisonTable[i * n + j] = value; }
-
   void addComparisonTransitivRecursive(const uint16_t i, const uint16_t j) {
     if (false == is_less(i, j)) {
       set_less(i, j, true);
@@ -86,6 +84,8 @@ class Poset {
   // Attention: `!is_less(i, j)` IMPLIES NOT `arr[i] > arr[j]`
   inline bool is_less(const uint16_t i, const uint16_t j) const { return comparisonTable[i * n + j]; }
 
+  inline void set_less(const uint16_t i, const uint16_t j, const bool value) { comparisonTable[i * n + j] = value; }
+
   // can one determine nthsmallest element with current comparisons
   bool canDetermineNSmallest() const {
     if (0 == n) {
@@ -157,8 +157,9 @@ class Poset {
   // Definiere Poset `p` ist vollständig gdw. jede transitive '1' gesetzt ist (d.h. es ex. kein a, b, c mit
   //     `is_less(a, b) && is_less(b, c) && !is_less(a, c)`)
   // input: vollständiges Poset
-  // output: Menge an Posets M, wobei für alle m in M gilt: m ist vollständig, normalisiert, durch Aufruf von
-  //         `m.addComparison(i, j)` erhält man wieder `*this` und keine unnötigen Vergleiche gespeichert haben
+  // output: Menge an Posets M, wobei für alle m in M gilt: m ist vollständig, NICHT normalisiert, aber dedupliziert,
+  //         durch Aufruf von `m.addComparison(i, j)` erhält man wieder `*this` und keine unnötigen Vergleiche
+  //         gespeichert haben
   inline std::unordered_set<Poset<maxN>> removeComparison(Normalizer<maxN> &normalizer, const uint16_t i,
                                                           const uint16_t j) const {
     // prüfe auf Vollständigkeit
@@ -175,7 +176,7 @@ class Poset {
       }
     }
 
-    std::unordered_set<Poset<maxN>> result;
+    std::unordered_set<Poset<maxN>> result, resultNormalized;
     // siehe unten
     if (!is_less(i, j) || isRedundant(i, j)) {
       return result;
@@ -187,8 +188,9 @@ class Poset {
     std::queue<Poset<maxN>> queue{};
     queue.push(poset_initial);
 
-    normalizer.canonifyNauty(poset_initial);
     result.insert(poset_initial);
+    normalizer.canonifyNauty(poset_initial);
+    resultNormalized.insert(poset_initial);
 
     while (!queue.empty()) {
       Poset<maxN> poset = queue.front();
@@ -205,27 +207,27 @@ class Poset {
             continue;
           }
 
+          Poset<maxN> poset_next = poset;
+          poset_next.set_less(i1, j1, false);
+
           // wenn durch hinzufügen des ursprünglich entfernten Vergleichs, nicht wieder das ursprüngliche Poset
           // entsteht, brich ab
-          Poset<maxN> poset_check = poset;
-          poset_check.set_less(i1, j1, false);
+          Poset<maxN> poset_check = poset_next;
           poset_check.addComparison(i, j);
           if (*this != poset_check) {
             continue;
           }
 
           // wenn das poset normalisert schon in result ist, abbruch
-          Poset<maxN> poset_norm = poset;
-          poset_norm.set_less(i1, j1, false);
+          Poset<maxN> poset_norm = poset_next;
           normalizer.canonifyNauty(poset_norm);
-          if (result.contains(poset_norm)) {
+          if (resultNormalized.contains(poset_norm)) {
             continue;
           }
-          result.insert(poset_norm);
+          resultNormalized.insert(poset_norm);
+          result.insert(poset_next);
 
           // mache sonst in den nächsten Schritten mit dem Poset weiter und versuche noch mehr Vergleiche zu entfernen
-          Poset<maxN> poset_next = poset;
-          poset_next.set_less(i1, j1, false);
           queue.push(poset_next);
         }
       }
