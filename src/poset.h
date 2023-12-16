@@ -203,7 +203,7 @@ class Poset {
           // !poset.is_less(i1, j1): der zu entfernende Vergleich existiert gar nicht
           // poset.isRedundant(i1, j1): wenn es sich bei (i1, j1) um eine redundante Kante handelt, muss dieser Pfad
           // auch nicht weiterverfolgt werden? (Beweis: tbd)
-          if (abs(j - i) >= abs(j1 - i1) || !poset.is_less(i1, j1) || poset.isRedundant(i1, j1)) {
+          if (i1 == j1 || abs(j - i) >= abs(j1 - i1) || !poset.is_less(i1, j1) || poset.isRedundant(i1, j1)) {
             continue;
           }
 
@@ -232,6 +232,21 @@ class Poset {
         }
       }
     }
+
+    // for (auto item : result) {
+    //   for (uint8_t in = 0; in < n; ++in) {
+    //     for (uint8_t jn = 0; jn < n; ++jn) {
+    //       for (uint16_t k = 0; k < n; ++k) {
+    //         if (in != jn && jn != k && k != in) {
+    //           if (item.is_less(in, jn) && item.is_less(jn, k) && !item.is_less(in, k)) {
+    //             std::cout << (int)in << " " << (int)jn << " " << (int)k << std::endl;
+    //             assert(false);
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     return result;
   }

@@ -34,7 +34,8 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
     const int n, const int nthSmallest) {
   const std::chrono::time_point start = std::chrono::high_resolution_clock::now();
   Normalizer<maxN> normalizer{};
-  std::vector<std::unordered_set<Poset<maxN>>> container(n * n);
+  std::vector<std::tuple<Poset<maxN>, int, int>> history;
+  std::unordered_set<Poset<maxN>> source, destination;
 
   if constexpr (false) {
     Poset<maxN> poset{(uint8_t)n, (uint8_t)nthSmallest};
@@ -44,35 +45,37 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
       }
     }
     normalizer.canonifyNauty(poset);
-    container[0].insert(poset);
+    source.insert(poset);
   } else {
     std::unordered_set<Poset<maxN>> cache;
-    findAllInitPosets(normalizer, Poset<maxN>{(uint8_t)n, (uint8_t)nthSmallest}, container[0], cache);
+    findAllInitPosets(normalizer, Poset<maxN>{(uint8_t)n, (uint8_t)nthSmallest}, source, cache);
+    for (auto it : source) {
+      history.push_back({it, -1, -1});
+    }
   }
   std::chrono::time_point end = std::chrono::high_resolution_clock::now();
 
   std::unordered_set<Poset<maxN>> allPos;
-  for (int k = 0; k < container.size(); ++k) {
-    allPos.merge(std::unordered_set<Poset<maxN>>(container[k]));
-    std::cout << k << ": " << container[k].size() << " " << allPos.size() << std::endl;
-    if (allPos.contains(Poset<maxN>{(uint8_t)n, (uint8_t)nthSmallest})) {
-      return {k, end - start, std::chrono::high_resolution_clock::now() - end};
-    }
+  for (int k = 0; k < n * n; ++k) {
+    allPos.merge(std::unordered_set<Poset<maxN>>(source));
+    std::cout << k << ": " << source.size() << " " << destination.size() << " " << allPos.size() << std::endl;
 
-    for (const Poset<maxN> &item : container[k]) {
-      std::unordered_set<Poset<maxN>> predecessors_set;  // global???
+    for (const Poset<maxN> &item : source) {
       for (uint8_t i = 0; i < n; ++i) {
         for (uint8_t j = 0; j < n; ++j) {
           if (item.is_less(i, j)) {
             for (const Poset<maxN> &predecessor : item.removeComparison(normalizer, i, j)) {
-              if (!allPos.contains(predecessor) && !predecessors_set.contains(predecessor)) {
-                predecessors_set.insert(predecessor);
-
+              if (!allPos.contains(predecessor)) {
                 Poset<maxN> predecessorNorm = predecessor;
                 predecessorNorm.addComparison(j, i);
                 normalizer.canonifyNauty(predecessorNorm);
                 if (allPos.contains(predecessorNorm)) {
-                  container[k + 1].insert(predecessor);
+                  if (predecessor == Poset<maxN>{(uint8_t)n, (uint8_t)nthSmallest}) {
+                    return {k + 1, end - start, std::chrono::high_resolution_clock::now() - end};
+                  }
+
+                  destination.insert(predecessor);
+                  history.push_back({predecessor, i, j});
                 }
               }
             }
@@ -80,6 +83,7 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
         }
       }
     }
+    std::swap(source, destination);
   }
 
   return {std::nullopt, end - start, std::chrono::high_resolution_clock::now() - end};
@@ -91,7 +95,7 @@ int main() {
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
   std::cout.precision(3);
 
-  for (int n = 2; n < globalMaxN; ++n) {
+  for (int n = 2; n < 8; ++n) {
     for (int nthSmallest = 0; nthSmallest < (n + 1) / 2; ++nthSmallest) {
       Statistics statistics;
       const auto &[comparisons, durationGeneratePosets, durationSearch] =
@@ -106,7 +110,7 @@ int main() {
         if (comparisons != min_n_comparisons[n][nthSmallest]) {
           std::cerr << "Error: got " << comparisons.value() << ", but expected " << min_n_comparisons[n][nthSmallest]
                     << std::endl;
-          exit(0);
+          // exit(0);
         }
       } else {
         std::cerr << "Error, maxComparisons exceeded" << std::endl;
