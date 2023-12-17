@@ -74,7 +74,62 @@ class Poset {
     return components;
   }
 
+  bool is_closed() const {  // only debug
+    for (uint8_t in = 0; in < n; ++in) {
+      for (uint8_t jn = 0; jn < n; ++jn) {
+        for (uint16_t k = 0; k < n; ++k) {
+          if (in != jn && jn != k && k != in) {
+            if (is_less(in, jn) && is_less(jn, k) && !is_less(in, k)) {
+              return false;
+            }
+          }
+        }
+      }
+    }
+    return true;
+  }
+
  public:
+  void perm(std::vector<int> temp, const int index, std::vector<std::vector<int>> &result) const {
+    if (index == temp.size()) {
+      result.push_back(temp);
+    } else {
+      temp[index] = 0;
+      perm(temp, index + 1, result);
+      temp[index] = 1;
+      perm(temp, index + 1, result);
+      temp[index] = 2;
+      perm(temp, index + 1, result);
+    }
+  }
+
+  void enlarge(Normalizer<maxN> &normalizer, std::unordered_set<Poset<maxN>> &finalResult) const {
+    std::vector<std::vector<int>> result;
+    perm(std::vector<int>(n, 0), 0, result);
+    for (const std::vector<int> &temp : result) {
+      Poset<maxN> newPoset{uint8_t(uint8_t(n) + uint8_t(1)), nthSmallest};
+      for (uint8_t i = 0; i < n; ++i) {
+        for (uint8_t j = 0; j < n; ++j) {
+          newPoset.set_less(i, j, comparisonTable[i * n + j]);
+        }
+      }
+      for (int k = 0; k < n; ++k) {
+        if (temp[k] == 1) {
+          newPoset.set_less(n, k, true);
+        } else if (temp[k] == 2) {
+          newPoset.set_less(k, n, true);
+        }
+      }
+      if (newPoset.is_solvable() && newPoset.is_closed()) {
+        normalizer.canonify_nauty(newPoset);
+        if (!finalResult.contains(newPoset)) {
+          finalResult.insert(newPoset);
+          // std::cout << newPoset << std::endl;
+        }
+      }
+    }
+  }
+
   /// @brief constructs an empty Poset
   /// @param n
   /// @param nthSmallest
@@ -90,6 +145,10 @@ class Poset {
 
   /// @return the nthSmallest Element
   inline uint8_t nth() const { return this->nthSmallest; }
+
+  /// @brief changes nthSmallest
+  /// @param _nthSmallest
+  inline void change_nth(const uint8_t _nthSmallest) { this->nthSmallest = _nthSmallest; }
 
   /// @brief checks, whether it holds `arr[i] < arr[j]`, e.g. `is_less(i, j) == true` => `arr[i] < arr[j]`
   //         Attention: `!is_less(i, j)` IMPLIES NOT `arr[i] > arr[j]`
@@ -189,20 +248,8 @@ class Poset {
   //          durch Aufruf von `m.add_less(i, j)` erhält man wieder `*this` und keine unnötigen Vergleiche
   //          gespeichert haben
   inline std::unordered_set<Poset<maxN>> remove_less(Normalizer<maxN> &normalizer, const uint16_t i,
-                                                          const uint16_t j) const {
-    // check if input closed
-    // for (uint8_t in = 0; in < n; ++in) {
-    //   for (uint8_t jn = 0; jn < n; ++jn) {
-    //     for (uint16_t k = 0; k < n; ++k) {
-    //       if (in != jn && jn != k && k != in) {
-    //         if (is_less(in, jn) && is_less(jn, k) && !is_less(in, k)) {
-    //           std::cout << (int)in << " " << (int)jn << " " << (int)k << std::endl;
-    //           assert(false);
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+                                                     const uint16_t j) const {
+    // assert(this->is_closed());  // check if input closed
 
     std::unordered_set<Poset<maxN>> result, resultNormalized;
     if (!this->is_less(i, j) || this->is_redundant(i, j)) {
@@ -260,25 +307,14 @@ class Poset {
 
     // check if output closed
     // for (auto item : result) {
-    //   for (uint8_t in = 0; in < n; ++in) {
-    //     for (uint8_t jn = 0; jn < n; ++jn) {
-    //       for (uint16_t k = 0; k < n; ++k) {
-    //         if (in != jn && jn != k && k != in) {
-    //           if (item.is_less(in, jn) && item.is_less(jn, k) && !item.is_less(in, k)) {
-    //             std::cout << (int)in << " " << (int)jn << " " << (int)k << std::endl;
-    //             assert(false);
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
+    //   assert(item.is_closed());  // check if item closed
     // }
 
     return result;
   }
 
-  /// @brief 
-  /// @param poset 
+  /// @brief
+  /// @param poset
   /// @return true, if *this is a subset of `poset`
   bool subset_of(const Poset<maxN> &poset) const {
     return n == poset.n && nthSmallest == poset.nthSmallest && (~comparisonTable | poset.comparisonTable).all();
@@ -286,14 +322,14 @@ class Poset {
 
   // TODO: iterator for all "ones"
 
-  /// @brief 
-  /// @param poset 
-  /// @return 
+  /// @brief
+  /// @param poset
+  /// @return
   bool operator==(const Poset<maxN> &poset) const {
     return n == poset.n && nthSmallest == poset.nthSmallest && comparisonTable == poset.comparisonTable;
   }
 
-  /// @brief 
+  /// @brief
   /// @return hash of poset
   std::size_t hash() const {
     const std::hash<std::bitset<maxN * maxN>> hash1;

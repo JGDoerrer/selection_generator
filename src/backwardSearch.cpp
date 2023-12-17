@@ -84,8 +84,8 @@ int forward(Poset<maxN> poset) {
 // Option 3: starte mit [1] und call anti_reduceN, anti_reduceNthsmallest
 
 template <size_t maxN>
-void findAllInitPosets(Normalizer<maxN> &normalizer, const Poset<maxN> &poset, std::unordered_set<Poset<maxN>> &posets,
-                       std::unordered_set<Poset<maxN>> &cache) {
+void findAllInitPosetsRec(Normalizer<maxN> &normalizer, const Poset<maxN> &poset,
+                          std::unordered_set<Poset<maxN>> &posets, std::unordered_set<Poset<maxN>> &cache) {
   cache.insert(poset);
   if (poset.is_solvable()) {
     posets.insert(poset);
@@ -96,11 +96,43 @@ void findAllInitPosets(Normalizer<maxN> &normalizer, const Poset<maxN> &poset, s
         Poset<maxN> poset2 = poset.with_less(i, j);
         normalizer.canonify_nauty(poset2);
         if (!cache.contains(poset2)) {
-          findAllInitPosets(normalizer, poset2, posets, cache);
+          findAllInitPosetsRec(normalizer, poset2, posets, cache);
         }
       }
     }
   }
+}
+
+template <size_t maxN>
+std::unordered_set<Poset<maxN>> findAllInitPosets(Normalizer<maxN> &normalizer, const int n, const int k) {
+  std::unordered_set<Poset<globalMaxN>> result, cache;
+  findAllInitPosetsRec(normalizer, Poset<globalMaxN>{(uint8_t)n, (uint8_t)k}, result, cache);
+  return result;
+}
+
+std::optional<std::unordered_set<Poset<globalMaxN>>> myBigCache[20][20];
+template <size_t maxN>
+std::unordered_set<Poset<maxN>> findAllInitPosets2(Normalizer<maxN> &normalizer, const uint8_t n, const uint8_t k) {
+  if (myBigCache[n][k] == std::nullopt) {
+    std::unordered_set<Poset<maxN>> result;
+
+    if (1 == n) {
+      result.insert(Poset<maxN>{n, k});
+    } else if (n == k + 1) {
+      for (Poset<maxN> item : findAllInitPosets2(normalizer, n - 1, k - 1)) {
+        item.change_nth(k);
+        item.enlarge(normalizer, result);
+      }
+    } else {
+      for (const Poset<maxN> &item : findAllInitPosets2(normalizer, n - 1, k)) {
+        item.enlarge(normalizer, result);
+      }
+    }
+
+    myBigCache[n][k] = result;
+  }
+
+  return myBigCache[n][k].value();
 }
 
 // Cache<Poset<globalMaxN>, uint8_t> cache_solvable_in;
@@ -111,9 +143,7 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
   const std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
   Normalizer<maxN> normalizer{};
-  const Poset<maxN> empty = Poset<maxN>{(uint8_t)n, (uint8_t)nthSmallest};
-  std::unordered_set<Poset<maxN>> source, cache;
-  findAllInitPosets(normalizer, empty, source, cache);
+  std::unordered_set<Poset<maxN>> source = findAllInitPosets2(normalizer, n, nthSmallest);
 
   std::chrono::time_point end = std::chrono::high_resolution_clock::now();
 
@@ -148,7 +178,7 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
               destination.insert(predecessorNorm0);
               // cache_solvable_in.insert(predecessorNorm0, k);
 
-              if (predecessorNorm0 == empty) {
+              if (predecessorNorm0 == Poset<maxN>{(uint8_t)n, (uint8_t)nthSmallest}) {
                 return {k, end - start, std::chrono::high_resolution_clock::now() - end};
               }
             }
@@ -163,6 +193,26 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
 }
 
 int main() {
+  Normalizer<globalMaxN> normalizer;
+
+  for (int i = 0; i < 20; ++i)
+    for (int j = 0; j < 20; ++j) {
+      myBigCache[i][j] = std::nullopt;
+    }
+
+  // for (int n = 1; n < 10; ++n) {
+  //   for (int k = 0; k < n; ++k) {
+  //     std::chrono::time_point start = std::chrono::high_resolution_clock::now();
+  //     std::unordered_set<Poset<globalMaxN>> result = findAllInitPosets(normalizer, n, k);
+  //     std::chrono::time_point mid = std::chrono::high_resolution_clock::now();
+  //     std::unordered_set<Poset<globalMaxN>> result2 = findAllInitPosets2(normalizer, n, k);
+  //     std::chrono::time_point end = std::chrono::high_resolution_clock::now();
+  //     std::cout << n << ", " << k << ": " << result.size() << " - " << result2.size() << " in: " << mid - start << " | "
+  //               << end - mid << std::endl;
+  //     assert(result == result2);
+  //   }
+  // }
+
   constexpr size_t nBound = 0;
 
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
