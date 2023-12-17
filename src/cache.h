@@ -20,6 +20,16 @@ class Cache {
   std::mutex mutex_cache;
 
  public:
+  inline std::optional<G> get(const F &poset) {
+    const std::lock_guard<std::mutex> lock(mutex_cache);
+    const auto temp = cache.find(poset);
+    if (temp == cache.end()) {
+      return {};
+    } else {
+      return *temp;
+    }
+  }
+
   inline bool checkLower(const F &poset, const G remainingComparisons) {
     const std::lock_guard<std::mutex> lock(mutex_cache);
     const auto temp = cache.find(poset);

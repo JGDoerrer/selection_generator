@@ -26,16 +26,25 @@ class Normalizer {
   int ptn[maxN];
   int orbits[maxN];
 
- public:
-  Normalizer() {
-    assert(maxN <= WORDSIZE);
-    nauty_check(WORDSIZE, m, maxN, NAUTYVERSIONID);
+  // invariant after method: i < n/2
+  inline Poset<maxN> &reduce_nthSmallest(Poset<maxN> &poset) {
+    if (poset.n <= 2 * poset.nthSmallest) {
+      poset.nthSmallest = poset.n - 1 - poset.nthSmallest;
+      for (uint8_t i = 0; i < poset.n; ++i) {
+        for (uint8_t j = i + 1; j < poset.n; ++j) {
+          const bool temp = poset.is_less(i, j);
+          poset.set_less(i, j, poset.is_less(j, i));
+          poset.set_less(j, i, temp);
+        }
+      }
+    }
+    return poset;
   }
 
-  inline void reduceN(Poset<maxN> &poset) {
+  inline Poset<maxN> &reduce_n(Poset<maxN> &poset) {
     uint8_t less[poset.n];
     uint8_t greater[poset.n];
-    poset.getLessGreater(less, greater);
+    poset.calculate_relations(less, greater);
 
     // can the element be ignored, because it is too large/small
     uint8_t new_indices[poset.n];
@@ -56,33 +65,29 @@ class Normalizer {
       }
     }
 
-    std::bitset<maxN * maxN> oldTb(poset.comparisonTable);
-    const uint8_t oldN = poset.n;
-    poset.n = new_n;
-    poset.nthSmallest -= n_less_dropped;
-    poset.comparisonTable.reset();
-    for (uint8_t i = 0; i < new_n; ++i) {
-      for (uint8_t j = 0; j < new_n; ++j) {
-        poset.set_less(i, j, oldTb[new_indices[i] * oldN + new_indices[j]]);
-      }
-    }
-  }
-
-  // invariant after method: i < n/2
-  inline void reduceNthSmallest(Poset<maxN> &poset) {
-    if (poset.n <= 2 * poset.nthSmallest) {
-      poset.nthSmallest = poset.n - 1 - poset.nthSmallest;
-      for (uint8_t i = 0; i < poset.n; ++i) {
-        for (uint8_t j = i + 1; j < poset.n; ++j) {
-          const bool temp = poset.is_less(i, j);
-          poset.set_less(i, j, poset.is_less(j, i));
-          poset.set_less(j, i, temp);
+    if (new_n != poset.n) {
+      std::bitset<maxN * maxN> oldTb(poset.comparisonTable);
+      const uint8_t oldN = poset.n;
+      poset.n = new_n;
+      poset.nthSmallest -= n_less_dropped;
+      poset.comparisonTable.reset();
+      for (uint8_t i = 0; i < new_n; ++i) {
+        for (uint8_t j = 0; j < new_n; ++j) {
+          poset.set_less(i, j, oldTb[new_indices[i] * oldN + new_indices[j]]);
         }
       }
+      reduce_nthSmallest(poset);
     }
+    return poset;
   }
 
-  inline void canonifyNauty(Poset<maxN> &poset) {
+ public:
+  Normalizer() {
+    assert(maxN <= WORDSIZE);
+    nauty_check(WORDSIZE, m, maxN, NAUTYVERSIONID);
+  }
+
+  inline Poset<maxN> &canonify_nauty(Poset<maxN> &poset) {
     EMPTYGRAPH(g, m, poset.n);
     for (uint16_t i = 0; i < poset.n; ++i) {
       for (uint16_t j = 0; j < poset.n; ++j) {
@@ -114,20 +119,20 @@ class Normalizer {
         poset.set_less(i, j, oldTb[lab[i] * poset.n + lab[j]]);
       }
     }
+    return poset;
   }
 
   void normalize(Poset<maxN> &poset) {
-    reduceN(poset);
-    reduceNthSmallest(poset);
+    reduce_n(poset);
 
     if (true) {
       // use nauty
-      canonifyNauty(poset);
+      canonify_nauty(poset);
     } else {
       // use mix
       uint8_t less[poset.n];
       uint8_t greater[poset.n];
-      poset.getLessGreater(less, greater);
+      poset.calculate_relations(less, greater);
 
       std::vector<std::pair<uint64_t, uint8_t>> rowSum(poset.n);
       for (uint16_t i = 0; i < poset.n; ++i) {

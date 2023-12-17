@@ -34,7 +34,7 @@ std::array<Normalizer<globalMaxN>, 230> norm;  // TODO: only Debug
 template <size_t maxN>
 Poset<maxN> createPosetWithComparison(const int normalizerIndex, Poset<maxN> poset, const uint16_t i,
                                       const uint16_t j) {
-  poset.addComparison(i, j);
+  poset.add_less(i, j);
   norm[normalizerIndex].normalize(poset);
   return poset;
 };
@@ -61,10 +61,10 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
   } else if (cache_upperBound[poset.size()].checkUpper(poset, remainingComparisons)) {
     ++statistics.hashMatchUpperBound;
     return FoundSolution;
-    // durch normalisierung können alle posets auf n == 1 reduziert werden, d.h. canDetermineNSmallest unnötig
-    // } else if (poset.canDetermineNSmallest()) {
+    // durch normalisierung können alle posets auf n == 1 reduziert werden, d.h. is_solvable unnötig
+    // } else if (poset.is_solvable()) {
     //   result = FoundSolution;
-  } else if (!poset.hasEnoughComparisons(remainingComparisons)) {
+  } else if (poset.is_not_solvable_in(remainingComparisons)) {
     result = NoSolution;
     ++statistics.noSolution;
   } else {
@@ -122,7 +122,7 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
 
         uint8_t less[poset.size()];
         uint8_t greater[poset.size()];
-        poset.getLessGreater(less, greater);
+        poset.calculate_relations(less, greater);
 
         std::sort(temp.begin(), temp.end(), [&](const std::pair<int, int> &a, const std::pair<int, int> &b) {
           return greater[a.first] + less[a.second] > greater[b.first] + less[b.second];
@@ -170,13 +170,14 @@ SearchResult startSearchNow(std::ostream &os, BS::thread_pool_light &threadpool,
     os << "# search with Pair-Optimisation & maxComparisons = " << maxComparisons << std::flush;
     for (int k = 0; k < n - 1 && comparisonsDone < maxComparisons; k += 2) {
       ++comparisonsDone;
-      poset.addComparison(k, k + 1);
+      poset.add_less(k, k + 1);
     }
   } else {
     os << "# search with maxComparisons = " << maxComparisons << std::flush;
     ++comparisonsDone;
-    poset.addComparison(0, 1);
+    poset.add_less(0, 1);
   }
+  // ACHTUNG: hier könnte reduce_n falsch sein!
   norm[0].normalize(poset);
 
   const SearchResult result =

@@ -2,8 +2,9 @@
 ## interne Links
 - [Github Repo](https://github.com/JGDoerrer/selection_generator/)
 - [Theoretische Schranken](./doc/theoreticalBounds.md)
-- [Program Output (search from Bottom to Top)](./doc/outputBottomTop.md)
-- [Program Output (search from Top to Bottom)](./doc/outputTopBottom.md)
+- [Program Output (forward search from Bottom to Top)](./doc/outputForwardSearchBottomTop.md)
+- [Program Output (forward search from Top to Bottom)](./doc/outputForwardSearchTopBottom.md)
+- [Program Output (backward search)](./doc/outputBackwardSearch.md)
 
 ## Installation
 - run `sh setup.sh` in the project folder once
@@ -114,6 +115,7 @@ Im folgenden sei `maxN` die Größe des größten Posets, `n` die Größe eines 
 - Einträge mit `f` sind immer false
 - wenn Eintrag `(0, 2) == true` gilt list[0] < list[2]
 - => dann kann nicht `(2, 0) == true` gelten
+- Definiere Poset `p` ist `closed` gdw. jede transitive '1' gesetzt ist (d.h. es ex. kein a, b, c mit `is_less(a, b) && is_less(b, c) && !is_less(a, c)`)
 
 ## Literatur
 - [C-implementation Oksanen](https://www.cs.hut.fi/~cessu/selection/)

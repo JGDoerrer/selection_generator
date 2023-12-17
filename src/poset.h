@@ -3,128 +3,164 @@
 
 #include "normalizer.h"
 
-template <size_t maxN>
+template <std::size_t maxN>
 class Poset {
  private:
   uint8_t n;
   uint8_t nthSmallest;
   std::bitset<maxN * maxN> comparisonTable;
 
-  void addComparisonTransitivRecursive(const uint16_t i, const uint16_t j) {
-    if (false == is_less(i, j)) {
-      set_less(i, j, true);
+  inline void set_less(const uint16_t i, const uint16_t j, const bool value) {
+    this->comparisonTable[i * n + j] = value;
+  }
 
-      for (uint16_t k = 0; k < n; ++k) {
+  Poset<maxN> &add_and_close_recursive(const uint16_t i, const uint16_t j) {
+    if (false == this->is_less(i, j)) {
+      this->set_less(i, j, true);
+
+      for (uint16_t k = 0; k < this->n; ++k) {
         if (i != k && j != k) {
-          if (is_less(j, k) && !is_less(i, k)) {
-            addComparisonTransitivRecursive(i, k);
-          } else if (is_less(k, i) && !is_less(k, j)) {
-            addComparisonTransitivRecursive(k, j);
+          if (this->is_less(j, k) && !this->is_less(i, k)) {
+            this->add_and_close_recursive(i, k);
+          } else if (this->is_less(k, i) && !this->is_less(k, j)) {
+            this->add_and_close_recursive(k, j);
           }
         }
       }
     }
+    return *this;
   }
 
-  inline void addComparisonTransitivIterative(const uint16_t i, const uint16_t j) {
+  inline Poset<maxN> &add_and_close_iterative(const uint16_t i, const uint16_t j) {
     std::queue<std::pair<uint16_t, uint16_t>> queue;
     queue.push({i, j});
-    while (0 != queue.size()) {
+    while (!queue.empty()) {
       const auto &[i1, j1] = queue.front();
       queue.pop();
 
-      if (false == is_less(i1, j1)) {
-        set_less(i1, j1, true);
-        for (uint16_t k = 0; k < n; ++k) {
-          if (is_less(j1, k) && !is_less(i1, k)) {
+      if (false == this->is_less(i1, j1)) {
+        this->set_less(i1, j1, true);
+        for (uint16_t k = 0; k < this->n; ++k) {
+          if (this->is_less(j1, k) && !this->is_less(i1, k)) {
             queue.push({i1, k});
-          } else if (is_less(k, i1) && !is_less(k, j1)) {
+          } else if (this->is_less(k, i1) && !this->is_less(k, j1)) {
             queue.push({k, j1});
           }
         }
       }
     }
+    return *this;
   }
 
   // Kante von (v) -> (w) g.d.w. a[v] < a[w]
   void visit(const int v, std::vector<bool> &visited) const {
     visited[v] = true;
-    for (uint8_t w = 0; w < n; ++w) {
-      if ((is_less(v, w) || is_less(w, v)) && !visited[w]) {
-        visit(w, visited);
+    for (uint8_t w = 0; w < this->n; ++w) {
+      if ((this->is_less(v, w) || this->is_less(w, v)) && !visited[w]) {
+        this->visit(w, visited);
       }
     }
   }
 
-  uint8_t numberConnectedComponents() const {
-    std::vector<bool> visited(n, false);
+  inline uint8_t count_connected_components() const {
+    std::vector<bool> visited(this->n, false);
     uint8_t components = 0;
-    for (uint8_t v = 0; v < n; ++v) {
+    for (uint8_t v = 0; v < this->n; ++v) {
       if (!visited[v]) {
         ++components;
-        visit(v, visited);
+        this->visit(v, visited);
       }
     }
     return components;
   }
 
  public:
+  /// @brief constructs an empty Poset
+  /// @param n
+  /// @param nthSmallest
   Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest), comparisonTable() {}
 
-  uint8_t size() const { return n; }
+  /// @brief clones a poset
+  /// @param poset
+  Poset(const Poset<maxN> &poset)
+      : n(poset.n), nthSmallest(poset.nthSmallest), comparisonTable(poset.comparisonTable) {}
 
-  uint8_t nth() const { return nthSmallest; }
+  /// @return size of the Poset
+  inline uint8_t size() const { return this->n; }
 
-  // `set_less(i, j)` and add all transitiv comparisons
-  void addComparison(const uint16_t i, const uint16_t j) {
-    addComparisonTransitivRecursive(i, j);  // faster than iterative
+  /// @return the nthSmallest Element
+  inline uint8_t nth() const { return this->nthSmallest; }
+
+  /// @brief checks, whether it holds `arr[i] < arr[j]`, e.g. `is_less(i, j) == true` => `arr[i] < arr[j]`
+  //         Attention: `!is_less(i, j)` IMPLIES NOT `arr[i] > arr[j]`
+  /// @param i
+  /// @param j
+  /// @return
+  inline bool is_less(const uint16_t i, const uint16_t j) const { return this->comparisonTable[i * n + j]; }
+
+  /// @brief
+  /// @return how many comparisons are set (including transitiv)
+  std::size_t count() const { return this->comparisonTable.count(); }
+
+  /// @brief adds i < j to the poset
+  /// @param i
+  /// @param j
+  /// @return
+  inline Poset<maxN> &add_less(const uint16_t i, const uint16_t j) {
+    return this->add_and_close_recursive(i, j);  // faster than iterative
   }
 
-  // checks, whether it holds `arr[i] < arr[j]`, e.g. `is_less(i, j) == true` => `arr[i] < arr[j]`
-  // Attention: `!is_less(i, j)` IMPLIES NOT `arr[i] > arr[j]`
-  inline bool is_less(const uint16_t i, const uint16_t j) const { return comparisonTable[i * n + j]; }
+  /// @brief
+  /// @param i
+  /// @param j
+  /// @return retunrs a clone of the poset, with i < j added
+  inline Poset<maxN> with_less(const uint16_t i, const uint16_t j) const { return Poset<maxN>{*this}.add_less(i, j); }
 
-  inline void set_less(const uint16_t i, const uint16_t j, const bool value) { comparisonTable[i * n + j] = value; }
-
-  // can one determine nthsmallest element with current comparisons
-  bool canDetermineNSmallest() const {
-    if (0 == n) {
+  /// @brief
+  /// @return true, if can one determine nthsmallest element with current comparisons
+  bool is_solvable() const {
+    if (0 == this->n) {
       return true;
     }
-    for (uint16_t k = 0; k < n; ++k) {  // guess arr[k] is_less median
+    for (uint16_t k = 0; k < this->n; ++k) {  // guess arr[k] is_less median
       uint8_t smaller = 0, bigger = 0;
-      for (uint16_t i = 0; i < n; ++i) {
-        if (is_less(i, k)) {
+      for (uint16_t i = 0; i < this->n; ++i) {
+        if (this->is_less(i, k)) {
           ++smaller;
-        } else if (is_less(k, i)) {
+        } else if (this->is_less(k, i)) {
           ++bigger;
         }
       }
-      if (1 + smaller + bigger == n && smaller == nthSmallest) {
+      if (1 + smaller + bigger == this->n && smaller == this->nthSmallest) {
         return true;
       }
     }
     return false;
   }
 
-  inline bool hasEnoughComparisons(const uint8_t remainingComparisons) const {
+  /// @brief
+  /// @param remainingComparisons
+  /// @return true if poset is definitely not solvable in `remainingComparisons` Comparisons
+  inline bool is_not_solvable_in(const uint8_t remainingComparisons) const {
     if (0 == remainingComparisons) {
-      return false;
+      return true;
     }
     // very rarely used, senseless???
-    if (remainingComparisons + 1 < numberConnectedComponents()) {
-      return false;
+    if (remainingComparisons + 1 < this->count_connected_components()) {
+      return true;
     }
-    return true;
+    return false;
   }
 
-  // how many elements are less than it
-  void getLessGreater(uint8_t less[], uint8_t greater[]) const {
-    std::memset(less, 0, n);
-    std::memset(greater, 0, n);
-    for (uint8_t i = 0; i < n; ++i) {
-      for (uint8_t j = 0; j < n; ++j) {
-        if (is_less(i, j)) {
+  /// @brief returns how many elements are less or greater than it
+  /// @param less
+  /// @param greater
+  void calculate_relations(uint8_t less[], uint8_t greater[]) const {
+    std::memset(less, 0, this->n);
+    std::memset(greater, 0, this->n);
+    for (uint8_t i = 0; i < this->n; ++i) {
+      for (uint8_t j = 0; j < this->n; ++j) {
+        if (this->is_less(i, j)) {
           ++less[j];
           ++greater[i];
         }
@@ -132,43 +168,44 @@ class Poset {
     }
   }
 
-  inline bool isRedundant(const uint16_t i, const uint16_t j) const {
-    for (uint16_t k = 0; k < n; ++k) {
-      if (is_less(i, k) && is_less(k, j)) {
+  /// @brief
+  /// @param i
+  /// @param j
+  /// @return true, if comparison (i, j) is redundant
+  inline bool is_redundant(const uint16_t i, const uint16_t j) const {
+    for (uint16_t k = 0; k < this->n; ++k) {
+      if (this->is_less(i, k) && this->is_less(k, j)) {
         return true;
       }
     }
-
     return false;
   }
 
-  size_t count() const { return comparisonTable.count(); }
-
-  // Definiere Poset `p` ist vollständig gdw. jede transitive '1' gesetzt ist (d.h. es ex. kein a, b, c mit
-  //     `is_less(a, b) && is_less(b, c) && !is_less(a, c)`)
-  // input: vollständiges Poset
-  // output: Menge an Posets M, wobei für alle m in M gilt: m ist vollständig, NICHT normalisiert, aber dedupliziert,
-  //         durch Aufruf von `m.addComparison(i, j)` erhält man wieder `*this` und keine unnötigen Vergleiche
-  //         gespeichert haben
-  inline std::unordered_set<Poset<maxN>> removeComparison(Normalizer<maxN> &normalizer, const uint16_t i,
+  /// @brief *this is a closed Poset
+  /// @param normalizer
+  /// @param i
+  /// @param j
+  /// @return Menge an Posets M, wobei für alle m in M gilt: m ist vollständig, NICHT normalisiert, aber dedupliziert,
+  //          durch Aufruf von `m.add_less(i, j)` erhält man wieder `*this` und keine unnötigen Vergleiche
+  //          gespeichert haben
+  inline std::unordered_set<Poset<maxN>> remove_less(Normalizer<maxN> &normalizer, const uint16_t i,
                                                           const uint16_t j) const {
-    // prüfe auf Vollständigkeit
-    for (uint8_t in = 0; in < n; ++in) {
-      for (uint8_t jn = 0; jn < n; ++jn) {
-        for (uint16_t k = 0; k < n; ++k) {
-          if (in != jn && jn != k && k != in) {
-            if (is_less(in, jn) && is_less(jn, k) && !is_less(in, k)) {
-              std::cout << (int)in << " " << (int)jn << " " << (int)k << std::endl;
-              assert(false);
-            }
-          }
-        }
-      }
-    }
+    // check if input closed
+    // for (uint8_t in = 0; in < n; ++in) {
+    //   for (uint8_t jn = 0; jn < n; ++jn) {
+    //     for (uint16_t k = 0; k < n; ++k) {
+    //       if (in != jn && jn != k && k != in) {
+    //         if (is_less(in, jn) && is_less(jn, k) && !is_less(in, k)) {
+    //           std::cout << (int)in << " " << (int)jn << " " << (int)k << std::endl;
+    //           assert(false);
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     std::unordered_set<Poset<maxN>> result, resultNormalized;
-    // siehe unten
-    if (!is_less(i, j) || isRedundant(i, j)) {
+    if (!this->is_less(i, j) || this->is_redundant(i, j)) {
       return result;
     }
 
@@ -179,21 +216,21 @@ class Poset {
     queue.push(poset_initial);
 
     result.insert(poset_initial);
-    normalizer.canonifyNauty(poset_initial);
+    normalizer.canonify_nauty(poset_initial);
     resultNormalized.insert(poset_initial);
 
     while (!queue.empty()) {
       Poset<maxN> poset = queue.front();
       queue.pop();
 
-      for (uint8_t i1 = 0; i1 < n; ++i1) {
-        for (uint8_t j1 = 0; j1 < n; ++j1) {
+      for (uint8_t i1 = 0; i1 < this->n; ++i1) {
+        for (uint8_t j1 = 0; j1 < this->n; ++j1) {
           // brich ab, wenn eine der folgenden Bedingungen entritt:
           // abs(j-i) >= abs(j1-i1): wenn das gilt, kann es sich um keinen transitiven Vergleich handeln? (Beweis: tbd)
           // !poset.is_less(i1, j1): der zu entfernende Vergleich existiert gar nicht
-          // poset.isRedundant(i1, j1): wenn es sich bei (i1, j1) um eine redundante Kante handelt, muss dieser Pfad
+          // poset.is_redundant(i1, j1): wenn es sich bei (i1, j1) um eine redundante Kante handelt, muss dieser Pfad
           // auch nicht weiterverfolgt werden? (Beweis: tbd)
-          if (i1 == j1 || abs(j - i) >= abs(j1 - i1) || !poset.is_less(i1, j1) || poset.isRedundant(i1, j1)) {
+          if (i1 == j1 || abs(j - i) >= abs(j1 - i1) || !poset.is_less(i1, j1) || poset.is_redundant(i1, j1)) {
             continue;
           }
 
@@ -202,15 +239,13 @@ class Poset {
 
           // wenn durch hinzufügen des ursprünglich entfernten Vergleichs, nicht wieder das ursprüngliche Poset
           // entsteht, brich ab
-          Poset<maxN> poset_check = poset_next;
-          poset_check.addComparison(i, j);
-          if (*this != poset_check) {
+          if (*this != poset_next.with_less(i, j)) {
             continue;
           }
 
           // wenn das poset normalisert schon in result ist, abbruch
           Poset<maxN> poset_norm = poset_next;
-          normalizer.canonifyNauty(poset_norm);
+          normalizer.canonify_nauty(poset_norm);
           if (resultNormalized.contains(poset_norm)) {
             continue;
           }
@@ -223,6 +258,7 @@ class Poset {
       }
     }
 
+    // check if output closed
     // for (auto item : result) {
     //   for (uint8_t in = 0; in < n; ++in) {
     //     for (uint8_t jn = 0; jn < n; ++jn) {
@@ -241,39 +277,47 @@ class Poset {
     return result;
   }
 
+  /// @brief 
+  /// @param poset 
+  /// @return true, if *this is a subset of `poset`
   bool subset_of(const Poset<maxN> &poset) const {
     return n == poset.n && nthSmallest == poset.nthSmallest && (~comparisonTable | poset.comparisonTable).all();
   }
 
   // TODO: iterator for all "ones"
 
+  /// @brief 
+  /// @param poset 
+  /// @return 
   bool operator==(const Poset<maxN> &poset) const {
     return n == poset.n && nthSmallest == poset.nthSmallest && comparisonTable == poset.comparisonTable;
   }
 
-  size_t hash() const {
+  /// @brief 
+  /// @return hash of poset
+  std::size_t hash() const {
     const std::hash<std::bitset<maxN * maxN>> hash1;
-    return ((size_t)n << (size_t)4) ^ nthSmallest ^ hash1(comparisonTable);
+    return ((std::size_t)n << (std::size_t)4) ^ nthSmallest ^ hash1(comparisonTable);
   }
 
-  template <size_t maxN2>
+  template <std::size_t maxN2>
   friend std::ostream &operator<<(std::ostream &os, const Poset<maxN2> &poset);
 
   friend class Normalizer<maxN>;
 };
 
-template <size_t maxN>
+template <std::size_t maxN>
 struct std::hash<Poset<maxN>> {
-  size_t operator()(const Poset<maxN> &poset) const { return poset.hash(); }
+  std::size_t operator()(const Poset<maxN> &poset) const { return poset.hash(); }
 };
 
-template <size_t maxN>
+template <std::size_t maxN>
 std::ostream &operator<<(std::ostream &os, const Poset<maxN> &poset) {
   os << "n = " << (uint16_t)poset.n << ", nthSmallest = " << (uint16_t)poset.nthSmallest;
   for (uint16_t i = 0; i < poset.n; ++i) {
-    std::cout << '\n';
+    os << '\n';
     for (uint16_t j = 0; j < poset.n; ++j) {
-      std::cout << poset.is_less(i, j) << " ";
+      os << poset.is_less(i, j) << " ";
     }
   }
   return os;
