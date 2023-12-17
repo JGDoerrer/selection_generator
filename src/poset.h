@@ -8,7 +8,7 @@ class Poset {
  private:
   uint8_t n;
   uint8_t nthSmallest;
-  std::vector<bool> comparisonTable;
+  std::bitset<maxN * maxN> comparisonTable;
 
   void addComparisonTransitivRecursive(const uint16_t i, const uint16_t j) {
     if (false == is_less(i, j)) {
@@ -69,7 +69,7 @@ class Poset {
   }
 
  public:
-  Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest), comparisonTable(n * n, false) {}
+  Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest), comparisonTable() {}
 
   uint8_t size() const { return n; }
 
@@ -142,17 +142,7 @@ class Poset {
     return false;
   }
 
-  int countNumberOfOnes() const {
-    int result = 0;
-    for (uint8_t i = 0; i < n; ++i) {
-      for (uint8_t j = 0; j < n; ++j) {
-        if (is_less(i, j)) {
-          ++result;
-        }
-      }
-    }
-    return result;
-  }
+  size_t count() const { return comparisonTable.count(); }
 
   // Definiere Poset `p` ist vollständig gdw. jede transitive '1' gesetzt ist (d.h. es ex. kein a, b, c mit
   //     `is_less(a, b) && is_less(b, c) && !is_less(a, c)`)
@@ -251,6 +241,10 @@ class Poset {
     return result;
   }
 
+  bool subset_of(const Poset<maxN> &poset) const {
+    return n == poset.n && nthSmallest == poset.nthSmallest && (~comparisonTable | poset.comparisonTable).all();
+  }
+
   // TODO: iterator for all "ones"
 
   bool operator==(const Poset<maxN> &poset) const {
@@ -258,18 +252,8 @@ class Poset {
   }
 
   size_t hash() const {
-    constexpr int shift = 7;
-    size_t result = 0;
-    result ^= n;
-    result = (result << shift) | (result >> (8 * sizeof(size_t) - shift));
-    result ^= nthSmallest;
-    for (uint16_t i = 0; i < n * n; ++i) {
-      if (comparisonTable[i]) {
-        result = (result << shift) | (result >> (8 * sizeof(size_t) - shift));
-        result ^= i;
-      }
-    }
-    return result;
+    const std::hash<std::bitset<maxN * maxN>> hash1;
+    return ((size_t)n << (size_t)4) ^ nthSmallest ^ hash1(comparisonTable);
   }
 
   template <size_t maxN2>

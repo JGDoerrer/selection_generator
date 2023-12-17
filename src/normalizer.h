@@ -56,11 +56,11 @@ class Normalizer {
       }
     }
 
-    std::vector<bool> oldTb(poset.comparisonTable);
+    std::bitset<maxN * maxN> oldTb(poset.comparisonTable);
     const uint8_t oldN = poset.n;
     poset.n = new_n;
     poset.nthSmallest -= n_less_dropped;
-    poset.comparisonTable.resize(new_n * new_n);
+    poset.comparisonTable.reset();
     for (uint8_t i = 0; i < new_n; ++i) {
       for (uint8_t j = 0; j < new_n; ++j) {
         poset.set_less(i, j, oldTb[new_indices[i] * oldN + new_indices[j]]);
@@ -108,7 +108,7 @@ class Normalizer {
     densenauty(g, lab, ptn, orbits, &options, &stats, m, poset.n, result);
     assert(stats.errstatus == 0);
 
-    std::vector<bool> oldTb(poset.comparisonTable);
+    std::bitset<maxN * maxN> oldTb(poset.comparisonTable);
     for (uint8_t i = 0; i < poset.n; ++i) {
       for (uint8_t j = 0; j < poset.n; ++j) {
         poset.set_less(i, j, oldTb[lab[i] * poset.n + lab[j]]);
@@ -136,7 +136,7 @@ class Normalizer {
 
       std::sort(rowSum.begin(), rowSum.end());
 
-      std::vector<bool> oldTb(poset.comparisonTable);
+      std::bitset<maxN * maxN> oldTb(poset.comparisonTable);
       for (uint8_t i = 0; i < poset.n; ++i) {
         for (uint8_t j = 0; j < poset.n; ++j) {
           poset.set_less(i, j, oldTb[rowSum[i].second * poset.n + rowSum[j].second]);

@@ -55,12 +55,10 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
   SearchResult result = NoSolution;
   if (atomicBreak) {
     return Unknown;
-  } else if (cache_lowerBound[poset.size()].check(
-                 poset, [=](const uint8_t item) { return remainingComparisons <= item; })) {
+  } else if (cache_lowerBound[poset.size()].checkLower(poset, remainingComparisons)) {
     ++statistics.hashMatchLowerBound;
     return NoSolution;
-  } else if (cache_upperBound[poset.size()].check(
-                 poset, [=](const uint8_t item) { return remainingComparisons >= item; })) {
+  } else if (cache_upperBound[poset.size()].checkUpper(poset, remainingComparisons)) {
     ++statistics.hashMatchUpperBound;
     return FoundSolution;
     // durch normalisierung können alle posets auf n == 1 reduziert werden, d.h. canDetermineNSmallest unnötig
@@ -150,11 +148,9 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
   }
 
   if (result == NoSolution) {
-    cache_lowerBound[poset.size()].insert_if(poset, remainingComparisons,
-                                                     [=](const uint8_t item) { return remainingComparisons > item; });
+    cache_lowerBound[poset.size()].insert_ifLower(poset, remainingComparisons);
   } else if (result == FoundSolution) {
-    cache_upperBound[poset.size()].insert_if(poset, remainingComparisons,
-                                                     [=](const uint8_t item) { return remainingComparisons < item; });
+    cache_upperBound[poset.size()].insert_ifUpper(poset, remainingComparisons);
   }
   return result;
 }
