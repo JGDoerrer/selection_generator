@@ -89,36 +89,40 @@ class Poset {
     return true;
   }
 
-  void generate_permutations(Normalizer<maxN> &normalizer, Poset<maxN> temp, const int index,
+  void generate_permutations(Normalizer<maxN> &normalizer, const int index,
                              std::unordered_set<Poset<maxN>> &result) const {
-    if (index == temp.n - 1) {
-      if (temp.is_solvable()) {
-        normalizer.canonify_nauty(temp);
-        result.insert(temp);
-      }
-    } else {
-      generate_permutations(normalizer, temp, index + 1, result);
+    if (!result.contains(*this)) {
+      result.insert(*this);
 
-      if (!temp.is_less(index, temp.n - 1) && !temp.is_less(temp.n - 1, index)) {
-        generate_permutations(normalizer, temp.with_less(index, temp.n - 1), index + 1, result);
-        generate_permutations(normalizer, temp.with_less(temp.n - 1, index), index + 1, result);
+      if (index < this->n - 1) {
+        for (int index1 = index; index1 < (int)(this->n) - 1; ++index1) {
+          if (!this->is_less(index1, this->n - 1) && !this->is_less(this->n - 1, index1)) {
+            this->with_less(index1, this->n - 1).generate_permutations(normalizer, index1 + 1, result);
+            this->with_less(this->n - 1, index1).generate_permutations(normalizer, index1 + 1, result);
+          }
+        }
       }
     }
   }
 
  public:
-  /// @brief
-  /// @param normalizer
-  /// @param finalResult returns all solvable, canonified Posets, which can be builded from *this
-  void enlarge(Normalizer<maxN> &normalizer, std::unordered_set<Poset<maxN>> &finalResult) const {
+  // returns all canonified Posets, which can be builded from *this
+  std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer) const {
     Poset<maxN> temp{uint8_t(uint8_t(n) + uint8_t(1)), nthSmallest};
     for (uint8_t i = 0; i < n; ++i) {
       for (uint8_t j = 0; j < n; ++j) {
         temp.set_less(i, j, comparisonTable[i * n + j]);
       }
     }
-    // TODO: Hier kann Brute-Force durch nachdenken VOLLSTÄNDIG vermieden werden
-    generate_permutations(normalizer, temp, 0, finalResult);
+    std::unordered_set<Poset<maxN>> result2;
+    temp.generate_permutations(normalizer, 0, result2);
+
+    std::unordered_set<Poset<maxN>> result;
+    for (Poset<maxN> item : result2) {
+      normalizer.canonify_nauty(item);
+      result.insert(item);
+    }
+    return result;
   }
 
   /// @brief constructs an empty Poset
@@ -331,6 +335,10 @@ class Poset {
   friend std::ostream &operator<<(std::ostream &os, const Poset<maxN2> &poset);
 
   friend class Normalizer<maxN>;
+
+  template <std::size_t maxN2>
+  friend std::unordered_set<Poset<maxN2>> enlarge(Normalizer<maxN2> &normalizer,
+                                                  const std::unordered_set<Poset<maxN2>> &setOfPosets);
 };
 
 template <std::size_t maxN>
@@ -348,4 +356,27 @@ std::ostream &operator<<(std::ostream &os, const Poset<maxN> &poset) {
     }
   }
   return os;
+}
+
+template <std::size_t maxN>
+std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
+                                        const std::unordered_set<Poset<maxN>> &setOfPosets) {
+  std::unordered_set<Poset<maxN>> result2;
+  for (const Poset<maxN> &poset : setOfPosets) {
+    Poset<maxN> temp{uint8_t(uint8_t(poset.n) + uint8_t(1)), poset.nth()};
+    for (uint8_t i = 0; i < poset.n; ++i) {
+      for (uint8_t j = 0; j < poset.n; ++j) {
+        temp.set_less(i, j, poset.comparisonTable[i * poset.n + j]);
+      }
+    }
+    temp.generate_permutations(normalizer, 0, result2);
+  }
+
+  std::unordered_set<Poset<maxN>> result;
+  for (Poset<maxN> item : result2) {
+    normalizer.canonify_nauty(item);
+    result.insert(item);
+  }
+
+  return result;
 }
