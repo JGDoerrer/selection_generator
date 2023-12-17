@@ -89,45 +89,36 @@ class Poset {
     return true;
   }
 
- public:
-  void perm(std::vector<int> temp, const int index, std::vector<std::vector<int>> &result) const {
-    if (index == temp.size()) {
-      result.push_back(temp);
+  void generate_permutations(Normalizer<maxN> &normalizer, Poset<maxN> temp, const int index,
+                             std::unordered_set<Poset<maxN>> &result) const {
+    if (index == temp.n - 1) {
+      if (temp.is_solvable()) {
+        normalizer.canonify_nauty(temp);
+        result.insert(temp);
+      }
     } else {
-      temp[index] = 0;
-      perm(temp, index + 1, result);
-      temp[index] = 1;
-      perm(temp, index + 1, result);
-      temp[index] = 2;
-      perm(temp, index + 1, result);
+      generate_permutations(normalizer, temp, index + 1, result);
+
+      if (!temp.is_less(index, temp.n - 1) && !temp.is_less(temp.n - 1, index)) {
+        generate_permutations(normalizer, temp.with_less(index, temp.n - 1), index + 1, result);
+        generate_permutations(normalizer, temp.with_less(temp.n - 1, index), index + 1, result);
+      }
     }
   }
 
+ public:
+  /// @brief
+  /// @param normalizer
+  /// @param finalResult returns all solvable, canonified Posets, which can be builded from *this
   void enlarge(Normalizer<maxN> &normalizer, std::unordered_set<Poset<maxN>> &finalResult) const {
-    std::vector<std::vector<int>> result;
-    perm(std::vector<int>(n, 0), 0, result);
-    for (const std::vector<int> &temp : result) {
-      Poset<maxN> newPoset{uint8_t(uint8_t(n) + uint8_t(1)), nthSmallest};
-      for (uint8_t i = 0; i < n; ++i) {
-        for (uint8_t j = 0; j < n; ++j) {
-          newPoset.set_less(i, j, comparisonTable[i * n + j]);
-        }
-      }
-      for (int k = 0; k < n; ++k) {
-        if (temp[k] == 1) {
-          newPoset.set_less(n, k, true);
-        } else if (temp[k] == 2) {
-          newPoset.set_less(k, n, true);
-        }
-      }
-      if (newPoset.is_solvable() && newPoset.is_closed()) {
-        normalizer.canonify_nauty(newPoset);
-        if (!finalResult.contains(newPoset)) {
-          finalResult.insert(newPoset);
-          // std::cout << newPoset << std::endl;
-        }
+    Poset<maxN> temp{uint8_t(uint8_t(n) + uint8_t(1)), nthSmallest};
+    for (uint8_t i = 0; i < n; ++i) {
+      for (uint8_t j = 0; j < n; ++j) {
+        temp.set_less(i, j, comparisonTable[i * n + j]);
       }
     }
+    // TODO: Hier kann Brute-Force durch nachdenken VOLLSTÄNDIG vermieden werden
+    generate_permutations(normalizer, temp, 0, finalResult);
   }
 
   /// @brief constructs an empty Poset
