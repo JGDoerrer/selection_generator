@@ -83,6 +83,12 @@ int forward(Poset<maxN> poset) {
 
 // Option 3: starte mit [1] und call anti_reduceN, anti_reduceNthsmallest
 
+// Radioactive Hardstyle Remix
+// overdose
+// startship hardstyle remix
+// halo (techno version)
+// Deck the halls - timmy trupet
+
 std::array<std::array<std::optional<std::unordered_set<Poset<globalMaxN>>>, globalMaxN>, globalMaxN> myBigCache;
 
 template <size_t maxN>
@@ -96,7 +102,7 @@ std::unordered_set<Poset<maxN>> findAllInitPosets(Normalizer<maxN> &normalizer, 
   } else if (myBigCache[n][n - k - 1] != std::nullopt) {
     std::unordered_set<Poset<maxN>> result;
     for (Poset<maxN> item : myBigCache[n][n - k - 1].value()) {
-      item.change_nth(k);
+      normalizer.invert_nthSmallest(item);
       result.insert(item);
     }
     return result;
@@ -112,7 +118,7 @@ std::unordered_set<Poset<maxN>> findAllInitPosets(Normalizer<maxN> &normalizer, 
   return myBigCache[n][k].value();
 }
 
-// Cache<Poset<globalMaxN>, uint8_t> cache_solvable_in;
+// std::unordered_map<Poset<globalMaxN>, std::unordered_set<Poset<globalMaxN>>> cache_solvable_in;
 
 template <size_t maxN>
 std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanoseconds> startSearchBackward(
@@ -125,15 +131,21 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
   std::chrono::time_point end = std::chrono::high_resolution_clock::now();
 
   std::unordered_set<Poset<maxN>> allPos;
+  // std::array<std::unordered_set<Poset<maxN>>, 10> container;
   for (int k = 1; k < n * n; ++k) {
+    // container[k - 1] = source;
     allPos.merge(std::unordered_set<Poset<maxN>>(source));
     // std::cout << k - 1 << ": " << source.size() << " " << allPos.size() << std::endl;
 
     std::unordered_set<Poset<maxN>> destination;
     for (const Poset<maxN> &item : source) {
-      // auto inh = cache_solvable_in.get(item);
-      // if (inh != std::nullopt) {
-      //   inh.value();
+      // Poset<maxN> item2 = item;
+      // item2.change_nth(0);
+      // auto inh = cache_solvable_in.find(item2);
+      // if (inh != cache_solvable_in.end()) {
+      //   std::cout << inh->second.size() << std::endl;
+      //   destination.merge(std::unordered_set<Poset<maxN>>(inh->second));
+      //   continue;
       // }
 
       // TODO: übergreifenden Cache integrieren
@@ -161,6 +173,20 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
               // cache_solvable_in.insert(predecessorNorm0, k);
 
               if (predecessorNorm0 == Poset<maxN>{(uint8_t)n, (uint8_t)nthSmallest}) {
+                // for (int q = 0; q < k; ++q) {
+                //   std::cout << q << ": " << container[q].size() << std::endl;
+                // }
+                // // container[q]: für n = 7 komme ich von allen Posets in container[q] in q Schritten ans Ziel
+                // // source2:      für n = 8 komme ich von allen Posets in source2 in 0 Schritten ans Ziel
+                // // ges: source2'
+                // std::cout << container[5].size() << std::endl;
+
+                // std::unordered_set<Poset<maxN>> newItem{};
+                // for (const Poset<maxN> &poset : enlarge(normalizer, container[5])) {
+                //   newItem.insert(poset);
+                // }
+                // std::cout << newItem.size() << std::endl;
+
                 return {k, end - start, std::chrono::high_resolution_clock::now() - end};
               }
             }
@@ -175,11 +201,14 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
 }
 
 int main() {
-  // 10, 0: 0 - 183231 in: 0s | 12.444s
-  // 10, 1: 0 - 16999 in: 0s | 0.776s
-  // 10, 2: 0 - 4090 in: 0s | 0.186s
-  // 10, 3: 0 - 1590 in: 0s | 0.079s
-  // 10, 4: 0 - 1008 in: 0s | 0.059s
+  // auffällig:
+  // (n, 2).size() == 2 * (n - 1, 1).size() == 2 * (n - 2, 0).size()
+
+  // 10, 0: 0 - 183231 in: 0s | 11.888s
+  // 10, 1: 0 - 16999 in: 0s | 0.781s
+  // 10, 2: 0 - 4090 in: 0s | 0.168s
+  // 10, 3: 0 - 1590 in: 0s | 0.074s
+  // 10, 4: 0 - 1008 in: 0s | 0.055s
 
   // Normalizer<globalMaxN> normalizer{};
   // for (int n = 1; n < 15; ++n) {
@@ -189,7 +218,8 @@ int main() {
   //     std::chrono::time_point mid = std::chrono::high_resolution_clock::now();
   //     std::unordered_set<Poset<globalMaxN>> result2 = findAllInitPosets(normalizer, n, k);
   //     std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-  //     std::cout << n << ", " << k << ": " << result.size() << " - " << result2.size() << " in: " << mid - start << " | "
+  //     std::cout << n << ", " << k << ": " << result.size() << " - " << result2.size() << " in: " << mid - start << "
+  //     | "
   //               << end - mid << std::endl;
   //     // assert(result == result2);
   //   }

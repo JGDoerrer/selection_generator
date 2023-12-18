@@ -26,21 +26,6 @@ class Normalizer {
   int ptn[maxN];
   int orbits[maxN];
 
-  // invariant after method: i < n/2
-  inline Poset<maxN> &reduce_nthSmallest(Poset<maxN> &poset) {
-    if (poset.n <= 2 * poset.nthSmallest) {
-      poset.nthSmallest = poset.n - 1 - poset.nthSmallest;
-      for (uint8_t i = 0; i < poset.n; ++i) {
-        for (uint8_t j = i + 1; j < poset.n; ++j) {
-          const bool temp = poset.is_less(i, j);
-          poset.set_less(i, j, poset.is_less(j, i));
-          poset.set_less(j, i, temp);
-        }
-      }
-    }
-    return poset;
-  }
-
   inline Poset<maxN> &reduce_n(Poset<maxN> &poset) {
     uint8_t less[poset.n];
     uint8_t greater[poset.n];
@@ -76,7 +61,9 @@ class Normalizer {
           poset.set_less(i, j, oldTb[new_indices[i] * oldN + new_indices[j]]);
         }
       }
-      reduce_nthSmallest(poset);
+      if (poset.n <= 2 * poset.nthSmallest) {
+        invert_nthSmallest(poset);
+      }
     }
     return poset;
   }
@@ -85,6 +72,19 @@ class Normalizer {
   Normalizer() {
     assert(maxN <= WORDSIZE);
     nauty_check(WORDSIZE, m, maxN, NAUTYVERSIONID);
+  }
+
+  // invariant after method: i < n/2
+  inline Poset<maxN> &invert_nthSmallest(Poset<maxN> &poset) {
+    poset.nthSmallest = poset.n - 1 - poset.nthSmallest;
+    for (uint8_t i = 0; i < poset.n; ++i) {
+      for (uint8_t j = i + 1; j < poset.n; ++j) {
+        const bool temp = poset.is_less(i, j);
+        poset.set_less(i, j, poset.is_less(j, i));
+        poset.set_less(j, i, temp);
+      }
+    }
+    return poset;
   }
 
   inline Poset<maxN> &canonify_nauty(Poset<maxN> &poset) {

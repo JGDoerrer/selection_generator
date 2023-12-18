@@ -141,10 +141,6 @@ class Poset {
   /// @return the nthSmallest Element
   inline uint8_t nth() const { return this->nthSmallest; }
 
-  /// @brief changes nthSmallest
-  /// @param _nthSmallest
-  inline void change_nth(const uint8_t _nthSmallest) { this->nthSmallest = _nthSmallest; }
-
   /// @brief checks, whether it holds `arr[i] < arr[j]`, e.g. `is_less(i, j) == true` => `arr[i] < arr[j]`
   //         Attention: `!is_less(i, j)` IMPLIES NOT `arr[i] > arr[j]`
   /// @param i
@@ -361,21 +357,44 @@ std::ostream &operator<<(std::ostream &os, const Poset<maxN> &poset) {
 template <std::size_t maxN>
 std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
                                         const std::unordered_set<Poset<maxN>> &setOfPosets) {
-  std::unordered_set<Poset<maxN>> result2;
+  std::unordered_set<Poset<maxN>> result, swap_init;
+  uint8_t n = 0;
   for (const Poset<maxN> &poset : setOfPosets) {
-    Poset<maxN> temp{uint8_t(uint8_t(poset.n) + uint8_t(1)), poset.nth()};
+    Poset<maxN> temp{uint8_t(poset.n + uint8_t(1)), poset.nthSmallest};
+    n = poset.n + 1;
     for (uint8_t i = 0; i < poset.n; ++i) {
       for (uint8_t j = 0; j < poset.n; ++j) {
         temp.set_less(i, j, poset.comparisonTable[i * poset.n + j]);
       }
     }
-    temp.generate_permutations(normalizer, 0, result2);
+    swap_init.insert(temp);
+    normalizer.canonify_nauty(temp);
+    result.insert(temp);
   }
 
-  std::unordered_set<Poset<maxN>> result;
-  for (Poset<maxN> item : result2) {
-    normalizer.canonify_nauty(item);
-    result.insert(item);
+  for (int index = 0; index < n - 1; ++index) {
+    std::unordered_set<Poset<maxN>> temp;
+    for (int k = index; k < n - 1; ++k) {
+      for (const Poset<maxN> &poset : swap_init) {
+        if (!poset.is_less(k, n - 1) && !poset.is_less(n - 1, k)) {
+          const Poset<maxN> a1 = poset.with_less(k, n - 1);
+          Poset<maxN> a1_normalized = a1;
+          normalizer.canonify_nauty(a1_normalized);
+          if (!result.contains(a1_normalized)) {
+            result.insert(a1_normalized);
+            temp.insert(a1);
+          }
+          const Poset<maxN> b1 = poset.with_less(n - 1, k);
+          Poset<maxN> b1_normalized = b1;
+          normalizer.canonify_nauty(b1_normalized);
+          if (!result.contains(b1_normalized)) {
+            result.insert(b1_normalized);
+            temp.insert(b1);
+          }
+        }
+      }
+    }
+    swap_init = temp;
   }
 
   return result;
