@@ -1,4 +1,16 @@
 # Lower Bounds for Selection 13, 14, 15 Elements
+## short overview
+| n | k | forward search (Bottom to Top) | forward search (Top to Bottom) | backward search (naive) |
+| -  | - | - | - | - |
+| 10 | 0 | 0.000s | 0.000s | 609.079s |
+| 10 | 1 | 0.000s | 0.000s | ~610s |
+| 10 | 2 | 0.000s | 0.000s | ~610s |
+| 10 | 3 | 1.317s | 1.593s | ~610s |
+| 10 | 4 | 6.916s | 6.803s | ~610s |
+| ... | ... | ... | ... | ... |
+| 11 | 4 | 100.450s | 102.289s | ? |
+| 11 | 5 | 144.713s | 128.878s | ? |
+
 ## interne Links
 - [Github Repo](https://github.com/JGDoerrer/selection_generator/)
 - [Theoretische Schranken](./doc/theoreticalBounds.md)
