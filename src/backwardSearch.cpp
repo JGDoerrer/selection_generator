@@ -92,7 +92,7 @@ int forward(Poset<maxN> poset) {
 std::array<std::array<std::optional<std::unordered_set<Poset<globalMaxN>>>, globalMaxN>, globalMaxN> myBigCache;
 
 template <size_t maxN>
-std::unordered_set<Poset<maxN>> findAllInitPosets(Normalizer<maxN> &normalizer, const uint8_t n, const uint8_t k) {
+std::unordered_set<Poset<maxN>> find_solvable_posets(Normalizer<maxN> &normalizer, const uint8_t n, const uint8_t k) {
   if (1 == n) {
     std::unordered_set<Poset<maxN>> result{};
     result.insert(Poset<maxN>{n, k});
@@ -109,7 +109,7 @@ std::unordered_set<Poset<maxN>> findAllInitPosets(Normalizer<maxN> &normalizer, 
   }
 
   myBigCache[n][k] = std::unordered_set<Poset<maxN>>{};
-  for (const Poset<maxN> &poset : enlarge(normalizer, findAllInitPosets(normalizer, n - 1, k))) {
+  for (const Poset<maxN> &poset : enlarge(normalizer, find_solvable_posets(normalizer, n - 1, k))) {
     if (poset.is_solvable()) {
       myBigCache[n][k].value().insert(poset);
     }
@@ -126,7 +126,7 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
   const std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
   Normalizer<maxN> normalizer{};
-  std::unordered_set<Poset<maxN>> source = findAllInitPosets(normalizer, n, nthSmallest);
+  std::unordered_set<Poset<maxN>> source = find_solvable_posets(normalizer, n, nthSmallest);
 
   std::chrono::time_point end = std::chrono::high_resolution_clock::now();
 
@@ -214,9 +214,9 @@ int main() {
   // for (int n = 1; n < 15; ++n) {
   //   for (int k = 0; k < (n + 1) / 2; ++k) {
   //     std::chrono::time_point start = std::chrono::high_resolution_clock::now();
-  //     std::unordered_set<Poset<globalMaxN>> result;  // = findAllInitPosets(normalizer, n, k);
+  //     std::unordered_set<Poset<globalMaxN>> result;  // = find_solvable_posets(normalizer, n, k);
   //     std::chrono::time_point mid = std::chrono::high_resolution_clock::now();
-  //     std::unordered_set<Poset<globalMaxN>> result2 = findAllInitPosets(normalizer, n, k);
+  //     std::unordered_set<Poset<globalMaxN>> result2 = find_solvable_posets(normalizer, n, k);
   //     std::chrono::time_point end = std::chrono::high_resolution_clock::now();
   //     std::cout << n << ", " << k << ": " << result.size() << " - " << result2.size() << " in: " << mid - start << "
   //     | "
