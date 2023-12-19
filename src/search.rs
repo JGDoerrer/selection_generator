@@ -328,7 +328,7 @@ impl<'a> Search<'a> {
         }
 
         if poset.n() >= 5
-            && max_comparisons < (poset.compatible_posets().max(1) as f32).log2().floor() as u8 - 1
+            && max_comparisons < (poset.compatible_posets().max(1) as f32).log2().ceil() as u8
         {
             // dbg!(poset, max_comparisons, poset.compatible_posets());
 
