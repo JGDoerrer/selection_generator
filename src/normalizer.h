@@ -17,6 +17,7 @@ class Poset;
 template <size_t maxN>
 class Normalizer {
  private:
+ public:
   const int m = SETWORDSNEEDED(maxN);
 
   graph g[SETWORDSNEEDED(maxN) * maxN];
@@ -29,7 +30,7 @@ class Normalizer {
   inline Poset<maxN> &reduce_n(Poset<maxN> &poset) {
     uint8_t less[poset.n];
     uint8_t greater[poset.n];
-    poset.calculate_relations(less, greater);
+    poset.calculate_relations(greater, less); // TODO: MACHT DAS SINN???
 
     // can the element be ignored, because it is too large/small
     uint8_t new_indices[poset.n];

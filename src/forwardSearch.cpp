@@ -1,7 +1,7 @@
 #include "main.h"
 
 constexpr bool SORT_DFS_BRANCHES = true;
-constexpr bool TOP_TO_BOTTOM_SEARCH = false;
+constexpr bool TOP_TO_BOTTOM_SEARCH = true;
 
 const auto randomDataTable = ([]() {
   std::array<std::array<std::array<std::array<std::pair<int, int>, globalMaxN>, globalMaxN>, globalMaxComparisons>,

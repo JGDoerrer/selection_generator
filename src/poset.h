@@ -203,7 +203,7 @@ class Poset {
   }
 
   /// @brief returns how many elements are less or greater than it
-  /// @param less
+  /// @param less wenn `less[3] = 2`, dann gibt es {a, b} mit a != b, is_less(a, 3) und is_less(b, 3)
   /// @param greater
   void calculate_relations(uint8_t less[], uint8_t greater[]) const {
     std::memset(less, 0, this->n);
@@ -355,9 +355,23 @@ std::ostream &operator<<(std::ostream &os, const Poset<maxN> &poset) {
 }
 
 template <std::size_t maxN>
+bool canTheLastElementBeReduced(const Poset<maxN> &poset) {
+  uint8_t greater = 0;
+  for (uint8_t k = 0; k < poset.size(); ++k) {
+    if (poset.is_less(k, poset.size() - 1)) {
+      ++greater;
+    }
+  }
+  return poset.nth() < greater;
+}
+
+// gibt ALLE closed, canonfified Posets zurück, die sich durch die Menge bilden lassen und das letzte wegreduziert
+// werden kann
+template <std::size_t maxN>
 std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
                                         const std::unordered_set<Poset<maxN>> &setOfPosets) {
-  std::unordered_set<Poset<maxN>> result, swap_init;
+  std::unordered_set<Poset<maxN>> result;
+  std::unordered_map<Poset<maxN>, int> swap_init;
   uint8_t n = 0;
   for (const Poset<maxN> &poset : setOfPosets) {
     Poset<maxN> temp{uint8_t(poset.n + uint8_t(1)), poset.nthSmallest};
@@ -367,29 +381,23 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
         temp.set_less(i, j, poset.comparisonTable[i * poset.n + j]);
       }
     }
-    swap_init.insert(temp);
-    normalizer.canonify_nauty(temp);
-    result.insert(temp);
+    swap_init[temp] = -1;
   }
 
   for (int index = 0; index < n - 1; ++index) {
-    std::unordered_set<Poset<maxN>> temp;
-    for (int k = index; k < n - 1; ++k) {
-      for (const Poset<maxN> &poset : swap_init) {
+    std::unordered_map<Poset<maxN>, int> temp;
+    for (const auto &[poset, number] : swap_init) {
+      for (int k = number + 1; k < n - 1; ++k) {  // auflösen???
         if (!poset.is_less(k, n - 1) && !poset.is_less(n - 1, k)) {
           const Poset<maxN> a1 = poset.with_less(k, n - 1);
-          Poset<maxN> a1_normalized = a1;
-          normalizer.canonify_nauty(a1_normalized);
-          if (!result.contains(a1_normalized)) {
-            result.insert(a1_normalized);
-            temp.insert(a1);
+          if (!result.contains(a1) && canTheLastElementBeReduced(a1)) {
+            result.insert(a1);
+            temp[a1] = k;
           }
           const Poset<maxN> b1 = poset.with_less(n - 1, k);
-          Poset<maxN> b1_normalized = b1;
-          normalizer.canonify_nauty(b1_normalized);
-          if (!result.contains(b1_normalized)) {
-            result.insert(b1_normalized);
-            temp.insert(b1);
+          if (!result.contains(b1) && canTheLastElementBeReduced(b1)) {
+            result.insert(b1);
+            temp[b1] = k;
           }
         }
       }
@@ -397,5 +405,10 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
     swap_init = temp;
   }
 
-  return result;
+  std::unordered_set<Poset<maxN>> result_canonified;
+  for (Poset<maxN> item : result) {
+    normalizer.canonify_nauty(item);
+    result_canonified.insert(item);
+  }
+  return result_canonified;
 }
