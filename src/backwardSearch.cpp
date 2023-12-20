@@ -101,7 +101,7 @@ std::unordered_set<Poset<maxN>> find_solvable_posets(Normalizer<maxN> &normalize
   } else if (n <= 2 * k) {
     std::unordered_set<Poset<maxN>> result{};
     for (Poset<maxN> item : find_solvable_posets(normalizer, comparisons, n, n - k - 1)) {
-      normalizer.invert_nthSmallest(item);
+      item.dual();
       result.insert(item);
     }
     myBigCache[comparisons][n][k] = result;
@@ -151,6 +151,11 @@ std::unordered_set<Poset<maxN>> find_solvable_posets(Normalizer<maxN> &normalize
         }
 
         if (k < n - 1) {
+          std::unordered_set<Poset<maxN>> allPos2;
+          for (int i = 0; i < comparisons; ++i) {
+            allPos2.merge(std::unordered_set<Poset<maxN>>(find_solvable_posets(normalizer, i, n, k)));
+          }
+
           std::unordered_set<Poset<maxN>> result2{};
           for (const Poset<maxN> &item :
                enlarge(normalizer, find_solvable_posets(normalizer, comparisons - 1, n - 1, k))) {
@@ -160,14 +165,14 @@ std::unordered_set<Poset<maxN>> find_solvable_posets(Normalizer<maxN> &normalize
                   for (const Poset<maxN> &predecessor : item.remove_less(normalizer, i, j)) {
                     Poset<maxN> predecessorNorm0 = predecessor;
                     normalizer.canonify_nauty(predecessorNorm0);
-                    if (allPos.contains(predecessorNorm0)) {
+                    if (allPos2.contains(predecessorNorm0)) {
                       continue;
                     }
 
                     Poset<maxN> predecessorNorm = predecessor;
                     predecessorNorm.add_less(j, i);
                     normalizer.canonify_nauty(predecessorNorm);
-                    if (!allPos.contains(predecessorNorm)) {
+                    if (!allPos2.contains(predecessorNorm)) {
                       continue;
                     }
 
@@ -178,20 +183,24 @@ std::unordered_set<Poset<maxN>> find_solvable_posets(Normalizer<maxN> &normalize
             }
           }
 
-          // enlarge via brute force prüfen
-
           // auto temp0 = find_solvable_posets(normalizer, comparisons, n - 1, k);
           // auto temp = enlarge(normalizer, temp0);
-          // std::cout << (int)n << " " << (int)k << " " << (int)comparisons << " -> " << result2.size() << " "
-          //           << result.size() << std::endl;
-          // std::cout << temp0.size() << std::endl;
-          // for (auto item : temp) {
-          //   std::cout << item << std::endl;
-          // }
-          // std::cout << std::endl;
-          // for (auto item : result) {
-          //   std::cout << item << std::endl;
-          // }
+          std::cout << (int)n << " " << (int)k << " " << (int)comparisons << " -> " << result2.size() << " "
+                    << result.size() << std::endl;
+          if (result2.size() != result.size()) {
+            for (auto item : result) {
+              if (!result2.contains(item)) {
+                std::cout << item << std::endl;
+              }
+            }
+            // for (auto item : result2) {
+            //   std::cout << item << std::endl;
+            // }
+            // std::cout << std::endl;
+            // for (auto item : result) {
+            //   std::cout << item << std::endl;
+            // }
+          }
         }
 
         myBigCache[comparisons][n][k] = result;
@@ -328,17 +337,18 @@ int main() {
   // 11, 4: 0 - 5088 in: 0.075s
   // 11, 5: 0 - 3969 in: 0.097s
 
-  if constexpr (false) {
+  if constexpr (true) {
     Normalizer<globalMaxN> normalizer{};
     std::chrono::time_point start = std::chrono::high_resolution_clock::now();
 
-    int n = 8;
-    int nthSmallest = 3;
-    const auto &[comparisons, durationGeneratePosets, durationSearch] =
-        startSearchBackward2<globalMaxN>(n, nthSmallest);
+    int n = 3;
+    int nthSmallest = 1;
+    find_solvable_posets(normalizer, 2, n, nthSmallest);
+    // const auto &[comparisons, durationGeneratePosets, durationSearch] =
+    //     startSearchBackward2<globalMaxN>(n, nthSmallest);
 
     std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-    std::cout << (comparisons.has_value() ? comparisons.value() : -1) << " " << (end - start) << std::endl;
+    // std::cout << (comparisons.has_value() ? comparisons.value() : -1) << " " << (end - start) << std::endl;
   } else if constexpr (false) {
     Normalizer<globalMaxN> normalizer{};
 

@@ -67,6 +67,14 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
   } else if (poset.is_not_solvable_in(remainingComparisons)) {
     result = NoSolution;
     ++statistics.noSolution;
+    // } else if (remainingComparisons < depth && cache_lowerBound[poset.size()].checkLower2(poset,
+    // remainingComparisons)) {
+    //   ++statistics.noSolution;
+    //   result = NoSolution;
+    // } else if (remainingComparisons < depth && cache_upperBound[poset.size()].checkUpper2(poset,
+    // remainingComparisons)) {
+    //   ++statistics.noSolution;
+    //   result = FoundSolution;
   } else {
     ++statistics.bruteForce;
 
@@ -111,22 +119,29 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
       }
     } else {
       if constexpr (SORT_DFS_BRANCHES) {
-        std::vector<std::pair<int, int>> temp;
-        for (int i = 0; i < poset.size(); ++i) {
-          for (int j = i + 1; j < poset.size(); ++j) {
-            if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
-              temp.push_back({i, j});
-            }
-          }
-        }
-
         uint8_t less[poset.size()];
         uint8_t greater[poset.size()];
         poset.calculate_relations(less, greater);
 
-        std::sort(temp.begin(), temp.end(), [&](const std::pair<int, int> &a, const std::pair<int, int> &b) {
-          return greater[a.first] + less[a.second] > greater[b.first] + less[b.second];
-        });
+        const auto cmp = [&](const std::pair<int, int> &a, const std::pair<int, int> &b) {
+          return greater[b.first] + less[b.second] < greater[a.first] + less[a.second];
+        };
+
+        std::vector<std::pair<int, int>> temp;
+        for (int i = 0; i < poset.size(); ++i) {
+          for (int j = i + 1; j < poset.size(); ++j) {
+            if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
+              // Soll zuerst i<j oder j<i vergleicht werden? -> langsamer
+              // if (cmp({j, i}, {i, j})) {
+              temp.push_back({i, j});
+              // } else {
+              // temp.push_back({j, i});
+              // }
+            }
+          }
+        }
+
+        std::sort(temp.begin(), temp.end(), cmp);
 
         for (const auto &[i, j] : temp) {
           result = recursiveSearch(atomicBreak, i, j, normalizerIndex);

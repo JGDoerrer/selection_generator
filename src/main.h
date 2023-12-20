@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 
 #include "BS_thread_pool.hpp"
-#include "cache.h"
 #include "poset.h"
 #include "util.h"
 // ===================
@@ -18,6 +17,7 @@ constexpr size_t globalMaxComparisons = 25;
 constexpr size_t globalMaxN = 15;
 constexpr size_t threadCount = 20;
 
+#include "cache.h"
 // siehe Section 5.3.3
 // https://doc.lagout.org/science/0_Computer%20Science/2_Algorithms/The%20Art%20of%20Computer%20Programming%20%28vol.%203_%20Sorting%20and%20Searching%29%20%282nd%20ed.%29%20%5BKnuth%201998-05-04%5D.pdf
 int upper_bound(const int n, int t) {
@@ -90,7 +90,7 @@ const int min_n_comparisons[15][15] = {
     /* n= 9 */ {8, 11, 12, 14, 14, 14, 12, 11, 8},
     /* n=10 */ {9, 12, 14, 15, 16, 16, 15, 14, 12, 9},
     /* n=11 */ {10, 13, 15, 17, 18, 18, 18, 17, 15, 13, 10},
-    /* n=12 */ {11, 14, 17, 18, 19, 21, 21, 19, 18, 17, 14, 11}};
+    /* n=12 */ {11, 14, 17, 18, 19, 20, 20, 19, 18, 17, 14, 11}};
 
 enum SearchResult : uint8_t { FoundSolution, NoSolution, Unknown };
 

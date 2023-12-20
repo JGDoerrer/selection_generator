@@ -46,6 +46,16 @@ class Cache {
     return false;
   }
 
+  inline bool checkLower2(const F &poset, const G remainingComparisons) {
+    const std::lock_guard<std::mutex> lock(mutex_cache);
+    for (const auto &it : cache) {
+      if (remainingComparisons <= it.second && poset.subset_of(it.first)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   inline bool checkUpper(const F &poset, const G remainingComparisons) {
     const std::lock_guard<std::mutex> lock(mutex_cache);
     const auto temp = cache.find(poset);
@@ -59,6 +69,16 @@ class Cache {
       }
     }
 #endif
+    return false;
+  }
+
+  inline bool checkUpper2(const F &poset, const G remainingComparisons) {
+    const std::lock_guard<std::mutex> lock(mutex_cache);
+    for (const auto &it : cache) {
+      if (remainingComparisons >= it.second && it.first.subset_of(poset)) {
+        return true;
+      }
+    }
     return false;
   }
 

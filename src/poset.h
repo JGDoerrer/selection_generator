@@ -111,7 +111,7 @@ class Poset {
     Poset<maxN> temp{uint8_t(uint8_t(n) + uint8_t(1)), nthSmallest};
     for (uint8_t i = 0; i < n; ++i) {
       for (uint8_t j = 0; j < n; ++j) {
-        temp.set_less(i, j, comparisonTable[i * n + j]);
+        temp.set_less(i, j, is_less(i, j));
       }
     }
     std::unordered_set<Poset<maxN>> result2;
@@ -304,6 +304,21 @@ class Poset {
     return result;
   }
 
+  // invariant after method: 2 * i < n
+  inline Poset<maxN> &dual() {
+    if (this->n <= 2 * this->nthSmallest) {
+      this->nthSmallest = this->n - 1 - this->nthSmallest;
+      for (uint8_t i = 0; i < this->n; ++i) {
+        for (uint8_t j = i + 1; j < this->n; ++j) {
+          const bool temp = this->is_less(i, j);
+          this->set_less(i, j, this->is_less(j, i));
+          this->set_less(j, i, temp);
+        }
+      }
+    }
+    return *this;
+  }
+
   /// @brief
   /// @param poset
   /// @return true, if *this is a subset of `poset`
@@ -378,7 +393,7 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
     n = poset.n + 1;
     for (uint8_t i = 0; i < poset.n; ++i) {
       for (uint8_t j = 0; j < poset.n; ++j) {
-        temp.set_less(i, j, poset.comparisonTable[i * poset.n + j]);
+        temp.set_less(i, j, poset.is_less(i, j));
       }
     }
     swap_init[temp] = -1;

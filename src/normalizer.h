@@ -30,7 +30,7 @@ class Normalizer {
   inline Poset<maxN> &reduce_n(Poset<maxN> &poset) {
     uint8_t less[poset.n];
     uint8_t greater[poset.n];
-    poset.calculate_relations(greater, less); // TODO: MACHT DAS SINN???
+    poset.calculate_relations(greater, less);  // TODO: MACHT DAS SINN???
 
     // can the element be ignored, because it is too large/small
     uint8_t new_indices[poset.n];
@@ -52,18 +52,18 @@ class Normalizer {
     }
 
     if (new_n != poset.n) {
-      std::bitset<maxN * maxN> oldTb(poset.comparisonTable);
-      const uint8_t oldN = poset.n;
+      const Poset<maxN> oldPoset(poset);
       poset.n = new_n;
       poset.nthSmallest -= n_less_dropped;
       poset.comparisonTable.reset();
       for (uint8_t i = 0; i < new_n; ++i) {
         for (uint8_t j = 0; j < new_n; ++j) {
-          poset.set_less(i, j, oldTb[new_indices[i] * oldN + new_indices[j]]);
+          poset.set_less(i, j, oldPoset.is_less(new_indices[i], new_indices[j]));
         }
       }
+
       if (poset.n <= 2 * poset.nthSmallest) {
-        invert_nthSmallest(poset);
+        poset.dual();
       }
     }
     return poset;
@@ -73,19 +73,6 @@ class Normalizer {
   Normalizer() {
     assert(maxN <= WORDSIZE);
     nauty_check(WORDSIZE, m, maxN, NAUTYVERSIONID);
-  }
-
-  // invariant after method: i < n/2
-  inline Poset<maxN> &invert_nthSmallest(Poset<maxN> &poset) {
-    poset.nthSmallest = poset.n - 1 - poset.nthSmallest;
-    for (uint8_t i = 0; i < poset.n; ++i) {
-      for (uint8_t j = i + 1; j < poset.n; ++j) {
-        const bool temp = poset.is_less(i, j);
-        poset.set_less(i, j, poset.is_less(j, i));
-        poset.set_less(j, i, temp);
-      }
-    }
-    return poset;
   }
 
   inline Poset<maxN> &canonify_nauty(Poset<maxN> &poset) {
@@ -114,10 +101,10 @@ class Normalizer {
     densenauty(g, lab, ptn, orbits, &options, &stats, m, poset.n, result);
     assert(stats.errstatus == 0);
 
-    std::bitset<maxN * maxN> oldTb(poset.comparisonTable);
+    const Poset<maxN> oldPoset(poset);
     for (uint8_t i = 0; i < poset.n; ++i) {
       for (uint8_t j = 0; j < poset.n; ++j) {
-        poset.set_less(i, j, oldTb[lab[i] * poset.n + lab[j]]);
+        poset.set_less(i, j, oldPoset.is_less(lab[i], lab[j]));
       }
     }
     return poset;
@@ -126,28 +113,40 @@ class Normalizer {
   void normalize(Poset<maxN> &poset) {
     reduce_n(poset);
 
-    if (true) {
-      // use nauty
-      canonify_nauty(poset);
-    } else {
-      // use mix
-      uint8_t less[poset.n];
-      uint8_t greater[poset.n];
-      poset.calculate_relations(less, greater);
+    uint8_t less[poset.n];
+    uint8_t greater[poset.n];
+    poset.calculate_relations(less, greater);
 
-      std::vector<std::pair<uint64_t, uint8_t>> rowSum(poset.n);
-      for (uint16_t i = 0; i < poset.n; ++i) {
-        rowSum[i] = {100 * greater[i] + less[i], i};
+    std::vector<std::pair<uint64_t, uint8_t>> in_out_degree(poset.n);
+    for (uint8_t i = 0; i < poset.n; ++i) {
+      if (greater[i] > less[i]) std::swap(greater[i], less[i]);  // TODO: WARUM???
+      in_out_degree[i] = {uint64_t(maxN) * uint64_t(greater[i]) + uint64_t(less[i]), i};
+    }
+
+    std::sort(in_out_degree.begin(), in_out_degree.end());
+
+    uint8_t duplicats = 0;
+    for (uint8_t i = 1; i < poset.n; ++i) {
+      if (in_out_degree[i - 1].first == in_out_degree[i].first) {
+        ++duplicats;
       }
+    }
 
-      std::sort(rowSum.begin(), rowSum.end());
-
-      std::bitset<maxN * maxN> oldTb(poset.comparisonTable);
+    if (0 == duplicats) {
+      const Poset<maxN> oldPoset(poset);
       for (uint8_t i = 0; i < poset.n; ++i) {
         for (uint8_t j = 0; j < poset.n; ++j) {
-          poset.set_less(i, j, oldTb[rowSum[i].second * poset.n + rowSum[j].second]);
+          poset.set_less(i, j, oldPoset.is_less(in_out_degree[i].second, in_out_degree[j].second));
         }
       }
+    } else {
+      canonify_nauty(poset);
     }
   }
 };
+
+// nur nauty: time '1.632s + 4.201s = 5.833s': n = 10, i = 4, (cache_l: 2016256, cache_u: 288692, noSol: 12, bruteForce:
+// 72555), cache = (59544 + 4809 = 64353), comparisons: 16
+
+// eig. Opti: time '1.563s + 4.122s = 5.685s': n = 10, i = 4, (cache_l: 2037863, cache_u: 288844, noSol: 12, bruteForce:
+// 73298), cache = (59695 + 4808 = 64503), comparisons: 16
