@@ -9,6 +9,7 @@ use poset::{Poset, MAX_N};
 
 use crate::{cache::Cache, search::Search};
 
+mod bitset;
 mod cache;
 mod poset;
 mod search;
