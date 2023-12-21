@@ -1,4 +1,4 @@
-use std::{collections::hash_map::DefaultHasher, hash::Hash, hash::Hasher, time::Instant};
+use std::time::Instant;
 
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
@@ -103,10 +103,7 @@ impl<'a> Search<'a> {
             let minutes = (duration.as_secs() / 60) % 60;
             let hours = (duration.as_secs() / (60 * 60)) % 24;
             let days = duration.as_secs() / (60 * 60 * 24);
-            println!(
-                "time since start: {}d {}h {}m {}s",
-                days, hours, minutes, seconds
-            );
+            println!("time taken: {}d {}h {}m {}s", days, hours, minutes, seconds);
 
             // println!("poset counts by number of comparisons: ");
             // let counts = self.cache.counts();
@@ -160,9 +157,8 @@ impl<'a> Search<'a> {
         let pairs = self.get_comparison_pairs(&poset);
 
         let progress = if depth + 2 < self.n {
-            let progress = ProgressBar::new(pairs.len() as u64).with_style(
-                ProgressStyle::with_template("[{pos:2}/{len:2}] {msg} {wide_bar}").unwrap(),
-            );
+            let progress = ProgressBar::new(pairs.len() as u64)
+                .with_style(ProgressStyle::with_template("[{pos:2}/{len:2}] {msg}").unwrap());
 
             let progress = self.progress_bars.add(progress);
             Some(progress)
@@ -287,7 +283,7 @@ impl<'a> Search<'a> {
         priority
     }
 
-    fn estimate_hardness(poset: &Poset) -> u8 {
+    fn estimate_hardness(poset: &Poset) -> u32 {
         let mut hardness = 0;
         let (less, unknown, greater) = poset.calculate_relations();
 
@@ -295,7 +291,7 @@ impl<'a> Search<'a> {
             let d = greater[i].abs_diff(less[i]);
             let u = unknown[i];
 
-            hardness += d + 2 * u;
+            hardness += (d + 2 * u) as u32;
         }
 
         hardness
@@ -327,8 +323,8 @@ impl<'a> Search<'a> {
             return Some(false);
         }
 
-        if poset.n() >= 5
-            && max_comparisons < (poset.compatible_posets().max(1) as f32).log2().ceil() as u8
+        if poset.n() >= 8
+            && max_comparisons < (poset.compatible_posets().max(1) as f32).log2().floor() as u8 + 1
         {
             // dbg!(poset, max_comparisons, poset.compatible_posets());
 

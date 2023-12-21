@@ -2,74 +2,124 @@ use std::fmt::Debug;
 
 use crate::poset::MAX_N;
 
-// Sadly i can't calculate the number of bytes needed at compile time
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 pub struct BitSet {
-    bytes: [u8; Self::BYTES],
-}
-
-impl Default for BitSet {
-    fn default() -> Self {
-        BitSet {
-            bytes: [0; Self::BYTES],
-        }
-    }
+    bits: u16,
 }
 
 impl BitSet {
-    const BYTES: usize = (MAX_N + 7) / 8;
-
+    #[inline]
     pub fn empty() -> Self {
         Self::default()
     }
 
+    #[inline]
+    pub fn from_u16(bits: u16) -> Self {
+        BitSet { bits }
+    }
+
+    #[inline]
+    pub fn bits(&self) -> u16 {
+        self.bits
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.bits == 0
+    }
+
+    #[inline]
     pub fn single(i: usize) -> Self {
         let mut new = Self::empty();
         new.insert(i);
         new
     }
 
+    #[inline]
     pub fn insert(&mut self, index: usize) {
-        let byte_index = index / 8;
-        let bit_mask = 1 << (index % 8);
+        debug_assert!(index < MAX_N);
+        let bit_mask = 1 << index;
 
-        self.bytes[byte_index] |= bit_mask;
+        self.bits |= bit_mask;
     }
 
+    #[inline]
+    pub fn remove(&mut self, index: usize) {
+        debug_assert!(index < MAX_N);
+        let bit_mask = 1 << index;
+
+        self.bits &= !bit_mask;
+    }
+
+    #[inline]
     pub fn contains(&self, index: usize) -> bool {
-        let byte_index = index / 8;
-        let bit_mask = 1 << (index % 8);
+        debug_assert!(index < MAX_N);
+        let bit_mask = 1 << index;
 
-        (self.bytes[byte_index] & bit_mask) > 0
+        (self.bits & bit_mask) != 0
     }
 
-    pub fn union(&self, other: Self) -> Self {
-        let mut bytes = self.bytes.clone();
-        bytes
-            .iter_mut()
-            .zip(other.bytes.iter())
-            .for_each(|(a, b)| *a |= b);
-        BitSet { bytes }
-    }
-
-    pub fn is_disjoint(&self, other: &Self) -> bool {
-        self.bytes
-            .iter()
-            .zip(other.bytes.iter())
-            .all(|(a, b)| a & b == 0)
-    }
-
-    pub fn iter(&self) -> BitSetIter {
-        BitSetIter {
-            bitset: self.clone(),
-            index: 0,
+    #[inline]
+    pub fn union(self, other: Self) -> Self {
+        BitSet {
+            bits: self.bits | other.bits,
         }
     }
 
+    #[inline]
+    pub fn intersect(self, other: Self) -> Self {
+        BitSet {
+            bits: self.bits & other.bits,
+        }
+    }
+
+    #[inline]
+    pub fn complement(self) -> Self {
+        const MASK: u16 = ((1u32 << (MAX_N + 1)) - 1) as u16;
+        BitSet {
+            bits: !self.bits & MASK,
+        }
+    }
+
+    #[inline]
+    pub fn is_disjoint(&self, other: &Self) -> bool {
+        self.bits & other.bits == 0
+    }
+
+    #[inline]
     pub fn len(&self) -> usize {
-        self.bytes.iter().map(|b| b.count_ones() as usize).sum()
+        self.bits.count_ones() as usize
+    }
+
+    #[inline]
+    pub fn iter(&self) -> BitSetIter {
+        BitSetIter {
+            bitset: *self,
+            index: 0,
+        }
     }
 }
+
+impl IntoIterator for BitSet {
+    type IntoIter = BitSetIter;
+    type Item = usize;
+
+    #[inline]
+    fn into_iter(self) -> Self::IntoIter {
+        BitSetIter {
+            bitset: self,
+            index: 0,
+        }
+    }
+}
+
+impl From<u16> for BitSet {
+    #[inline]
+    fn from(bits: u16) -> Self {
+        Self::from_u16(bits)
+    }
+}
+
 pub struct BitSetIter {
     bitset: BitSet,
     index: usize,
@@ -78,29 +128,16 @@ pub struct BitSetIter {
 impl Iterator for BitSetIter {
     type Item = usize;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        for i in self.index..MAX_N {
-            if self.bitset.contains(i) {
-                self.index = i + 1;
-                return Some(i);
-            }
-        }
-        self.index = MAX_N;
+        let next = self.bitset.bits.trailing_zeros() as usize;
 
-        None
-    }
-
-    fn all<F>(&mut self, mut f: F) -> bool
-    where
-        Self: Sized,
-        F: FnMut(Self::Item) -> bool,
-    {
-        for i in self.index..MAX_N {
-            if self.bitset.contains(i) && !f(i) {
-                return false;
-            }
+        if next < MAX_N {
+            self.bitset.remove(next);
+            Some(next)
+        } else {
+            None
         }
-        true
     }
 
     fn count(self) -> usize
@@ -118,11 +155,7 @@ impl Debug for BitSet {
         f.debug_struct("BitSet")
             .field(
                 "bits",
-                &self
-                    .bytes
-                    .iter()
-                    .map(|byte| format!("{byte:08b}").chars().collect::<String>())
-                    .collect::<String>(),
+                &format!("{:08b}", self.bits).chars().collect::<String>(),
             )
             .field(
                 "set_bits",

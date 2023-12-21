@@ -8,7 +8,7 @@ use crate::{poset::Poset, search::Cost, KNOWN_MIN_VALUES};
 pub struct Entry {
     pub poset: Poset,
     pub cost: Cost,
-    pub priority: i32,
+    pub priority: i16,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -59,7 +59,7 @@ impl Cache {
             let entry = row.get_mut(index).unwrap().as_mut().unwrap();
             let cost = entry.cost;
             let priority = KNOWN_MIN_VALUES[poset.n() as usize]
-                [poset.i().min(poset.n() - poset.i()) as usize] as i32;
+                [poset.i().min(poset.n() - poset.i()) as usize] as i16;
 
             entry.priority = entry.priority.saturating_add(priority);
 
@@ -76,20 +76,18 @@ impl Cache {
 
         let row = &mut self.arrays[hash as usize % self.arrays.len()];
 
-        let mut lowest_prio = i32::MAX;
+        let mut lowest_prio = i16::MAX;
         let mut lowest_prio_index = 0;
-        let mut lowest_unsolved_prio = i32::MAX;
+        let mut lowest_unsolved_prio = i16::MAX;
         let mut lowest_unsolved_prio_index = None;
         let mut match_index = None;
         let mut free_index = None;
 
         for (i, entry) in row.iter().enumerate() {
             if let Some(entry) = entry {
-                if !entry.cost.is_solved() {
-                    if entry.priority < lowest_unsolved_prio {
-                        lowest_unsolved_prio = entry.priority;
-                        lowest_unsolved_prio_index = Some(i);
-                    }
+                if !entry.cost.is_solved() && entry.priority < lowest_unsolved_prio {
+                    lowest_unsolved_prio = entry.priority;
+                    lowest_unsolved_prio_index = Some(i);
                 }
                 if entry.priority < lowest_prio {
                     lowest_prio = entry.priority;
@@ -132,7 +130,7 @@ impl Cache {
         }
 
         let priority = KNOWN_MIN_VALUES[poset.n() as usize]
-            [poset.i().min(poset.n() - poset.i()) as usize] as i32;
+            [poset.i().min(poset.n() - poset.i()) as usize] as i16;
 
         row[index] = Some(Entry {
             poset,
@@ -147,7 +145,7 @@ impl Cache {
 
     pub fn iter(&self) -> CacheIterator {
         CacheIterator {
-            cache: &self,
+            cache: self,
             row: 0,
             index: 0,
         }
