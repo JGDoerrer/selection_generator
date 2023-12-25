@@ -10,7 +10,7 @@
 // (cache_l: 1068601, cache_u: 209055, noSol: 7, bruteForce: 39551), cache = (51512 + 3983 = 55495)
 
 struct PosetStruct {
-  std::shared_ptr<PosetStruct> branchIsLess, branchIsNotLess;
+  std::unique_ptr<PosetStruct> branchIsLess, branchIsNotLess;
 
   PosetStruct() : branchIsLess(nullptr), branchIsNotLess(nullptr){};
 
@@ -49,20 +49,6 @@ struct PosetStruct {
     }
   }
 
-  size_t size(const uint8_t index) {
-    if (0 == index) {
-      return 1;
-    }
-    size_t sum = 0;
-    if (nullptr != branchIsLess) {
-      sum += branchIsLess->size(index - 1);
-    }
-    if (nullptr != branchIsNotLess) {
-      sum += branchIsNotLess->size(index - 1);
-    }
-    return sum;
-  }
-
   // template <size_t maxN>
   // void entries(std::vector<Poset<maxN>> &entries, Poset<maxN> temp, const uint8_t index) {
   //   if (0 == index) {
@@ -82,26 +68,28 @@ struct PosetStruct {
 
 class unordered_set2 {
  private:
-  std::shared_ptr<PosetStruct> root;
+  std::unique_ptr<PosetStruct> root;
+  size_t _size;
 
  public:
   unordered_set2() : root(std::make_unique<PosetStruct>()) {}
 
   template <size_t maxN>
   inline void insert(const Poset<maxN> &poset) {
-    std::shared_ptr<PosetStruct> level = root;
-    for (int i = poset.size() * poset.size() - 1; i >= 0; --i)
+    PosetStruct *level = root.get();
+    for (int i = poset.size() * poset.size() - 1; i >= 0; --i) {
       if (poset.comparisonTable[i]) {
         if (nullptr == level->branchIsLess) {
           level->branchIsLess = std::make_unique<PosetStruct>();
         }
-        level = level->branchIsLess;
+        level = level->branchIsLess.get();
       } else {
         if (nullptr == level->branchIsNotLess) {
           level->branchIsNotLess = std::make_unique<PosetStruct>();
         }
-        level = level->branchIsNotLess;
+        level = level->branchIsNotLess.get();
       }
+    }
   }
 
   template <size_t maxN>
@@ -114,12 +102,11 @@ class unordered_set2 {
     return root->containsUpper(poset, poset.size() * poset.size());
   }
 
-  inline size_t size(const uint8_t n) const { return root->size(n * n); }
+  inline size_t size(const uint8_t n) const { return _size; }
 
   // template <size_t maxN>
   // inline void clean(const uint8_t n, const uint8_t i) {
   // TODO
-  // std::shared_ptr<PosetStruct> new_root;
   // std::vector<Poset<maxN>> entries;
   // root->entries(entries, Poset<maxN>(n, i), n * n);
   // assert(entries.size() == root->size(n * n));
