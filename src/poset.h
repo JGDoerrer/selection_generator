@@ -8,8 +8,11 @@ class Poset {
  private:
   uint8_t n;
   uint8_t nthSmallest;
+
+ public:
   std::bitset<maxN * maxN> comparisonTable;
 
+ private:
   inline void set_less(const uint16_t i, const uint16_t j, const bool value) {
     this->comparisonTable[i * n + j] = value;
   }
