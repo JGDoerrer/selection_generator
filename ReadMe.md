@@ -11,6 +11,8 @@
 | 11 | 4 | 85.877s | 78.018s | ? |
 | 11 | 5 | 136.895s | 110.925s | ? |
 
+[Anzahl der linearen Erweiterungen](https://arxiv.org/pdf/1108.0866.pdf)
+
 ## interne Links
 - [Github Repo](https://github.com/JGDoerrer/selection_generator/)
 - [Theoretische Schranken](./doc/theoreticalBounds.md)
