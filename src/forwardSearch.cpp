@@ -258,8 +258,10 @@ int main() {
           startSearch(std::cout, threadpool, n, nthSmallest, cache_lowerBound, cache_upperBound, statistics);
 
       const int cache_upper_size = cache_upperBound.size(), cache_lower_size = cache_lowerBound.size();
-      cache_lowerBound.clean();
-      cache_upperBound.clean();
+      // StopWatch watch;
+      // cache_lowerBound.clean(true);
+      // cache_upperBound.clean(false);
+      // std::cout << watch << std::endl;
       const int cache_upper_size_cleaned = cache_upperBound.size(), cache_lower_size_cleaned = cache_lowerBound.size();
 
       if (comparisons.has_value()) {

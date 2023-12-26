@@ -14,23 +14,12 @@ struct PosetStruct {
 
   PosetStruct() : branchIsLess(nullptr), branchIsNotLess(nullptr){};
 
-  // template <size_t maxN>
-  // bool contains(const Poset<maxN> &poset, const uint8_t index) const {
-  //   if (0 == index) {
-  //     return true;
-  //   } else if (poset.comparisonTable[index - 1]) {
-  //     return (nullptr != branchIsLess && branchIsLess->containsLower(poset, index - 1));
-  //   } else {
-  //     return (nullptr != branchIsNotLess && branchIsNotLess->containsLower(poset, index - 1));
-  //   }
-  // }
-
   template <size_t maxN>
   bool containsLower(const Poset<maxN> &poset, const uint8_t index) const {
     if (0 == index) {
       return true;
     } else if (poset.comparisonTable[index - 1]) {
-      return (nullptr != branchIsLess && branchIsLess->containsLower(poset, index - 1));
+      return nullptr != branchIsLess && branchIsLess->containsLower(poset, index - 1);
     } else {
       return (nullptr != branchIsNotLess && branchIsNotLess->containsLower(poset, index - 1)) ||
              (nullptr != branchIsLess && branchIsLess->containsLower(poset, index - 1));
@@ -45,25 +34,44 @@ struct PosetStruct {
       return (nullptr != branchIsLess && branchIsLess->containsUpper(poset, index - 1)) ||
              (nullptr != branchIsNotLess && branchIsNotLess->containsUpper(poset, index - 1));
     } else {
-      return (nullptr != branchIsNotLess && branchIsNotLess->containsUpper(poset, index - 1));
+      return nullptr != branchIsNotLess && branchIsNotLess->containsUpper(poset, index - 1);
     }
   }
 
-  // template <size_t maxN>
-  // void entries(std::vector<Poset<maxN>> &entries, Poset<maxN> temp, const uint8_t index) {
-  //   if (0 == index) {
-  //     entries.push_back(temp);
-  //   }
-  //   size_t sum = 0;
-  //   if (nullptr != branchIsLess) {
-  //     temp.comparisonTable[index - 1] = true;
-  //     branchIsLess->entries(entries, temp, index - 1);
-  //   }
-  //   if (nullptr != branchIsNotLess) {
-  //     temp.comparisonTable[index - 1] = false;
-  //     branchIsNotLess->entries(entries, temp, index - 1);
-  //   }
-  // }
+  template <size_t maxN>
+  bool entries(std::vector<Poset<maxN>> &entries, size_t &_size, Poset<maxN> temp, const uint8_t index,
+               std::unique_ptr<PosetStruct> &rootStruct, std::unique_ptr<PosetStruct> &topLevel, const bool isLower) {
+    if (0 == index) {
+      if (nullptr != topLevel) {
+        std::unique_ptr<PosetStruct> temp1 = move(topLevel);
+        topLevel = nullptr;
+
+        if ((isLower) ? rootStruct->containsLower(temp, temp.size() * temp.size())
+                      : rootStruct->containsUpper(temp, temp.size() * temp.size())) {
+          --_size;
+          // return true; // remove temp from rootStruct recursive
+        } else {
+          topLevel = move(temp1);
+          entries.push_back(temp);
+        }
+      }
+    } else {
+      if (nullptr != branchIsLess) {
+        temp.comparisonTable[index - 1] = true;
+        if (branchIsLess->entries(entries, _size, temp, index - 1, rootStruct, branchIsLess, isLower)) {
+          branchIsLess = nullptr;
+        }
+      }
+      if (nullptr != branchIsNotLess) {
+        temp.comparisonTable[index - 1] = false;
+        if (branchIsNotLess->entries(entries, _size, temp, index - 1, rootStruct, branchIsNotLess, isLower)) {
+          branchIsNotLess = nullptr;
+        }
+      }
+      // return nullptr == branchIsLess && nullptr == branchIsNotLess;
+    }
+    return false;
+  }
 };
 
 class unordered_set2 {
@@ -90,6 +98,7 @@ class unordered_set2 {
         level = level->branchIsNotLess.get();
       }
     }
+    ++_size;
   }
 
   template <size_t maxN>
@@ -102,17 +111,15 @@ class unordered_set2 {
     return root->containsUpper(poset, poset.size() * poset.size());
   }
 
-  inline size_t size(const uint8_t n) const { return _size; }
+  template <size_t maxN>
+  inline void clean(const uint8_t n, const uint8_t i, const bool isLower) {
+    std::vector<Poset<maxN>> entries;
+    auto temp1 = std::make_unique<PosetStruct>();
+    root->entries(entries, _size, Poset<maxN>(n, i), n * n, root, temp1, isLower);
+    assert(entries.size() == _size);
+  }
 
-  // template <size_t maxN>
-  // inline void clean(const uint8_t n, const uint8_t i) {
-  // TODO
-  // std::vector<Poset<maxN>> entries;
-  // root->entries(entries, Poset<maxN>(n, i), n * n);
-  // assert(entries.size() == root->size(n * n));
-  // for (auto entry : entries) {
-  // }
-  // }
+  inline size_t size(const uint8_t n) const { return _size; }
 };
 
 template <size_t maxN>
@@ -163,6 +170,17 @@ class Cache {
     return false;
   }
 
+  void clean(const bool isLower) {
+    for (uint8_t n = 1; n < globalMaxN; ++n) {
+      for (uint8_t i = 0; i < globalMaxN; ++i) {
+        for (uint8_t c = 0; c < globalMaxComparisons; ++c) {
+          const std::lock_guard<std::mutex> lock(mutex_cache[n][i][c]);
+          cache2[n][i][c].clean<maxN>(n, i, isLower);
+        }
+      }
+    }
+  }
+
   inline size_t size() {
     size_t sum = 0;
     // size_t max1 = 0;
@@ -177,16 +195,5 @@ class Cache {
     }
     // std::cout << max1 << std::endl;
     return sum;
-  }
-
-  void clean() {
-    //   for (uint8_t n = 1; n < globalMaxN; ++n) {
-    //     for (uint8_t i = 0; i < globalMaxN; ++i) {
-    //       for (uint8_t c = 0; c < globalMaxComparisons; ++c) {
-    //         const std::lock_guard<std::mutex> lock(mutex_cache[n][i][c]);
-    //         cache2[n][i][c].clean<maxN>(n, i);
-    //       }
-    //     }
-    //   }
   }
 };
