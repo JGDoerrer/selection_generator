@@ -29,13 +29,11 @@ const auto randomDataTable = ([]() {
   return randomDataTable;
 })();
 
-std::array<Normalizer<globalMaxN>, 230> norm;  // TODO: only Debug
-
 template <size_t maxN>
-Poset<maxN> createPosetWithComparison(const int normalizerIndex, Poset<maxN> poset, const uint16_t i,
+Poset<maxN> createPosetWithComparison(Normalizer<maxN> &normalizer, Poset<maxN> poset, const uint16_t i,
                                       const uint16_t j) {
   poset.add_less(i, j);
-  norm[normalizerIndex].normalize(poset);
+  normalizer.normalize(poset);
   return poset;
 };
 
@@ -44,7 +42,7 @@ template <size_t maxN, size_t maxC>
 SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN> &poset, Cache<maxN, maxC> &cache,
                              const uint8_t remainingComparisons, const uint8_t multiThreadingLevel,
                              const std::atomic<bool> &atomicBreak, Statistics &statistics, const int depth,
-                             const int normalizerIndex = 229) {
+                             Normalizer<maxN> &normalizer) {
   SearchResult result = NoSolution;
   if (atomicBreak) {
     return Unknown;
@@ -64,14 +62,14 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
     ++statistics.bruteForce;
 
     const auto recursiveSearch = [&](const std::atomic<bool> &breakCondition, const int i, const int j,
-                                     const int normalizerIndex1) {
-      SearchResult searchResult = searchRecursive(threadpool, createPosetWithComparison(normalizerIndex1, poset, i, j),
-                                                  cache, remainingComparisons - 1, multiThreadingLevel, breakCondition,
-                                                  statistics, depth + 1, normalizerIndex1);
+                                     Normalizer<maxN> &normalizer) {
+      SearchResult searchResult = searchRecursive(threadpool, createPosetWithComparison(normalizer, poset, i, j), cache,
+                                                  remainingComparisons - 1, multiThreadingLevel, breakCondition,
+                                                  statistics, depth + 1, normalizer);
       if (searchResult == FoundSolution) {
-        searchResult = searchRecursive(threadpool, createPosetWithComparison(normalizerIndex1, poset, j, i), cache,
+        searchResult = searchRecursive(threadpool, createPosetWithComparison(normalizer, poset, j, i), cache,
                                        remainingComparisons - 1, multiThreadingLevel, breakCondition, statistics,
-                                       depth + 1, normalizerIndex1);
+                                       depth + 1, normalizer);
       }
       return searchResult;
     };
@@ -79,16 +77,15 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
     if (remainingComparisons == multiThreadingLevel) {
       std::atomic<bool> breakCondition(false);
 
-      int normalizerIndex1 = 0;
       for (int i = 0; i < poset.size(); ++i) {
         for (int j = i + 1; j < poset.size(); ++j) {
           if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
             threadpool.push_task([&]() {
-              if (FoundSolution == recursiveSearch(breakCondition, i, j, normalizerIndex1)) {
+              Normalizer<maxN> new_normalizer{};
+              if (FoundSolution == recursiveSearch(breakCondition, i, j, new_normalizer)) {
                 breakCondition = true;
               }
             });
-            ++normalizerIndex1;
           }
         }
       }
@@ -129,7 +126,7 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
         std::sort(temp.begin(), temp.end(), cmp);
 
         for (const auto &[i, j] : temp) {
-          result = recursiveSearch(atomicBreak, i, j, normalizerIndex);
+          result = recursiveSearch(atomicBreak, i, j, normalizer);
           if (result == FoundSolution) {
             break;
           }
@@ -139,7 +136,7 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
           for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
             const auto [new_i, new_j] = randomDataTable[poset.size()][remainingComparisons][i][j];
             if (!poset.is_less(new_i, new_j) && !poset.is_less(new_j, new_i)) {
-              result = recursiveSearch(atomicBreak, new_i, new_j, normalizerIndex);
+              result = recursiveSearch(atomicBreak, new_i, new_j, normalizer);
             }
           }
         }
@@ -177,10 +174,11 @@ SearchResult startSearchNow(std::ostream &os, BS::thread_pool_light &threadpool,
     poset.add_less(0, 1);
   }
   // ACHTUNG: hier könnte reduce_n falsch sein!
-  norm[0].normalize(poset);
+  Normalizer<maxN> normalizer{};
+  normalizer.normalize(poset);
 
   const SearchResult result = searchRecursive(threadpool, poset, cache, maxComparisons - comparisonsDone, multiLevel,
-                                              atomicBreak, statistics, comparisonsDone);
+                                              atomicBreak, statistics, comparisonsDone, normalizer);
   if (result == FoundSolution) {
     os << " -> FoundSolution";
   } else if (result == NoSolution) {
@@ -195,7 +193,7 @@ SearchResult startSearchNow(std::ostream &os, BS::thread_pool_light &threadpool,
 template <size_t maxN, size_t maxC>
 const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanoseconds> startSearch(
     std::ostream &os, BS::thread_pool_light &threadpool, const int n, const int nthSmallest, Cache<maxN, maxC> &cache,
-    Statistics &statistics) {
+    Statistics &statistics, const bool topToBottom) {
   std::chrono::nanoseconds searchDuration{}, validateDuration{};
   const int lower = lower_bound(n, nthSmallest);
   const int upper = upper_bound(n, nthSmallest);
@@ -204,7 +202,7 @@ const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nano
   }
   assert(2 < n);
 
-  if constexpr (TOP_TO_BOTTOM_SEARCH) {
+  if (topToBottom) {
     // searchRecursive from top
     for (int i = upper - 1; i >= lower; --i) {
       if (startSearchNow(os, threadpool, n, nthSmallest, cache, statistics, true, i, searchDuration) == NoSolution) {
@@ -233,6 +231,8 @@ const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nano
   }
 }
 
+using namespace std::chrono;
+
 int main() {
   constexpr size_t nBound = 9;
 
@@ -247,7 +247,24 @@ int main() {
     for (int nthSmallest = 0; nthSmallest < (n + 1) / 2; ++nthSmallest) {
       Statistics statistics;
       const auto &[comparisons, durationSearch, durationValidate] =
-          startSearch(std::cout, threadpool, n, nthSmallest, cache, statistics);
+          startSearch(std::cout, threadpool, n, nthSmallest, cache, statistics, TOP_TO_BOTTOM_SEARCH);
+
+      // auto result1 = std::async(std::launch::async, [&]() {
+      //   return startSearch(std::cout, threadpool, n, nthSmallest, cache, statistics, true);
+      // });
+      // auto result2 = std::async(std::launch::async, [&]() {
+      //   Statistics statistics2;
+      //   return startSearch(std::cout, threadpool, n, nthSmallest, cache, statistics2, false);
+      // });
+      // while (!result1.valid() && !result2.valid()) {
+      //   result1.wait_for(100ms);
+      //   result2.wait_for(100ms);
+      // }
+      // const auto &[comparisons, durationSearch1, durationValidate1] = result1.get();
+      // const auto &[comparisons2, durationSearch2, durationValidate2] = result2.get();
+      // assert(comparisons == comparisons2);
+      // auto durationSearch = (durationSearch1 + durationValidate1);
+      // auto durationValidate = (durationSearch2 + durationValidate2);
 
       // StopWatch watch;
       // cache.clean();
