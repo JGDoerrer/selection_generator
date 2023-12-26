@@ -198,11 +198,110 @@ class Poset {
     if (0 == remainingComparisons) {
       return true;
     }
-    // very rarely used, senseless???
+    // // very rarely used, senseless???
     if (remainingComparisons + 1 < this->count_connected_components()) {
       return true;
     }
     return false;
+    // return !this->is_solvable_in(remainingComparisons);
+  }
+
+  // NOT CHECKED, adapted from rust
+  inline bool is_solvable_in(uint8_t max_comparisons) const {
+    if (0 == this->nthSmallest || this->nthSmallest == this->n - 1) {
+      return this->n - 1 <= max_comparisons;
+    } else if (1 == nthSmallest) {
+      uint8_t less[this->n], greater[this->n];
+      this->calculate_relations(less, greater);
+
+      int num_groups = 0;
+      int s = 0;
+
+      for (int i = 0; i < this->n; ++i) {
+        if (0 == greater[i]) {
+          num_groups += 1;
+          s += 1 << less[i];
+        }
+      }
+
+      // return max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 3;
+      return max_comparisons >= num_groups + (std::numeric_limits<uint32_t>::digits - __builtin_clz(s)) - 3;
+    } else if (this->nthSmallest == this->n - 2) {
+      uint8_t less[this->n], greater[this->n];
+      this->calculate_relations(less, greater);
+
+      int num_groups = 0;
+      int s = 0;
+
+      for (int i = 0; i < this->n; ++i) {
+        if (0 == less[i]) {
+          num_groups += 1;
+          s += 1 << greater[i];
+        }
+      }
+
+      // return max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 3
+      return max_comparisons >= num_groups + (std::numeric_limits<uint32_t>::digits - __builtin_clz(s)) - 3;
+    } else if (this->n - 1 < min_n_comparisons_len) {
+      uint8_t less[this->n], greater[this->n];
+      this->calculate_relations(less, greater);
+
+      int comps = min_n_comparisons[this->n - 1][std::min((int)this->nthSmallest, this->n - this->nthSmallest - 1)];
+
+      // comps -= less[0..this->n]
+      //     .iter()
+      //     .filter(|elem| **elem == 1)
+      //     .count() as u8;
+
+      comps -= std::count_if(less, less + this->n, [](uint8_t elem) { return elem == 1; });
+
+      if (comps <= max_comparisons) {
+        return true;
+      }
+
+      for (int i = 0; i < this->n - 1; ++i) {
+        if (less[i] < 2) {
+          continue;
+        }
+
+        // j_loop:
+        for (int j = i + 1; j < this->n; ++j) {
+          if (!this->is_less(j, i)) {
+            continue;
+          }
+
+          if (1 == greater[j]) {
+            comps -= 1;
+
+            if (comps <= max_comparisons) {
+              return true;
+            }
+          } else {
+            bool breaked = false;
+            for (int k = 0; k < this->n; ++k) {
+              if (i != k && j != k && this->is_less(j, k) && this->is_less(k, i)) {
+                // continue j_loop;
+                breaked = true;
+                break;
+              }
+            }
+            if (breaked) {
+              continue;
+            }
+
+            comps -= 1;
+
+            if (comps <= max_comparisons) {
+              return true;
+            }
+          }
+        }
+      }
+
+      return comps <= max_comparisons;
+    } else {
+      return true;
+    }
   }
 
   /// @brief returns how many elements are less or greater than it

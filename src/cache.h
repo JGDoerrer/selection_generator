@@ -4,96 +4,79 @@
 
 #include "poset.h"
 
-// für n = 10, i = 4 und BottomTop:
+struct PosetStructRecursive {
+  std::unique_ptr<PosetStructRecursive> branchIsLess, branchIsNotLess;
 
-// 4.842s:
-// (cache_l: 1068601, cache_u: 209055, noSol: 7, bruteForce: 39551), cache = (51512 + 3983 = 55495)
+  PosetStructRecursive() : branchIsLess(nullptr), branchIsNotLess(nullptr){};
 
-struct PosetStruct {
-  std::unique_ptr<PosetStruct> branchIsLess, branchIsNotLess;
-
-  PosetStruct() : branchIsLess(nullptr), branchIsNotLess(nullptr){};
-
-  template <size_t maxN>
-  bool containsLower(const Poset<maxN> &poset, const uint8_t index) const {
+  template <std::size_t maxN>
+  bool contains(const Poset<maxN> &poset, const uint8_t index, const bool is_not_solvable) const {
     if (0 == index) {
       return true;
     } else if (poset.comparisonTable[index - 1]) {
-      return nullptr != branchIsLess && branchIsLess->containsLower(poset, index - 1);
+      return nullptr != branchIsLess && branchIsLess->contains(poset, index - 1, is_not_solvable) ||
+             (!is_not_solvable && nullptr != branchIsNotLess && branchIsNotLess->contains(poset, index - 1, is_not_solvable));
     } else {
-      return (nullptr != branchIsNotLess && branchIsNotLess->containsLower(poset, index - 1)) ||
-             (nullptr != branchIsLess && branchIsLess->containsLower(poset, index - 1));
+      return (nullptr != branchIsNotLess && branchIsNotLess->contains(poset, index - 1, is_not_solvable)) ||
+             (is_not_solvable && nullptr != branchIsLess && branchIsLess->contains(poset, index - 1, is_not_solvable));
     }
   }
 
-  template <size_t maxN>
-  bool containsUpper(const Poset<maxN> &poset, const uint8_t index) const {
-    if (0 == index) {
-      return true;
-    } else if (poset.comparisonTable[index - 1]) {
-      return (nullptr != branchIsLess && branchIsLess->containsUpper(poset, index - 1)) ||
-             (nullptr != branchIsNotLess && branchIsNotLess->containsUpper(poset, index - 1));
-    } else {
-      return nullptr != branchIsNotLess && branchIsNotLess->containsUpper(poset, index - 1);
-    }
-  }
-
-  template <size_t maxN>
-  bool entries(std::vector<Poset<maxN>> &entries, size_t &_size, Poset<maxN> temp, const uint8_t index,
-               std::unique_ptr<PosetStruct> &rootStruct, std::unique_ptr<PosetStruct> &topLevel, const bool isLower) {
+  template <std::size_t maxN>
+  bool clean(std::size_t &_size, Poset<maxN> temp, const uint8_t index,
+             std::unique_ptr<PosetStructRecursive> &rootStruct, std::unique_ptr<PosetStructRecursive> &topLevel,
+             const bool is_not_solvable) {
     if (0 == index) {
       if (nullptr != topLevel) {
-        std::unique_ptr<PosetStruct> temp1 = move(topLevel);
+        std::unique_ptr<PosetStructRecursive> temp1 = move(topLevel);
         topLevel = nullptr;
 
-        if ((isLower) ? rootStruct->containsLower(temp, temp.size() * temp.size())
-                      : rootStruct->containsUpper(temp, temp.size() * temp.size())) {
+        if (rootStruct->contains(temp, temp.size() * temp.size(), is_not_solvable)) {
           --_size;
-          // return true; // remove temp from rootStruct recursive
+          return true;  // remove temp from rootStruct recursive
         } else {
           topLevel = move(temp1);
-          entries.push_back(temp);
         }
       }
     } else {
       if (nullptr != branchIsLess) {
         temp.comparisonTable[index - 1] = true;
-        if (branchIsLess->entries(entries, _size, temp, index - 1, rootStruct, branchIsLess, isLower)) {
+        if (branchIsLess->clean(_size, temp, index - 1, rootStruct, branchIsLess, is_not_solvable)) {
           branchIsLess = nullptr;
         }
       }
       if (nullptr != branchIsNotLess) {
         temp.comparisonTable[index - 1] = false;
-        if (branchIsNotLess->entries(entries, _size, temp, index - 1, rootStruct, branchIsNotLess, isLower)) {
+        if (branchIsNotLess->clean(_size, temp, index - 1, rootStruct, branchIsNotLess, is_not_solvable)) {
           branchIsNotLess = nullptr;
         }
       }
-      // return nullptr == branchIsLess && nullptr == branchIsNotLess;
+      return nullptr == branchIsLess && nullptr == branchIsNotLess;
     }
     return false;
   }
 };
 
-class unordered_set2 {
+template <std::size_t maxN>
+class PosetSet {
  private:
-  std::unique_ptr<PosetStruct> root;
-  size_t _size;
+  std::unique_ptr<PosetStructRecursive> root;
+  std::size_t _size;
 
  public:
-  unordered_set2() : root(std::make_unique<PosetStruct>()) {}
+  PosetSet() : root(std::make_unique<PosetStructRecursive>()) {}
 
-  template <size_t maxN>
   inline void insert(const Poset<maxN> &poset) {
-    PosetStruct *level = root.get();
+    PosetStructRecursive *level = root.get();
     for (int i = poset.size() * poset.size() - 1; i >= 0; --i) {
       if (poset.comparisonTable[i]) {
         if (nullptr == level->branchIsLess) {
-          level->branchIsLess = std::make_unique<PosetStruct>();
+          level->branchIsLess = std::make_unique<PosetStructRecursive>();
         }
         level = level->branchIsLess.get();
       } else {
         if (nullptr == level->branchIsNotLess) {
-          level->branchIsNotLess = std::make_unique<PosetStruct>();
+          level->branchIsNotLess = std::make_unique<PosetStructRecursive>();
         }
         level = level->branchIsNotLess.get();
       }
@@ -101,99 +84,116 @@ class unordered_set2 {
     ++_size;
   }
 
-  template <size_t maxN>
-  inline bool containsLower(const Poset<maxN> &poset) const {
-    return root->containsLower(poset, poset.size() * poset.size());
+  inline bool contains(const Poset<maxN> &poset, const bool is_not_solvable) const {
+    return root->contains(poset, poset.size() * poset.size(), is_not_solvable);
   }
 
-  template <size_t maxN>
-  inline bool containsUpper(const Poset<maxN> &poset) const {
-    return root->containsUpper(poset, poset.size() * poset.size());
+  inline void clean(const uint8_t n, const uint8_t i, const bool is_not_solvable) {
+    root->clean(_size, Poset<maxN>(n, i), n * n, root, nullptr, is_not_solvable);
   }
 
-  template <size_t maxN>
-  inline void clean(const uint8_t n, const uint8_t i, const bool isLower) {
-    std::vector<Poset<maxN>> entries;
-    auto temp1 = std::make_unique<PosetStruct>();
-    root->entries(entries, _size, Poset<maxN>(n, i), n * n, root, temp1, isLower);
-    assert(entries.size() == _size);
-  }
-
-  inline size_t size(const uint8_t n) const { return _size; }
+  inline std::size_t size(const uint8_t n) const { return _size; }
 };
 
-template <size_t maxN>
-class Cache {
+template <std::size_t maxN, std::size_t maxC>
+class PosetCache {
  private:
   /**
-   * 1. dimension: poset Size, 1 <= n <= globalMaxN
-   * 2. dimension: poset nthSmallest, 0 <= i <= globalMaxN / 2
-   * 3. dimension: remaining Comparisons, 0 <= c <= globalMaxComparisons
+   * 1. dimension: poset Size, 1 <= n <= maxN
+   * 2. dimension: poset nthSmallest, 0 <= i <= maxN / 2
+   * 3. dimension: remaining Comparisons, 0 <= c <= maxC
    */
-  unordered_set2 cache2[globalMaxN][globalMaxN][globalMaxComparisons];
-  std::mutex mutex_cache[globalMaxN][globalMaxN][globalMaxComparisons];
+  PosetSet<maxN> cache[maxN][maxN][maxC];
+  std::mutex mutex_cache[maxN][maxN][maxC];
 
+ public:
   inline void insert(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
     assert(2 * poset.nth() < poset.size());
     const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()][remainingComparisons]);
-    cache2[poset.size()][poset.nth()][remainingComparisons].insert(poset);
+    cache[poset.size()][poset.nth()][remainingComparisons].insert(poset);
   }
 
- public:
-  inline void insert_ifLower(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
-    this->insert(poset, remainingComparisons);
-  }
-
-  inline void insert_ifUpper(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
-    this->insert(poset, remainingComparisons);
-  }
-
-  inline bool checkLower(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
-    assert(2 * poset.nth() < poset.size());
-    for (int c = remainingComparisons; c < globalMaxComparisons; ++c) {
+  inline bool check_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+    for (int c = remainingComparisons; c < maxC; ++c) {
       const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()][c]);
-      if (cache2[poset.size()][poset.nth()][c].containsLower(poset)) {
+      if (cache[poset.size()][poset.nth()][c].contains(poset, true)) {
         return true;
       }
     }
     return false;
   }
 
-  inline bool checkUpper(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
-    assert(2 * poset.nth() < poset.size());
+  inline bool check_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
     for (int c = remainingComparisons; c >= 0; --c) {
       const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()][c]);
-      if (cache2[poset.size()][poset.nth()][c].containsUpper(poset)) {
+      if (cache[poset.size()][poset.nth()][c].contains(poset, false)) {
         return true;
       }
     }
     return false;
   }
 
-  void clean(const bool isLower) {
-    for (uint8_t n = 1; n < globalMaxN; ++n) {
-      for (uint8_t i = 0; i < globalMaxN; ++i) {
-        for (uint8_t c = 0; c < globalMaxComparisons; ++c) {
+  inline void clean(const bool is_not_solvable) {
+    for (uint8_t n = 1; n < maxN; ++n) {
+      for (uint8_t i = 0; i < maxN; ++i) {
+        for (uint8_t c = 0; c < maxC; ++c) {
           const std::lock_guard<std::mutex> lock(mutex_cache[n][i][c]);
-          cache2[n][i][c].clean<maxN>(n, i, isLower);
+          cache[n][i][c].clean<maxN>(n, i, is_not_solvable);
         }
       }
     }
   }
 
-  inline size_t size() {
-    size_t sum = 0;
-    // size_t max1 = 0;
-    for (uint8_t n = 1; n < globalMaxN; ++n) {
-      for (uint8_t i = 0; i < globalMaxN; ++i) {
-        for (uint8_t c = 0; c < globalMaxComparisons; ++c) {
+  inline std::size_t size() {
+    std::size_t sum = 0;
+    for (uint8_t n = 1; n < maxN; ++n) {
+      for (uint8_t i = 0; i < maxN; ++i) {
+        for (uint8_t c = 0; c < maxC; ++c) {
           const std::lock_guard<std::mutex> lock(mutex_cache[n][i][c]);
-          sum += cache2[n][i][c].size(n);
-          // max1 = std::max(max1, cache2[n][i][c].size(n));
+          sum += cache[n][i][c].size(n);
         }
       }
     }
-    // std::cout << max1 << std::endl;
     return sum;
   }
+};
+
+template <std::size_t maxN, std::size_t maxC>
+class Cache {
+ private:
+  /// TODO: doku aktualisieren
+  /// @param cache_not_solvable enthält alle Posets, für die mit max. `maxComparisons` Schritten keine Lösung bestimmt
+  ///                         werden kann; z.B. wenn cache_not_solvable[poset] = 2, dann: benötige MEHR ALS 2 Schritte,
+  ///                         um Poset zu lösen
+  /// @param cache_solvable enhält alle Posets, für die bereits eine Lösung gefunden wurde; z.B. wenn
+  ///                         cache_solvable[poset] = 2, dann kann poset IN 2 Schrittem gelöst werden
+  PosetCache<maxN, maxC> cache_not_solvable, cache_solvable;
+
+ public:
+  inline bool check_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+    assert(2 * poset.nth() < poset.size());
+    return cache_not_solvable.check_not_solvable(poset, remainingComparisons);
+  }
+
+  inline bool check_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+    assert(2 * poset.nth() < poset.size());
+    return cache_solvable.check_solvable(poset, remainingComparisons);
+  }
+
+  inline void insert_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+    assert(2 * poset.nth() < poset.size());
+    cache_not_solvable.insert(poset, remainingComparisons);
+  }
+
+  inline void insert_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+    assert(2 * poset.nth() < poset.size());
+    cache_solvable.insert(poset, remainingComparisons);
+  }
+
+  inline void clean() {
+    cache_not_solvable.clean(true);
+    cache_solvable.clean(false);
+  }
+
+  inline std::size_t size() { return cache_not_solvable.size() + cache_solvable.size(); }
 };

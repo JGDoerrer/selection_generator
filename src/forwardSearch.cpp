@@ -39,24 +39,19 @@ Poset<maxN> createPosetWithComparison(const int normalizerIndex, Poset<maxN> pos
   return poset;
 };
 
-/// @param cache_lowerBound enthält alle Posets, für die mit max. `maxComparisons` Schritten keine Lösung bestimmt
-///                         werden kann; z.B. wenn cache_lowerBound[poset] = 2, dann: benötige MEHR ALS 2 Schritte,
-///                         um Poset zu lösen
-/// @param cache_upperBound enhält alle Posets, für die bereits eine Lösung gefunden wurde; z.B. wenn
-///                         cache_upperBound[poset] = 2, dann kann poset IN 2 Schrittem gelöst werden
 /// @return true, wenn Median in poset in max. `maxComparisons` gefunden werden kann
-template <size_t maxN>
-SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN> &poset, Cache<maxN> &cache_lowerBound,
-                             Cache<maxN> &cache_upperBound, const uint8_t remainingComparisons,
-                             const uint8_t multiThreadingLevel, const std::atomic<bool> &atomicBreak,
-                             Statistics &statistics, const int depth, const int normalizerIndex = 229) {
+template <size_t maxN, size_t maxC>
+SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN> &poset, Cache<maxN, maxC> &cache,
+                             const uint8_t remainingComparisons, const uint8_t multiThreadingLevel,
+                             const std::atomic<bool> &atomicBreak, Statistics &statistics, const int depth,
+                             const int normalizerIndex = 229) {
   SearchResult result = NoSolution;
   if (atomicBreak) {
     return Unknown;
-  } else if (cache_lowerBound.checkLower(poset, remainingComparisons)) {
+  } else if (cache.check_not_solvable(poset, remainingComparisons)) {
     ++statistics.hashMatchLowerBound;
     return NoSolution;
-  } else if (cache_upperBound.checkUpper(poset, remainingComparisons)) {
+  } else if (cache.check_solvable(poset, remainingComparisons)) {
     ++statistics.hashMatchUpperBound;
     return FoundSolution;
     // durch normalisierung können alle posets auf n == 1 reduziert werden, d.h. is_solvable unnötig
@@ -70,13 +65,13 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
 
     const auto recursiveSearch = [&](const std::atomic<bool> &breakCondition, const int i, const int j,
                                      const int normalizerIndex1) {
-      SearchResult searchResult = searchRecursive(
-          threadpool, createPosetWithComparison(normalizerIndex1, poset, i, j), cache_lowerBound, cache_upperBound,
-          remainingComparisons - 1, multiThreadingLevel, breakCondition, statistics, depth + 1, normalizerIndex1);
+      SearchResult searchResult = searchRecursive(threadpool, createPosetWithComparison(normalizerIndex1, poset, i, j),
+                                                  cache, remainingComparisons - 1, multiThreadingLevel, breakCondition,
+                                                  statistics, depth + 1, normalizerIndex1);
       if (searchResult == FoundSolution) {
-        searchResult = searchRecursive(threadpool, createPosetWithComparison(normalizerIndex1, poset, j, i),
-                                       cache_lowerBound, cache_upperBound, remainingComparisons - 1,
-                                       multiThreadingLevel, breakCondition, statistics, depth + 1, normalizerIndex1);
+        searchResult = searchRecursive(threadpool, createPosetWithComparison(normalizerIndex1, poset, j, i), cache,
+                                       remainingComparisons - 1, multiThreadingLevel, breakCondition, statistics,
+                                       depth + 1, normalizerIndex1);
       }
       return searchResult;
     };
@@ -153,17 +148,17 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
   }
 
   if (result == NoSolution) {
-    cache_lowerBound.insert_ifLower(poset, remainingComparisons);
+    cache.insert_not_solvable(poset, remainingComparisons);
   } else if (result == FoundSolution) {
-    cache_upperBound.insert_ifUpper(poset, remainingComparisons);
+    cache.insert_solvable(poset, remainingComparisons);
   }
   return result;
 }
 
-template <size_t maxN>
+template <size_t maxN, size_t maxC>
 SearchResult startSearchNow(std::ostream &os, BS::thread_pool_light &threadpool, const int n, const int nthSmallest,
-                            Cache<maxN> &cache_lowerBound, Cache<maxN> &cache_upperBound, Statistics &statistics,
-                            const bool pairWiseOptimisation, int maxComparisons, std::chrono::nanoseconds &time) {
+                            Cache<maxN, maxC> &cache, Statistics &statistics, const bool pairWiseOptimisation,
+                            int maxComparisons, std::chrono::nanoseconds &time) {
   const std::chrono::time_point start = std::chrono::high_resolution_clock::now();
   const uint8_t multiLevel = 0;
   std::atomic<bool> atomicBreak(false);
@@ -184,9 +179,8 @@ SearchResult startSearchNow(std::ostream &os, BS::thread_pool_light &threadpool,
   // ACHTUNG: hier könnte reduce_n falsch sein!
   norm[0].normalize(poset);
 
-  const SearchResult result =
-      searchRecursive(threadpool, poset, cache_lowerBound, cache_upperBound, maxComparisons - comparisonsDone,
-                      multiLevel, atomicBreak, statistics, comparisonsDone);
+  const SearchResult result = searchRecursive(threadpool, poset, cache, maxComparisons - comparisonsDone, multiLevel,
+                                              atomicBreak, statistics, comparisonsDone);
   if (result == FoundSolution) {
     os << " -> FoundSolution";
   } else if (result == NoSolution) {
@@ -198,10 +192,10 @@ SearchResult startSearchNow(std::ostream &os, BS::thread_pool_light &threadpool,
   return result;
 }
 
-template <size_t maxN>
+template <size_t maxN, size_t maxC>
 const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanoseconds> startSearch(
-    std::ostream &os, BS::thread_pool_light &threadpool, const int n, const int nthSmallest,
-    Cache<maxN> &cache_lowerBound, Cache<maxN> &cache_upperBound, Statistics &statistics) {
+    std::ostream &os, BS::thread_pool_light &threadpool, const int n, const int nthSmallest, Cache<maxN, maxC> &cache,
+    Statistics &statistics) {
   std::chrono::nanoseconds searchDuration{}, validateDuration{};
   const int lower = lower_bound(n, nthSmallest);
   const int upper = upper_bound(n, nthSmallest);
@@ -213,10 +207,9 @@ const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nano
   if constexpr (TOP_TO_BOTTOM_SEARCH) {
     // searchRecursive from top
     for (int i = upper - 1; i >= lower; --i) {
-      if (startSearchNow(os, threadpool, n, nthSmallest, cache_lowerBound, cache_upperBound, statistics, true, i,
-                         searchDuration) == NoSolution) {
-        if (startSearchNow(os, threadpool, n, nthSmallest, cache_lowerBound, cache_upperBound, statistics, false, i,
-                           validateDuration) == NoSolution) {
+      if (startSearchNow(os, threadpool, n, nthSmallest, cache, statistics, true, i, searchDuration) == NoSolution) {
+        if (startSearchNow(os, threadpool, n, nthSmallest, cache, statistics, false, i, validateDuration) ==
+            NoSolution) {
           return {i + 1, searchDuration, validateDuration};
         }
       }
@@ -226,13 +219,12 @@ const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nano
   } else {
     // searchRecursive from bottom
     for (int i = lower; i < upper; ++i) {
-      if (startSearchNow(os, threadpool, n, nthSmallest, cache_lowerBound, cache_upperBound, statistics, true, i,
-                         searchDuration) == FoundSolution) {
+      if (startSearchNow(os, threadpool, n, nthSmallest, cache, statistics, true, i, searchDuration) == FoundSolution) {
         return {i, searchDuration, validateDuration};
       }
 
-      if (startSearchNow(os, threadpool, n, nthSmallest, cache_lowerBound, cache_upperBound, statistics, false, i,
-                         validateDuration) == FoundSolution) {
+      if (startSearchNow(os, threadpool, n, nthSmallest, cache, statistics, false, i, validateDuration) ==
+          FoundSolution) {
         return {i, searchDuration, validateDuration};
       }
     }
@@ -248,30 +240,25 @@ int main() {
   std::cout.precision(3);
 
   BS::thread_pool_light threadpool(threadCount);
-  Cache<globalMaxN> cache_lowerBound, cache_upperBound;
-  cache_upperBound.insert_ifUpper(Poset<globalMaxN>(1, 0), 0);
+  Cache<globalMaxN, globalMaxComparisons> cache;
+  cache.insert_solvable(Poset<globalMaxN>(1, 0), 0);
 
   for (int n = 1; n < globalMaxN; ++n) {
     for (int nthSmallest = 0; nthSmallest < (n + 1) / 2; ++nthSmallest) {
       Statistics statistics;
       const auto &[comparisons, durationSearch, durationValidate] =
-          startSearch(std::cout, threadpool, n, nthSmallest, cache_lowerBound, cache_upperBound, statistics);
+          startSearch(std::cout, threadpool, n, nthSmallest, cache, statistics);
 
-      const int cache_upper_size = cache_upperBound.size(), cache_lower_size = cache_lowerBound.size();
       // StopWatch watch;
-      // cache_lowerBound.clean(true);
-      // cache_upperBound.clean(false);
+      // cache.clean();
       // std::cout << watch << std::endl;
-      const int cache_upper_size_cleaned = cache_upperBound.size(), cache_lower_size_cleaned = cache_lowerBound.size();
 
       if (comparisons.has_value()) {
         if (n >= nBound) {
           std::cout << "\rtime '" << durationSearch << " + " << durationValidate << " = "
                     << durationSearch + durationValidate << "': n = " << n << ", i = " << nthSmallest << ", "
-                    << statistics << ", cache = (" << cache_lower_size << " + " << cache_upper_size << " = "
-                    << cache_upper_size + cache_lower_size << "), cache_cleaned = (" << cache_lower_size_cleaned
-                    << " + " << cache_upper_size_cleaned << " = " << cache_upper_size_cleaned + cache_lower_size_cleaned
-                    << "), comparisons: " << comparisons.value() << std::endl;
+                    << statistics << ", cache = " << cache.size() << ", comparisons: " << comparisons.value()
+                    << std::endl;
         }
         if (comparisons != min_n_comparisons[n][nthSmallest]) {
           std::cerr << "Error: got " << comparisons.value() << ", but expected " << min_n_comparisons[n][nthSmallest]
