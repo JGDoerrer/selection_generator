@@ -17,13 +17,8 @@
 // (cache_l: 1068601, cache_u: 209055, noSol: 7, bruteForce: 39551), cache = (34344 + 3980 = 38324)
 
 template <std::size_t maxN, std::size_t maxC>
-class PosetCache {
+class PosetCacheSet {
  private:
-  /**
-   * 1. dimension: poset Size, 1 <= n <= maxN
-   * 2. dimension: poset nthSmallest, 0 <= i <= maxN / 2
-   * 3. dimension: remaining Comparisons, 0 <= c <= maxC
-   */
   std::unordered_map<Poset<maxN>, uint8_t> cache[globalMaxN][globalMaxN];
   std::mutex mutex_cache[globalMaxN][globalMaxN];
 
@@ -113,7 +108,7 @@ class PosetCache {
 };
 
 template <std::size_t maxN, std::size_t maxC>
-class Cache {
+class CacheSet {
  private:
   /// TODO: doku aktualisieren
   /// @param cache_not_solvable enthält alle Posets, für die mit max. `maxComparisons` Schritten keine Lösung bestimmt
@@ -121,7 +116,7 @@ class Cache {
   ///                         um Poset zu lösen
   /// @param cache_solvable enhält alle Posets, für die bereits eine Lösung gefunden wurde; z.B. wenn
   ///                         cache_solvable[poset] = 2, dann kann poset IN 2 Schrittem gelöst werden
-  PosetCache<maxN, maxC> cache_not_solvable, cache_solvable;
+  PosetCacheSet<maxN, maxC> cache_not_solvable, cache_solvable;
 
  public:
   inline bool check_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {

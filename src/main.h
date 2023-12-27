@@ -35,7 +35,12 @@ constexpr size_t globalMaxN = 15;
 constexpr size_t threadCount = 20;
 
 #include "cache.h"
-// #include "cache_old.h"
+#include "cache_old.h"
+
+template<std::size_t maxN, std::size_t maxC>
+using Cache = CacheTree<maxN, maxC>;
+// using Cache = CacheSet<maxN, maxC>;
+
 // siehe Section 5.3.3
 // https://doc.lagout.org/science/0_Computer%20Science/2_Algorithms/The%20Art%20of%20Computer%20Programming%20%28vol.%203_%20Sorting%20and%20Searching%29%20%282nd%20ed.%29%20%5BKnuth%201998-05-04%5D.pdf
 int upper_bound(const int n, int t) {

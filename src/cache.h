@@ -159,7 +159,7 @@ class PosetCache {
 };
 
 template <std::size_t maxN, std::size_t maxC>
-class Cache {
+class CacheTree {
  private:
   /// TODO: doku aktualisieren
   /// @param cache_not_solvable enthält alle Posets, für die mit max. `maxComparisons` Schritten keine Lösung bestimmt
