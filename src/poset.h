@@ -6,10 +6,10 @@
 template <std::size_t maxN>
 class Poset {
  private:
- public:
   uint8_t n;
   uint8_t nthSmallest;
 
+ public:
   std::bitset<maxN * maxN> comparisonTable;
 
  private:
@@ -110,7 +110,7 @@ class Poset {
 
  public:
   // returns all canonified Posets, which can be builded from *this
-  std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer) const {
+  std::unordered_set<Poset<maxN>> enlarge_n(Normalizer<maxN> &normalizer) const {
     Poset<maxN> temp{uint8_t(uint8_t(n) + uint8_t(1)), nthSmallest};
     for (uint8_t i = 0; i < n; ++i) {
       for (uint8_t j = 0; j < n; ++j) {
@@ -448,12 +448,12 @@ class Poset {
   friend class Normalizer<maxN>;
 
   template <std::size_t maxN2>
-  friend std::unordered_set<Poset<maxN2>> enlarge(Normalizer<maxN2> &normalizer,
-                                                  const std::unordered_set<Poset<maxN2>> &setOfPosets);
+  friend std::unordered_set<Poset<maxN2>> enlarge_n(Normalizer<maxN2> &normalizer,
+                                                    const std::unordered_set<Poset<maxN2>> &setOfPosets);
 
   template <std::size_t maxN2>
-  friend std::unordered_set<Poset<maxN2>> enlarge2(Normalizer<maxN2> &normalizer,
-                                                   const std::unordered_set<Poset<maxN2>> &setOfPosets);
+  friend std::unordered_set<Poset<maxN2>> enlarge_nk(Normalizer<maxN2> &normalizer,
+                                                     const std::unordered_set<Poset<maxN2>> &setOfPosets);
 };
 
 template <std::size_t maxN>
@@ -474,22 +474,32 @@ std::ostream &operator<<(std::ostream &os, const Poset<maxN> &poset) {
 }
 
 template <std::size_t maxN>
-bool canTheLastElementBeReduced(const Poset<maxN> &poset) {
+bool can_reduce_element_greater(const Poset<maxN> &poset, const uint8_t element) {
   uint8_t greater = 0;
   for (uint8_t k = 0; k < poset.size(); ++k) {
-    if (poset.is_less(k, poset.size() - 1)) {
+    if (poset.is_less(k, element)) {
       ++greater;
     }
   }
   return poset.nth() < greater;
 }
 
+template <std::size_t maxN>
+bool can_reduce_element_less(const Poset<maxN> &poset, const uint8_t element) {
+  uint8_t less = 0;
+  for (uint8_t k = 0; k < poset.size(); ++k) {
+    if (poset.is_less(element, k)) {
+      ++less;
+    }
+  }
+  return (poset.size() - 1) - poset.nth() < less;
+}
+
 // gibt ALLE closed, canonfified Posets zurück, die sich durch die Menge bilden lassen und das letzte wegreduziert
 // werden kann
 template <std::size_t maxN>
-std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
-                                        const std::unordered_set<Poset<maxN>> &setOfPosets) {
-  std::unordered_set<Poset<maxN>> result;
+std::unordered_set<Poset<maxN>> enlarge_n(Normalizer<maxN> &normalizer,
+                                          const std::unordered_set<Poset<maxN>> &setOfPosets) {
   std::unordered_map<Poset<maxN>, int> swap_init;
   for (const Poset<maxN> &poset : setOfPosets) {
     Poset<maxN> temp{uint8_t(poset.n + uint8_t(1)), poset.nthSmallest};
@@ -501,40 +511,17 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
     swap_init[temp] = -1;
   }
 
+  std::unordered_set<Poset<maxN>> result;
   while (!swap_init.empty()) {
     std::unordered_map<Poset<maxN>, int> temp;
     for (const auto &[poset, number] : swap_init) {
-      for (int k = number + 1; k < poset.n - 1; ++k) {  // auflösen???
+      for (int k = number + 1; k < poset.n - 1; ++k) {
         if (!poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k)) {
-          Poset<maxN> a1 = poset.with_less(k, poset.n - 1);
-          if (!result.contains(a1) && canTheLastElementBeReduced(a1)) {
-            bool is_same = true;  // INEFFIZIENT, canonify???
-            for (uint8_t i = 0; i < poset.n - 1; ++i) {
-              for (uint8_t j = 0; j < poset.n - 1; ++j) {
-                if (a1.is_less(i, j) != poset.is_less(i, j)) {
-                  is_same = false;
-                }
-              }
-            }
-            if (is_same) {
-              result.insert(a1);
-              temp[a1] = k;
-            }
-          }
-          Poset<maxN> b1 = poset.with_less(poset.n - 1, k);
-          if (!result.contains(b1) && canTheLastElementBeReduced(b1)) {
-            bool is_same = true;
-            for (uint8_t i = 0; i < poset.n - 1; ++i) {
-              for (uint8_t j = 0; j < poset.n - 1; ++j) {
-                if (b1.is_less(i, j) != poset.is_less(i, j)) {
-                  is_same = false;
-                }
-              }
-            }
-            if (is_same) {
-              result.insert(b1);
-              temp[b1] = k;
-            }
+          const Poset<maxN> new_poset = poset.with_less(k, poset.n - 1);
+          // TODO: ist der can_reduce_... Test hier korrekt?
+          if (!result.contains(new_poset) && can_reduce_element_greater(new_poset, new_poset.n - 1)) {
+            result.insert(new_poset);
+            temp[new_poset] = k;
           }
         }
       }
@@ -544,31 +531,20 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
 
   std::unordered_set<Poset<maxN>> result_canonified;
   for (Poset<maxN> item : result) {
+    // oder eher hier?
     normalizer.canonify_nauty(item);
     result_canonified.insert(item);
   }
-  // prüfe auf shadowing -> weniger pot. Ergebnisse
+  // TODO: prüfe auf shadowing -> potentiell weniger Ergebnisse
   return result_canonified;
-}
-
-template <std::size_t maxN>
-bool canTheLastElementBeReduced_withKInc(const Poset<maxN> &poset) {
-  uint8_t less = 0;
-  for (uint8_t k = 0; k < poset.size(); ++k) {
-    if (poset.is_less(poset.size() - 1, k)) {
-      ++less;
-    }
-  }
-  return (poset.size() - 1) - poset.nth() < less;
 }
 
 // gibt ALLE closed, canonfified Posets zurück, die sich durch die Menge bilden lassen und das letzte wegreduziert
 // werden kann
-// wenn poset Größe (n, k) hat, dann kommt (n + 1, k); (n + 1, k + 1) zurück
+// wenn poset Größe (n, k) hat, dann return (n + 1, k); (n + 1, k + 1)
 template <std::size_t maxN>
-std::unordered_set<Poset<maxN>> enlarge2(Normalizer<maxN> &normalizer,
-                                         const std::unordered_set<Poset<maxN>> &setOfPosets) {
-  std::unordered_set<Poset<maxN>> result;
+std::unordered_set<Poset<maxN>> enlarge_nk(Normalizer<maxN> &normalizer,
+                                           const std::unordered_set<Poset<maxN>> &setOfPosets) {
   std::unordered_map<Poset<maxN>, int> swap_init;
   for (const Poset<maxN> &poset : setOfPosets) {
     Poset<maxN> temp{uint8_t(poset.n + uint8_t(1)), uint8_t(poset.nthSmallest + uint8_t(1))};
@@ -580,40 +556,16 @@ std::unordered_set<Poset<maxN>> enlarge2(Normalizer<maxN> &normalizer,
     swap_init[temp] = -1;
   }
 
+  std::unordered_set<Poset<maxN>> result;
   while (!swap_init.empty()) {
     std::unordered_map<Poset<maxN>, int> temp;
     for (const auto &[poset, number] : swap_init) {
-      for (int k = number + 1; k < poset.n - 1; ++k) {  // auflösen???
+      for (int k = number + 1; k < poset.n - 1; ++k) {
         if (!poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k)) {
-          Poset<maxN> a1 = poset.with_less(k, poset.n - 1);
-          if (!result.contains(a1)) {
-            bool is_same = true;  // INEFFIZIENT, canonify???
-            for (uint8_t i = 0; i < poset.n - 1; ++i) {
-              for (uint8_t j = 0; j < poset.n - 1; ++j) {
-                if (a1.is_less(i, j) != poset.is_less(i, j)) {
-                  is_same = false;
-                }
-              }
-            }
-            if (is_same) {
-              result.insert(a1);
-              temp[a1] = k;
-            }
-          }
-          Poset<maxN> b1 = poset.with_less(poset.n - 1, k);
-          if (!result.contains(b1)) {
-            bool is_same = true;
-            for (uint8_t i = 0; i < poset.n - 1; ++i) {
-              for (uint8_t j = 0; j < poset.n - 1; ++j) {
-                if (b1.is_less(i, j) != poset.is_less(i, j)) {
-                  is_same = false;
-                }
-              }
-            }
-            if (is_same) {
-              result.insert(b1);
-              temp[b1] = k;
-            }
+          Poset<maxN> new_poset = poset.with_less(poset.n - 1, k);
+          if (!result.contains(new_poset)) {
+            result.insert(new_poset);
+            temp[new_poset] = k;
           }
         }
       }
@@ -623,7 +575,7 @@ std::unordered_set<Poset<maxN>> enlarge2(Normalizer<maxN> &normalizer,
 
   std::unordered_set<Poset<maxN>> result_canonified;
   for (Poset<maxN> item : result) {
-    if (canTheLastElementBeReduced_withKInc(item)) {
+    if (can_reduce_element_less(item, item.size() - 1)) {
       normalizer.canonify_nauty(item);
       result_canonified.insert(item);
     }
