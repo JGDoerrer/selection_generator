@@ -2,6 +2,8 @@
 #include <bits/stdc++.h>
 
 #include "normalizer.h"
+// =============
+#include "cache.h"
 
 template <std::size_t maxN>
 class Poset {
@@ -460,6 +462,24 @@ inline bool can_reduce_element_less(const Poset<maxN> &poset, const uint8_t elem
   return (poset.size() - 1) - poset.nth() < less;
 }
 
+template <std::size_t maxN>
+std::unordered_set<Poset<maxN>> filter(const std::unordered_set<Poset<maxN>> &unfiltered) {
+  std::unordered_set<Poset<maxN>> filtered;
+  for (Poset<maxN> item : unfiltered) {
+    bool found = false;
+    for (auto temp : unfiltered) {
+      if (temp != item && temp.subset_of(item)) {
+        found = false;
+        break;
+      }
+    }
+    if (!found) {
+      filtered.insert(item);
+    }
+  }
+  return filtered;
+}
+
 // gibt ALLE closed, canonfified Posets zurück, die sich durch die Menge bilden lassen und das letzte wegreduziert
 // werden kann
 template <std::size_t maxN>
@@ -554,9 +574,10 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
   assert(2 * k < n);
 
   std::unordered_set<Poset<maxN>> tempSet = setOfPosets;
-  std::unordered_set<Poset<maxN>> result;
+  PosetSet<maxN> cache;
   while (0 != tempSet.size()) {
     std::unordered_set<Poset<maxN>> remainder1, remainder2;
+    // tempSet = filter(tempSet);
     for (auto item : tempSet) {
       assert(item.size() <= n);
       assert(item.nth() < item.size());
@@ -567,12 +588,13 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
           remainder2.insert(item);
         }
       } else if (item.size() == n && item.nth() == k) {
-        result.insert(item);
+        cache.insert(item);
       }
     }
 
     tempSet = enlarge_n(normalizer, remainder1);
     tempSet.merge(enlarge_nk(normalizer, remainder2));
   }
-  return result;
+
+  return cache.entries(n, k, false);
 }

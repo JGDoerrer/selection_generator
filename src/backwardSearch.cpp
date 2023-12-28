@@ -1,109 +1,30 @@
 #include "main.h"
 
-#if 0
-std::array<Normalizer<globalMaxN>, 230> norm;  // TODO: only Debug
-
-template <size_t maxN>
-Poset<maxN> createPosetWithComparison(const int normalizerIndex, Poset<maxN> poset, const uint16_t i,
-                                      const uint16_t j) {
-  poset.add_less(i, j);
-  norm[normalizerIndex].canonify(poset);
-  return poset;
-};
-
-/// @param cache_lowerBound enthält alle Posets, für die mit max. `maxComparisons` Schritten keine Lösung bestimmt
-///                         werden kann; z.B. wenn cache_lowerBound[poset] = 2, dann: benötige MEHR ALS 2 Schritte,
-///                         um Poset zu lösen
-/// @param cache_upperBound enhält alle Posets, für die bereits eine Lösung gefunden wurde; z.B. wenn
-///                         cache_upperBound[poset] = 2, dann kann poset IN 2 Schrittem gelöst werden
-/// @return true, wenn Median in poset in max. `maxComparisons` gefunden werden kann
-template <size_t maxN>
-SearchResult searchRecursive(const Poset<maxN> &poset, Cache<Poset<maxN>, uint8_t> cache_lowerBound[globalMaxN],
-                             Cache<Poset<maxN>, uint8_t> cache_upperBound[globalMaxN],
-                             const uint8_t remainingComparisons) {
-  SearchResult result = NoSolution;
-  if (cache_lowerBound[poset.size()].checkLower(poset, remainingComparisons)) {
-    return NoSolution;
-  } else if (cache_upperBound[poset.size()].checkUpper(poset, remainingComparisons)) {
-    return FoundSolution;
-    // durch normalisierung können alle posets auf n == 1 reduziert werden, d.h. is_solvable unnötig
-  } else if (poset.is_solvable()) {
-    result = FoundSolution;
-  } else if (poset.is_not_solvable_in(remainingComparisons)) {
-    result = NoSolution;
-  } else {
-    for (int i = 0; i < poset.size() && result != FoundSolution; ++i) {
-      for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
-        if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
-          result = searchRecursive(createPosetWithComparison(0, poset, i, j), cache_lowerBound, cache_upperBound,
-                                   remainingComparisons - 1);
-          if (result == FoundSolution) {
-            result = searchRecursive(createPosetWithComparison(0, poset, j, i), cache_lowerBound, cache_upperBound,
-                                     remainingComparisons - 1);
-          }
-        }
-      }
-    }
-  }
-
-  if (result == NoSolution) {
-    cache_lowerBound[poset.size()].insert_ifLower(poset, remainingComparisons);
-  } else if (result == FoundSolution) {
-    cache_upperBound[poset.size()].insert_ifUpper(poset, remainingComparisons);
-  }
-  return result;
-}
-
-Cache<Poset<globalMaxN>, uint8_t> cache_lowerBound[globalMaxN];
-Cache<Poset<globalMaxN>, uint8_t> cache_upperBound[globalMaxN];
-
-template <size_t maxN>
-int forward(Poset<maxN> poset) {
-  cache_upperBound[1].insert(Poset<globalMaxN>(1, 0), 0);
-
-  norm[0].canonify(poset);
-  for (int i = 0; i < poset.size() * poset.size(); ++i) {
-    if (searchRecursive(poset, cache_lowerBound, cache_upperBound, i) == FoundSolution) {
-      return i;
-    }
-  }
-
-  std::cerr << "Error, maxComparisons exceeded" << std::endl;
-  std::cerr << poset << std::endl;
-  exit(0);
-}
-#endif
-
 // TODO: alternative, da aktuell zu langsam: nur Cache für forwardSeach befüllen
 
-std::array<std::array<std::optional<std::unordered_set<Poset<globalMaxN>>>, globalMaxN>, globalMaxComparisons>
-    myBigCache;
+std::array<std::array<std::optional<std::unordered_set<Poset<globalMaxN>>>, globalMaxN>, globalMaxN> myBigCache;
 
 template <size_t maxN>
 std::unordered_set<Poset<maxN>> find_solvable_posets(Normalizer<maxN> &normalizer, const uint8_t n, const uint8_t k) {
-  assert(k < n);
-  if (myBigCache[n][k] != std::nullopt) {
-    return myBigCache[n][k].value();
-  } else if (n <= 2 * k) {
-    std::unordered_set<Poset<maxN>> result{};
-    for (Poset<maxN> item : find_solvable_posets(normalizer, n, n - k - 1)) {
-      item.dual();
-      normalizer.canonify(item);
-      result.insert(item);
-    }
-    myBigCache[n][k] = result;
-    return myBigCache[n][k].value();
-  } else {
+  assert(2 * k < n);
+  if (myBigCache[n][k] == std::nullopt) {
     if (1 == n) {
-      std::unordered_set<Poset<maxN>> result{};
-      result.insert(Poset<maxN>{n, k});
-      myBigCache[n][k] = result;
-      return myBigCache[n][k].value();
+      myBigCache[n][k] = std::unordered_set<Poset<maxN>>{{Poset<maxN>{1, 0}}};
     } else {
-      myBigCache[n][k] = enlarge_n(normalizer, find_solvable_posets(normalizer, n - 1, k));
-      return myBigCache[n][k].value();
+      std::unordered_set<Poset<maxN>> result{};
+      if (n - 1 <= 2 * k) {
+        for (Poset<maxN> item : find_solvable_posets(normalizer, n - 1, (n - 1) - k - 1)) {
+          item.dual();
+          normalizer.canonify(item);
+          result.insert(item);
+        }
+      } else {
+        result = find_solvable_posets(normalizer, n - 1, k);
+      }
+      myBigCache[n][k] = enlarge_n(normalizer, result);
     }
   }
+  return myBigCache[n][k].value();
 }
 
 template <size_t maxN>
@@ -118,7 +39,22 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
   for (int k = 1; k < n * n; ++k) {
     std::chrono::nanoseconds duration0{}, duration1{};
     const auto start0 = std::chrono::high_resolution_clock::now();
-    const auto source_new = enlarge(normalizer, source_reduced, n, nthSmallest);
+    auto source_new = enlarge(normalizer, source_reduced, n, nthSmallest);
+    // std::unordered_set<Poset<maxN>> source_new2;
+    // for (auto item : source_new) {
+    //   bool found = false;
+    //   for (auto item2 : source_new2) {
+    //     if (item2.subset_of(item)) {
+    //       found = true;
+    //     }
+    //   }
+    //   if (!found) {
+    //     source_new2.insert(item);
+    //   } else {
+    //     // assert(false);
+    //   }
+    // }
+    // source_new = source_new2;
     // source_new.delete all from source
     const auto end0 = std::chrono::high_resolution_clock::now();
     duration0 = end0 - start0;
@@ -133,20 +69,21 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
           if (item.is_less(i, j)) {
             for (const Poset<maxN> &predecessor : item.remove_less(normalizer, i, j)) {
               if (predecessor == Poset<maxN>{(uint8_t)n, (uint8_t)nthSmallest}) {
+                std::cout << "# " << k << ": " << source_reduced.size() << " => " << source_new.size() << " in "
+                          << duration0 << " ~ " << duration1 << " | total cached: " << allPos_reduced.size()
+                          << " (found solution)" << std::endl;
                 return {k, duration0g, duration1g};
               }
 
               Poset<maxN> predecessorNorm0_reduced = predecessor;
-              normalizer.reduce_n(predecessorNorm0_reduced);
-              normalizer.canonify(predecessorNorm0_reduced);
+              normalizer.normalize(predecessorNorm0_reduced);
               if (allPos_reduced.contains(predecessorNorm0_reduced) && allPos_reduced[predecessorNorm0_reduced] < k) {
                 continue;
               }
 
               Poset<maxN> predecessorNorm_reduced = predecessor;
               predecessorNorm_reduced.add_less(j, i);
-              normalizer.reduce_n(predecessorNorm_reduced);
-              normalizer.canonify(predecessorNorm_reduced);
+              normalizer.normalize(predecessorNorm_reduced);
               if (!(allPos_reduced.contains(predecessorNorm_reduced) && allPos_reduced[predecessorNorm_reduced] < k)) {
                 continue;
               }

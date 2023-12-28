@@ -2,14 +2,14 @@
 ## short overview
 | n | k | forward search (Bottom to Top) | forward search (Top to Bottom) | backward search (naive) |
 | -  | - | - | - | - |
-| 10 | 0 | 0.000s | 0.000s | 447.177s |
-| 10 | 1 | 0.000s | 0.000s | 208.319s |
-| 10 | 2 | 0.000s | 0.000s | 194.291s |
-| 10 | 3 | 0.540s | 0.528s | 193.612s |
-| 10 | 4 | 3.544s | 2.980s | 222.155s |
+| 10 | 0 | 0.000s | 0.000s | 41.323s |
+| 10 | 1 | 0.000s | 0.000s | 15.199s |
+| 10 | 2 | 0.000s | 0.000s | 19.955s |
+| 10 | 3 | 0.540s | 0.528s | 29.947s |
+| 10 | 4 | 3.544s | 2.980s | 40.341s |
 | ... | ... | ... | ... | ... |
-| 11 | 4 | 41.411s | 36.814s | ? |
-| 11 | 5 | 77.485s | 56.426s | ? |
+| 11 | 4 | 41.411s | 36.814s | OutOfMemory |
+| 11 | 5 | 77.485s | 56.426s | OutOfMemory |
 
 [Anzahl der linearen Erweiterungen](https://arxiv.org/pdf/1108.0866.pdf)
 
