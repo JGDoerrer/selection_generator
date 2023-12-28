@@ -69,12 +69,6 @@ class Normalizer {
     return poset;
   }
 
- public:
-  Normalizer() {
-    assert(maxN <= WORDSIZE);
-    nauty_check(WORDSIZE, m, maxN, NAUTYVERSIONID);
-  }
-
   inline Poset<maxN> &canonify_nauty(Poset<maxN> &poset) {
     EMPTYGRAPH(g, m, poset.n);
     for (uint16_t i = 0; i < poset.n; ++i) {
@@ -110,38 +104,50 @@ class Normalizer {
     return poset;
   }
 
-  void normalize(Poset<maxN> &poset) {
-    reduce_n(poset);
+ public:
+  Normalizer() {
+    assert(maxN <= WORDSIZE);
+    nauty_check(WORDSIZE, m, maxN, NAUTYVERSIONID);
+  }
 
-    uint8_t less[poset.n];
-    uint8_t greater[poset.n];
-    poset.calculate_relations(less, greater);
+  inline Poset<maxN> &canonify(Poset<maxN> &poset) {
+    if constexpr (false) {
+      uint8_t less[poset.n];
+      uint8_t greater[poset.n];
+      poset.calculate_relations(less, greater);
 
-    std::vector<std::pair<uint64_t, uint8_t>> in_out_degree(poset.n);
-    for (uint8_t i = 0; i < poset.n; ++i) {
-      if (greater[i] > less[i]) std::swap(greater[i], less[i]);  // TODO: WARUM???
-      in_out_degree[i] = {uint64_t(maxN) * uint64_t(greater[i]) + uint64_t(less[i]), i};
-    }
-
-    std::sort(in_out_degree.begin(), in_out_degree.end());
-
-    uint8_t duplicats = 0;
-    for (uint8_t i = 1; i < poset.n; ++i) {
-      if (in_out_degree[i - 1].first == in_out_degree[i].first) {
-        ++duplicats;
-      }
-    }
-
-    if (0 == duplicats) {
-      const Poset<maxN> oldPoset(poset);
+      std::vector<std::pair<uint64_t, uint8_t>> in_out_degree(poset.n);
       for (uint8_t i = 0; i < poset.n; ++i) {
-        for (uint8_t j = 0; j < poset.n; ++j) {
-          poset.set_less(i, j, oldPoset.is_less(in_out_degree[i].second, in_out_degree[j].second));
+        in_out_degree[i] = {uint64_t(maxN) * uint64_t(greater[i]) + uint64_t(less[i]), i};
+      }
+
+      std::sort(in_out_degree.begin(), in_out_degree.end());
+
+      uint8_t duplicats = 0;
+      for (uint8_t i = 1; i < poset.n; ++i) {
+        if (in_out_degree[i - 1].first == in_out_degree[i].first) {
+          ++duplicats;
         }
       }
-    } else {
-      canonify_nauty(poset);
+
+      if (0 == duplicats) {
+        const Poset<maxN> oldPoset(poset);
+        for (uint8_t i = 0; i < poset.n; ++i) {
+          for (uint8_t j = 0; j < poset.n; ++j) {
+            poset.set_less(i, j, oldPoset.is_less(in_out_degree[i].second, in_out_degree[j].second));
+          }
+        }
+        return poset;
+      }
     }
+
+    canonify_nauty(poset);
+    return poset;
+  }
+
+  void normalize(Poset<maxN> &poset) {
+    reduce_n(poset);
+    canonify(poset);
   }
 };
 

@@ -15,7 +15,8 @@ struct PosetStructRecursive {
       return true;
     } else if (poset.comparisonTable[index - 1]) {
       return nullptr != branchIsLess && branchIsLess->contains(poset, index - 1, is_not_solvable) ||
-             (!is_not_solvable && nullptr != branchIsNotLess && branchIsNotLess->contains(poset, index - 1, is_not_solvable));
+             (!is_not_solvable && nullptr != branchIsNotLess &&
+              branchIsNotLess->contains(poset, index - 1, is_not_solvable));
     } else {
       return (nullptr != branchIsNotLess && branchIsNotLess->contains(poset, index - 1, is_not_solvable)) ||
              (is_not_solvable && nullptr != branchIsLess && branchIsLess->contains(poset, index - 1, is_not_solvable));
@@ -68,20 +69,26 @@ class PosetSet {
 
   inline void insert(const Poset<maxN> &poset) {
     PosetStructRecursive *level = root.get();
+    bool lastInsert = false;
     for (int i = poset.size() * poset.size() - 1; i >= 0; --i) {
+      lastInsert = false;
       if (poset.comparisonTable[i]) {
         if (nullptr == level->branchIsLess) {
           level->branchIsLess = std::make_unique<PosetStructRecursive>();
+          lastInsert = true;
         }
         level = level->branchIsLess.get();
       } else {
         if (nullptr == level->branchIsNotLess) {
           level->branchIsNotLess = std::make_unique<PosetStructRecursive>();
+          lastInsert = true;
         }
         level = level->branchIsNotLess.get();
       }
     }
-    ++_size;
+    if (lastInsert) {
+      ++_size;
+    }
   }
 
   inline bool contains(const Poset<maxN> &poset, const bool is_not_solvable) const {

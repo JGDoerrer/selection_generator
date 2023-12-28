@@ -7,7 +7,7 @@ template <size_t maxN>
 Poset<maxN> createPosetWithComparison(const int normalizerIndex, Poset<maxN> poset, const uint16_t i,
                                       const uint16_t j) {
   poset.add_less(i, j);
-  norm[normalizerIndex].canonify_nauty(poset);
+  norm[normalizerIndex].canonify(poset);
   return poset;
 };
 
@@ -61,7 +61,7 @@ template <size_t maxN>
 int forward(Poset<maxN> poset) {
   cache_upperBound[1].insert(Poset<globalMaxN>(1, 0), 0);
 
-  norm[0].canonify_nauty(poset);
+  norm[0].canonify(poset);
   for (int i = 0; i < poset.size() * poset.size(); ++i) {
     if (searchRecursive(poset, cache_lowerBound, cache_upperBound, i) == FoundSolution) {
       return i;
@@ -74,373 +74,106 @@ int forward(Poset<maxN> poset) {
 }
 #endif
 
-// Option 1: nur cache befüllen
+// TODO: alternative, da aktuell zu langsam: nur Cache für forwardSeach befüllen
 
-// Option 2: suche alle posets, die folgendes erfüllen:
-// für ein bel. k: (sei k = 0)
-// es ex. `nthSmallest` versch. i mit : is_less(i, 0)
-// es ex. `n - nthSmallest - 1` versch. i mit : is_less(0, i)
-
-// Option 3: starte mit [1] und call anti_reduceN, anti_reduceNthsmallest
-
-// Radioactive Hardstyle Remix
-// overdose
-// startship hardstyle remix
-// halo (techno version)
-// Deck the halls - timmy trupet
-
-std::array<std::array<std::array<std::optional<std::unordered_set<Poset<globalMaxN>>>, globalMaxN>, globalMaxN>,
-           globalMaxComparisons>
+std::array<std::array<std::optional<std::unordered_set<Poset<globalMaxN>>>, globalMaxN>, globalMaxComparisons>
     myBigCache;
 
 template <size_t maxN>
-std::unordered_set<Poset<maxN>> find_solvable_posets(Normalizer<maxN> &normalizer, const uint8_t comparisons,
-                                                     const uint8_t n, const uint8_t k) {
+std::unordered_set<Poset<maxN>> find_solvable_posets(Normalizer<maxN> &normalizer, const uint8_t n, const uint8_t k) {
   assert(k < n);
-  if (myBigCache[comparisons][n][k] != std::nullopt) {
-    return myBigCache[comparisons][n][k].value();
+  if (myBigCache[n][k] != std::nullopt) {
+    return myBigCache[n][k].value();
   } else if (n <= 2 * k) {
     std::unordered_set<Poset<maxN>> result{};
-    for (Poset<maxN> item : find_solvable_posets(normalizer, comparisons, n, n - k - 1)) {
+    for (Poset<maxN> item : find_solvable_posets(normalizer, n, n - k - 1)) {
       item.dual();
-      normalizer.canonify_nauty(item);
+      normalizer.canonify(item);
       result.insert(item);
     }
-    myBigCache[comparisons][n][k] = result;
-    return myBigCache[comparisons][n][k].value();
+    myBigCache[n][k] = result;
+    return myBigCache[n][k].value();
   } else {
-    if (0 == comparisons) {
-      if (1 == n) {
-        std::unordered_set<Poset<maxN>> result{};
-        result.insert(Poset<maxN>{n, k});
-        myBigCache[comparisons][n][k] = result;
-        return myBigCache[comparisons][n][k].value();
-      } else {
-        myBigCache[comparisons][n][k] = enlarge_n(normalizer, find_solvable_posets(normalizer, comparisons, n - 1, k));
-        return myBigCache[comparisons][n][k].value();
-      }
+    if (1 == n) {
+      std::unordered_set<Poset<maxN>> result{};
+      result.insert(Poset<maxN>{n, k});
+      myBigCache[n][k] = result;
+      return myBigCache[n][k].value();
     } else {
-      if (true) {
-        std::unordered_set<Poset<maxN>> allPos;
-        for (int i = 0; i < comparisons; ++i) {
-          allPos.merge(std::unordered_set<Poset<maxN>>(find_solvable_posets(normalizer, i, n, k)));
-        }
-
-        std::unordered_set<Poset<maxN>> result{};
-        for (const Poset<maxN> &item : find_solvable_posets(normalizer, comparisons - 1, n, k)) {
-          for (uint8_t i = 0; i < n; ++i) {
-            for (uint8_t j = 0; j < n; ++j) {
-              if (item.is_less(i, j)) {
-                for (const Poset<maxN> &predecessor : item.remove_less(normalizer, i, j)) {
-                  Poset<maxN> predecessorNorm0 = predecessor;
-                  normalizer.canonify_nauty(predecessorNorm0);
-                  if (allPos.contains(predecessorNorm0)) {
-                    continue;
-                  }
-
-                  Poset<maxN> predecessorNorm = predecessor;
-                  predecessorNorm.add_less(j, i);
-                  normalizer.canonify_nauty(predecessorNorm);
-                  if (!allPos.contains(predecessorNorm)) {
-                    continue;
-                  }
-
-                  result.insert(predecessorNorm0);
-                }
-              }
-            }
-          }
-        }
-
-        //         if (k < n - 1) {
-        //           std::unordered_set<Poset<maxN>> allPos2;
-        //           for (int i = 0; i < comparisons; ++i) {
-        //             allPos2.merge(std::unordered_set<Poset<maxN>>(find_solvable_posets(normalizer, i, n, k)));
-        //           }
-
-        //           std::unordered_set<Poset<maxN>> result2{};
-        //           for (const Poset<maxN> &item :
-        //                enlarge_n(normalizer, find_solvable_posets(normalizer, comparisons - 1, n - 1, k))) {
-        //             for (uint8_t i = 0; i < n; ++i) {
-        //               for (uint8_t j = 0; j < n; ++j) {
-        //                 if (item.is_less(i, j)) {
-        //                   for (const Poset<maxN> &predecessor : item.remove_less(normalizer, i, j)) {
-        //                     Poset<maxN> predecessorNorm0 = predecessor;
-        //                     normalizer.canonify_nauty(predecessorNorm0);
-        //                     if (allPos2.contains(predecessorNorm0)) {
-        //                       continue;
-        //                     }
-
-        //                     Poset<maxN> predecessorNorm = predecessor;
-        //                     predecessorNorm.add_less(j, i);
-        //                     normalizer.canonify_nauty(predecessorNorm);
-        //                     if (!allPos2.contains(predecessorNorm)) {
-        //                       continue;
-        //                     }
-
-        //                     result2.insert(predecessorNorm0);
-        //                   }
-        //                 }
-        //               }
-        //             }
-        //           }
-
-        //           // auto temp0 = find_solvable_posets(normalizer, comparisons, n - 1, k);
-        //           // auto temp = enlarge_n(normalizer, temp0);
-        //           std::cout << (int)n << " " << (int)k << " " << (int)comparisons << " -> " << result2.size() << " "
-        //                     << result.size() << std::endl;
-        //           if (result2.size() != result.size()) {
-        //             for (auto item : result) {
-        //               if (!result2.contains(item)) {
-        //                 std::cout << item << std::endl;
-        //               }
-        //             }
-        //             for (auto item : find_solvable_posets(normalizer, comparisons - 1, n - 1, k))
-        //               std::cout << item << std::endl;
-
-        // 0 0 0
-        // 0 0 0
-        // 1 0 0
-
-        // 0 < 2
-
-        //             // for (auto item : result2) {
-        //             //   std::cout << item << std::endl;
-        //             // }
-        //             // std::cout << std::endl;
-        //             // for (auto item : result) {
-        //             //   std::cout << item << std::endl;
-        //             // }
-        //           }
-        //         }
-
-        myBigCache[comparisons][n][k] = result;
-        return myBigCache[comparisons][n][k].value();
-        // std::unordered_set<Poset<maxN>> result{};
-        // result.insert(Poset<maxN>{n, k});
-        // myBigCache[comparisons][n][k] = result;
-        // return myBigCache[comparisons][n][k].value();
-      } else {
-        // myBigCache[comparisons][n][k] = enlarge_n(normalizer, find_solvable_posets(normalizer, comparisons, n - 1,
-        // k)); return myBigCache[comparisons][n][k].value();
-      }
+      myBigCache[n][k] = enlarge_n(normalizer, find_solvable_posets(normalizer, n - 1, k));
+      return myBigCache[n][k].value();
     }
   }
-}
-
-// Ang. Poset enlarge_n(p)[0] kann nicht auf p reduziert werden
-
-// std::unordered_map<Poset<globalMaxN>, std::unordered_set<Poset<globalMaxN>>> cache_solvable_in;
-
-template <std::size_t maxN>
-std::unordered_set<Poset<maxN>> super_enlarge(Normalizer<maxN> &normalizer, int &skipped,
-                                              const std::unordered_set<Poset<maxN>> &source,
-                                              const std::unordered_set<Poset<maxN>> &source_reduced, int n,
-                                              int nthSmallest) {
-  std::unordered_set<Poset<maxN>> source_old = source_reduced;
-  std::unordered_set<Poset<maxN>> source_new;
-  while (0 != source_old.size()) {
-    std::unordered_set<Poset<maxN>> remainder1, remainder2;
-    assert(2 * nthSmallest < n);
-    for (auto item : source_old) {
-      assert(item.size() <= n);
-      assert(item.nth() < item.size());
-      if (item.size() < n) {
-        if (item.nth() == nthSmallest) {
-          remainder1.insert(item);
-        } else if (item.nth() < nthSmallest) {
-          remainder2.insert(item);
-        }
-      } else if (item.size() == n && item.nth() == nthSmallest) {
-        if (source.contains(item)) {
-          source_new.insert(item);
-        } else {
-          ++skipped;
-        }
-      }
-    }
-
-    source_old = enlarge_n(normalizer, remainder1);
-    source_old.merge(enlarge_nk(normalizer, remainder2));
-  }
-  return source_new;
 }
 
 template <size_t maxN>
 std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanoseconds> startSearchBackward(
-    const uint8_t n, const uint8_t nthSmallest) {
+    std::unordered_map<Poset<globalMaxN>, int> &allPos_reduced, const uint8_t n, const uint8_t nthSmallest) {
   Normalizer<maxN> normalizer{};
-  const std::chrono::time_point start = std::chrono::high_resolution_clock::now();
+  std::chrono::nanoseconds duration0g{}, duration1g{};
 
-  std::unordered_set<Poset<maxN>> source = find_solvable_posets(normalizer, 0, n, nthSmallest);
+  // std::unordered_set<Poset<maxN>> source = find_solvable_posets(normalizer, 0, n, nthSmallest);
   std::unordered_set<Poset<maxN>> source_reduced{{Poset<globalMaxN>(1, 0)}};
 
-  std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-
-  std::unordered_set<Poset<maxN>> allPos_reduced;
-  int skipped = 0;
-  std::chrono::nanoseconds duration1;
   for (int k = 1; k < n * n; ++k) {
-    allPos_reduced.merge(std::unordered_set<Poset<maxN>>(source_reduced));
-
+    std::chrono::nanoseconds duration0{}, duration1{};
     const auto start0 = std::chrono::high_resolution_clock::now();
-    const auto source_new = super_enlarge(normalizer, skipped, source, source_reduced, n, nthSmallest);
+    const auto source_new = enlarge(normalizer, source_reduced, n, nthSmallest);
+    // source_new.delete all from source
     const auto end0 = std::chrono::high_resolution_clock::now();
-    const auto duration0 = end0 - start0;
-
-    std::cout << "# " << k - 1 << ": " << source_reduced.size() << " => " << source_new.size() << " < " << source.size()
-              << " in " << duration0 << " ~ " << duration1 << " | total skipped: " << skipped
-              << ", total cached: " << allPos_reduced.size() << std::endl;
+    duration0 = end0 - start0;
+    duration0g += duration0;
 
     const auto start1 = std::chrono::high_resolution_clock::now();
     std::unordered_set<Poset<maxN>> destination;  // pqrc1
     std::unordered_set<Poset<maxN>> destination_reduced;
-    for (Poset<maxN> item : source_new) {
-      // Poset<maxN> item2 = item;
-      // item2.change_nth(0);
-      // auto inh = cache_solvable_in.find(item2);
-      // if (inh != cache_solvable_in.end()) {
-      //   std::cout << inh->second.size() << std::endl;
-      //   destination.merge(std::unordered_set<Poset<maxN>>(inh->second));
-      //   continue;
-      // }
-
-      // TODO: übergreifenden Cache integrieren
+    for (const Poset<maxN> &item : source_new) {
       for (uint8_t i = 0; i < n; ++i) {
         for (uint8_t j = 0; j < n; ++j) {
           if (item.is_less(i, j)) {
             for (const Poset<maxN> &predecessor : item.remove_less(normalizer, i, j)) {
               if (predecessor == Poset<maxN>{(uint8_t)n, (uint8_t)nthSmallest}) {
-                // for (int q = 0; q < k; ++q) {
-                //   std::cout << q << ": " << container[q].size() << std::endl;
-                // }
-                // // container[q]: für n = 7 komme ich von allen Posets in container[q] in q Schritten ans Ziel
-                // // source2:      für n = 8 komme ich von allen Posets in source2 in 0 Schritten ans Ziel
-                // // ges: source2'
-                // std::cout << container[5].size() << std::endl;
-
-                // std::unordered_set<Poset<maxN>> newItem{};
-                // for (const Poset<maxN> &poset : enlarge_n(normalizer, container[5])) {
-                //   newItem.insert(poset);
-                // }
-                // std::cout << newItem.size() << std::endl;
-
-                return {k, end - start, std::chrono::high_resolution_clock::now() - end};
+                return {k, duration0g, duration1g};
               }
 
               Poset<maxN> predecessorNorm0_reduced = predecessor;
               normalizer.reduce_n(predecessorNorm0_reduced);
-              normalizer.canonify_nauty(predecessorNorm0_reduced);
-              if (allPos_reduced.contains(predecessorNorm0_reduced)) {
+              normalizer.canonify(predecessorNorm0_reduced);
+              if (allPos_reduced.contains(predecessorNorm0_reduced) && allPos_reduced[predecessorNorm0_reduced] < k) {
                 continue;
               }
 
               Poset<maxN> predecessorNorm_reduced = predecessor;
               predecessorNorm_reduced.add_less(j, i);
               normalizer.reduce_n(predecessorNorm_reduced);
-              normalizer.canonify_nauty(predecessorNorm_reduced);
-              if (!allPos_reduced.contains(predecessorNorm_reduced)) {
+              normalizer.canonify(predecessorNorm_reduced);
+              if (!(allPos_reduced.contains(predecessorNorm_reduced) && allPos_reduced[predecessorNorm_reduced] < k)) {
                 continue;
               }
 
-              Poset<maxN> predecessorNorm0 = predecessor;
-              normalizer.canonify_nauty(predecessorNorm0);
-              destination.insert(predecessorNorm0);
+              // Poset<maxN> predecessorNorm0 = predecessor;
+              // normalizer.canonify(predecessorNorm0);
+              // destination.insert(predecessorNorm0);
 
               destination_reduced.insert(predecessorNorm0_reduced);
-
-              // cache_solvable_in.insert(predecessorNorm0, k);
+              allPos_reduced[predecessorNorm0_reduced] = k;
             }
           }
         }
       }
     }
-    source = destination;
-    source_reduced = destination_reduced;
+    // source = destination;
     const auto end1 = std::chrono::high_resolution_clock::now();
     duration1 = end1 - start1;
+    duration1g += duration1;
+
+    std::cout << "# " << k << ": " << source_reduced.size() << " => " << source_new.size() << " in " << duration0
+              << " ~ " << duration1 << " | total cached: " << allPos_reduced.size() << std::endl;
+
+    source_reduced = destination_reduced;
   }
 
-  return {std::nullopt, end - start, std::chrono::high_resolution_clock::now() - end};
-}
-
-template <size_t maxN>
-std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanoseconds> startSearchBackward2(
-    const uint8_t n, const uint8_t nthSmallest) {
-  Normalizer<maxN> normalizer{};
-  const std::chrono::time_point start = std::chrono::high_resolution_clock::now();
-  for (int i = 0; i < n * n; ++i) {
-    if (find_solvable_posets(normalizer, i, n, nthSmallest)
-            .contains(Poset<globalMaxN>{(uint8_t)n, (uint8_t)nthSmallest})) {
-      const std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-      return {i, end - end, end - start};
-    }
-  }
-  const std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-  return {std::nullopt, end - end, end - start};
-}
-
-template <size_t maxN>
-std::unordered_set<Poset<maxN>> find_solvable_posets2(Normalizer<maxN> &normalizer, const uint8_t comparisons,
-                                                      const uint8_t n, const uint8_t k) {
-  assert(k < n);
-  if (myBigCache[comparisons][n][k] != std::nullopt) {
-    return myBigCache[comparisons][n][k].value();
-  } else if (n <= 2 * k) {
-    std::unordered_set<Poset<maxN>> result{};
-    for (Poset<maxN> item : find_solvable_posets2(normalizer, comparisons, n, n - k - 1)) {
-      item.dual();
-      result.insert(item);
-    }
-    myBigCache[comparisons][n][k] = result;
-    return myBigCache[comparisons][n][k].value();
-  } else {
-    if (0 == comparisons) {
-      if (1 == n) {
-        std::unordered_set<Poset<maxN>> result{};
-        result.insert(Poset<maxN>{n, k});
-        myBigCache[comparisons][n][k] = result;
-        return myBigCache[comparisons][n][k].value();
-      } else {
-        myBigCache[comparisons][n][k] = enlarge_n(normalizer, find_solvable_posets2(normalizer, comparisons, n - 1, k));
-        return myBigCache[comparisons][n][k].value();
-      }
-    } else {
-      std::unordered_set<Poset<maxN>> allPos;
-      for (int i = 0; i < comparisons; ++i) {
-        allPos.merge(std::unordered_set<Poset<maxN>>(find_solvable_posets2(normalizer, i, n, k)));
-      }
-
-      std::unordered_set<Poset<maxN>> result{};
-      for (const Poset<maxN> &item : find_solvable_posets2(normalizer, comparisons - 1, n, k)) {
-        for (uint8_t i = 0; i < n; ++i) {
-          for (uint8_t j = 0; j < n; ++j) {
-            if (item.is_less(i, j)) {
-              for (const Poset<maxN> &predecessor : item.remove_less(normalizer, i, j)) {
-                Poset<maxN> predecessorNorm0 = predecessor;
-                normalizer.canonify_nauty(predecessorNorm0);
-                if (allPos.contains(predecessorNorm0)) {
-                  continue;
-                }
-
-                Poset<maxN> predecessorNorm = predecessor;
-                predecessorNorm.add_less(j, i);
-                normalizer.canonify_nauty(predecessorNorm);
-                if (!allPos.contains(predecessorNorm)) {
-                  continue;
-                }
-
-                result.insert(predecessorNorm0);
-              }
-            }
-          }
-        }
-      }
-
-      myBigCache[comparisons][n][k] = result;
-      return myBigCache[comparisons][n][k].value();
-    }
-  }
+  return {std::nullopt, duration0g, duration1g};
 }
 
 int main() {
@@ -469,127 +202,31 @@ int main() {
       std::cout << item << std::endl;
     }
   } else if constexpr (false) {
-    int globN = 7;
-    const std::chrono::time_point start = std::chrono::high_resolution_clock::now();
-    Normalizer<globalMaxN> normalizer{};
-    std::unordered_set<Poset<globalMaxN>> comp[globalMaxComparisons];
-    comp[0].insert(Poset<globalMaxN>(1, 0));
-    std::cout << "comparisons = " << 0 << ": " << comp[0].size() << " " << 1 << std::endl;
-    for (int i = 1; i < globalMaxComparisons; ++i) {
-      int maxN1 = 0;
-      for (int n = 1; n <= globN; ++n) {
-        for (int k = 0; k < (n + 1) / 2; ++k) {
-          for (auto item : find_solvable_posets2(normalizer, i, n, k)) {
-            normalizer.reduce_n(item);
-            normalizer.canonify_nauty(item);
-            bool cont = false;
-            for (int j = 0; j < i; ++j) {
-              if (comp[j].contains(item)) cont = true;
-            }
-            if (!cont) {
-              maxN1 = std::max(maxN1, (int)item.size());
-              comp[i].insert(item);
-            }
-          }
-        }
-      }
-      // std::cout << std::endl;
-      std::cout << "comparisons = " << i << ": " << comp[i].size() << " " << maxN1 << std::endl;
-      if (0 == comp[i].size()) break;
-      // for (auto item : comp[i]) std::cout << item << std::endl;
-    }
-
-    for (int n = 1; n <= globN; ++n) {
-      for (int k = 0; k < (n + 1) / 2; ++k) {
-        for (int i = 0; i < globalMaxComparisons; ++i) {
-          int found = -1;
-          if (comp[i].contains(Poset<globalMaxN>(n, k))) {
-            found = i;
-          }
-          if (-1 != found) {
-            assert(min_n_comparisons[n][k] == i);
-            // std::cout << "n = " << n << ", k = " << k << ": " << i << std::endl;
-          }
-        }
-      }
-    }
-    const std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-    std::cout << "success in " << end - start << std::endl;
-
-    std::unordered_set<Poset<globalMaxN>> allPos;
-    allPos.merge(comp[0]);
-    allPos.merge(comp[1]);
-    allPos.merge(comp[2]);
-
-    auto A = comp[3];
-    for (int i = 0; i < globN; ++i)
-      for (auto item : enlarge_n(normalizer, A)) {
-        if (item.size() <= globN) {
-          A.insert(item);
-        }
-      }
-    std::unordered_set<Poset<globalMaxN>> B;
-
-    for (const Poset<globalMaxN> &item : A) {
-      for (uint8_t i = 0; i < item.size(); ++i) {
-        for (uint8_t j = 0; j < item.size(); ++j) {
-          if (item.is_less(i, j)) {
-            for (const Poset<globalMaxN> &predecessor : item.remove_less(normalizer, i, j)) {
-              Poset<globalMaxN> predecessorNorm0 = predecessor;
-              normalizer.canonify_nauty(predecessorNorm0);
-              if (allPos.contains(predecessorNorm0)) {
-                continue;
-              }
-
-              Poset<globalMaxN> predecessorNorm = predecessor;
-              predecessorNorm.add_less(j, i);
-              normalizer.canonify_nauty(predecessorNorm);
-              if (!allPos.contains(predecessorNorm)) {
-                continue;
-              }
-
-              B.insert(predecessorNorm0);
-            }
-          }
-        }
-      }
-    }
-
-    std::cout << A.size() << " " << B.size() << std::endl;
-  } else if constexpr (false) {
-    Normalizer<globalMaxN> normalizer{};
-    std::chrono::time_point start = std::chrono::high_resolution_clock::now();
-
-    int n = 3;
-    int nthSmallest = 1;
-    find_solvable_posets(normalizer, 2, n, nthSmallest);
-    // const auto &[comparisons, durationGeneratePosets, durationSearch] =
-    //     startSearchBackward2<globalMaxN>(n, nthSmallest);
-
-    std::chrono::time_point end = std::chrono::high_resolution_clock::now();
-    // std::cout << (comparisons.has_value() ? comparisons.value() : -1) << " " << (end - start) << std::endl;
-  } else if constexpr (false) {
     Normalizer<globalMaxN> normalizer{};
 
     for (int n = 1; n < 12; ++n) {
       for (int k = 0; k < (n + 1) / 2; ++k) {
         std::chrono::time_point start = std::chrono::high_resolution_clock::now();
-        std::unordered_set<Poset<globalMaxN>> result;  // = find_solvable_posets(normalizer, n, k);
+        std::unordered_set<Poset<globalMaxN>> result =
+            enlarge(normalizer, std::unordered_set<Poset<globalMaxN>>{{Poset<globalMaxN>(1, 0)}}, n, k);
         std::chrono::time_point mid = std::chrono::high_resolution_clock::now();
-        std::unordered_set<Poset<globalMaxN>> result2 = find_solvable_posets(normalizer, 0, n, k);
+        std::unordered_set<Poset<globalMaxN>> result2 = find_solvable_posets(normalizer, n, k);
         std::chrono::time_point end = std::chrono::high_resolution_clock::now();
         std::cout << n << ", " << k << ": " << result.size() << " - " << result2.size() << " in: " << mid - start
                   << " | " << end - mid << std::endl;
-        // assert(result == result2);
+        assert(result == result2);
       }
     }
   } else {
     constexpr size_t nBound = 0;
 
+    std::unordered_map<Poset<globalMaxN>, int> allPos_reduced;
+    allPos_reduced[Poset<globalMaxN>(1, 0)] = 0;
+
     for (int n = 2; n < 15; ++n) {
       for (int nthSmallest = 0; nthSmallest < (n + 1) / 2; ++nthSmallest) {
         const auto &[comparisons, durationGeneratePosets, durationSearch] =
-            startSearchBackward<globalMaxN>(n, nthSmallest);
+            startSearchBackward<globalMaxN>(allPos_reduced, n, nthSmallest);
 
         if (comparisons.has_value()) {
           if (n >= nBound) {
