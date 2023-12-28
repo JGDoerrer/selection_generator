@@ -15,7 +15,7 @@ std::unordered_set<Poset<maxN>> find_solvable_posets(Normalizer<maxN> &normalize
       if (n - 1 <= 2 * k) {
         for (Poset<maxN> item : find_solvable_posets(normalizer, n - 1, (n - 1) - k - 1)) {
           item.dual();
-          normalizer.canonify(item);
+          item.canonify(normalizer);
           result.insert(item);
         }
       } else {
@@ -57,13 +57,13 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
               }
 
               Poset<maxN> predecessor_normalized = predecessor;
-              normalizer.normalize(predecessor_normalized);
+              predecessor_normalized.normalize(normalizer);
               if (poset_cache.contains(predecessor_normalized) && poset_cache[predecessor_normalized] < k) {
                 continue;
               }
 
               Poset<maxN> predecessor_check = predecessor.with_less(j, i);
-              normalizer.normalize(predecessor_check);
+              predecessor_check.normalize(normalizer);
               if (!(poset_cache.contains(predecessor_check) && poset_cache[predecessor_check] < k)) {
                 continue;
               }

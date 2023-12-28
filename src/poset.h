@@ -94,6 +94,48 @@ class Poset {
     return true;
   }
 
+  inline Poset<maxN> &reduce_n() {
+    uint8_t less[this->n];
+    uint8_t greater[this->n];
+    this->calculate_relations(greater, less);  // TODO: MACHT DAS SINN???
+
+    // can the element be ignored, because it is too large/small
+    uint8_t new_indices[this->n];
+    uint8_t n_less_dropped = 0;
+
+    // maps the old indices to the new ones
+    uint8_t new_n = 0;
+    uint8_t b = this->n - 1;
+
+    for (int i = 0; i < this->n; ++i) {
+      if (this->nthSmallest < greater[i]) {
+        new_indices[b--] = i;
+      } else if ((this->n - 1) - this->nthSmallest < less[i]) {
+        ++n_less_dropped;
+        new_indices[b--] = i;
+      } else {
+        new_indices[new_n++] = i;
+      }
+    }
+
+    if (new_n != this->n) {
+      const Poset<maxN> oldPoset(*this);
+      this->n = new_n;
+      this->nthSmallest -= n_less_dropped;
+      this->comparisonTable.reset();
+      for (uint8_t i = 0; i < new_n; ++i) {
+        for (uint8_t j = 0; j < new_n; ++j) {
+          this->set_less(i, j, oldPoset.is_less(new_indices[i], new_indices[j]));
+        }
+      }
+
+      if (this->n <= 2 * this->nthSmallest) {
+        this->dual();
+      }
+    }
+    return *this;
+  }
+
  public:
   /// @brief constructs an empty Poset
   /// @param n
@@ -323,7 +365,7 @@ class Poset {
     queue.push(poset_initial);
 
     result.insert(poset_initial);
-    normalizer.canonify(poset_initial);
+    poset_initial.canonify(normalizer);
     resultNormalized.insert(poset_initial);
 
     while (!queue.empty()) {
@@ -352,7 +394,7 @@ class Poset {
 
           // wenn das poset normalisert schon in result ist, abbruch
           Poset<maxN> poset_norm = poset_next;
-          normalizer.canonify(poset_norm);
+          poset_norm.canonify(normalizer);
           if (resultNormalized.contains(poset_norm)) {
             continue;
           }
@@ -392,6 +434,42 @@ class Poset {
   bool subset_of(const Poset<maxN> &poset) const {
     return n == poset.n && nthSmallest == poset.nthSmallest && (~comparisonTable | poset.comparisonTable).all();
   }
+
+  inline Poset<maxN> &canonify(Normalizer<maxN> &normalizer) {
+    if constexpr (false) {
+      uint8_t less[this->n];
+      uint8_t greater[this->n];
+      this->calculate_relations(less, greater);
+
+      std::vector<std::pair<uint64_t, uint8_t>> in_out_degree(this->n);
+      for (uint8_t i = 0; i < this->n; ++i) {
+        in_out_degree[i] = {uint64_t(maxN) * uint64_t(greater[i]) + uint64_t(less[i]), i};
+      }
+
+      std::sort(in_out_degree.begin(), in_out_degree.end());
+
+      uint8_t duplicats = 0;
+      for (uint8_t i = 1; i < this->n; ++i) {
+        if (in_out_degree[i - 1].first == in_out_degree[i].first) {
+          ++duplicats;
+        }
+      }
+
+      if (0 == duplicats) {
+        const Poset<maxN> oldPoset(*this);
+        for (uint8_t i = 0; i < this->n; ++i) {
+          for (uint8_t j = 0; j < this->n; ++j) {
+            this->set_less(i, j, oldPoset.is_less(in_out_degree[i].second, in_out_degree[j].second));
+          }
+        }
+        return *this;
+      }
+    }
+
+    return normalizer.canonify_nauty(*this);
+  }
+
+  inline Poset<maxN> &normalize(Normalizer<maxN> &normalizer) { return this->reduce_n().canonify(normalizer); }
 
   // TODO: iterator for all "ones"
 
@@ -465,9 +543,9 @@ inline bool can_reduce_element_less(const Poset<maxN> &poset, const uint8_t elem
 template <std::size_t maxN>
 std::unordered_set<Poset<maxN>> filter(const std::unordered_set<Poset<maxN>> &unfiltered) {
   std::unordered_set<Poset<maxN>> filtered;
-  for (Poset<maxN> item : unfiltered) {
+  for (const Poset<maxN> &item : unfiltered) {
     bool found = false;
-    for (auto temp : unfiltered) {
+    for (const Poset<maxN> &temp : unfiltered) {
       if (temp != item && temp.subset_of(item)) {
         found = false;
         break;
@@ -517,7 +595,7 @@ std::unordered_set<Poset<maxN>> enlarge_n(Normalizer<maxN> &normalizer,
   std::unordered_set<Poset<maxN>> result_canonified;
   for (Poset<maxN> item : result) {
     // oder eher hier?
-    normalizer.canonify(item);
+    item.canonify(normalizer);
     result_canonified.insert(item);
   }
   // TODO: prüfe auf shadowing -> potentiell weniger Ergebnisse
@@ -561,7 +639,7 @@ std::unordered_set<Poset<maxN>> enlarge_nk(Normalizer<maxN> &normalizer,
   std::unordered_set<Poset<maxN>> result_canonified;
   for (Poset<maxN> item : result) {
     if (can_reduce_element_less(item, item.size() - 1)) {
-      normalizer.canonify(item);
+      item.canonify(normalizer);
       result_canonified.insert(item);
     }
   }

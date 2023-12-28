@@ -33,7 +33,7 @@ template <size_t maxN>
 Poset<maxN> createPosetWithComparison(Normalizer<maxN> &normalizer, Poset<maxN> poset, const uint16_t i,
                                       const uint16_t j) {
   poset.add_less(i, j);
-  normalizer.normalize(poset);
+  poset.normalize(normalizer);
   return poset;
 };
 
@@ -175,7 +175,7 @@ SearchResult startSearchNow(std::ostream &os, BS::thread_pool_light &threadpool,
   }
   // ACHTUNG: hier könnte reduce_n falsch sein!
   Normalizer<maxN> normalizer{};
-  normalizer.normalize(poset);
+  poset.normalize(normalizer);
 
   const SearchResult result = searchRecursive(threadpool, poset, cache, maxComparisons - comparisonsDone, multiLevel,
                                               atomicBreak, statistics, comparisonsDone, normalizer);
