@@ -5,6 +5,7 @@
 // =============
 #include "cache.h"
 
+constexpr bool largeMode = true;
 template <std::size_t maxN>
 class Poset {
  private:
@@ -12,11 +13,29 @@ class Poset {
   uint8_t nthSmallest;
 
  public:
-  std::bitset<maxN * maxN> comparisonTable;
+  std::bitset<maxN * maxN - maxN> comparisonTable;
+
+  inline std::size_t getComparisonTableSize() const {
+    if constexpr (largeMode) {
+      return n * n;
+    } else {
+      return n * (n - 1);
+    }
+  }
+
+  inline std::size_t toInternalPos(const uint16_t i, const uint16_t j) const {
+    if constexpr (largeMode) {
+      return i * n + j;
+    } else {
+      return i * (n - 1) + ((j < i) ? j : j - 1);
+    }
+  }
 
  private:
   inline void set_less(const uint16_t i, const uint16_t j, const bool value) {
-    this->comparisonTable[i * n + j] = value;
+    if (i != j && 0 != n) {
+      this->comparisonTable[toInternalPos(i, j)] = value;
+    }
   }
 
   Poset<maxN> &add_and_close_recursive(const uint16_t i, const uint16_t j) {
@@ -158,7 +177,9 @@ class Poset {
   /// @param i
   /// @param j
   /// @return
-  inline bool is_less(const uint16_t i, const uint16_t j) const { return this->comparisonTable[i * n + j]; }
+  inline bool is_less(const uint16_t i, const uint16_t j) const {
+    return 0 != n && i != j && this->comparisonTable[toInternalPos(i, j)];
+  }
 
   /// @brief
   /// @return how many comparisons are set (including transitiv)
@@ -483,7 +504,7 @@ class Poset {
   /// @brief
   /// @return hash of poset
   std::size_t hash() const {
-    const std::hash<std::bitset<maxN * maxN>> hash1;
+    const std::hash<std::bitset<maxN * maxN - maxN>> hash1;
     return ((std::size_t)n << (std::size_t)4) ^ nthSmallest ^ hash1(comparisonTable);
   }
 

@@ -1,5 +1,7 @@
 #pragma once
 #include <bits/stdc++.h>
+#include <cxxabi.h>
+#include <execinfo.h>
 
 template <class T>
 struct is_map {
@@ -189,3 +191,30 @@ template <>
 struct std::hash<std::pair<uint16_t, uint16_t>> {
   size_t operator()(const std::pair<uint16_t, uint16_t> &pair) const { return pair.first ^ pair.second; }
 };
+
+void printStackTrace() {
+  const int maxFrames = 20;  // You can adjust this based on your needs
+  void *callstack[maxFrames];
+  int frames = backtrace(callstack, maxFrames);
+  char **symbols = backtrace_symbols(callstack, frames);
+
+  std::cout << "Stack Trace:" << std::endl;
+  for (int i = 0; i < frames; ++i) {
+    // Demangle C++ function names
+    size_t sz = 256;
+    char *function = static_cast<char *>(malloc(sz));
+    if (function == nullptr) {
+      continue;
+    }
+    int status;
+    char *demangled = abi::__cxa_demangle(symbols[i], function, &sz, &status);
+    if (status == 0) {
+      function = demangled;  // Use demangled name if available
+    }
+
+    std::cout << "[" << i << "] " << function << std::endl;
+    free(function);
+  }
+
+  free(symbols);
+}

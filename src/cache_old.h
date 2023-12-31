@@ -144,5 +144,44 @@ class CacheSet {
     cache_solvable.clean(false);
   }
 
-  inline std::size_t size() { return cache_not_solvable.size() + cache_solvable.size(); }
+  inline std::size_t size() {
+    // int n1 = 10;
+    // int k1 = 4;
+
+    // std::cout << std::endl;
+    // std::vector<std::pair<float, std::pair<int, int>>> vec1;
+    // for (int i = 0; i < n1; ++i) {
+    //   for (int j = 0; j < n1; ++j) {
+    //     int counter = 0;
+    //     int counter2 = 0;
+    //     for (auto [item, num] : cache_not_solvable.cache[n1][k1]) {
+    //       if (item.is_less(i, j)) {
+    //         ++counter;
+    //       } else {
+    //         ++counter2;
+    //       }
+    //     }
+    //     for (auto [item, num] : cache_solvable.cache[n1][k1]) {
+    //       if (item.is_less(i, j)) {
+    //         ++counter;
+    //       } else {
+    //         ++counter2;
+    //       }
+    //     }
+    //     vec1.push_back(
+    //         {std::abs(float(std::max(counter, counter2)) / float(counter + counter2) - 0.5f), std::make_pair(i, j)});
+    //     std::cout << 2 * (float(std::max(counter, counter2)) / float(counter + counter2) - 0.5f) << "\t";
+    //   }
+    //   std::cout << std::endl;
+    // }
+    // std::sort(vec1.begin(), vec1.end());
+    // for (int i = 0; i < 17 && i < vec1.size(); ++i) {
+    //   std::cout << "std::make_pair(" << vec1[i].second.first << ", " << vec1[i].second.second << "), ";
+    //   // std::cout << i << ": " << vec1[i].second.first << ", " << vec1[i].second.second << " -> " << vec1[i].first
+    //   <<
+    //   // std::endl;
+    // }
+
+    return cache_not_solvable.size() + cache_solvable.size();
+  }
 };

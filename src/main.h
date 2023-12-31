@@ -34,11 +34,13 @@ constexpr size_t globalMaxComparisons = 25;
 constexpr size_t globalMaxN = 15;
 constexpr size_t threadCount = 20;
 
-#include "cache.h"
+// #include "cache.h"
 #include "cache_old.h"
+#include "cache_new.h"
 
 template<std::size_t maxN, std::size_t maxC>
-using Cache = CacheTree<maxN, maxC>;
+using Cache = CacheTreeMemoryEffient<maxN, maxC>;
+// using Cache = CacheTree<maxN, maxC>;
 // using Cache = CacheSet<maxN, maxC>;
 
 // siehe Section 5.3.3
