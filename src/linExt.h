@@ -117,19 +117,6 @@ class LinearExtensionCalculatorInternal {
     uint32_t endNode_mask = 1;
     int writeIndex = 1;
     for (int endNode = 0; endNode < n; endNode++, endNode_mask <<= 1) {
-      if (lastEnd >= allocatedMemorySize / 2) {
-        std::cout << "lastEnd: " << lastEnd << ", allocatedMemorySize: " << allocatedMemorySize << std::endl;
-        assert(false);
-      }
-
-      if constexpr (overflowCheck) {
-        constexpr uint32_t limit = std::numeric_limits<uint32_t>::max() / MAXN;
-        uint32_t downSet = udSetVectorSet[lastEnd - 1];
-        if (udSetVectorVal[downSet].downVal > limit) {
-          return 0;
-        }
-      }
-
       for (int j = 0; j < lastEnd; j++) {
         if ((udSetVectorSet[j] | inVertexMask[endNode]) == udSetVectorSet[j]) {  // if downset
           udSetVectorSet[writeIndex] = udSetVectorSet[j] | endNode_mask;
@@ -140,7 +127,6 @@ class LinearExtensionCalculatorInternal {
           uint32_t curSetShift = curSet >> (i + 1);
           while (curSetShift) {
             uint32_t preCurSet = curSet & (~(uint32_t(1) << i));
-            assert(preCurSet < curSet);
 
             if (!(preCurSet & outVertexMask[i])) {
               udSetVectorVal[curSet].downVal += udSetVectorVal[preCurSet].downVal;

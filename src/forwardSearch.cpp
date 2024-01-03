@@ -233,7 +233,7 @@ const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nano
 
 using namespace std::chrono;
 
-int main() {
+int main32() {
   constexpr size_t nBound = 9;
 
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
@@ -289,4 +289,175 @@ int main() {
     }
     if (n >= nBound) std::cout << std::endl;
   }
+  return 0;
 }
+
+using namespace std;
+
+bitset<14> operator&(bitset<14> a, const bitset<14> b) {
+  a &= b;
+  return a;
+}
+
+bitset<14> operator|(bitset<14> a, const bitset<14> b) {
+  a &= b;
+  return a;
+}
+
+template <std::size_t maxN>
+unordered_set<int> to_set(bitset<maxN> value) {
+  unordered_set<int> result;
+  for (uint8_t i = 0; i < maxN; ++i, value >>= 1) {
+    bitset<maxN> item{value};
+    if ((item &= 0b1).any()) {
+      result.insert(i);
+    }
+  }
+  return result;
+}
+
+template <std::size_t maxN>
+bool is_down_set(const bitset<maxN> D, const bitset<maxN> U, const Poset<maxN> &poset) {
+  bitset<maxN> temp = D;
+  temp |= U;
+  if (temp != U) {
+    return false;
+  }
+  for (uint8_t x = 0; x < maxN; ++x) {
+    for (uint8_t y = 0; y < maxN; ++y) {
+      if ((bitset<maxN>{D >> x} & 0b1).any() && (bitset<maxN>{U >> y} & 0b1).any() &&
+          (bitset<maxN>{1 << y} & ~D).any() && poset.is_less(y, x)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+template <std::size_t maxN>
+vector<bitset<maxN>> get_permutations(const uint8_t level) {
+  vector<bitset<maxN>> result;
+  if (0 == level) {
+    result.push_back(0);
+    return result;
+  } else {
+    for (bitset<maxN> item : get_permutations<maxN>(level - 1)) {
+      item <<= 1;
+      result.push_back(item);
+      item |= 1;
+      result.push_back(item);
+    }
+    return result;
+  }
+}
+
+int rec(const int n, vector<vector<int>> &adj, vector<int> &result) {
+  result[n] = (0 == n) ? 1 : 0;
+  for (int i : adj[n]) {
+    result[n] += rec(i, adj, result);
+  }
+  return result[n];
+}
+
+int rec2(const int n, vector<vector<int>> &adj, vector<int> &result) {
+  result[n] = (15 == n) ? 1 : 0;
+  for (int i : adj[n]) {
+    result[n] += rec2(i, adj, result);
+  }
+  return result[n];
+}
+
+int main() {
+  constexpr size_t maxN = 14;
+
+  Poset<maxN> P{4, 0};
+  P.add_less(0, 2);
+  P.add_less(1, 2);
+  P.add_less(1, 3);
+
+  const bitset<maxN> U = (1 << P.size()) - 1;
+  vector<bitset<maxN>> downsets;
+  for (const bitset<maxN> D : get_permutations<maxN>(P.size())) {
+    if (is_down_set(D, U, P)) {
+      std::cout << to_set(D) << " is downset of " << to_set(U) << std::endl;
+      downsets.push_back(D);
+    }
+  }
+
+  int counter = 0;
+  vector<vector<int>> adj(16);
+  vector<vector<int>> adj2(16);
+  for (bitset<maxN> D1 : downsets) {
+    if (is_down_set(D1, U, P)) {
+      bitset<maxN> u = U;
+      for (uint8_t x = 0; x < maxN; ++x, u >>= 1) {
+        bitset<maxN> item{u};
+        if ((item &= 0b1).any()) {
+          bitset<maxN> D2 = D1;
+          if (!(bitset<maxN>{D2 >> x} & 0b1).any()) {
+            D2 |= bitset<maxN>{1 << x};
+            if (is_down_set(D2, U, P)) {
+              adj2[D1.to_ulong()].push_back(D2.to_ulong());
+              adj[D2.to_ulong()].push_back(D1.to_ulong());
+              std::cout << to_set(D1) << " to " << to_set(D2) << std::endl;
+              // std::cout << D1.to_ulong() << " to " << D2.to_ulong() << std::endl;
+              ++counter;
+            }
+          }
+        }
+      }
+    }
+  }
+  cout << counter << endl;
+
+  vector<int> d1(16);
+  cout << "d(D): " << rec(15, adj, d1) << endl;
+  for (int i = 0; i < 16; ++i) {
+    if (0 != d1[i]) cout << to_set(bitset<maxN>{i}) << ": " << d1[i] << endl;
+  }
+
+  vector<int> u1(16);
+  cout << "u(D): " << rec2(0, adj2, u1) << endl;
+  for (int i = 0; i < 16; ++i) {
+    if (0 != u1[i]) cout << to_set(bitset<maxN>{i}) << ": " << u1[i] << endl;
+  }
+
+  vector<vector<int>> t1(P.size(), vector<int>(P.size(), 0));
+  for (int j = 0; j < P.size(); ++j) {
+    for (int k = 0; k < P.size(); ++k) {
+      if (j != k)
+        for (int v = 0; v < 16; ++v) {
+          auto w = v | (1 << j);
+          bool found = false;
+          for (auto ww : adj2[v]) {
+            if (w == ww) found = true;
+          }
+          if (found && !bitset<maxN>((1 << k) & w).any()) {
+            t1[j][k] += d1[v] * u1[w];
+          }
+        }
+    }
+  }
+  cout << t1 << endl;
+  // [[0, 2, 5, 4], [3, 0, 5, 5], [0, 0, 0, 2], [1, 0, 3, 0]]
+}
+// {} is downset of {3, 2, 1, 0}
+// {1} is downset of {3, 2, 1, 0}
+// {3, 1} is downset of {3, 2, 1, 0}
+// {0} is downset of {3, 2, 1, 0}
+// {1, 0} is downset of {3, 2, 1, 0}
+// {3, 1, 0} is downset of {3, 2, 1, 0}
+// {2, 1, 0} is downset of {3, 2, 1, 0}
+// {3, 2, 1, 0} is downset of {3, 2, 1, 0}
+// {} to {1}
+// {} to {0}
+// {1} to {3, 1}
+// {1} to {0, 1}
+// {3, 1} to {0, 3, 1}
+// {0} to {1, 0}
+// {1, 0} to {3, 1, 0}
+// {1, 0} to {2, 1, 0}
+// {3, 1, 0} to {2, 3, 1, 0}
+// {2, 1, 0} to {3, 2, 1, 0}
+// 10

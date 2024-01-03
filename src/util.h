@@ -53,6 +53,11 @@ struct is_set<std::set<T>> {
   static constexpr bool value = true;
 };
 
+template <class T>
+struct is_set<std::unordered_set<T>> {
+  static constexpr bool value = true;
+};
+
 template <typename T>
 std::ostream &print_container(std::ostream &os, T container) {
   if constexpr (is_map<T>::value) {
@@ -132,6 +137,11 @@ std::ostream &operator<<(std::ostream &os, const std::pair<F, G> &container) {
 
 template <typename F, typename G>
 std::ostream &operator<<(std::ostream &os, const std::set<F, G> &container) {
+  return print_container(os, container);
+}
+
+template <typename F, typename G>
+std::ostream &operator<<(std::ostream &os, const std::unordered_set<F, G> &container) {
   return print_container(os, container);
 }
 
