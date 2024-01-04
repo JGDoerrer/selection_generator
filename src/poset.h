@@ -3,9 +3,8 @@
 
 #include "normalizer.h"
 // =============
-#include "cache.h"
+#include "cache_Tree.h"
 
-constexpr bool largeMode = true;
 template <std::size_t maxN>
 class Poset {
  private:
@@ -13,29 +12,17 @@ class Poset {
   uint8_t nthSmallest;
 
  public:
-  std::bitset<maxN * maxN - maxN> comparisonTable;
+  std::bitset<maxN * maxN> comparisonTable;
 
-  inline std::size_t getComparisonTableSize() const {
-    if constexpr (largeMode) {
-      return n * n;
-    } else {
-      return n * (n - 1);
-    }
-  }
+  inline std::size_t getComparisonTableSize() const { return this->n * this->n; }
 
-  inline std::size_t toInternalPos(const uint16_t i, const uint16_t j) const {
-    if constexpr (largeMode) {
-      return i * n + j;
-    } else {
-      return i * (n - 1) + ((j < i) ? j : j - 1);
-    }
-  }
+  inline std::size_t toInternalPos(const uint16_t i, const uint16_t j) const { return i * this->n + j; }
 
  private:
   inline void set_less(const uint16_t i, const uint16_t j, const bool value) {
-    if (i != j && 0 != n) {
-      this->comparisonTable[toInternalPos(i, j)] = value;
-    }
+    // if (i != j && 0 != n) {
+    this->comparisonTable[toInternalPos(i, j)] = value;
+    // }
   }
 
   Poset<maxN> &add_and_close_recursive(const uint16_t i, const uint16_t j) {
@@ -178,7 +165,8 @@ class Poset {
   /// @param j
   /// @return
   inline bool is_less(const uint16_t i, const uint16_t j) const {
-    return 0 != n && i != j && this->comparisonTable[toInternalPos(i, j)];
+    // 0 != n && i != j &&
+    return this->comparisonTable[toInternalPos(i, j)];
   }
 
   /// @brief
@@ -228,7 +216,7 @@ class Poset {
     if (0 == remainingComparisons) {
       return true;
     }
-    // // very rarely used, senseless???
+    // very rarely used, senseless???
     if (remainingComparisons + 1 < this->count_connected_components()) {
       return true;
     }
@@ -456,31 +444,109 @@ class Poset {
     return n == poset.n && nthSmallest == poset.nthSmallest && (~comparisonTable | poset.comparisonTable).all();
   }
 
+  uint64_t hash1(uint64_t a, uint64_t b) const {
+    uint64_t hash = 9118271012717746669;
+    hash = hash * a;
+    hash = hash << 7;
+    hash = hash + 3032928155878307119;
+    hash = hash * b;
+    hash = hash >> 9;
+    hash = hash + 16728691407311227577ull;
+    hash = hash << 11;
+    hash = hash * 1536811303;
+    hash = hash >> 15;
+    hash = hash + 2072583677;
+    return hash;
+  }
+
+  inline void swap(const uint16_t i1, const uint16_t j1, const uint16_t i2, const uint16_t j2) {
+    const bool temp = this->is_less(i1, j1);
+    this->set_less(i1, j1, this->is_less(i2, j2));
+    this->set_less(i2, j2, temp);
+  }
+
+  inline void swap(const uint16_t i, const uint16_t j) {
+    for (uint8_t k = 0; k < this->n; ++k) {
+      this->swap(i, k, j, k);
+    }
+    for (uint8_t k = 0; k < this->n; ++k) {
+      this->swap(k, i, k, j);
+    }
+  }
+
   inline Poset<maxN> &canonify(Normalizer<maxN> &normalizer) {
-    if constexpr (false) {
+    if constexpr (true) {
       uint8_t less[this->n];
       uint8_t greater[this->n];
       this->calculate_relations(less, greater);
 
-      std::vector<std::pair<uint64_t, uint8_t>> in_out_degree(this->n);
+      std::vector<uint64_t> in_out_degree(this->n);
       for (uint8_t i = 0; i < this->n; ++i) {
-        in_out_degree[i] = {uint64_t(maxN) * uint64_t(greater[i]) + uint64_t(less[i]), i};
+        in_out_degree[i] = uint64_t(maxN) * uint64_t(greater[i]) + uint64_t(less[i]);
       }
 
-      std::sort(in_out_degree.begin(), in_out_degree.end());
+      std::vector<uint64_t> hash = in_out_degree;
 
-      uint8_t duplicats = 0;
-      for (uint8_t i = 1; i < this->n; ++i) {
-        if (in_out_degree[i - 1].first == in_out_degree[i].first) {
-          ++duplicats;
+      for (int q = 0; q < 5; ++q) {
+        uint64_t sum_hash[maxN];
+        for (int k = 0; k < maxN; ++k) {
+          sum_hash[k] = 0;
+        }
+
+        for (size_t i = 0; i < n; ++i) {
+          uint64_t sum = hash[i];
+
+          for (size_t j = 0; j < n; ++j) {
+            if (i == j) {
+              continue;
+            }
+
+            if (this->is_less(i, j) || this->is_less(j, i)) {
+              sum = sum ^ hash[j];
+            }
+          }
+
+          sum_hash[i] = sum;
+        }
+
+        for (size_t i = 0; i < n; ++i) {
+          hash[i] = this->hash1(sum_hash[i], in_out_degree[i]);
         }
       }
 
-      if (0 == duplicats) {
+      std::vector<int> new_indices(this->n);
+      std::iota(new_indices.begin(), new_indices.end(), 0);
+
+      std::sort(new_indices.begin(), new_indices.end(), [&](int a, int b) {
+        return std::tie(in_out_degree[a], hash[a]) < std::tie(in_out_degree[b], hash[b]);
+      });
+
+      std::vector<int> duplicats;
+      for (uint8_t i = 1; i < this->n; ++i) {
+        if (std::tie(in_out_degree[new_indices[i - 1]], hash[new_indices[i - 1]]) ==
+            std::tie(in_out_degree[new_indices[i]], hash[new_indices[i]])) {
+          duplicats.push_back(i);
+        }
+      }
+
+      bool isUnique = false;
+      if (duplicats.size() <= 5) {
+        isUnique = true;
+        auto old = *this;
+        for (int i : duplicats) {
+          this->swap(new_indices[i - 1], new_indices[i]);
+          if (*this != old) {
+            isUnique = false;
+            break;
+          }
+        }
+      }
+
+      if (isUnique) {
         const Poset<maxN> oldPoset(*this);
         for (uint8_t i = 0; i < this->n; ++i) {
           for (uint8_t j = 0; j < this->n; ++j) {
-            this->set_less(i, j, oldPoset.is_less(in_out_degree[i].second, in_out_degree[j].second));
+            this->set_less(i, j, oldPoset.is_less(new_indices[i], new_indices[j]));
           }
         }
         return *this;
@@ -504,7 +570,7 @@ class Poset {
   /// @brief
   /// @return hash of poset
   std::size_t hash() const {
-    const std::hash<std::bitset<maxN * maxN - maxN>> hash1;
+    const std::hash<std::bitset<maxN * maxN>> hash1;
     return ((std::size_t)n << (std::size_t)4) ^ nthSmallest ^ hash1(comparisonTable);
   }
 
@@ -568,7 +634,7 @@ std::unordered_set<Poset<maxN>> filter(const std::unordered_set<Poset<maxN>> &un
     bool found = false;
     for (const Poset<maxN> &temp : unfiltered) {
       if (temp != item && temp.subset_of(item)) {
-        found = false;
+        found = true;
         break;
       }
     }
@@ -672,27 +738,42 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
                                         const std::unordered_set<Poset<maxN>> &setOfPosets, const int n, const int k) {
   assert(2 * k < n);
 
-  std::unordered_set<Poset<maxN>> tempSet = setOfPosets;
+  PosetSet<maxN> tempSet[n + 1][k + 1];
+  for (const Poset<maxN> &item : setOfPosets) {
+    tempSet[item.size()][item.nth()].insert(item, false);
+  }
   PosetSet<maxN> cache;
-  while (0 != tempSet.size()) {
+  bool isRunning = true;
+  while (isRunning) {
     std::unordered_set<Poset<maxN>> remainder1, remainder2;
-    // tempSet = filter(tempSet);
-    for (auto item : tempSet) {
-      assert(item.size() <= n);
-      assert(item.nth() < item.size());
-      if (item.size() < n) {
-        if (item.nth() == k) {
-          remainder1.insert(item);
-        } else if (item.nth() < k) {
-          remainder2.insert(item);
+    for (int n0 = 0; n0 <= n; ++n0) {
+      for (int k0 = 0; k0 <= k; ++k0) {
+        for (auto item : tempSet[n0][k0].entries(n0, k0, false)) {
+          assert(item.size() <= n);
+          assert(item.nth() < item.size());
+          if (item.size() < n) {
+            if (item.nth() == k) {
+              remainder1.insert(item);
+            } else if (item.nth() < k) {
+              remainder2.insert(item);
+            }
+          } else if (item.size() == n && item.nth() == k) {
+            cache.insert(item, false);
+          }
         }
-      } else if (item.size() == n && item.nth() == k) {
-        cache.insert(item, true);
+        tempSet[n0][k0] = PosetSet<maxN>();
       }
     }
 
-    tempSet = enlarge_n(normalizer, remainder1);
-    tempSet.merge(enlarge_nk(normalizer, remainder2));
+    isRunning = false;
+    for (const Poset<maxN> &item : enlarge_n(normalizer, remainder1)) {
+      tempSet[item.size()][item.nth()].insert(item, false);
+      isRunning = true;
+    }
+    for (const Poset<maxN> &item : enlarge_nk(normalizer, remainder2)) {
+      tempSet[item.size()][item.nth()].insert(item, false);
+      isRunning = true;
+    }
   }
 
   return cache.entries(n, k, false);

@@ -7,6 +7,8 @@ SRC_FORWARD=${wildcard src/forwardSearch.cpp}
 OBJ_FORWARD=${patsubst %.cpp,build/%.o,${SRC_FORWARD}}
 SRC_BACKWARD=${wildcard src/backwardSearch.cpp}
 OBJ_BACKWARD=${patsubst %.cpp,build/%.o,${SRC_BACKWARD}}
+SRC_BIDRECTIONAL=${wildcard src/bidirectionalSearch.cpp}
+OBJ_BIDRECTIONAL=${patsubst %.cpp,build/%.o,${SRC_BIDRECTIONAL}}
 TARGET=output.out
 LDFLAGS=nauty2_8_8/nauty.a
 
@@ -22,6 +24,10 @@ forwardSearch: ${OBJ_FORWARD}
 
 backwardSearch: ${OBJ_BACKWARD}
 	$(CXX) $(CXXFLAGS) ${OBJ_BACKWARD} -o build/$(TARGET) ${LDFLAGS}
+	./build/$(TARGET)
+
+bidirectionalSearch: ${OBJ_BIDRECTIONAL}
+	$(CXX) $(CXXFLAGS) ${OBJ_BIDRECTIONAL} -o build/$(TARGET) ${LDFLAGS}
 	./build/$(TARGET)
 
 build/%.o : %.cpp

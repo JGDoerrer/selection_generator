@@ -29,11 +29,12 @@ std::unordered_set<Poset<maxN>> find_solvable_posets(Normalizer<maxN> &normalize
 
 template <size_t maxN>
 std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanoseconds> startSearchBackward(
-    std::unordered_map<Poset<globalMaxN>, int> &poset_cache, const uint8_t n, const uint8_t nthSmallest) {
+    std::unordered_map<Poset<globalMaxN>, int> &poset_cache, const uint8_t n, const uint8_t nthSmallest,
+    const int maxComparisons) {
   Normalizer<maxN> normalizer{};
   std::chrono::nanoseconds duration_build_posets_total{}, duration_test_posets_total{};
   std::unordered_set<Poset<maxN>> source{{Poset<globalMaxN>(1, 0)}};
-  for (int k = 1; k < n * n; ++k) {
+  for (int k = 1; k < maxComparisons; ++k) {
     std::chrono::nanoseconds duration_build_posets{}, duration_test_posets{};
     const auto start = std::chrono::high_resolution_clock::now();
     const auto source_new = enlarge(normalizer, source, n, nthSmallest);
@@ -171,7 +172,7 @@ int main() {
     const int nthSmallest = 5;
 
     const auto &[comparisons, durationGeneratePosets, durationSearch] =
-        startSearchBackward<globalMaxN>(poset_cache, n, nthSmallest);
+        startSearchBackward<globalMaxN>(poset_cache, n, nthSmallest, n * n);
 
     if (comparisons.has_value()) {
       std::cout << "\rtime '" << durationGeneratePosets << " + " << durationSearch << " = "
@@ -189,13 +190,13 @@ int main() {
   } else {
     constexpr size_t nBound = 0;
 
-    std::unordered_map<Poset<globalMaxN>, int> poset_cache;
+    std::unordered_map<Poset<globalMaxN>, int> poset_cache;  // TODO: Cache<Poset<maxN>> instead???
     poset_cache[Poset<globalMaxN>(1, 0)] = 0;
 
     for (int n = 2; n < 15; ++n) {
       for (int nthSmallest = 0; nthSmallest < (n + 1) / 2; ++nthSmallest) {
         const auto &[comparisons, durationGeneratePosets, durationSearch] =
-            startSearchBackward<globalMaxN>(poset_cache, n, nthSmallest);
+            startSearchBackward<globalMaxN>(poset_cache, n, nthSmallest, n * n);
 
         if (comparisons.has_value()) {
           if (n >= nBound) {
