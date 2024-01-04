@@ -22,6 +22,8 @@ const int min_n_comparisons_len = 12;
 #include "util.h"
 // ===================
 #include "normalizer.h"
+//===
+#include "linearExtension.h"
 
 // TODO: multithreading implementieren
 // TODO: multithreading nauty testen
@@ -35,10 +37,10 @@ constexpr size_t globalMaxN = 15;
 constexpr size_t threadCount = 20;
 
 // #include "cache.h"
-#include "cache_old.h"
 #include "cache_new.h"
+#include "cache_old.h"
 
-template<std::size_t maxN, std::size_t maxC>
+template <std::size_t maxN, std::size_t maxC>
 using Cache = CacheTreeMemoryEffient<maxN, maxC>;
 // using Cache = CacheTree<maxN, maxC>;
 // using Cache = CacheSet<maxN, maxC>;

@@ -101,13 +101,14 @@ std::pair<int, std::vector<std::vector<uint64_t>>> get_linear_extensions(const P
   std::vector<std::vector<uint64_t>> table(n, std::vector<uint64_t>(n, 0));
   for (int j = 0; j < n; ++j) {
     for (int k = 0; k < n; ++k) {
-      if (j != k)
+      if (j != k) {
         for (int v = 0; v < biggest_value; ++v) {
           const int w = v | (1 << j);
           if (std::find(adj_inv[v].begin(), adj_inv[v].end(), w) != adj_inv[v].end() && !((1 << k) & w)) {
             table[j][k] += d1[v] * u1[w];
           }
         }
+      }
     }
   }
   return {d1[U], table};

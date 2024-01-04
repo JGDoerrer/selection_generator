@@ -687,7 +687,7 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
           remainder2.insert(item);
         }
       } else if (item.size() == n && item.nth() == k) {
-        cache.insert(item);
+        cache.insert(item, true);
       }
     }
 

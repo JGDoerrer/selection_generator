@@ -88,6 +88,41 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
 }
 
 int main() {
+  // Normalizer<globalMaxN> normalizer{};
+  // int n = 7;
+  // int k = 0;
+
+  // // n = 7
+  // // 0: 12 * 60
+  // // 1: 12 * 10
+  // // 2: 12 * 4
+  // // 3: 12 * k
+
+  // // n = 8
+  // // 0: 48 * 105
+  // // 1: 48 * 15
+  // // 2: 48 * 5
+  // // 3: 48 * k
+
+  // // n = 9
+  // // 0: 144 * 280
+  // // 1: 144 * 35
+  // // 2: 144 * 10
+  // // 3: 144 * 5
+  // // 4: 144 * k
+
+  // int counter = 0;
+  // int max1 = 0;
+  // for (auto poset : find_solvable_posets(normalizer, n, k)) {
+  //   ++counter;
+  //   max1 = std::max(max1, get_linear_extensions(poset).first);
+  //   // std::cout << poset << std::endl;
+  //   // std::cout <<  << std::endl;
+  // }
+  // std::cout << float(max1) << std::endl;
+  // std::cout << counter << std::endl;
+  // exit(0);
+
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
   std::cout.precision(3);
 

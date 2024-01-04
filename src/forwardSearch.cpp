@@ -1,6 +1,4 @@
 #include "main.h"
-//===
-#include "linearExtension.h"
 
 constexpr bool SORT_DFS_BRANCHES = true;
 constexpr bool TOP_TO_BOTTOM_SEARCH = true;
@@ -39,6 +37,17 @@ Poset<maxN> createPosetWithComparison(Normalizer<maxN> &normalizer, Poset<maxN> 
   return poset;
 };
 
+// int factorial(int n) {
+//   if (n <= 1) {
+//     return 1;
+//   } else {
+//     return n * factorial(n - 1);
+//   }
+// }
+
+// std::array<std::array<std::pair<float, float>, 15>, 15> test123dash;
+// std::array<std::array<std::array<float, 25>, 15>, 15> test123dash2;
+// std::array<std::array<std::array<float, 25>, 15>, 15> test123;
 /// @return true, wenn Median in poset in max. `maxComparisons` gefunden werden kann
 template <size_t maxN, size_t maxC>
 SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN> &poset, Cache<maxN, maxC> &cache,
@@ -102,43 +111,62 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
         result = FoundSolution;
       }
     } else {
-      if constexpr (true) {
-        const auto [value, table] = get_linear_extensions(poset);
-        if (value > pow(2, remainingComparisons)) {
-          const auto cmp = [&](const std::pair<int, int> &a, const std::pair<int, int> &b) {
-            return table[a.first][a.second] > table[b.first][b.second];
-          };
+      if constexpr (false) {
+        // const auto [value, table] = get_linear_extensions(poset);
+        // const auto cmp = [&](const std::pair<int, int> &a, const std::pair<int, int> &b) {
+        //   return table[a.first][a.second] < table[b.first][b.second];
+        // };
 
-          std::vector<std::pair<int, int>> temp;
-          for (int i = 0; i < poset.size(); ++i) {
-            for (int j = i + 1; j < poset.size(); ++j) {
-              if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
-                if (!cmp({i, j}, {j, i})) {
-                  temp.push_back({i, j});
-                } else {
-                  temp.push_back({j, i});
-                }
-              }
-            }
-          }
+        // std::vector<std::pair<int, int>> temp;
+        // for (int i = 0; i < poset.size(); ++i) {
+        //   for (int j = i + 1; j < poset.size(); ++j) {
+        //     if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
+        //       if (poset.size() <= 12) {
+        //         auto value = 144;
+        //         if (poset.size() == 9 && poset.nth() == 4) {
+        //           value *= 4;
+        //         } else if (poset.size() == 9 && poset.nth() == 3) {
+        //           value *= 5;
+        //         } else if (poset.size() == 9 && poset.nth() == 2) {
+        //           value *= 10;
+        //         } else if (poset.size() == 9 && poset.nth() == 1) {
+        //           value *= 35;
+        //         } else if (poset.size() == 9 && poset.nth() == 0) {
+        //           value *= 280;
+        //         } else {
+        //           value *= 300;
+        //         }
+        //         if (std::max(table[i][j], table[j][i]) > pow(2, remainingComparisons - 1) * value) continue;
+        //         // 2 ^ remainingComparisons
+        //         // auto [a, b] = test123dash[poset.size()][poset.nth()];
+        //         // if ((float)log2(std::max(table[i][j], table[j][i])) > a * remainingComparisons + b) continue;
+        //       }
+        //       if (cmp({i, j}, {j, i})) {
+        //         temp.push_back({i, j});
+        //       } else {
+        //         temp.push_back({j, i});
+        //       }
+        //     }
+        //   }
 
-          std::sort(temp.begin(), temp.end(), cmp);
+        //   std::sort(temp.rbegin(), temp.rend(), cmp);
 
-          // for (const auto &[i, j] : temp) {
-          //   result = recursiveSearch(atomicBreak, i, j, normalizer);
-          //   if (result == FoundSolution) {
-          //     break;
-          //   }
-          // }
-          for (int i = 0; i < poset.size() && result != FoundSolution; ++i) {
-            for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
-              const auto [new_i, new_j] = randomDataTable[poset.size()][remainingComparisons][i][j];
-              if (!poset.is_less(new_i, new_j) && !poset.is_less(new_j, new_i)) {
-                result = recursiveSearch(atomicBreak, new_i, new_j, normalizer);
-              }
-            }
-          }
-        }
+        //   float temp1 = 1000;
+        //   for (const auto &[i, j] : temp) {
+        //     auto tem = recursiveSearch(atomicBreak, i, j, normalizer);
+        //     if (tem == FoundSolution) {
+        //       result = FoundSolution;
+        //       temp1 = std::min(temp1, float(log2(std::max(table[i][j], table[j][i]))) + 0.00001f);
+        //       // std::cout << "## " << (int)poset.size() << " " << (int)poset.nth() << " " << (int)remainingComparisons
+        //       //           << ": " << log2(std::max(table[i][j], table[j][i])) << std::endl;
+        //       break;
+        //     }
+        //   }
+        //   if (1000 != temp1) {
+        //     test123[poset.size()][poset.nth()][remainingComparisons] =
+        //         std::max(test123[poset.size()][poset.nth()][remainingComparisons], temp1);
+        //   }
+        // }
       } else if constexpr (SORT_DFS_BRANCHES) {
         uint8_t less[poset.size()];
         uint8_t greater[poset.size()];
@@ -272,7 +300,62 @@ const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nano
 
 using namespace std::chrono;
 
+// void linearRegression(const std::vector<double> &x, const std::vector<double> &y, double &a, double &b) {
+//   int n = x.size();
+
+//   // Calculate necessary sums
+//   double sumX = 0.0, sumY = 0.0, sumXY = 0.0, sumX2 = 0.0;
+//   for (int i = 0; i < n; ++i) {
+//     sumX += x[i];
+//     sumY += y[i];
+//     sumXY += x[i] * y[i];
+//     sumX2 += x[i] * x[i];
+//   }
+
+//   // Calculate coefficients 'a' and 'b'
+//   a = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+//   b = (sumY - a * sumX) / n;
+// }
+
 int main() {
+  // for (int n = 0; n < 15; ++n) {
+  //   for (int k = 0; k < 15; ++k) {
+  //     test123dash[n][k] = {1, log2(n * (factorial(k) + factorial(n - k - 1)))};
+  //   }
+  // }
+
+  // test123dash[3][1] = {0.584962, -0.169915};
+
+  // test123dash[4][1] = {1.000000, -0.415028};
+
+  // test123dash[5][1] = {0.875489, 0.944494};
+  // test123dash[5][2] = {0.868483, 0.564487};
+
+  // test123dash[6][1] = {0.709474, 3.484043};
+  // test123dash[6][2] = {0.672067, 2.896703};
+
+  // test123dash[7][1] = {0.875489, 4.461324};
+  // test123dash[7][2] = {0.718510, 4.290105};
+  // test123dash[7][3] = {0.869290, 3.107810};
+
+  // test123dash[8][1] = {0.600000, 8.299217};
+  // test123dash[8][2] = {0.531139, 6.996285};
+  // test123dash[8][3] = {0.865463, 5.030012};
+
+  // test123dash[9][1] = {0.660964, 9.918396};
+  // test123dash[9][2] = {0.759808, 8.019551};
+  // test123dash[9][3] = {0.520029, 8.243977};
+  // test123dash[9][4] = {0.538434, 8.084798};
+
+  // test123dash[10][2] = {0.574608, 11.513998};
+  // test123dash[10][3] = {0.511384, 10.770338};
+  // // test123dash[10][4] = {0.666737, 8.731593};
+  // test123dash[10][4] = {0.681425, 8.295392};
+  // // test123dash[10][4] = {0.7009844, 8.794294};
+  // // test123dash[10][4] = {0.72161157, 7.85334371};
+
+  // test123dash[11][3] = {0.689856, 11.697412};
+
   constexpr size_t nBound = 9;
 
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
@@ -325,6 +408,63 @@ int main() {
         std::cerr << "Error, maxComparisons exceeded" << std::endl;
         exit(0);
       }
+
+      // if (n == 10 && nthSmallest == 4) {
+      //   std::cout.precision(6);
+      //   for (int n = 0; n <= 11; ++n) {
+      //     for (int k = 0; k < (n + 1) / 2; ++k) {
+      //       for (int i = 0; i < 25; ++i) {
+      //         if (n == 10 && k == 4 && 0 != test123[n][k][i]) {
+      //           std::cout << i << ": " << test123[n][k][i] << std::endl;
+      //         }
+      //       }
+
+      //       double a, b;
+      //       std::vector<double> x, y;
+      //       for (int i = 0; i < 25; ++i) {
+      //         if (0 != test123[n][k][i]) {
+      //           x.push_back(i);
+      //           y.push_back(test123[n][k][i]);
+      //         }
+      //       }
+      //       linearRegression(x, y, a, b);
+      //       for (int i = 0; i < 25; ++i) {
+      //         if (0 != test123[n][k][i]) {
+      //           float temp = a * i + b - test123[n][k][i];
+      //           if (temp < 0) {
+      //             b -= temp;
+      //           }
+      //         }
+      //       }
+      //       // b = n;
+      //       // a = 0;
+      //       // for (int i = 0; i < 25; ++i) {
+      //       //   if (0 != test123[n][k][i]) {
+      //       //     float temp = (test123[n][k][i] - n) / i;
+      //       //     if (temp > a) {
+      //       //       a = temp;
+      //       //     }
+      //       //   }
+      //       // }
+
+      //       // a = 0.7;
+      //       // b = 100;
+      //       // for (int i = 0; i < 25; ++i) {
+      //       //   if (0 != test123[n][k][i]) {
+      //       //     float temp = float(test123[n][k][i]) / a - i;
+      //       //     if (temp < b) {
+      //       //       b = temp;
+      //       //     }
+      //       //   }
+      //       // }
+
+      //       if (x.size() >= 2) {
+      //         // std::cout << "test123dash[" << n << "][" << k << "] = {" << a << ", " << b << "};" << std::endl;
+      //       }
+      //     }
+      //   }
+      //   exit(0);
+      // }
     }
     if (n >= nBound) std::cout << std::endl;
   }
