@@ -323,11 +323,10 @@ impl<'a> Search<'a> {
             return Some(false);
         }
 
-        if poset.n() >= 8
-            && max_comparisons < (poset.compatible_posets().max(1) as f32).log2().floor() as u8 + 1
+        if poset.n() >= self.n - 1
+            && self.current_max - max_comparisons + 3 > poset.n()
+            && max_comparisons < (poset.compatible_posets().max(1) as f32).log2().ceil() as u8
         {
-            // dbg!(poset, max_comparisons, poset.compatible_posets());
-
             return Some(false);
         }
 

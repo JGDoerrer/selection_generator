@@ -1,7 +1,6 @@
 use std::{collections::HashSet, fmt::Debug, os::raw::c_int};
 
-use hashbrown::hash_map::Keys;
-use nauty_Traces_sys::{bit, densenauty, optionblk, statsblk, FALSE, TRUE};
+use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use serde::{Deserialize, Serialize};
 
 use crate::{bitset::BitSet, KNOWN_MIN_VALUES};
@@ -70,6 +69,21 @@ impl Poset {
     pub fn get_all_greater_than(&self, i: PosetIndex) -> BitSet {
         debug_assert!(i < self.n);
         self.adjacency[i as usize].into()
+    }
+
+    /// returns a bitset of all elements less than i
+    pub fn get_all_less_than(&self, i: PosetIndex) -> BitSet {
+        debug_assert!(i < self.n);
+
+        let mut less_than_i = BitSet::empty();
+
+        for j in 0..self.n {
+            if self.is_less(j, i) {
+                less_than_i.insert(j.into());
+            }
+        }
+
+        less_than_i
     }
 
     /// is either i < j or j < i?
@@ -749,26 +763,16 @@ impl Poset {
                     }
 
                     let greater_than_j = self.get_all_greater_than(j);
+                    let less_than_j = self.get_all_less_than(j);
 
                     // test if adding j would make a valid subset
                     for subset in &greater_subsets {
                         let subset = *subset;
 
-                        if !subset.contains(j as usize) && !greater_than_j.contains(i as usize) {
-                            let mut valid = true;
-                            for k in subset {
-                                let greater_than_k = self.get_all_greater_than(k as u8);
-
-                                if greater_than_k.contains(j as usize) {
-                                    valid = false;
-                                    break;
-                                }
-                            }
-
-                            if !valid {
-                                continue;
-                            }
-
+                        if !subset.contains(j as usize)
+                            && !greater_than_j.contains(i as usize)
+                            && less_than_j.complement().intersect(subset) == subset
+                        {
                             let mut new_subset = subset;
                             new_subset.insert(j as usize);
                             new_subsets.insert(new_subset);
@@ -787,14 +791,11 @@ impl Poset {
                 .into_iter()
                 .map(|s| {
                     // there can be only one matching subset
-                    let mut matching = BitSet::empty();
-                    for j in 0..self.n as usize {
-                        if s.contains(j) || j == i as usize {
-                            continue;
-                        }
-
-                        matching.insert(j);
-                    }
+                    let matching = s
+                        .union(BitSet::single(i.into()))
+                        .complement()
+                        .intersect(BitSet::from_u16(((1u32 << self.n) - 1) as u16)) // only take elements less than self.n
+                        ;
 
                     if greater_subsets.contains(&matching) {
                         1
