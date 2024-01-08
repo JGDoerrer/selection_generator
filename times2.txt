@@ -269,3 +269,8 @@ found solution for n = 14, i = 4, comparisons = 23
 cache entries: 268434230
 cache hits: 6440423067
 time since start: 0d 8h 41m 53.615234s
+
+found solution for n = 14, i = 5: comparisons = 24
+cache entries: 1237355991
+cache hits: 348517242105
+time since start: 20d 9h 52m 47.875s
