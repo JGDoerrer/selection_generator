@@ -355,14 +355,14 @@ class Poset {
   /// @param normalizer
   /// @param i
   /// @param j
-  /// @return Menge an Posets M, wobei für alle m in M gilt: m ist vollständig, NICHT normalisiert, aber dedupliziert,
-  //          durch Aufruf von `m.add_less(i, j)` erhält man wieder `*this` und keine unnötigen Vergleiche
-  //          gespeichert haben
-  inline std::unordered_set<Poset<maxN>> remove_less(Normalizer<maxN> &normalizer, const uint16_t i,
-                                                     const uint16_t j) const {
+  /// @return Menge an Posets M, wobei für alle m in M gilt: m ist vollständig, normalisiert, dedupliziert,
+  //          durch Aufruf von `m.add_less(i, j)` erhält man wieder `*this`, durch Aufruf von `m.add_less(j, i)` erfüllt
+  //          Kriterium `test` und keine unnötigen Vergleiche gespeichert haben
+  inline std::unordered_set<Poset<maxN>> remove_less(Normalizer<maxN> &normalizer, const uint16_t i, const uint16_t j,
+                                                     const std::function<bool(const Poset<maxN> &)> &test) const {
     // assert(this->is_closed());  // check if input closed
 
-    std::unordered_set<Poset<maxN>> result, resultNormalized;
+    std::unordered_set<Poset<maxN>> result;
     if (!this->is_less(i, j) || this->is_redundant(i, j)) {
       return result;
     }
@@ -370,12 +370,17 @@ class Poset {
     Poset<maxN> poset_initial = *this;
     poset_initial.set_less(i, j, false);
 
+    Poset<maxN> poset_check = poset_initial.with_less(j, i);
+    poset_check.normalize(normalizer);
+    if (!test(poset_check)) {
+      return result;
+    }
+
     std::queue<Poset<maxN>> queue{};
     queue.push(poset_initial);
 
-    result.insert(poset_initial);
     poset_initial.canonify(normalizer);
-    resultNormalized.insert(poset_initial);
+    result.insert(poset_initial);
 
     while (!queue.empty()) {
       Poset<maxN> poset = queue.front();
@@ -401,14 +406,19 @@ class Poset {
             continue;
           }
 
+          Poset<maxN> poset_check = poset_next.with_less(j, i);
+          poset_check.normalize(normalizer);
+          if (!test(poset_check)) {
+            continue;
+          }
+
           // wenn das poset normalisert schon in result ist, abbruch
           Poset<maxN> poset_norm = poset_next;
           poset_norm.canonify(normalizer);
-          if (resultNormalized.contains(poset_norm)) {
+          if (result.contains(poset_norm)) {
             continue;
           }
-          resultNormalized.insert(poset_norm);
-          result.insert(poset_next);
+          result.insert(poset_norm);
 
           // mache sonst in den nächsten Schritten mit dem Poset weiter und versuche noch mehr Vergleiche zu entfernen
           queue.push(poset_next);
@@ -740,41 +750,23 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
 
   PosetSet<maxN> tempSet[n + 1][k + 1];
   for (const Poset<maxN> &item : setOfPosets) {
-    tempSet[item.size()][item.nth()].insert(item, false);
+    if (item.size() <= n && item.nth() <= k) {
+      tempSet[item.size()][item.nth()].insert(item, false);
+    }
   }
-  PosetSet<maxN> cache;
-  bool isRunning = true;
-  while (isRunning) {
-    std::unordered_set<Poset<maxN>> remainder1, remainder2;
-    for (int n0 = 0; n0 <= n; ++n0) {
-      for (int k0 = 0; k0 <= k; ++k0) {
-        for (auto item : tempSet[n0][k0].entries(n0, k0, false)) {
-          assert(item.size() <= n);
-          assert(item.nth() < item.size());
-          if (item.size() < n) {
-            if (item.nth() == k) {
-              remainder1.insert(item);
-            } else if (item.nth() < k) {
-              remainder2.insert(item);
-            }
-          } else if (item.size() == n && item.nth() == k) {
-            cache.insert(item, false);
-          }
-        }
-        tempSet[n0][k0] = PosetSet<maxN>();
+  for (int n0 = 0; n0 < n; ++n0) {
+    for (int k0 = 0; k0 < k; ++k0) {
+      for (const Poset<maxN> &item : enlarge_nk(normalizer, tempSet[n0][k0].entries(n0, k0, false))) {
+        tempSet[item.size()][item.nth()].insert(item, false);
       }
+      tempSet[n0][k0].reset();
     }
 
-    isRunning = false;
-    for (const Poset<maxN> &item : enlarge_n(normalizer, remainder1)) {
+    for (const Poset<maxN> &item : enlarge_n(normalizer, tempSet[n0][k].entries(n0, k, false))) {
       tempSet[item.size()][item.nth()].insert(item, false);
-      isRunning = true;
     }
-    for (const Poset<maxN> &item : enlarge_nk(normalizer, remainder2)) {
-      tempSet[item.size()][item.nth()].insert(item, false);
-      isRunning = true;
-    }
+    tempSet[n0][k].reset();
   }
 
-  return cache.entries(n, k, false);
+  return tempSet[n][k].entries(n, k, false);
 }

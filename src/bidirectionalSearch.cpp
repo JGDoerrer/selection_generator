@@ -1,6 +1,6 @@
 #include "main.h"
 
-std::unordered_map<Poset<globalMaxN>, int> poset_cache;
+PosetCacheSet<globalMaxN, globalMaxComparisons> poset_cache;
 std::atomic<int> dynLevel = 0;
 
 constexpr bool SORT_DFS_BRANCHES = true;
@@ -49,8 +49,7 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
   if (remainingComparisons <= dynLevel) {
     Poset<maxN> poset_norm = poset;
     poset_norm.normalize(normalizer);
-    return (poset_cache.contains(poset_norm) && poset_cache[poset_norm] <= remainingComparisons) ? FoundSolution
-                                                                                                 : NoSolution;
+    return (poset_cache.check_solvable(poset_norm, remainingComparisons)) ? FoundSolution : NoSolution;
   }
 
   SearchResult result = NoSolution;
@@ -238,7 +237,7 @@ const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nano
 
 template <size_t maxN>
 std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanoseconds> startSearchBackward(
-    std::unordered_map<Poset<globalMaxN>, int> &poset_cache, const uint8_t n, const uint8_t nthSmallest,
+    PosetCacheSet<maxN, globalMaxComparisons> &poset_cache, const uint8_t n, const uint8_t nthSmallest,
     const std::atomic<bool> &breaker) {
   dynLevel = 0;
   Normalizer<maxN> normalizer{};
@@ -257,7 +256,10 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
       for (uint8_t i = 0; i < n; ++i) {
         for (uint8_t j = 0; j < n; ++j) {
           if (item.is_less(i, j)) {
-            for (const Poset<maxN> &predecessor : item.remove_less(normalizer, i, j)) {
+            for (const Poset<maxN> &predecessor :
+                 item.remove_less(normalizer, i, j, [&poset_cache, k](const Poset<maxN> &poset) {
+                   return poset_cache.check_solvable(poset, k - 1);
+                 })) {
               if (predecessor == Poset<maxN>{(uint8_t)n, (uint8_t)nthSmallest} || breaker) {
                 duration_test_posets = std::chrono::high_resolution_clock::now() - mid;
                 duration_test_posets_total += duration_test_posets;
@@ -275,18 +277,12 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
 
               Poset<maxN> predecessor_normalized = predecessor;
               predecessor_normalized.normalize(normalizer);
-              if (poset_cache.contains(predecessor_normalized) && poset_cache[predecessor_normalized] < k) {
-                continue;
-              }
-
-              Poset<maxN> predecessor_check = predecessor.with_less(j, i);
-              predecessor_check.normalize(normalizer);
-              if (!(poset_cache.contains(predecessor_check) && poset_cache[predecessor_check] < k)) {
+              if (poset_cache.check_solvable(predecessor_normalized, k - 1)) {
                 continue;
               }
 
               destination.insert(predecessor_normalized);
-              poset_cache[predecessor_normalized] = k;
+              poset_cache.insert_solvable(predecessor_normalized, k);
             }
           }
         }
@@ -317,7 +313,7 @@ int main() {
   Cache<globalMaxN, globalMaxComparisons> cache;
   cache.insert_solvable(Poset<globalMaxN>(1, 0), 0);
 
-  poset_cache[Poset<globalMaxN>(1, 0)] = 0;
+  poset_cache.insert_solvable(Poset<globalMaxN>(1, 0), 0);
 
   for (int n = 2; n < globalMaxN; ++n) {
     for (int nthSmallest = 0; nthSmallest < (n + 1) / 2; ++nthSmallest) {

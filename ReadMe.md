@@ -1,17 +1,19 @@
 # Lower Bounds for Selection 13, 14, 15 Elements
 ## short overview
-| n | k | forward search (Bottom to Top) | forward search (Top to Bottom) | backward search (naive) |
-| -  | - | - | - | - |
-| 10 | 0 | 0.000s | 0.000s | 11.620s |
-| 10 | 1 | 0.000s | 0.000s | 8.735s |
-| 10 | 2 | 0.000s | 0.000s | 10.330s |
-| 10 | 3 | 0.540s | 0.528s | 13.952s |
-| 10 | 4 | 3.544s | 2.980s | 21.989s |
-| ... | ... | ... | ... | ... |
-| 11 | 4 | 41.411s | 36.814s | OutOfMemory |
-| 11 | 5 | 77.485s | 56.426s | OutOfMemory |
-
-[Anzahl der linearen Erweiterungen](https://arxiv.org/pdf/1108.0866.pdf)
+| n  | k | bidirection search | forward search (Top to Bottom) | forward search (Bottom to Top) | backward search |
+| -  | - | -        | -       | -       | -        |
+| 10 | 0 | 0.000s  | 0.000s  | 0.000s  | 13.567s  |
+| 10 | 1 | 0.000s  | 0.000s  | 0.000s  | 8.356s   |
+| 10 | 2 | 0.000s  | 0.000s  | 0.000s  | 9.200s   |
+| 10 | 3 | 0.601s  | 0.528s  | 0.540s  | 10.836s  |
+| 10 | 4 | 2.085s  | 2.980s  | 3.544s  | 17.972s  |
+| -  | - | -       | -       | -       | -        |
+| 11 | 0 | 0.000s  | 0.000s  | 0.000s  | 270.345s |
+| 11 | 1 | 0.000s  | 0.000s  | 0.000s  | 146.691s |
+| 11 | 2 | 0.000s  | 0.000s  | 0.000s  | 154.023s |
+| 11 | 3 | 7.450s  | 6.507s  | 6.945s  | 166.231s |
+| 11 | 4 | 22.561s | 36.814s | 41.411s | 291.835s |
+| 11 | 5 | 37.063s | 56.426s | 77.485s | 520.800s |
 
 ## interne Links
 - [Github Repo](https://github.com/JGDoerrer/selection_generator/)
@@ -136,3 +138,4 @@ Im folgenden sei `maxN` die Größe des größten Posets, `n` die Größe eines 
 - [The Art of Computer Programming (TAOCP)](https://www-cs-faculty.stanford.edu/~knuth/taocp.html#vol3), [online pdf](https://doc.lagout.org/science/0_Computer%20Science/2_Algorithms/The%20Art%20of%20Computer%20Programming%20%28vol.%203_%20Sorting%20and%20Searching%29%20%282nd%20ed.%29%20%5BKnuth%201998-05-04%5D.pdf)
 - [Lower Bounds for Sorting](https://arxiv.org/pdf/2206.05597.pdf), [reorderGraphCanonically](https://github.com/CodeCrafter47/sortinglowerbounds/blob/92865960ba465e4b6e068b400da82ff3f12af803/src/expandedPoset.cpp#L65)
 - [Nauty Manual](https://pallini.di.uniroma1.it/nug28.pdf)
+- [Anzahl der linearen Erweiterungen](https://arxiv.org/pdf/1108.0866.pdf)

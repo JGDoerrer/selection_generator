@@ -176,6 +176,11 @@ class PosetSet {
   }
 
   inline std::size_t size(const uint8_t n) const { return _size; }
+
+  inline void reset() {
+    _size = 0;
+    root.reset();
+  }
 };
 
 template <std::size_t maxN, std::size_t maxC>
