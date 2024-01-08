@@ -1,5 +1,6 @@
-use std::{collections::HashSet, fmt::Debug, os::raw::c_int};
+use std::{fmt::Debug, os::raw::c_int};
 
+use hashbrown::HashSet;
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use serde::{Deserialize, Serialize};
 
@@ -682,28 +683,24 @@ impl Poset {
             return self.n as usize;
         }
 
-        let (less, _unknown, greater) = self.calculate_relations();
+        let mut greater_than_sets = [BitSet::empty(); MAX_N];
+        for i in 0..self.n {
+            greater_than_sets[i as usize] = self.get_all_greater_than(i);
+        }
 
         let mut sum = 0;
         for i in 0..self.n {
             // assume the ith element is the solution
 
-            let less_than_i = {
-                let mut bitset = BitSet::empty();
-                for j in (0..self.n).filter(|j| self.is_less(*j, i)) {
-                    bitset.insert(j as usize);
-                }
-                bitset
-            };
-
-            let greater_than_i = self.get_all_greater_than(i);
+            let less_than_i = self.get_all_less_than(i);
+            let greater_than_i = greater_than_sets[i as usize];
 
             // calculate subsets of increasing size
 
             // start with all minimal elements
             let mut less_subsets = HashSet::new();
             for j in 0..self.n {
-                if less[j as usize] == 0 {
+                if self.get_all_less_than(j).is_empty() {
                     let mut bitset = BitSet::empty();
                     bitset.insert(j as usize);
                     for j in less_than_i {
@@ -721,15 +718,15 @@ impl Poset {
                         continue;
                     }
 
-                    let greater_than_j = self.get_all_greater_than(j);
+                    let greater_than_j = greater_than_sets[j as usize];
 
                     // test if adding j would make a valid subset
                     for subset in &less_subsets {
                         let subset = *subset;
 
                         if !subset.contains(j as usize)
+                            && !greater_than_i.contains(j as usize)
                             && greater_than_j.complement().intersect(subset) == subset
-                            && greater_than_i.complement().intersect(subset) == subset
                         {
                             let mut new_subset = subset;
                             new_subset.insert(j as usize);
@@ -744,7 +741,7 @@ impl Poset {
             // start with all maximal elements
             let mut greater_subsets = HashSet::new();
             for j in 0..self.n {
-                if greater[j as usize] == 0 {
+                if greater_than_sets[j as usize].is_empty() {
                     let mut bitset = BitSet::empty();
                     bitset.insert(j as usize);
                     for j in greater_than_i {
@@ -762,7 +759,6 @@ impl Poset {
                         continue;
                     }
 
-                    let greater_than_j = self.get_all_greater_than(j);
                     let less_than_j = self.get_all_less_than(j);
 
                     // test if adding j would make a valid subset
@@ -770,7 +766,7 @@ impl Poset {
                         let subset = *subset;
 
                         if !subset.contains(j as usize)
-                            && !greater_than_j.contains(i as usize)
+                            && !less_than_i.contains(j as usize)
                             && less_than_j.complement().intersect(subset) == subset
                         {
                             let mut new_subset = subset;
@@ -782,10 +778,6 @@ impl Poset {
 
                 greater_subsets = new_subsets;
             }
-
-            less_subsets.retain(|s| s.len() == self.i as usize && !s.contains(i as usize));
-            greater_subsets
-                .retain(|t| t.len() == (self.n - self.i - 1) as usize && !t.contains(i as usize));
 
             sum += less_subsets
                 .into_iter()
