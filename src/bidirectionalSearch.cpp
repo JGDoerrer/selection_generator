@@ -47,9 +47,11 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
                              const std::atomic<bool> &atomicBreak, Statistics &statistics, const int depth,
                              Normalizer<maxN> &normalizer) {
   if (remainingComparisons <= dynLevel) {
-    Poset<maxN> poset_norm = poset;
-    poset_norm.normalize(normalizer);
-    return (poset_cache.check_solvable(poset_norm, remainingComparisons)) ? FoundSolution : NoSolution;
+    return (poset_cache.check_solvable(poset, remainingComparisons)) ? FoundSolution : NoSolution;
+  } else if (remainingComparisons <= dynLevel + 1) {
+    if (poset_cache.check_solvable(poset, remainingComparisons)) {
+      return FoundSolution;
+    }
   }
 
   SearchResult result = NoSolution;
@@ -338,7 +340,7 @@ int main() {
 
       if (comparisons.has_value()) {
         if (n >= nBound) {
-          std::cout << "\rtime '" << durationSearch << " + " << durationValidate << " = "
+          std::cout << "time '" << durationSearch << " + " << durationValidate << " = "
                     << durationSearch + durationValidate << "': n = " << n << ", i = " << nthSmallest << ", "
                     << statistics << ", cache = " << cache.size() << ", comparisons: " << comparisons.value()
                     << std::endl;
