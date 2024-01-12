@@ -98,6 +98,7 @@ impl<'a> Search<'a> {
             );
             println!("cache entries: {}", self.cache.len());
             println!("cache hits: {}", self.cache_hits);
+            println!("posets searched: {}", self.total_posets);
             let duration = Instant::now() - self.start;
             let seconds = duration.as_secs_f32() % 60.0;
             let minutes = (duration.as_secs() / 60) % 60;
@@ -110,6 +111,24 @@ impl<'a> Search<'a> {
 
             // for (i, count) in counts.iter().enumerate() {
             //     println!("{i:2}: {count:12}");
+            // }
+
+            // for entry in self.cache.iter() {
+            //     if entry.cost.is_solved()
+            //         && (entry.cost.value()
+            //             < (entry.poset.compatible_posets().max(1) as f32)
+            //                 .log2()
+            //                 .floor() as u8)
+            //     {
+            //         dbg!(
+            //             entry.cost,
+            //             entry.poset,
+            //             entry.poset.compatible_posets(),
+            //             (entry.poset.compatible_posets().max(1) as f32)
+            //                 .log2()
+            //                 .floor()
+            //         );
+            //     }
             // }
 
             // assert_eq!(comps, max);
@@ -323,11 +342,13 @@ impl<'a> Search<'a> {
             return Some(false);
         }
 
-        if poset.n() >= self.n - 1
-            && self.current_max - max_comparisons + 3 > poset.n()
-            && max_comparisons < (poset.compatible_posets().max(1) as f32).log2().ceil() as u8
-        {
-            return Some(false);
+        if poset.n() + 1 >= self.n {
+            let compatible_posets = poset.compatible_posets();
+            if compatible_posets == 0 || max_comparisons < compatible_posets.ilog2() as u8 {
+                return Some(false);
+            } else if compatible_posets == 1 {
+                return Some(true);
+            }
         }
 
         let (less, _unknown, greater) = poset.calculate_relations();

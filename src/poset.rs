@@ -485,6 +485,45 @@ impl Poset {
         *self = new;
     }
 
+    fn canonify_lower_matrix(&self) -> Poset {
+        let mut new_indices = [0; MAX_N];
+        for i in 0..self.n {
+            new_indices[i as usize] = i;
+        }
+
+        let mut new = Poset::new(self.n, self.i);
+
+        for i in 0..self.n as usize {
+            for j in 0..self.n as usize {
+                if self.is_less(i as u8, j as u8) && i > j {
+                    new_indices.swap(i, j);
+                }
+            }
+        }
+
+        for i in 0..new.n {
+            for j in 0..new.n {
+                if self.is_less(i, j) {
+                    new.set_bit(new_indices[i as usize], new_indices[j as usize])
+                }
+            }
+        }
+
+        debug_assert!(new.is_lower_triangle_matrix());
+        new
+    }
+
+    fn is_lower_triangle_matrix(&self) -> bool {
+        for i in 0..self.n {
+            for j in 0..self.n {
+                if self.is_less(i, j) && i > j {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
     /// for debugging
     fn is_closed(&self) -> bool {
         for i in 0..self.n {
@@ -683,119 +722,48 @@ impl Poset {
             return self.n as usize;
         }
 
-        let mut greater_than_sets = [BitSet::empty(); MAX_N];
-        for i in 0..self.n {
-            greater_than_sets[i as usize] = self.get_all_greater_than(i);
-        }
+        let canonified = self.canonify_lower_matrix();
 
         let mut sum = 0;
-        for i in 0..self.n {
+        for i in 0..canonified.n {
             // assume the ith element is the solution
 
-            let less_than_i = self.get_all_less_than(i);
-            let greater_than_i = greater_than_sets[i as usize];
+            let less_than_i = canonified.get_all_less_than(i);
+            let greater_than_i = canonified.get_all_greater_than(i);
 
-            // calculate subsets of increasing size
+            let mut less_subsets = Vec::new();
+            less_subsets.push(BitSet::empty());
 
-            // start with all minimal elements
-            let mut less_subsets = HashSet::new();
-            for j in 0..self.n {
-                if self.get_all_less_than(j).is_empty() {
-                    let mut bitset = BitSet::empty();
-                    bitset.insert(j as usize);
-                    for j in less_than_i {
-                        bitset.insert(j as usize);
-                    }
-                    less_subsets.insert(bitset);
+            for j in 0..canonified.n {
+                if j == i || greater_than_i.contains(j as usize) {
+                    continue;
                 }
-            }
 
-            for _ in less_than_i.len() + 1..self.i as usize {
-                let mut new_subsets = HashSet::new();
+                let less_than_j = canonified.get_all_less_than(j);
 
-                for j in 0..self.n {
-                    if j == i {
-                        continue;
-                    }
-
-                    let greater_than_j = greater_than_sets[j as usize];
+                // try adding j to all previous subsets
+                for i in 0..less_subsets.len() {
+                    let subset = less_subsets[i];
 
                     // test if adding j would make a valid subset
-                    for subset in &less_subsets {
-                        let subset = *subset;
-
-                        if !subset.contains(j as usize)
-                            && !greater_than_i.contains(j as usize)
-                            && greater_than_j.complement().intersect(subset) == subset
-                        {
-                            let mut new_subset = subset;
-                            new_subset.insert(j as usize);
-                            new_subsets.insert(new_subset);
-                        }
+                    // we know, that there is no k with p[k] > p[j]
+                    if less_than_j.intersect(subset) == less_than_j {
+                        let mut new_subset = subset;
+                        new_subset.insert(j as usize);
+                        less_subsets.push(new_subset);
                     }
                 }
 
-                less_subsets = new_subsets;
-            }
-
-            // start with all maximal elements
-            let mut greater_subsets = HashSet::new();
-            for j in 0..self.n {
-                if greater_than_sets[j as usize].is_empty() {
-                    let mut bitset = BitSet::empty();
-                    bitset.insert(j as usize);
-                    for j in greater_than_i {
-                        bitset.insert(j);
-                    }
-                    greater_subsets.insert(bitset);
+                if less_than_i.contains(j as usize) {
+                    // all subsets must contain j to be valid
+                    less_subsets.retain(|s| s.contains(j as usize));
                 }
-            }
-
-            for _ in greater_than_i.len() + 1..(self.n - self.i - 1) as usize {
-                let mut new_subsets = HashSet::new();
-
-                for j in 0..self.n {
-                    if j == i {
-                        continue;
-                    }
-
-                    let less_than_j = self.get_all_less_than(j);
-
-                    // test if adding j would make a valid subset
-                    for subset in &greater_subsets {
-                        let subset = *subset;
-
-                        if !subset.contains(j as usize)
-                            && !less_than_i.contains(j as usize)
-                            && less_than_j.complement().intersect(subset) == subset
-                        {
-                            let mut new_subset = subset;
-                            new_subset.insert(j as usize);
-                            new_subsets.insert(new_subset);
-                        }
-                    }
-                }
-
-                greater_subsets = new_subsets;
             }
 
             sum += less_subsets
                 .into_iter()
-                .map(|s| {
-                    // there can be only one matching subset
-                    let matching = s
-                        .union(BitSet::single(i.into()))
-                        .complement()
-                        .intersect(BitSet::from_u16(((1u32 << self.n) - 1) as u16)) // only take elements less than self.n
-                        ;
-
-                    if greater_subsets.contains(&matching) {
-                        1
-                    } else {
-                        0
-                    }
-                })
-                .sum::<usize>();
+                .filter(|s| s.len() == canonified.i as usize)
+                .count();
         }
 
         sum
@@ -885,7 +853,8 @@ impl Debug for Poset {
                     .collect()
             })
             .collect();
-        let comparisons: Vec<String> = (0..self.n)
+
+        let all_comparisons: Vec<String> = (0..self.n)
             .flat_map(|i| {
                 (0..self.n).flat_map(move |j| {
                     if self.is_less(i, j) {
@@ -901,7 +870,7 @@ impl Debug for Poset {
             .field("n", &self.n)
             .field("i", &self.i)
             .field("adjacency", &adjacency)
-            .field("comparisons", &comparisons)
+            .field("all_comparisons", &all_comparisons)
             .finish()
     }
 }
@@ -1048,14 +1017,23 @@ mod test {
         poset.add_and_close(0, 1);
         poset.canonify();
         dbg!(poset, poset.compatible_posets());
-        // assert_eq!(poset.compatible_posets(), 1134); // i don't know if this is correct
+        // assert_eq!(poset.compatible_posets(), 854); // i don't know if this is correct
 
         let mut poset = Poset::new(10, 4);
         poset.add_and_close(0, 1);
         poset.add_and_close(1, 2);
         poset.canonify();
         dbg!(poset, poset.compatible_posets());
-        // assert_eq!(poset.compatible_posets(), 973); // i don't know if this is correct
+        // assert_eq!(poset.compatible_posets(), 483); // i don't know if this is correct
+
+        let mut poset = Poset::new(6, 1);
+        poset.add_and_close(2, 0);
+        poset.add_and_close(3, 0);
+        poset.add_and_close(4, 1);
+        poset.add_and_close(5, 1);
+        poset.canonify();
+        dbg!(poset, poset.compatible_posets());
+        // assert_eq!(poset.compatible_posets(), 12); // i don't know if this is correct
     }
 
     #[test]

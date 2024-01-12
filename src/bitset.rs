@@ -155,7 +155,7 @@ impl Debug for BitSet {
         f.debug_struct("BitSet")
             .field(
                 "bits",
-                &format!("{:08b}", self.bits).chars().collect::<String>(),
+                &format!("{:016b}", self.bits).chars().collect::<String>(),
             )
             .field(
                 "set_bits",
