@@ -9,30 +9,28 @@ pub struct BitSet {
 
 impl BitSet {
     #[inline]
-    pub fn empty() -> Self {
-        Self::default()
+    pub const fn empty() -> Self {
+        BitSet { bits: 0 }
     }
 
     #[inline]
-    pub fn from_u16(bits: u16) -> Self {
+    pub const fn from_u16(bits: u16) -> Self {
         BitSet { bits }
     }
 
     #[inline]
-    pub fn bits(&self) -> u16 {
+    pub const fn bits(&self) -> u16 {
         self.bits
     }
 
     #[inline]
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.bits == 0
     }
 
     #[inline]
-    pub fn single(i: usize) -> Self {
-        let mut new = Self::empty();
-        new.insert(i);
-        new
+    pub const fn single(i: usize) -> Self {
+        BitSet { bits: 1 << i }
     }
 
     #[inline]
@@ -52,7 +50,7 @@ impl BitSet {
     }
 
     #[inline]
-    pub fn contains(&self, index: usize) -> bool {
+    pub const fn contains(&self, index: usize) -> bool {
         debug_assert!(index < MAX_N);
         let bit_mask = 1 << index;
 
@@ -60,21 +58,21 @@ impl BitSet {
     }
 
     #[inline]
-    pub fn union(self, other: Self) -> Self {
+    pub const fn union(self, other: Self) -> Self {
         BitSet {
             bits: self.bits | other.bits,
         }
     }
 
     #[inline]
-    pub fn intersect(self, other: Self) -> Self {
+    pub const fn intersect(self, other: Self) -> Self {
         BitSet {
             bits: self.bits & other.bits,
         }
     }
 
     #[inline]
-    pub fn complement(self) -> Self {
+    pub const fn complement(self) -> Self {
         const MASK: u16 = ((1u32 << (MAX_N + 1)) - 1) as u16;
         BitSet {
             bits: !self.bits & MASK,
@@ -82,21 +80,18 @@ impl BitSet {
     }
 
     #[inline]
-    pub fn is_disjoint(&self, other: &Self) -> bool {
+    pub const fn is_disjoint(&self, other: &Self) -> bool {
         self.bits & other.bits == 0
     }
 
     #[inline]
-    pub fn len(&self) -> usize {
+    pub const fn len(&self) -> usize {
         self.bits.count_ones() as usize
     }
 
     #[inline]
-    pub fn iter(&self) -> BitSetIter {
-        BitSetIter {
-            bitset: *self,
-            index: 0,
-        }
+    pub const fn iter(&self) -> BitSetIter {
+        BitSetIter { bitset: *self }
     }
 }
 
@@ -106,10 +101,7 @@ impl IntoIterator for BitSet {
 
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
-        BitSetIter {
-            bitset: self,
-            index: 0,
-        }
+        BitSetIter { bitset: self }
     }
 }
 
@@ -122,7 +114,6 @@ impl From<u16> for BitSet {
 
 pub struct BitSetIter {
     bitset: BitSet,
-    index: usize,
 }
 
 impl Iterator for BitSetIter {
@@ -144,9 +135,7 @@ impl Iterator for BitSetIter {
     where
         Self: Sized,
     {
-        (self.index..MAX_N)
-            .filter(|i| self.bitset.contains(*i))
-            .count()
+        self.bitset.len()
     }
 }
 

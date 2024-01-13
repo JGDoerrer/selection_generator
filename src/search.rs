@@ -342,12 +342,10 @@ impl<'a> Search<'a> {
             return Some(false);
         }
 
-        if poset.n() + 1 >= self.n {
-            let compatible_posets = poset.compatible_posets();
+        if self.current_max - max_comparisons >= poset.n() && poset.n() >= self.n {
+            let compatible_posets = poset.num_compatible_posets();
             if compatible_posets == 0 || max_comparisons < compatible_posets.ilog2() as u8 {
                 return Some(false);
-            } else if compatible_posets == 1 {
-                return Some(true);
             }
         }
 

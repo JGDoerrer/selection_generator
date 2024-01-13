@@ -21,11 +21,15 @@ impl Cache {
     const ROW_LEN: usize = 8;
 
     pub fn new(max_bytes: usize) -> Self {
-        let len = max_bytes / (Self::ROW_LEN * size_of::<Entry>());
+        let len = max_bytes / size_of::<[Option<Entry>; Self::ROW_LEN]>();
         Cache {
             arrays: vec![[None; Self::ROW_LEN]; len].into_boxed_slice(),
             len: 0,
         }
+    }
+
+    pub fn max_entries(&self) -> usize {
+        self.arrays.len() * Self::ROW_LEN
     }
 
     pub fn get(&self, poset: &Poset) -> Option<Cost> {
@@ -58,8 +62,9 @@ impl Cache {
         if let Some(index) = index {
             let entry = row.get_mut(index).unwrap().as_mut().unwrap();
             let cost = entry.cost;
-            let priority = KNOWN_MIN_VALUES[poset.n() as usize]
-                [poset.i().min(poset.n() - poset.i()) as usize] as i16;
+            let priority = KNOWN_MIN_VALUES[poset.n() as usize - 1]
+                [poset.i().min(poset.n() - poset.i() - 1) as usize]
+                as i16;
 
             entry.priority = entry.priority.saturating_add(priority);
 
@@ -129,8 +134,8 @@ impl Cache {
             }
         }
 
-        let priority = KNOWN_MIN_VALUES[poset.n() as usize]
-            [poset.i().min(poset.n() - poset.i()) as usize] as i16;
+        let priority = KNOWN_MIN_VALUES[poset.n() as usize - 1]
+            [poset.i().min(poset.n() - poset.i() - 1) as usize] as i16;
 
         row[index] = Some(Entry {
             poset,
@@ -146,7 +151,6 @@ impl Cache {
     pub fn iter(&self) -> CacheIterator {
         CacheIterator {
             cache: self,
-            row: 0,
             index: 0,
         }
     }
@@ -170,27 +174,21 @@ impl Cache {
 
 pub struct CacheIterator<'a> {
     cache: &'a Cache,
-    row: usize,
     index: usize,
 }
 
 impl<'a> Iterator for CacheIterator<'a> {
     type Item = Entry;
     fn next(&mut self) -> Option<Self::Item> {
-        let mut next = self.cache.arrays[self.row]
+        let next = self
+            .cache
+            .arrays
             .iter()
-            .skip(self.index)
             .flatten()
+            .flatten()
+            .skip(self.index)
             .next();
-
-        while next.is_none() && self.row < self.cache.arrays.len() {
-            self.row += 1;
-            next = self.cache.arrays[self.row]
-                .iter()
-                .skip(self.index)
-                .flatten()
-                .next();
-        }
+        self.index += 1;
 
         next.copied()
     }

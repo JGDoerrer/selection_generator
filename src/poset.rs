@@ -1,6 +1,5 @@
 use std::{fmt::Debug, os::raw::c_int};
 
-use hashbrown::HashSet;
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use serde::{Deserialize, Serialize};
 
@@ -76,15 +75,18 @@ impl Poset {
     pub fn get_all_less_than(&self, i: PosetIndex) -> BitSet {
         debug_assert!(i < self.n);
 
-        let mut less_than_i = BitSet::empty();
+        let mut less_than_i = 0;
 
         for j in 0..self.n {
-            if self.is_less(j, i) {
-                less_than_i.insert(j.into());
-            }
+            less_than_i |= (self
+                .get_all_greater_than(j)
+                .intersect(BitSet::single(i as usize))
+                .bits()
+                >> i)
+                << j;
         }
 
-        less_than_i
+        less_than_i.into()
     }
 
     /// is either i < j or j < i?
@@ -94,29 +96,27 @@ impl Poset {
     }
 
     /// returns how many elements are less, unknown or greater than it
+    #[inline]
     pub fn calculate_relations(&self) -> ([u8; MAX_N], [u8; MAX_N], [u8; MAX_N]) {
         let mut less = [0u8; MAX_N];
         let mut greater = [0u8; MAX_N];
         let mut unknown = [0u8; MAX_N];
 
-        for i in 0..self.n {
-            for j in (i + 1)..self.n {
-                if self.is_less(i, j) {
-                    less[j as usize] += 1;
-                    greater[i as usize] += 1;
-                } else if self.is_less(j, i) {
-                    less[i as usize] += 1;
-                    greater[j as usize] += 1;
-                } else {
-                    unknown[i as usize] += 1;
-                    unknown[j as usize] += 1;
-                }
+        for i in 0..self.n as usize {
+            greater[i] = self.get_all_greater_than(i as u8).len() as u8;
+
+            let i_bitset = BitSet::single(i as usize);
+            for j in 0..self.n {
+                less[i] += (self.get_all_greater_than(j).intersect(i_bitset).bits() >> i) as u8;
             }
+
+            unknown[i] = self.n - greater[i] - less[i];
         }
 
         (less, unknown, greater)
     }
 
+    #[inline]
     fn hash(a: u64, b: u64) -> u64 {
         let mut hash: u64 = 9118271012717746669;
 
@@ -174,16 +174,15 @@ impl Poset {
             }
 
             // calc new hash based on neighbours hashes
-            for i in 0..self.n {
-                let i = i as usize;
+            for i in 0..self.n as usize {
                 hash[i] = Self::hash(sum_hash[i], in_out_degree[i]);
             }
         }
 
-        let mut new_indices: [PosetIndex; MAX_N] = (0..MAX_N as PosetIndex)
-            .collect::<Vec<_>>()
-            .try_into()
-            .unwrap();
+        let mut new_indices = [0; MAX_N];
+        for i in 0..self.n {
+            new_indices[i as usize] = i;
+        }
 
         new_indices[0..n].sort_by(|a, b| {
             in_out_degree[*a as usize]
@@ -289,10 +288,19 @@ impl Poset {
         let mut dropped = [false; MAX_N];
         let mut n_less_dropped = 0;
 
-        let (less, _unknown, greater) = self.calculate_relations();
+        let mut less = [0; MAX_N];
+        for i in 0..self.n {
+            for j in 0..self.n {
+                less[i as usize] += (self
+                    .get_all_greater_than(j)
+                    .intersect(BitSet::single(i as usize))
+                    .bits()
+                    >> i) as u8;
+            }
+        }
 
         for i in 0..self.n as usize {
-            if greater[i] > self.i {
+            if self.get_all_greater_than(i as u8).len() > self.i.into() {
                 dropped[i] = true;
             } else if less[i] >= self.n - self.i {
                 dropped[i] = true;
@@ -487,19 +495,34 @@ impl Poset {
 
     fn canonify_lower_matrix(&self) -> Poset {
         let mut new_indices = [0; MAX_N];
-        for i in 0..self.n {
-            new_indices[i as usize] = i;
-        }
+        let mut next_free = 0;
+        let mut indices_used = BitSet::empty();
 
         let mut new = Poset::new(self.n, self.i);
 
-        for i in 0..self.n as usize {
-            for j in 0..self.n as usize {
-                if self.is_less(i as u8, j as u8) && i > j {
-                    new_indices.swap(i, j);
+        while indices_used != BitSet::from_u16(((1u32 << self.n) - 1) as u16) {
+            for i in 0..self.n {
+                if indices_used.contains(i as usize) {
+                    continue;
+                }
+
+                let less_than_i = self.get_all_less_than(i);
+
+                if less_than_i.len() == 0 || less_than_i.intersect(indices_used) == less_than_i {
+                    new_indices[next_free] = i;
+                    next_free += 1;
+                    indices_used.insert(i as usize);
                 }
             }
         }
+
+        new_indices = {
+            let mut mapping = [0; MAX_N];
+            for i in 0..self.n {
+                mapping[new_indices[i as usize] as usize] = i;
+            }
+            mapping
+        };
 
         for i in 0..new.n {
             for j in 0..new.n {
@@ -513,6 +536,7 @@ impl Poset {
         new
     }
 
+    /// for debugging
     fn is_lower_triangle_matrix(&self) -> bool {
         for i in 0..self.n {
             for j in 0..self.n {
@@ -717,11 +741,7 @@ impl Poset {
         comps
     }
 
-    pub fn compatible_posets(&self) -> usize {
-        if self.i == 0 {
-            return self.n as usize;
-        }
-
+    pub fn num_compatible_posets(&self) -> usize {
         let canonified = self.canonify_lower_matrix();
 
         let mut sum = 0;
@@ -742,21 +762,35 @@ impl Poset {
                 let less_than_j = canonified.get_all_less_than(j);
 
                 // try adding j to all previous subsets
-                for i in 0..less_subsets.len() {
-                    let subset = less_subsets[i];
-
-                    // test if adding j would make a valid subset
-                    // we know, that there is no k with p[k] > p[j]
-                    if less_than_j.intersect(subset) == less_than_j {
-                        let mut new_subset = subset;
-                        new_subset.insert(j as usize);
-                        less_subsets.push(new_subset);
-                    }
-                }
-
                 if less_than_i.contains(j as usize) {
                     // all subsets must contain j to be valid
-                    less_subsets.retain(|s| s.contains(j as usize));
+
+                    let mut next_free = 0;
+                    for i in 0..less_subsets.len() {
+                        let subset = less_subsets[i];
+
+                        // test if adding j would make a valid subset
+                        // we know, that there is no k with p[k] > p[j]
+                        if less_than_j.intersect(subset) == less_than_j {
+                            let mut new_subset = subset;
+                            new_subset.insert(j as usize);
+                            less_subsets[next_free] = new_subset;
+                            next_free += 1;
+                        }
+                    }
+                    less_subsets.truncate(next_free);
+                } else {
+                    for i in 0..less_subsets.len() {
+                        let subset = less_subsets[i];
+
+                        // test if adding j would make a valid subset
+                        // we know, that there is no k with p[k] > p[j]
+                        if less_than_j.intersect(subset) == less_than_j {
+                            let mut new_subset = subset;
+                            new_subset.insert(j as usize);
+                            less_subsets.push(new_subset);
+                        }
+                    }
                 }
             }
 
@@ -1011,19 +1045,19 @@ mod test {
 
     #[test]
     fn test_compatible_posets() {
-        assert_eq!(Poset::new(5, 2).compatible_posets(), 30); // 5 * (4 choose 2)
-        assert_eq!(Poset::new(10, 4).compatible_posets(), 1260); // 10 * (9 choose 4)
+        assert_eq!(Poset::new(5, 2).num_compatible_posets(), 30); // 5 * (4 choose 2)
+        assert_eq!(Poset::new(10, 4).num_compatible_posets(), 1260); // 10 * (9 choose 4)
         let mut poset = Poset::new(10, 4);
         poset.add_and_close(0, 1);
         poset.canonify();
-        dbg!(poset, poset.compatible_posets());
+        dbg!(poset, poset.num_compatible_posets());
         // assert_eq!(poset.compatible_posets(), 854); // i don't know if this is correct
 
         let mut poset = Poset::new(10, 4);
         poset.add_and_close(0, 1);
         poset.add_and_close(1, 2);
         poset.canonify();
-        dbg!(poset, poset.compatible_posets());
+        dbg!(poset, poset.num_compatible_posets());
         // assert_eq!(poset.compatible_posets(), 483); // i don't know if this is correct
 
         let mut poset = Poset::new(6, 1);
@@ -1032,25 +1066,25 @@ mod test {
         poset.add_and_close(4, 1);
         poset.add_and_close(5, 1);
         poset.canonify();
-        dbg!(poset, poset.compatible_posets());
+        dbg!(poset, poset.num_compatible_posets());
         // assert_eq!(poset.compatible_posets(), 12); // i don't know if this is correct
     }
 
     #[test]
     fn test() {
-        for n in 8..15 {
+        for n in 3..15 {
             for i in 0..(n + 1) / 2 {
                 let poset = Poset::new(n, i);
                 println!(
                     "n={}, i={}, c={}, {}",
                     n,
                     i,
-                    (poset.compatible_posets() as f32).log2().ceil(),
-                    poset.compatible_posets()
+                    poset.num_compatible_posets().ilog2(),
+                    poset.num_compatible_posets()
                 );
                 assert!(
                     KNOWN_MIN_VALUES[n as usize - 1][i as usize]
-                        > (poset.compatible_posets() as f32).log2().ceil() as u8 + 1
+                        > poset.num_compatible_posets().ilog2() as u8
                 );
             }
         }
