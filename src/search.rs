@@ -3,10 +3,7 @@ use std::time::Instant;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    cache::Cache,
-    poset::{Poset, MAX_N},
-};
+use crate::{cache::Cache, poset::Poset};
 
 pub struct Search<'a> {
     n: u8,
@@ -266,29 +263,6 @@ impl<'a> Search<'a> {
         }
 
         pairs
-    }
-
-    // heuristic priority of performing that comparison
-    fn get_priority(i: u8, j: u8, less: &[u8; MAX_N], greater: &[u8; MAX_N]) -> u8 {
-        let mut priority = 0;
-
-        if less[i as usize] == 1
-            || greater[j as usize] == 1
-            || greater[i as usize] == 1
-            || less[j as usize] == 1
-        {
-            priority += 10;
-        }
-
-        if less[i as usize] == 0
-            || greater[j as usize] == 0
-            || less[j as usize] == 0
-            || greater[i as usize] == 0
-        {
-            priority += 5;
-        }
-
-        priority
     }
 
     fn estimate_hardness(poset: &Poset) -> u32 {
