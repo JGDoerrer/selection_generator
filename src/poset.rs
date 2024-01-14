@@ -120,15 +120,12 @@ impl Poset {
     fn hash(a: u64, b: u64) -> u64 {
         let mut hash: u64 = 9118271012717746669;
 
-        hash = hash.wrapping_mul(a);
-        hash = hash.wrapping_shl(7);
-        hash = hash.wrapping_add(3032928155878307119);
-        hash = hash.wrapping_mul(b);
-        hash = hash.wrapping_shr(9);
-        hash = hash.wrapping_add(16728691407311227577);
-        hash = hash.wrapping_shl(11);
-        hash = hash.wrapping_mul(1536811303);
-        hash = hash.wrapping_shr(15);
+        hash = hash.wrapping_add(a);
+        hash = hash.wrapping_mul(5878307119);
+        hash ^= hash.wrapping_shl(7);
+        hash = hash.wrapping_add(b);
+        hash = hash.wrapping_mul(7311227577);
+        hash ^= hash.wrapping_shl(9);
         hash = hash.wrapping_add(2072583677);
 
         hash

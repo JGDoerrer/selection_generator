@@ -28,8 +28,8 @@ const KNOWN_MIN_VALUES: [&[u8]; 15] = [
     &[10, 13, 15, 17, 18, 18],
     &[11, 14, 17, 18, 19, 20],
     &[12, 15, 18, 20, 21, 22, 23],
-    &[13, 16, 19, 21, 23, 24, 25],
-    &[14, 17, 20, 23, 25, 26, 28, 28],
+    &[13, 16, 19, 21, 23, 24, 24],
+    &[14, 17, 20, 23, 25, 25, 23, 24],
 ];
 
 #[derive(Parser, Debug)]
@@ -79,7 +79,7 @@ fn main() {
             let old_cache_len = cache.len();
             let cost = Search::new(n, i, &mut cache).search();
 
-            if let Cost::Solved(comparisons) = cost {
+            if let Cost::Solved(_comparisons) = cost {
                 if n < KNOWN_MIN_VALUES.len() as u8 {
                     // assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
                 }

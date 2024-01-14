@@ -243,36 +243,25 @@ impl<'a> Search<'a> {
     }
 
     fn get_comparison_pairs(&self, poset: &Poset) -> Vec<(Poset, Poset)> {
-        let mut comparisons = Vec::with_capacity(poset.n() as usize * poset.n() as usize);
+        let mut pairs = Vec::with_capacity(poset.n() as usize * (poset.n() as usize - 1) / 2);
 
         for i in 0..poset.n() {
             for j in (i + 1)..poset.n() {
                 if poset.has_order(i, j) {
                     continue;
                 }
+                let less = poset.with_less(i, j);
+                let greater = poset.with_less(j, i);
 
-                comparisons.push((i, j));
-            }
-        }
+                let pair = if Self::estimate_hardness(&less) < Self::estimate_hardness(&greater) {
+                    (less, greater)
+                } else {
+                    (greater, less)
+                };
 
-        // let (less, _unknown, greater) = poset.calculate_relations();
-
-        // comparisons.sort_by_key(|(i, j)| Self::get_priority(*i, *j, &less, &greater));
-
-        let mut pairs = Vec::with_capacity(comparisons.len());
-
-        for (i, j) in comparisons {
-            let less = poset.with_less(i, j);
-            let greater = poset.with_less(j, i);
-
-            let pair = if Self::estimate_hardness(&less) < Self::estimate_hardness(&greater) {
-                (less, greater)
-            } else {
-                (greater, less)
-            };
-
-            if !pairs.contains(&pair) {
-                pairs.push(pair);
+                if !pairs.contains(&pair) {
+                    pairs.push(pair);
+                }
             }
         }
 
