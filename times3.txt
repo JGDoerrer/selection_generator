@@ -1,3 +1,5 @@
+commit c0cf33c0bb151ea1dac2fee45cf28dc48a3c34ea
+
 cache_entries = 0
 max_cache_entries = 1388888888
 
@@ -288,3 +290,33 @@ cache entries: 72903537
 cache hits: 2355271405
 posets searched: 20510074
 time taken: 0d 10h 14m 37.10547s
+
+found solution for n = 13, i = 6: comparisons = 23
+cache entries: 238566117
+cache hits: 7260293187
+posets searched: 63035340
+time taken: 1d 13h 16m 49.390625s
+
+found solution for n = 14, i = 0: comparisons = 13
+cache entries: 238566118
+cache hits: 2
+posets searched: 1
+time taken: 0d 0h 0m 0.000293909s
+
+found solution for n = 14, i = 1: comparisons = 16
+cache entries: 238566201
+cache hits: 1015
+posets searched: 71
+time taken: 0d 0h 0m 0.023331791s
+
+found solution for n = 14, i = 2: comparisons = 19
+cache entries: 238574360
+cache hits: 137118
+posets searched: 2998
+time taken: 0d 0h 0m 1.0667151s
+
+found solution for n = 14, i = 3: comparisons = 21
+cache entries: 239101533
+cache hits: 22352887
+posets searched: 162098
+time taken: 0d 0h 1m 31.686401s
