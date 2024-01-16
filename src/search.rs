@@ -3,10 +3,7 @@ use std::time::Instant;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    cache::Cache,
-    poset::{Poset, MAX_N},
-};
+use crate::{cache::Cache, poset::Poset};
 
 pub struct Search<'a> {
     n: u8,
@@ -243,65 +240,31 @@ impl<'a> Search<'a> {
     }
 
     fn get_comparison_pairs(&self, poset: &Poset) -> Vec<(Poset, Poset)> {
-        let mut comparisons = Vec::with_capacity(poset.n() as usize * poset.n() as usize);
+        let mut pairs = Vec::with_capacity(poset.n() as usize * (poset.n() as usize - 1) / 2);
 
         for i in 0..poset.n() {
             for j in (i + 1)..poset.n() {
                 if poset.has_order(i, j) {
                     continue;
                 }
+                let less = poset.with_less(i, j);
+                let greater = poset.with_less(j, i);
 
-                comparisons.push((i, j));
-            }
-        }
+                let pair = if Self::estimate_hardness(&less) < Self::estimate_hardness(&greater) {
+                    (less, greater)
+                } else {
+                    (greater, less)
+                };
 
-        // let (less, _unknown, greater) = poset.calculate_relations();
-
-        // comparisons.sort_by_key(|(i, j)| Self::get_priority(*i, *j, &less, &greater));
-
-        let mut pairs = Vec::with_capacity(comparisons.len());
-
-        for (i, j) in comparisons {
-            let less = poset.with_less(i, j);
-            let greater = poset.with_less(j, i);
-
-            let pair = if Self::estimate_hardness(&less) < Self::estimate_hardness(&greater) {
-                (less, greater)
-            } else {
-                (greater, less)
-            };
-
-            if !pairs.contains(&pair) {
-                pairs.push(pair);
+                if !pairs.contains(&pair) {
+                    pairs.push(pair);
+                }
             }
         }
 
         pairs.sort_by_cached_key(|pair| Self::estimate_hardness(&pair.1));
 
         pairs
-    }
-
-    // heuristic priority of performing that comparison
-    fn get_priority(i: u8, j: u8, less: &[u8; MAX_N], greater: &[u8; MAX_N]) -> u8 {
-        let mut priority = 0;
-
-        if less[i as usize] == 1
-            || greater[j as usize] == 1
-            || greater[i as usize] == 1
-            || less[j as usize] == 1
-        {
-            priority += 10;
-        }
-
-        if less[i as usize] == 0
-            || greater[j as usize] == 0
-            || less[j as usize] == 0
-            || greater[i as usize] == 0
-        {
-            priority += 5;
-        }
-
-        priority
     }
 
     fn estimate_hardness(poset: &Poset) -> u32 {

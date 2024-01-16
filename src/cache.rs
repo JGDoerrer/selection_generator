@@ -154,22 +154,6 @@ impl Cache {
             index: 0,
         }
     }
-
-    pub fn counts(&self) -> Vec<u64> {
-        let mut counts = vec![0; 50]; // i hope this is enough
-
-        for row in self.arrays.iter() {
-            for entry in row.iter().flatten() {
-                counts[entry.cost.value() as usize] += 1;
-            }
-        }
-
-        while counts.last().copied() == Some(0) {
-            counts.pop();
-        }
-
-        counts
-    }
 }
 
 pub struct CacheIterator<'a> {
