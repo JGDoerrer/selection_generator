@@ -276,6 +276,8 @@ impl<'a> Search<'a> {
             }
         }
 
+        pairs.sort_by_cached_key(|pair| Self::estimate_hardness(&pair.1));
+
         pairs
     }
 
