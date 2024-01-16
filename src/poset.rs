@@ -95,25 +95,24 @@ impl Poset {
         self.is_less(i, j) || self.is_less(j, i)
     }
 
-    /// returns how many elements are less, unknown or greater than it
+    /// returns how many elements are less or greater than it
     #[inline]
-    pub fn calculate_relations(&self) -> ([u8; MAX_N], [u8; MAX_N], [u8; MAX_N]) {
+    pub fn calculate_relations(&self) -> ([u8; MAX_N], [u8; MAX_N]) {
         let mut less = [0u8; MAX_N];
         let mut greater = [0u8; MAX_N];
-        let mut unknown = [0u8; MAX_N];
 
         for i in 0..self.n as usize {
             greater[i] = self.get_all_greater_than(i as u8).len() as u8;
-
-            let i_bitset = BitSet::single(i as usize);
-            for j in 0..self.n {
-                less[i] += (self.get_all_greater_than(j).intersect(i_bitset).bits() >> i) as u8;
-            }
-
-            unknown[i] = self.n - greater[i] - less[i];
         }
 
-        (less, unknown, greater)
+        for i in 0..self.n as usize {
+            let i_bitset = BitSet::single(i as usize);
+            for j in 0..self.n {
+                less[i] += (!self.get_all_greater_than(j).intersect(i_bitset).is_empty()) as u8;
+            }
+        }
+
+        (less, greater)
     }
 
     #[inline]
@@ -140,12 +139,16 @@ impl Poset {
     fn canonify_mapping(&mut self) -> [PosetIndex; MAX_N] {
         let n = self.n as usize;
 
-        let (less, _unknown, greater) = self.calculate_relations();
+        let mut ordered_with_subsets = [BitSet::empty(); MAX_N];
 
         let mut in_out_degree = [0; MAX_N];
 
         for i in 0..n {
-            in_out_degree[i] = greater[i] as u64 * MAX_N as u64 + less[i] as u64;
+            let greater = self.get_all_greater_than(i as u8);
+            let less = self.get_all_less_than(i as u8);
+
+            ordered_with_subsets[i] = greater.union(less);
+            in_out_degree[i] = greater.len() as u64 * MAX_N as u64 + less.len() as u64;
         }
 
         let mut hash = in_out_degree;
@@ -157,14 +160,8 @@ impl Poset {
                 let mut sum = hash[i as usize];
 
                 // sum hashes of neighbours
-                for j in self.get_all_greater_than(i) {
+                for j in ordered_with_subsets[i as usize] {
                     sum = sum.wrapping_add(hash[j as usize]);
-                }
-
-                for j in 0..self.n {
-                    if self.is_less(j as u8, i) {
-                        sum = sum.wrapping_add(hash[j as usize]);
-                    }
                 }
 
                 sum_hash[i as usize] = sum;
@@ -215,19 +212,10 @@ impl Poset {
         let mut dropped = [false; MAX_N];
         let mut n_less_dropped = 0;
 
-        let mut less = [0; MAX_N];
-        for i in 0..self.n {
-            for j in 0..self.n {
-                less[i as usize] += (self
-                    .get_all_greater_than(j)
-                    .intersect(BitSet::single(i as usize))
-                    .bits()
-                    >> i) as u8;
-            }
-        }
+        let (less, greater) = self.calculate_relations();
 
         for i in 0..self.n as usize {
-            if self.get_all_greater_than(i as u8).len() > self.i.into() {
+            if greater[i] > self.i.into() {
                 dropped[i] = true;
             } else if less[i] >= self.n - self.i {
                 dropped[i] = true;
@@ -451,7 +439,7 @@ impl Poset {
         if self.i == 0 || self.i == self.n - 1 {
             max_comparisons >= self.n - 1
         } else if self.i == 1 {
-            let (less, _unknown, greater) = self.calculate_relations();
+            let (less, greater) = self.calculate_relations();
 
             let mut num_groups = 0;
             let mut s = 0u32;
@@ -465,7 +453,7 @@ impl Poset {
 
             max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 3
         } else if self.i == self.n - 2 {
-            let (less, _unknown, greater) = self.calculate_relations();
+            let (less, greater) = self.calculate_relations();
 
             let mut num_groups = 0;
             let mut s = 0u32;
@@ -479,7 +467,7 @@ impl Poset {
 
             max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 3
         } else if self.n - 1 < KNOWN_MIN_VALUES.len() as u8 {
-            let (less, _unknown, greater) = self.calculate_relations();
+            let (less, greater) = self.calculate_relations();
 
             let mut comps = KNOWN_MIN_VALUES[self.n as usize - 1]
                 [(self.i as usize).min((self.n - self.i - 1) as usize)];

@@ -269,11 +269,11 @@ impl<'a> Search<'a> {
 
     fn estimate_hardness(poset: &Poset) -> u32 {
         let mut hardness = 0;
-        let (less, unknown, greater) = poset.calculate_relations();
+        let (less, greater) = poset.calculate_relations();
 
         for i in 0..poset.n() as usize {
             let d = greater[i].abs_diff(less[i]);
-            let u = unknown[i];
+            let u = poset.n() - greater[i] - less[i];
 
             hardness += (d + 2 * u) as u32;
         }
@@ -314,7 +314,7 @@ impl<'a> Search<'a> {
             }
         }
 
-        let (less, _unknown, greater) = poset.calculate_relations();
+        let (less, greater) = poset.calculate_relations();
 
         for i in start_i..poset.n() {
             if !(less[i as usize] == 0 && greater[i as usize] >= 2) {
