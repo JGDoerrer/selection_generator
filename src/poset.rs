@@ -157,12 +157,12 @@ impl Poset {
                 let mut sum = hash[i as usize];
 
                 // sum hashes of neighbours
-                for j in 0..self.n {
-                    if i == j {
-                        continue;
-                    }
+                for j in self.get_all_greater_than(i) {
+                    sum = sum.wrapping_add(hash[j as usize]);
+                }
 
-                    if self.has_order(i, j) {
+                for j in 0..self.n {
+                    if self.is_less(j as u8, i) {
                         sum = sum.wrapping_add(hash[j as usize]);
                     }
                 }
