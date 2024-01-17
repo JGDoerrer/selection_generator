@@ -320,3 +320,9 @@ cache entries: 239101533
 cache hits: 22352887
 posets searched: 162098
 time taken: 0d 0h 1m 31.686401s
+
+found solution for n = 14, i = 4: comparisons = 23
+cache entries: 278142595
+cache hits: 2567999975
+posets searched: 13931428
+time taken: 0d 6h 23m 34.748047s
