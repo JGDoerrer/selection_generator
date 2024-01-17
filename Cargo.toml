@@ -15,4 +15,5 @@ serde = "1.0.189"
 
 [profile.release]
 debug = true
-# lto = true
+lto = true
+codegen-units = 1
