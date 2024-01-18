@@ -106,7 +106,7 @@ impl Poset {
         }
 
         for i in 0..self.n as usize {
-            let i_bitset = BitSet::single(i as usize);
+            let i_bitset = BitSet::single(i);
             for j in 0..self.n {
                 less[i] += (!self.get_all_greater_than(j).intersect(i_bitset).is_empty()) as u8;
             }
@@ -539,29 +539,65 @@ impl Poset {
             let less_than_i = canonified.get_all_less_than(i);
             let greater_than_i = canonified.get_all_greater_than(i);
 
-            let mut counts = [0; MAX_N];
-            counts[0] = 1;
+            // let mut counts = [0; MAX_N];
+            // counts[0] = 1;
+
+            // for j in 0..canonified.n {
+            //     if j == i || greater_than_i.contains(j as usize) {
+            //         continue;
+            //     }
+
+            //     // try adding j to all previous subsets
+            //     if less_than_i.contains(j as usize) {
+            //         // all subsets must contain j to be valid
+            //         for i in (1..=canonified.i as usize).rev() {
+            //             counts[i] = counts[i - 1];
+            //         }
+            //         counts[0] = 0;
+            //     } else {
+            //         for i in (1..=canonified.i as usize).rev() {
+            //             counts[i] += counts[i - 1];
+            //         }
+            //     }
+            // }
+
+            // sum += counts[canonified.i as usize];
+
+            let mut less_subsets = Vec::new();
+            less_subsets.push(BitSet::empty());
 
             for j in 0..canonified.n {
                 if j == i || greater_than_i.contains(j as usize) {
                     continue;
                 }
+                // try adding j to all previous subsets
+                let less_than_j = canonified.get_all_less_than(j);
 
                 // try adding j to all previous subsets
                 if less_than_i.contains(j as usize) {
                     // all subsets must contain j to be valid
-                    for i in (1..=canonified.i as usize).rev() {
-                        counts[i] = counts[i - 1];
+                    for subset in &mut less_subsets {
+                        subset.insert(j as usize);
                     }
-                    counts[0] = 0;
                 } else {
-                    for i in (1..=canonified.i as usize).rev() {
-                        counts[i] += counts[i - 1];
+                    for i in 0..less_subsets.len() {
+                        let subset = less_subsets[i];
+
+                        // test if adding j would make a valid subset
+                        // we know, that there is no k with p[k] > p[j]
+                        if less_than_j.intersect(subset) == less_than_j {
+                            let mut new_subset = subset;
+                            new_subset.insert(j as usize);
+                            less_subsets.push(new_subset);
+                        }
                     }
                 }
             }
 
-            sum += counts[canonified.i as usize];
+            sum += less_subsets
+                .into_iter()
+                .filter(|s| s.len() == canonified.i as usize)
+                .count();
         }
 
         sum
