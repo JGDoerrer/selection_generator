@@ -303,15 +303,15 @@ impl<'a> Search<'a> {
             }
         }
 
-        if !poset.is_solvable_in(max_comparisons) {
-            return Some(false);
-        }
-
         if self.current_max - max_comparisons >= poset.n() && poset.n() >= self.n {
             let compatible_posets = poset.num_compatible_posets();
             if compatible_posets == 0 || max_comparisons < compatible_posets.ilog2() as u8 {
                 return Some(false);
             }
+        }
+
+        if !poset.is_solvable_in(max_comparisons) {
+            return Some(false);
         }
 
         let (less, greater) = poset.calculate_relations();
