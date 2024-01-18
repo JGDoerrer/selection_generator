@@ -539,8 +539,8 @@ impl Poset {
             let less_than_i = canonified.get_all_less_than(i);
             let greater_than_i = canonified.get_all_greater_than(i);
 
-            let mut less_subsets = Vec::new();
-            less_subsets.push(BitSet::empty());
+            let mut counts = [0; MAX_N];
+            counts[0] = 1;
 
             for j in 0..canonified.n {
                 if j == i || greater_than_i.contains(j as usize) {
@@ -550,23 +550,18 @@ impl Poset {
                 // try adding j to all previous subsets
                 if less_than_i.contains(j as usize) {
                     // all subsets must contain j to be valid
-                    for subset in &mut less_subsets {
-                        subset.insert(j as usize);
+                    for i in (1..=canonified.i as usize).rev() {
+                        counts[i] = counts[i - 1];
                     }
+                    counts[0] = 0;
                 } else {
-                    for i in 0..less_subsets.len() {
-                        // we know, that there is no k with p[k] > p[j]
-                        let mut new_subset = less_subsets[i];
-                        new_subset.insert(j as usize);
-                        less_subsets.push(new_subset);
+                    for i in (1..=canonified.i as usize).rev() {
+                        counts[i] += counts[i - 1];
                     }
                 }
             }
 
-            sum += less_subsets
-                .into_iter()
-                .filter(|s| s.len() == canonified.i as usize)
-                .count();
+            sum += counts[canonified.i as usize];
         }
 
         sum
