@@ -154,17 +154,13 @@ impl Poset {
         let mut hash = in_out_degree;
 
         for _ in 0..2 {
-            let mut sum_hash = [0; MAX_N];
+            let mut sum_hash = hash;
 
-            for i in 0..self.n {
-                let mut sum = hash[i as usize];
-
+            for i in 0..n {
                 // sum hashes of neighbours
-                for j in ordered_with_subsets[i as usize] {
-                    sum = sum.wrapping_add(hash[j as usize]);
+                for j in ordered_with_subsets[i] {
+                    sum_hash[i] = sum_hash[i].wrapping_add(hash[j]);
                 }
-
-                sum_hash[i as usize] = sum;
             }
 
             // calc new hash based on neighbours hashes
@@ -215,7 +211,7 @@ impl Poset {
         let (less, greater) = self.calculate_relations();
 
         for i in 0..self.n as usize {
-            if greater[i] > self.i.into() {
+            if greater[i] > self.i {
                 dropped[i] = true;
             } else if less[i] >= self.n - self.i {
                 dropped[i] = true;
@@ -335,7 +331,7 @@ impl Poset {
 
                 let less_than_i = self.get_all_less_than(i);
 
-                if less_than_i.len() == 0 || less_than_i.intersect(indices_used) == less_than_i {
+                if less_than_i.is_empty() || less_than_i.intersect(indices_used) == less_than_i {
                     new_indices[next_free] = i;
                     next_free += 1;
                     indices_used.insert(i as usize);
@@ -551,37 +547,18 @@ impl Poset {
                     continue;
                 }
 
-                let less_than_j = canonified.get_all_less_than(j);
-
                 // try adding j to all previous subsets
                 if less_than_i.contains(j as usize) {
                     // all subsets must contain j to be valid
-
-                    let mut next_free = 0;
-                    for i in 0..less_subsets.len() {
-                        let subset = less_subsets[i];
-
-                        // test if adding j would make a valid subset
-                        // we know, that there is no k with p[k] > p[j]
-                        if less_than_j.intersect(subset) == less_than_j {
-                            let mut new_subset = subset;
-                            new_subset.insert(j as usize);
-                            less_subsets[next_free] = new_subset;
-                            next_free += 1;
-                        }
+                    for subset in &mut less_subsets {
+                        subset.insert(j as usize);
                     }
-                    less_subsets.truncate(next_free);
                 } else {
                     for i in 0..less_subsets.len() {
-                        let subset = less_subsets[i];
-
-                        // test if adding j would make a valid subset
                         // we know, that there is no k with p[k] > p[j]
-                        if less_than_j.intersect(subset) == less_than_j {
-                            let mut new_subset = subset;
-                            new_subset.insert(j as usize);
-                            less_subsets.push(new_subset);
-                        }
+                        let mut new_subset = less_subsets[i];
+                        new_subset.insert(j as usize);
+                        less_subsets.push(new_subset);
                     }
                 }
             }
