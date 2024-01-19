@@ -74,7 +74,8 @@ impl Cache {
         }
     }
 
-    pub fn insert(&mut self, poset: Poset, cost: Cost) {
+    /// returns true if an entry has been replaced
+    pub fn insert(&mut self, poset: Poset, cost: Cost) -> bool {
         let mut hasher = DefaultHasher::new();
         poset.hash(&mut hasher);
         let hash = hasher.finish();
@@ -106,6 +107,7 @@ impl Cache {
             }
         }
 
+        let mut replace = false;
         let index = match match_index {
             Some(i) => i,
             None => match free_index {
@@ -115,11 +117,11 @@ impl Cache {
                 }
                 None => match lowest_unsolved_prio_index {
                     Some(i) => {
-                        let _old_entry = row[i].unwrap();
+                        replace = true;
                         i
                     }
                     None => {
-                        let _old_entry = row[lowest_prio_index].unwrap();
+                        replace = true;
                         lowest_prio_index
                     }
                 },
@@ -142,6 +144,8 @@ impl Cache {
             cost,
             priority,
         });
+
+        replace
     }
 
     pub fn len(&self) -> usize {
@@ -164,14 +168,7 @@ pub struct CacheIterator<'a> {
 impl<'a> Iterator for CacheIterator<'a> {
     type Item = Entry;
     fn next(&mut self) -> Option<Self::Item> {
-        let next = self
-            .cache
-            .arrays
-            .iter()
-            .flatten()
-            .flatten()
-            .skip(self.index)
-            .next();
+        let next = self.cache.arrays.iter().flatten().flatten().nth(self.index);
         self.index += 1;
 
         next.copied()

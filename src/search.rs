@@ -12,6 +12,8 @@ pub struct Search<'a> {
     cache: &'a mut Cache,
     total_posets: u64,
     cache_hits: u64,
+    cache_misses: u64,
+    cache_replaced: u64,
     start: Instant,
     progress_bars: MultiProgress,
 }
@@ -33,13 +35,21 @@ impl<'a> Search<'a> {
             cache,
             total_posets: 0,
             cache_hits: 0,
+            cache_misses: 0,
+            cache_replaced: 0,
             start: Instant::now(),
             progress_bars: MultiProgress::new(),
         }
     }
 
     fn search_cache(&mut self, poset: &Poset) -> Option<Cost> {
-        self.cache.get_and_do_stuff(poset)
+        let result = self.cache.get_and_do_stuff(poset);
+        if result.is_some() {
+            self.cache_hits += 1;
+        } else {
+            self.cache_misses += 1;
+        }
+        result
     }
 
     fn insert_cache(&mut self, poset: Poset, new_cost: Cost) {
@@ -55,9 +65,15 @@ impl<'a> Search<'a> {
                 (Cost::Minimum(_), Cost::Solved(_)) => new_cost,
             };
 
-            self.cache.insert(poset, res);
+            let replaced = self.cache.insert(poset, res);
+            if replaced {
+                self.cache_replaced += 1;
+            }
         } else {
-            self.cache.insert(poset, new_cost);
+            let replaced = self.cache.insert(poset, new_cost);
+            if replaced {
+                self.cache_replaced += 1;
+            }
         }
     }
 
@@ -95,6 +111,8 @@ impl<'a> Search<'a> {
             );
             println!("cache entries: {}", self.cache.len());
             println!("cache hits: {}", self.cache_hits);
+            println!("cache misses: {}", self.cache_misses);
+            println!("cache replaced: {}", self.cache_replaced);
             println!("posets searched: {}", self.total_posets);
             let duration = Instant::now() - self.start;
             let seconds = duration.as_secs_f32() % 60.0;
@@ -145,7 +163,6 @@ impl<'a> Search<'a> {
         }
 
         if let Some(cost) = self.search_cache(&poset) {
-            self.cache_hits += 1;
             match cost {
                 Cost::Solved(solved) => {
                     return if solved > max_comparisons {
@@ -290,7 +307,6 @@ impl<'a> Search<'a> {
         _depth: u8,
     ) -> Option<bool> {
         if let Some(cost) = self.search_cache(&poset) {
-            self.cache_hits += 1;
             match cost {
                 Cost::Solved(solved) => {
                     return Some(solved <= max_comparisons);
