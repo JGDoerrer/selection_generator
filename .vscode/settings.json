@@ -1,0 +1,29 @@
+{
+  "cSpell.words": [
+    "Archlinux",
+    "Gasarch",
+    "hashbrown",
+    "indicatif",
+    "lessness",
+    "nauty",
+    "Oksanen",
+    "pacman",
+    "poset",
+    "posets",
+    "rustc",
+    "topo"
+  ],
+  "cSpell.ignoreWords": [
+    "AHCI",
+    "APIC",
+    "CLFE",
+    "DDRIO",
+    "EHCI",
+    "SPSR",
+    "STRIX",
+    "Ubox",
+    "Vidia",
+    "simpledrmdrmfb",
+    "wlan"
+  ]
+}
