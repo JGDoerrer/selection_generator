@@ -238,6 +238,17 @@ class PosetCache2 {
     return false;
   }
 
+  inline void clean(const bool is_not_solvable) {
+    for (uint8_t n = 1; n < maxN; ++n) {
+      for (uint8_t i = 0; i < maxN; ++i) {
+        for (uint8_t c = 0; c < maxC; ++c) {
+          const std::lock_guard<std::mutex> lock(mutex_cache[n][i][c]);
+          cache[n][i][c].clean<maxN>(n, i, is_not_solvable);
+        }
+      }
+    }
+  }
+
   inline std::size_t size() {
     std::size_t sum = 0;
     for (uint8_t n = 1; n < maxN; ++n) {

@@ -12,6 +12,98 @@ class Poset {
   uint8_t nthSmallest;
 
  public:
+  bool rec(const Poset<maxN> &poset, std::vector<int> &new_indices, std::vector<bool> &visited, const int n, int k,
+           int a, int b) const {
+    if (a > b) {
+      return false;
+    }
+    if (-1 != new_indices[k]) {
+      int na = a, nb = b;
+      bool maybe = true;
+      for (uint8_t q = 0; q < k; ++q) {
+        if (this->is_less(k, q)) {
+          --na;
+        }
+        if (new_indices[k] != new_indices[q]) {
+          if (poset.is_less(new_indices[k], new_indices[q])) {
+            --nb;
+          }
+          if ((this->is_less(k, q) && !poset.is_less(new_indices[k], new_indices[q])) ||
+              (this->is_less(q, k) && !poset.is_less(new_indices[q], new_indices[k]))) {
+            maybe = false;
+            break;
+          }
+        }
+      }
+
+      if (maybe && (k + 1 == n || rec(poset, new_indices, visited, n, k + 1, na, nb))) {
+        return true;
+      }
+    } else {
+      for (int i = 0; i < n; ++i) {
+        if (!visited[i]) {
+          visited[i] = true;
+          new_indices[k] = i;
+
+          int na = a, nb = b;
+          bool maybe = true;
+          for (uint8_t q = 0; q < k; ++q) {
+            if (this->is_less(k, q)) {
+              --na;
+            }
+            if (new_indices[k] != new_indices[q]) {
+              if (poset.is_less(new_indices[k], new_indices[q])) {
+                --nb;
+              }
+              if ((this->is_less(k, q) && !poset.is_less(new_indices[k], new_indices[q])) ||
+                  (this->is_less(q, k) && !poset.is_less(new_indices[q], new_indices[k]))) {
+                maybe = false;
+                break;
+              }
+            }
+          }
+
+          if (maybe && (k + 1 == n || rec(poset, new_indices, visited, n, k + 1, na, nb))) {
+            return true;
+          }
+          new_indices[k] = -1;
+          visited[i] = false;
+        }
+      }
+    }
+    return false;
+  }
+
+  // is *this subst of poset?
+  // Frage: exisitert eine Permutation new_indicies, sodass Teilmenge?
+  // new: 96.148s': n = 8, i = 3, (cache_l: 5535, cache_u: 2387, noSol: 0, bruteForce: 416), cache = 683
+  // old: 0.089s': n = 8, i = 3, (cache_l: 11590, cache_u: 3508, noSol: 0, bruteForce: 778), cache = 1081
+  bool subsetBruteForce(const Poset &poset) const {
+    if (n != poset.n || nthSmallest != poset.nthSmallest) {
+      return false;
+    }
+
+    std::vector<int> new_indices(poset.n, -1);
+    std::vector<bool> visited(poset.n, false);
+    // for (int i = 0; i < poset.n; ++i) {
+    //   for (int j = 0; j < poset.n; ++j) {
+    //     bool is_same = true;
+    //     for (int k = 0; k < poset.n; ++k) {
+    //       if (this->is_less(i, k) != poset.is_less(j, k)) {
+    //         is_same = false;
+    //         break;
+    //       }
+    //     }
+    //     if (is_same && -1 == new_indices[i] && !visited[j]) {
+    //       new_indices[i] = j;
+    //       visited[j] = true;
+    //     }
+    //   }
+    // }
+
+    return rec(poset, new_indices, visited, poset.n, 0, this->count(), poset.count());
+  }
+
   std::bitset<maxN * maxN> comparisonTable;
 
   inline std::size_t getComparisonTableSize() const { return this->n * this->n; }
@@ -485,7 +577,36 @@ class Poset {
   }
 
   inline Poset<maxN> &canonify(Normalizer<maxN> &normalizer) {
-    if constexpr (true) {
+    // static std::array<std::array<int, maxN>, maxN> table;
+    // static int debug = 0;
+
+    // for (uint8_t i = 0; i < this->n; ++i) {
+    //   for (uint8_t j = 0; j < this->n; ++j) {
+    //     if (this->is_less(i, j)) {
+    //       ++table[i][j];
+    //     }
+    //   }
+    // }
+    // ++debug;
+    // if (debug % 1000000 == 0) {
+    //   int max = 0;
+    //   for (uint8_t i = 0; i < this->n; ++i) {
+    //     for (uint8_t j = 0; j < this->n; ++j) {
+    //       max = std::max(max, table[i][j]);
+    //     }
+    //   }
+    //   for (uint8_t i = 0; i < this->n; ++i) {
+    //     for (uint8_t j = 0; j < this->n; ++j) {
+    //       std::cout << (int)std::ceil(1000 * table[i][j] / float(max)) << "\t ";
+    //     }
+    //     std::cout << std::endl;
+    //   }
+    // }
+
+    constexpr bool ONLY_NAUTY = false;
+    if constexpr (ONLY_NAUTY) {
+      return normalizer.canonify_nauty(*this);
+    } else {
       uint8_t less[this->n];
       uint8_t greater[this->n];
       this->calculate_relations(less, greater);
@@ -496,74 +617,71 @@ class Poset {
       }
 
       std::vector<uint64_t> hash = in_out_degree;
-
-      for (int q = 0; q < 5; ++q) {
+      for (int q = 0; q < 2; ++q) {
         uint64_t sum_hash[maxN];
         for (int k = 0; k < maxN; ++k) {
           sum_hash[k] = 0;
         }
 
-        for (size_t i = 0; i < n; ++i) {
+        for (size_t i = 0; i < this->n; ++i) {
           uint64_t sum = hash[i];
 
-          for (size_t j = 0; j < n; ++j) {
-            if (i == j) {
-              continue;
-            }
-
-            if (this->is_less(i, j) || this->is_less(j, i)) {
-              sum = sum ^ hash[j];
+          for (size_t j = 0; j < this->n; ++j) {
+            if (i != j && (this->is_less(i, j) || this->is_less(j, i))) {
+              sum ^= hash[j];
             }
           }
 
           sum_hash[i] = sum;
         }
 
-        for (size_t i = 0; i < n; ++i) {
-          hash[i] = this->hash1(sum_hash[i], in_out_degree[i]);
+        for (size_t i = 0; i < this->n; ++i) {
+          hash[i] = sum_hash[i] * (maxN * maxN) + in_out_degree[i];
         }
       }
 
       std::vector<int> new_indices(this->n);
       std::iota(new_indices.begin(), new_indices.end(), 0);
 
-      std::sort(new_indices.begin(), new_indices.end(), [&](int a, int b) {
-        return std::tie(in_out_degree[a], hash[a]) < std::tie(in_out_degree[b], hash[b]);
+      std::stable_sort(new_indices.begin(), new_indices.end(), [&](const int a, const int b) {
+        return in_out_degree[a] < in_out_degree[b] || (in_out_degree[a] == in_out_degree[b] && hash[a] < hash[b]);
       });
 
-      std::vector<int> duplicats;
+      const Poset<maxN> oldPoset(*this);
+      bool isUnique = true;
       for (uint8_t i = 1; i < this->n; ++i) {
-        if (std::tie(in_out_degree[new_indices[i - 1]], hash[new_indices[i - 1]]) ==
-            std::tie(in_out_degree[new_indices[i]], hash[new_indices[i]])) {
-          duplicats.push_back(i);
-        }
-      }
-
-      bool isUnique = false;
-      if (duplicats.size() <= 5) {
-        isUnique = true;
-        auto old = *this;
-        for (int i : duplicats) {
+        if (in_out_degree[new_indices[i - 1]] == in_out_degree[new_indices[i]] &&
+            hash[new_indices[i - 1]] == hash[new_indices[i]]) {
           this->swap(new_indices[i - 1], new_indices[i]);
-          if (*this != old) {
+          if (*this != oldPoset) {
             isUnique = false;
             break;
           }
         }
       }
 
-      if (isUnique) {
-        const Poset<maxN> oldPoset(*this);
-        for (uint8_t i = 0; i < this->n; ++i) {
-          for (uint8_t j = 0; j < this->n; ++j) {
-            this->set_less(i, j, oldPoset.is_less(new_indices[i], new_indices[j]));
-          }
-        }
-        return *this;
-      }
-    }
+      if (!isUnique) {
+        new_indices = normalizer.canonify_nauty_indicies(*this);
 
-    return normalizer.canonify_nauty(*this);
+        std::stable_sort(new_indices.begin(), new_indices.end(), [&](const int a, const int b) {
+          return in_out_degree[a] < in_out_degree[b] || (in_out_degree[a] == in_out_degree[b] && hash[a] < hash[b]);
+        });
+      }
+
+      for (uint8_t i = 0; i < this->n; ++i) {
+        for (uint8_t j = 0; j < this->n; ++j) {
+          this->set_less(i, j, oldPoset.is_less(new_indices[i], new_indices[j]));
+        }
+      }
+
+      for (uint8_t i = 0; i < this->n; ++i) {
+        for (uint8_t j = i + 1; j < this->n; ++j) {
+          assert(!this->is_less(i, j));
+        }
+      }
+
+      return *this;
+    }
   }
 
   inline Poset<maxN> &normalize(Normalizer<maxN> &normalizer) { return this->reduce_n().canonify(normalizer); }
@@ -643,7 +761,7 @@ std::unordered_set<Poset<maxN>> filter(const std::unordered_set<Poset<maxN>> &un
   for (const Poset<maxN> &item : unfiltered) {
     bool found = false;
     for (const Poset<maxN> &temp : unfiltered) {
-      if (temp != item && temp.subset_of(item)) {
+      if (temp != item && temp.subsetBruteForce(item)) {
         found = true;
         break;
       }
@@ -769,4 +887,5 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
   }
 
   return tempSet[n][k].entries(n, k, false);
+  // return filter(tempSet[n][k].entries(n, k, false));
 }

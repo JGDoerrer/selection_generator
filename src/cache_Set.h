@@ -61,7 +61,7 @@ class PosetCacheSet {
 #endif
   }
 
-  inline bool check_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+  inline bool check_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons, bool special = false) {
     const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()]);
     const auto temp = cache[poset.size()][poset.nth()].find(poset);
     if (temp != cache[poset.size()][poset.nth()].end() && remainingComparisons <= temp->second) {
@@ -69,15 +69,21 @@ class PosetCacheSet {
     }
 #ifdef PosetShadowing
     for (const auto &it : cache[poset.size()][poset.nth()]) {
-      if (remainingComparisons <= it.second && poset.subset_of(it.first)) {
-        return true;
+      if (special) {
+        if (remainingComparisons <= it.second && poset.subsetBruteForce(it.first)) {
+          return true;
+        }
+      } else {
+        if (remainingComparisons <= it.second && poset.subset_of(it.first)) {
+          return true;
+        }
       }
     }
 #endif
     return false;
   }
 
-  inline bool check_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+  inline bool check_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons, bool special = false) {
     const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()]);
     const auto temp = cache[poset.size()][poset.nth()].find(poset);
     if (temp != cache[poset.size()][poset.nth()].end() && remainingComparisons >= temp->second) {
@@ -85,8 +91,14 @@ class PosetCacheSet {
     }
 #ifdef PosetShadowing
     for (const auto &it : cache[poset.size()][poset.nth()]) {
-      if (remainingComparisons >= it.second && it.first.subset_of(poset)) {
-        return true;
+      if (special) {
+        if (remainingComparisons >= it.second && it.first.subsetBruteForce(poset)) {
+          return true;
+        }
+      } else {
+        if (remainingComparisons >= it.second && it.first.subset_of(poset)) {
+          return true;
+        }
       }
     }
 #endif
@@ -119,14 +131,14 @@ class CacheSet {
   PosetCacheSet<maxN, maxC> cache_not_solvable, cache_solvable;
 
  public:
-  inline bool check_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+  inline bool check_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons, bool special = false) {
     assert(2 * poset.nth() < poset.size());
-    return cache_not_solvable.check_not_solvable(poset, remainingComparisons);
+    return cache_not_solvable.check_not_solvable(poset, remainingComparisons, special);
   }
 
-  inline bool check_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
+  inline bool check_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons, bool special = false) {
     assert(2 * poset.nth() < poset.size());
-    return cache_solvable.check_solvable(poset, remainingComparisons);
+    return cache_solvable.check_solvable(poset, remainingComparisons, special);
   }
 
   inline void insert_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {

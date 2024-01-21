@@ -72,6 +72,15 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
     result = NoSolution;
     ++statistics.noSolution;
   } else {
+    // if (cache.check_not_solvable(poset, remainingComparisons, true)) {
+    //   ++statistics.noSolution;
+    //   return NoSolution;
+    // } else if (cache.check_solvable(poset, remainingComparisons, true)) {
+    //   ++statistics.noSolution;
+    //   return FoundSolution;
+    // }
+    // old: time '2.076s + 3.385s = 5.461s': n = 10, i = 4, (cache_l: 1010707, cache_u: 214307, noSol: 2, bruteForce:
+    // 37812), cache = 55157, comparisons: 16
     ++statistics.bruteForce;
 
     const auto recursiveSearch = [&](const std::atomic<bool> &breakCondition, const int i, const int j,
@@ -170,7 +179,6 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
         for (int i = 0; i < poset.size(); ++i) {
           for (int j = i + 1; j < poset.size(); ++j) {
             if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
-              // Soll zuerst i<j oder j<i vergleicht werden? -> langsamer
               if (cmp({j, i}, {i, j})) {
                 temp.push_back({i, j});
               } else {
@@ -368,7 +376,7 @@ int main() {
 
   // test123dash[11][3] = {0.689856, 11.697412};
 
-  constexpr size_t nBound = 9;
+  constexpr size_t nBound = 6;
 
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
   std::cout.precision(3);
