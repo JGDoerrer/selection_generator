@@ -192,18 +192,18 @@ class PosetCache {
    * 3. dimension: remaining Comparisons, 0 <= c <= maxC
    */
   PosetSet<maxN> cache[maxN][maxN][maxC];
-  std::mutex mutex_cache[maxN][maxN][maxC];
+  std::shared_mutex mutex_cache[maxN][maxN][maxC];
 
  public:
   inline void insert(const Poset<maxN> &poset, const uint8_t remainingComparisons, const bool is_not_solvable) {
     assert(2 * poset.nth() < poset.size());
-    const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()][remainingComparisons]);
+    const std::lock_guard<std::shared_mutex> lock(mutex_cache[poset.size()][poset.nth()][remainingComparisons]);
     cache[poset.size()][poset.nth()][remainingComparisons].insert(poset, is_not_solvable);
   }
 
   inline bool check_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
     for (int c = remainingComparisons; c < maxC; ++c) {
-      const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()][c]);
+      const std::shared_lock<std::shared_mutex> lock(mutex_cache[poset.size()][poset.nth()][c]);
       if (cache[poset.size()][poset.nth()][c].contains(poset, true)) {
         return true;
       }
@@ -213,7 +213,7 @@ class PosetCache {
 
   inline bool check_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
     for (int c = remainingComparisons; c >= 0; --c) {
-      const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()][c]);
+      const std::shared_lock<std::shared_mutex> lock(mutex_cache[poset.size()][poset.nth()][c]);
       if (cache[poset.size()][poset.nth()][c].contains(poset, false)) {
         return true;
       }
@@ -225,7 +225,7 @@ class PosetCache {
     for (uint8_t n = 1; n < maxN; ++n) {
       for (uint8_t i = 0; i < maxN; ++i) {
         for (uint8_t c = 0; c < maxC; ++c) {
-          const std::lock_guard<std::mutex> lock(mutex_cache[n][i][c]);
+          const std::lock_guard<std::shared_mutex> lock(mutex_cache[n][i][c]);
           cache[n][i][c].clean<maxN>(n, i, is_not_solvable);
         }
       }
@@ -237,7 +237,7 @@ class PosetCache {
     for (uint8_t n = 1; n < maxN; ++n) {
       for (uint8_t i = 0; i < maxN; ++i) {
         for (uint8_t c = 0; c < maxC; ++c) {
-          const std::lock_guard<std::mutex> lock(mutex_cache[n][i][c]);
+          const std::lock_guard<std::shared_mutex> lock(mutex_cache[n][i][c]);
           sum += cache[n][i][c].size(n);
         }
       }

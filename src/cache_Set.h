@@ -20,11 +20,11 @@ template <std::size_t maxN, std::size_t maxC>
 class PosetCacheSet {
  private:
   std::unordered_map<Poset<maxN>, uint8_t> cache[globalMaxN][globalMaxN];
-  std::mutex mutex_cache[globalMaxN][globalMaxN];
+  std::shared_mutex mutex_cache[globalMaxN][globalMaxN];
 
  public:
   inline void insert_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
-    const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()]);
+    const std::lock_guard<std::shared_mutex> lock(mutex_cache[poset.size()][poset.nth()]);
     const auto temp = cache[poset.size()][poset.nth()].find(poset);
     if (temp == cache[poset.size()][poset.nth()].end()) {
       cache[poset.size()][poset.nth()][poset] = remainingComparisons;
@@ -43,7 +43,7 @@ class PosetCacheSet {
   }
 
   inline void insert_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
-    const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()]);
+    const std::lock_guard<std::shared_mutex> lock(mutex_cache[poset.size()][poset.nth()]);
     const auto temp = cache[poset.size()][poset.nth()].find(poset);
     if (temp == cache[poset.size()][poset.nth()].end()) {
       cache[poset.size()][poset.nth()][poset] = remainingComparisons;
@@ -62,7 +62,7 @@ class PosetCacheSet {
   }
 
   inline bool check_not_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons, bool special = false) {
-    const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()]);
+    const std::shared_lock<std::shared_mutex> lock(mutex_cache[poset.size()][poset.nth()]);
     const auto temp = cache[poset.size()][poset.nth()].find(poset);
     if (temp != cache[poset.size()][poset.nth()].end() && remainingComparisons <= temp->second) {
       return true;
@@ -84,7 +84,7 @@ class PosetCacheSet {
   }
 
   inline bool check_solvable(const Poset<maxN> &poset, const uint8_t remainingComparisons, bool special = false) {
-    const std::lock_guard<std::mutex> lock(mutex_cache[poset.size()][poset.nth()]);
+    const std::shared_lock<std::shared_mutex> lock(mutex_cache[poset.size()][poset.nth()]);
     const auto temp = cache[poset.size()][poset.nth()].find(poset);
     if (temp != cache[poset.size()][poset.nth()].end() && remainingComparisons >= temp->second) {
       return true;
@@ -111,7 +111,7 @@ class PosetCacheSet {
     size_t sum = 0;
     for (uint8_t n = 0; n < globalMaxN; ++n) {
       for (uint8_t i = 0; i < globalMaxN; ++i) {
-        const std::lock_guard<std::mutex> lock(mutex_cache[n][i]);
+        const std::shared_lock<std::shared_mutex> lock(mutex_cache[n][i]);
         sum += cache[n][i].size();
       }
     }
