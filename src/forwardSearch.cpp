@@ -1,33 +1,6 @@
 #include "main.h"
 
-constexpr bool SORT_DFS_BRANCHES = true;
 constexpr bool TOP_TO_BOTTOM_SEARCH = true;
-
-const auto randomDataTable = ([]() {
-  std::array<std::array<std::array<std::array<std::pair<int, int>, globalMaxN>, globalMaxN>, globalMaxComparisons>,
-             globalMaxN>
-      randomDataTable;
-  auto rng = std::default_random_engine{1234};
-
-  for (int n = 0; n < globalMaxN; ++n) {
-    for (int comparison = 0; comparison < globalMaxComparisons; ++comparison) {
-      std::vector<std::pair<int, int>> items;
-      for (int i = 0; i < n; ++i) {
-        for (int j = i + 1; j < n; ++j) {
-          items.push_back({i, j});
-        }
-      }
-      std::shuffle(items.begin(), items.end(), rng);
-      int pos = 0;
-      for (int i = 0; i < n; ++i) {
-        for (int j = i + 1; j < n; ++j) {
-          randomDataTable[n][comparison][i][j] = items[pos++];
-        }
-      }
-    }
-  }
-  return randomDataTable;
-})();
 
 template <size_t maxN>
 Poset<maxN> createPosetWithComparison(Normalizer<maxN> &normalizer, Poset<maxN> poset, const uint16_t i,
@@ -37,19 +10,9 @@ Poset<maxN> createPosetWithComparison(Normalizer<maxN> &normalizer, Poset<maxN> 
   return poset;
 };
 
-int factorial(int n) {
-  if (n <= 1) {
-    return 1;
-  } else {
-    return n * factorial(n - 1);
-  }
-}
-
 static int counter = 0;
+std::array<std::array<std::array<int, 15>, 15>, 25> formula;
 
-std::array<std::array<std::pair<float, float>, 15>, 15> test123dash;
-// std::array<std::array<std::array<float, 25>, 15>, 15> test123dash2;
-std::array<std::array<std::array<float, 25>, 15>, 15> test123;
 /// @return true, wenn Median in poset in max. `maxComparisons` gefunden werden kann
 template <size_t maxN, size_t maxC>
 SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN> &poset, Cache<maxN, maxC> &cache,
@@ -79,8 +42,6 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
     //   ++statistics.noSolution;
     //   return FoundSolution;
     // }
-    // old: time '2.076s + 3.385s = 5.461s': n = 10, i = 4, (cache_l: 1010707, cache_u: 214307, noSol: 2, bruteForce:
-    // 37812), cache = 55157, comparisons: 16
     ++statistics.bruteForce;
 
     const auto recursiveSearch = [&](const std::atomic<bool> &breakCondition, const int i, const int j,
@@ -132,15 +93,9 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
         for (int i = 0; i < poset.size(); ++i) {
           for (int j = i + 1; j < poset.size(); ++j) {
             if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
-              // if (std::max(table[i][j], table[j][i]) > pow(2, remainingComparisons - 1) * factorial(poset.nth()) *
-              //                                              factorial(poset.size() - poset.nth() - 1)) {
-              //   continue;
-              // }
-              const auto [a, b] = test123dash[poset.size()][poset.nth()];
-              if ((float)log2(std::max(table[i][j], table[j][i])) > a * remainingComparisons + b) {
+              if (std::min(table[i][j], table[j][i]) > formula[remainingComparisons - 1][poset.size()][poset.nth()]) {
                 ++counter;
                 continue;
-              } else {
               }
               if (cmp({i, j}, {j, i})) {
                 temp.push_back({i, j});
@@ -152,21 +107,14 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
 
           std::sort(temp.rbegin(), temp.rend(), cmp);
 
-          float temp1 = 1000;
           for (const auto &[i, j] : temp) {
-            auto tem = recursiveSearch(atomicBreak, i, j, normalizer);
-            if (tem == FoundSolution) {
+            if (recursiveSearch(atomicBreak, i, j, normalizer) == FoundSolution) {
               result = FoundSolution;
-              temp1 = std::min(temp1, float(log2(std::max(table[i][j], table[j][i]))) + 0.00001f);
               break;
             }
           }
-          if (1000 != temp1) {
-            test123[poset.size()][poset.nth()][remainingComparisons] =
-                std::max(test123[poset.size()][poset.nth()][remainingComparisons], temp1);
-          }
         }
-      } else if constexpr (SORT_DFS_BRANCHES) {
+      } else {
         uint8_t less[poset.size()];
         uint8_t greater[poset.size()];
         poset.calculate_relations(less, greater);
@@ -194,15 +142,6 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
           result = recursiveSearch(atomicBreak, i, j, normalizer);
           if (result == FoundSolution) {
             break;
-          }
-        }
-      } else {
-        for (int i = 0; i < poset.size() && result != FoundSolution; ++i) {
-          for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
-            const auto [new_i, new_j] = randomDataTable[poset.size()][remainingComparisons][i][j];
-            if (!poset.is_less(new_i, new_j) && !poset.is_less(new_j, new_i)) {
-              result = recursiveSearch(atomicBreak, new_i, new_j, normalizer);
-            }
           }
         }
       }
@@ -298,85 +237,16 @@ const std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nano
 
 using namespace std::chrono;
 
-void linearRegression(const std::vector<double> &x, const std::vector<double> &y, double &a, double &b) {
-  int n = x.size();
-
-  // Calculate necessary sums
-  double sumX = 0.0, sumY = 0.0, sumXY = 0.0, sumX2 = 0.0;
-  for (int i = 0; i < n; ++i) {
-    sumX += x[i];
-    sumY += y[i];
-    sumXY += x[i] * y[i];
-    sumX2 += x[i] * x[i];
+int main() {
+  for (int c = 1; c <= globalMaxComparisons; ++c) {
+    for (int n = 0; n < globalMaxN; ++n) {
+      for (int k = 0; k < n; ++k) {
+        formula[c][n][k] = pow(2, c) * factorial(k) * factorial(n - k - 1);
+      }
+    }
   }
 
-  // Calculate coefficients 'a' and 'b'
-  a = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-  b = (sumY - a * sumX) / n;
-}
-
-int main() {
-  // for (int n = 0; n < 15; ++n) {
-  //   for (int k = 0; k < 15; ++k) {
-  //     test123dash[n][k] = {1, log2(factorial(k) * factorial(n - k - 1)) - 1};
-  //     std::cout << "test123dash[" << n << "][" << k << "] = {" << test123dash[n][k].first << ", "
-  //               << test123dash[n][k].second << "};" << std::endl;
-  //   }
-  // }
-
-  // test123dash[3][1] = {1.000000, 0.000000};
-
-  // test123dash[4][1] = {1.000000, 0.000000};
-
-  // test123dash[5][1] = {1.000000, 0.321938};
-  // test123dash[5][2] = {1.000000, 0.169935};
-
-  // test123dash[6][1] = {1.000000, 2.321938};
-  // test123dash[6][2] = {1.000000, 1.584972};
-
-  // test123dash[7][1] = {1.000000, 3.714255};
-  // test123dash[7][2] = {1.000000, 2.906900};
-  // test123dash[7][3] = {1.000000, 2.584972};
-
-  // test123dash[8][2] = {1.000000, 5.076825};
-  // test123dash[8][3] = {1.000000, 4.491862};
-
-  // test123dash[9][3] = {1.000000, 6.228828 * 0.6};
-  // test123dash[9][4] = {1.000000, 5.960011};
-
-  // test123dash[3][1] = {0.584962, -0.169915};
-
-  // test123dash[4][1] = {1.000000, -0.415028};
-
-  // test123dash[5][1] = {0.875489, 0.944494};
-  // test123dash[5][2] = {0.868483, 0.564487};
-
-  // test123dash[6][1] = {0.709474, 3.484043};
-  // test123dash[6][2] = {0.672067, 2.896703};
-
-  // test123dash[7][1] = {0.875489, 4.461324};
-  // test123dash[7][2] = {0.718510, 4.290105};
-  // test123dash[7][3] = {0.869290, 3.107810};
-
-  // test123dash[8][1] = {0.600000, 8.299217};
-  // test123dash[8][2] = {0.531139, 6.996285};
-  // test123dash[8][3] = {0.865463, 5.030012};
-
-  // test123dash[9][1] = {0.660964, 9.918396};
-  // test123dash[9][2] = {0.759808, 8.019551};
-  // test123dash[9][3] = {0.520029, 8.243977};
-  // test123dash[9][4] = {0.538434, 8.084798};
-
-  // test123dash[10][2] = {0.574608, 11.513998};
-  // test123dash[10][3] = {0.511384, 10.770338};
-  // // test123dash[10][4] = {0.666737, 8.731593};
-  // test123dash[10][4] = {0.681425, 8.295392};
-  // // test123dash[10][4] = {0.7009844, 8.794294};
-  // // test123dash[10][4] = {0.72161157, 7.85334371};
-
-  // test123dash[11][3] = {0.689856, 11.697412};
-
-  constexpr size_t nBound = 6;
+  constexpr size_t nBound = 9;
 
   std::cout.setf(std::ios::fixed, std::ios::floatfield);
   std::cout.precision(3);
@@ -428,76 +298,8 @@ int main() {
         std::cerr << "Error, maxComparisons exceeded" << std::endl;
         exit(0);
       }
-
-      if (false && n == 9 && nthSmallest == 4) {
-        std::cout.precision(6);
-        for (int n = 0; n <= 11; ++n) {
-          for (int k = 0; k < (n + 1) / 2; ++k) {
-            // for (int i = 0; i < 25; ++i) {
-            //   if (n == 10 && k == 4 && 0 != test123[n][k][i]) {
-            //     std::cout << i << ": " << test123[n][k][i] << std::endl;
-            //   }
-            // }
-
-            double a, b;
-            std::vector<double> x, y;
-            for (int i = 0; i < 25; ++i) {
-              if (0 != test123[n][k][i]) {
-                x.push_back(i);
-                y.push_back(test123[n][k][i]);
-              }
-            }
-            // linearRegression(x, y, a, b);
-            // for (int i = 0; i < 25; ++i) {
-            //   if (0 != test123[n][k][i]) {
-            //     float temp = a * i + b - test123[n][k][i];
-            //     if (temp < 0) {
-            //       b -= temp;
-            //     }
-            //   }
-            // }
-            // b = n;
-            // a = 0;
-            // for (int i = 0; i < 25; ++i) {
-            //   if (0 != test123[n][k][i]) {
-            //     float temp = (test123[n][k][i] - n) / i;
-            //     if (temp > a) {
-            //       a = temp;
-            //     }
-            //   }
-            // }
-
-            a = 1;
-            b = 0;
-            for (int i = 0; i < 25; ++i) {
-              if (0 != test123[n][k][i]) {
-                float temp = float(test123[n][k][i]) / a - i;
-                if (temp > b) {
-                  b = temp;
-                }
-              }
-            }
-
-            if (x.size() >= 2) {
-              // std::cout << "test123dash[" << n << "][" << k << "] = {" << a << ", " << b << "};" << std::endl;
-            }
-          }
-        }
-        std::cout << counter << std::endl;
-        exit(0);
-      }
     }
     if (n >= nBound) std::cout << std::endl;
   }
   return 0;
 }
-
-// int main() {
-//   Poset<globalMaxN> poset{4, 0};
-//   poset.add_less(0, 2);
-//   poset.add_less(1, 2);
-//   poset.add_less(1, 3);
-
-//   std::cout << get_linear_extensions(poset) << std::endl;
-//   std::cout << "[[0, 2, 5, 4], [3, 0, 5, 5], [0, 0, 0, 2], [1, 0, 3, 0]]" << std::endl;
-// }

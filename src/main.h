@@ -72,7 +72,14 @@ int upper_bound(const int n, int t) {
   return std::min(res1, res2);
 }
 
-// TODO: untested
+int factorial(const int n) {
+  if (n <= 1) {
+    return 1;
+  } else {
+    return n * factorial(n - 1);
+  }
+}
+
 double nCr(const int n, int k) {
   double result = 1;
   for (; k > 0; --k) {
