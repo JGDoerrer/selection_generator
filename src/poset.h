@@ -228,7 +228,7 @@ class Poset {
           // !poset.is_less(i1, j1): der zu entfernende Vergleich existiert gar nicht
           // poset.is_redundant(i1, j1): wenn es sich bei (i1, j1) um eine redundante Kante handelt, muss dieser Pfad
           // auch nicht weiterverfolgt werden? (Beweis: tbd)
-          if (i1 == j1 || abs(j - i) >= abs(j1 - i1) || !poset.is_less(i1, j1) || poset.is_redundant(i1, j1)) {
+          if (i1 == j1 || abs((int)j - (int)i) >= abs((int)j1 - (int)i1) || !poset.is_less(i1, j1) || poset.is_redundant(i1, j1)) {
             continue;
           }
 
