@@ -2,7 +2,6 @@
 #include <bits/stdc++.h>
 
 #include "poset.h"
-#include "util.h"
 
 // A special case of option (b) is 0 < MAXN ≤ WORDSIZE, which implies that a set
 // consists of a single setword. Some of the critical routines in nauty have special code to

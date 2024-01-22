@@ -4,25 +4,6 @@
 #include "normalizer.h"
 // =============
 #include "cache_Tree.h"
-// ==
-// #include <boost/graph/adjacency_matrix.hpp>
-// #include <boost/graph/vf2_sub_graph_iso.hpp>
-
-// struct Graph : public boost::adjacency_matrix<boost::directedS> {
-//   using Impl = boost::adjacency_matrix<boost::directedS>;
-//   // using Impl::Impl;
-//   // using Impl::operator=;
-// };
-
-// namespace boost {
-// template <>
-// struct graph_traits<Graph> : graph_traits<Graph::Impl> {
-//   struct traversal_category : boost::bidirectional_graph_tag, Graph::Impl::traversal_category {};
-// };
-
-// // O(2N)
-// auto degree(Graph::vertex_descriptor u, Graph const &g) { return size(out_edges(u, g)) + size(in_edges(u, g)); }
-// };  // namespace boost
 
 template <std::size_t maxN>
 class Poset {
@@ -31,121 +12,6 @@ class Poset {
   uint8_t nthSmallest;
 
  public:
-  bool rec(const Poset<maxN> &poset, std::vector<int> &new_indices, std::vector<bool> &visited, const int n, int k,
-           int a, int b) const {
-    if (a > b) {
-      return false;
-    }
-    if (-1 != new_indices[k]) {
-      int na = a, nb = b;
-      bool maybe = true;
-      for (uint8_t q = 0; q < k; ++q) {
-        if (this->is_less(k, q)) {
-          --na;
-        }
-        if (new_indices[k] != new_indices[q]) {
-          if (poset.is_less(new_indices[k], new_indices[q])) {
-            --nb;
-          }
-          if ((this->is_less(k, q) && !poset.is_less(new_indices[k], new_indices[q])) ||
-              (this->is_less(q, k) && !poset.is_less(new_indices[q], new_indices[k]))) {
-            maybe = false;
-            break;
-          }
-        }
-      }
-
-      if (maybe && (k + 1 == n || rec(poset, new_indices, visited, n, k + 1, na, nb))) {
-        return true;
-      }
-    } else {
-      for (int i = 0; i < n; ++i) {
-        if (!visited[i]) {
-          visited[i] = true;
-          new_indices[k] = i;
-
-          int na = a, nb = b;
-          bool maybe = true;
-          for (uint8_t q = 0; q < k; ++q) {
-            if (this->is_less(k, q)) {
-              --na;
-            }
-            if (new_indices[k] != new_indices[q]) {
-              if (poset.is_less(new_indices[k], new_indices[q])) {
-                --nb;
-              }
-              if ((this->is_less(k, q) && !poset.is_less(new_indices[k], new_indices[q])) ||
-                  (this->is_less(q, k) && !poset.is_less(new_indices[q], new_indices[k]))) {
-                maybe = false;
-                break;
-              }
-            }
-          }
-
-          if (maybe && (k + 1 == n || rec(poset, new_indices, visited, n, k + 1, na, nb))) {
-            return true;
-          }
-          new_indices[k] = -1;
-          visited[i] = false;
-        }
-      }
-    }
-    return false;
-  }
-
-  // is *this subset of poset?
-  // Frage: exisitert eine Permutation new_indicies, sodass Teilmenge?
-  // new: 96.148s': n = 8, i = 3, (cache_l: 5535, cache_u: 2387, noSol: 0, bruteForce: 416), cache = 683
-  // old: 0.089s': n = 8, i = 3, (cache_l: 11590, cache_u: 3508, noSol: 0, bruteForce: 778), cache = 1081
-  bool subsetBruteForce(const Poset &poset) const {
-    // eigentlich nicht nötig
-    // if (n != poset.n || nthSmallest != poset.nthSmallest) {
-    //   return false;
-    // }
-
-    // Graph graph_this(n), graph_poset(n + 1); // TODO: why is this only working with n + 1???
-    // for (uint8_t i = 0; i < n; ++i) {
-    //   for (uint8_t j = 0; j < n; ++j) {
-    //     if (this->is_less(i, j)) {
-    //       add_edge(i, j, graph_this);
-    //     }
-    //     if (poset.is_less(i, j)) {
-    //       add_edge(i, j, graph_poset);
-    //     }
-    //   }
-    // }
-
-    // bool is_iso = false;
-    // auto callback = [&](auto f, auto) {
-    //   is_iso = true;
-    //   return false;
-    // };
-
-    // vf2_subgraph_iso(graph_this, graph_poset, callback);
-
-    std::vector<int> new_indices(poset.n, -1);
-    std::vector<bool> visited(poset.n, false);
-    // for (int i = 0; i < poset.n; ++i) {
-    //   for (int j = 0; j < poset.n; ++j) {
-    //     bool is_same = true;
-    //     for (int k = 0; k < poset.n; ++k) {
-    //       if (this->is_less(i, k) != poset.is_less(j, k)) {
-    //         is_same = false;
-    //         break;
-    //       }
-    //     }
-    //     if (is_same && -1 == new_indices[i] && !visited[j]) {
-    //       new_indices[i] = j;
-    //       visited[j] = true;
-    //     }
-    //   }
-    // }
-
-    bool sol = rec(poset, new_indices, visited, poset.n, 0, this->count(), poset.count());
-    // assert(sol == is_iso);
-    return sol;
-  }
-
   std::bitset<maxN * maxN> comparisonTable;
 
   inline std::size_t getComparisonTableSize() const { return this->n * this->n; }
@@ -154,9 +20,7 @@ class Poset {
 
  private:
   inline void set_less(const uint16_t i, const uint16_t j, const bool value) {
-    // if (i != j && 0 != n) {
     this->comparisonTable[toInternalPos(i, j)] = value;
-    // }
   }
 
   Poset<maxN> &add_and_close_recursive(const uint16_t i, const uint16_t j) {
@@ -174,64 +38,6 @@ class Poset {
       }
     }
     return *this;
-  }
-
-  inline Poset<maxN> &add_and_close_iterative(const uint16_t i, const uint16_t j) {
-    std::queue<std::pair<uint16_t, uint16_t>> queue;
-    queue.push({i, j});
-    while (!queue.empty()) {
-      const auto &[i1, j1] = queue.front();
-      queue.pop();
-
-      if (false == this->is_less(i1, j1)) {
-        this->set_less(i1, j1, true);
-        for (uint16_t k = 0; k < this->n; ++k) {
-          if (this->is_less(j1, k) && !this->is_less(i1, k)) {
-            queue.push({i1, k});
-          } else if (this->is_less(k, i1) && !this->is_less(k, j1)) {
-            queue.push({k, j1});
-          }
-        }
-      }
-    }
-    return *this;
-  }
-
-  // Kante von (v) -> (w) g.d.w. a[v] < a[w]
-  void visit(const int v, std::vector<bool> &visited) const {
-    visited[v] = true;
-    for (uint8_t w = 0; w < this->n; ++w) {
-      if ((this->is_less(v, w) || this->is_less(w, v)) && !visited[w]) {
-        this->visit(w, visited);
-      }
-    }
-  }
-
-  inline uint8_t count_connected_components() const {
-    std::vector<bool> visited(this->n, false);
-    uint8_t components = 0;
-    for (uint8_t v = 0; v < this->n; ++v) {
-      if (!visited[v]) {
-        ++components;
-        this->visit(v, visited);
-      }
-    }
-    return components;
-  }
-
-  bool is_closed() const {  // only debug
-    for (uint8_t in = 0; in < n; ++in) {
-      for (uint8_t jn = 0; jn < n; ++jn) {
-        for (uint16_t k = 0; k < n; ++k) {
-          if (in != jn && jn != k && k != in) {
-            if (is_less(in, jn) && is_less(jn, k) && !is_less(in, k)) {
-              return false;
-            }
-          }
-        }
-      }
-    }
-    return true;
   }
 
   inline Poset<maxN> &reduce_n() {
@@ -350,110 +156,7 @@ class Poset {
     if (0 == remainingComparisons) {
       return true;
     }
-    // very rarely used, senseless???
-    if (remainingComparisons + 1 < this->count_connected_components()) {
-      return true;
-    }
     return false;
-    // return !this->is_solvable_in(remainingComparisons);
-  }
-
-  // NOT CHECKED, adapted from rust
-  inline bool is_solvable_in(uint8_t max_comparisons) const {
-    if (0 == this->nthSmallest || this->nthSmallest == this->n - 1) {
-      return this->n - 1 <= max_comparisons;
-    } else if (1 == nthSmallest) {
-      uint8_t less[this->n], greater[this->n];
-      this->calculate_relations(less, greater);
-
-      int num_groups = 0;
-      int s = 0;
-
-      for (int i = 0; i < this->n; ++i) {
-        if (0 == greater[i]) {
-          num_groups += 1;
-          s += 1 << less[i];
-        }
-      }
-
-      // return max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 3;
-      return max_comparisons >= num_groups + (std::numeric_limits<uint32_t>::digits - __builtin_clz(s)) - 3;
-    } else if (this->nthSmallest == this->n - 2) {
-      uint8_t less[this->n], greater[this->n];
-      this->calculate_relations(less, greater);
-
-      int num_groups = 0;
-      int s = 0;
-
-      for (int i = 0; i < this->n; ++i) {
-        if (0 == less[i]) {
-          num_groups += 1;
-          s += 1 << greater[i];
-        }
-      }
-
-      // return max_comparisons >= num_groups + (u32::BITS - s.leading_zeros()) as u8 - 3
-      return max_comparisons >= num_groups + (std::numeric_limits<uint32_t>::digits - __builtin_clz(s)) - 3;
-    } else if (this->n - 1 < min_n_comparisons_len) {
-      uint8_t less[this->n], greater[this->n];
-      this->calculate_relations(less, greater);
-
-      int comps = min_n_comparisons[this->n - 1][std::min((int)this->nthSmallest, this->n - this->nthSmallest - 1)];
-
-      // comps -= less[0..this->n]
-      //     .iter()
-      //     .filter(|elem| **elem == 1)
-      //     .count() as u8;
-
-      comps -= std::count_if(less, less + this->n, [](uint8_t elem) { return elem == 1; });
-
-      if (comps <= max_comparisons) {
-        return true;
-      }
-
-      for (int i = 0; i < this->n - 1; ++i) {
-        if (less[i] < 2) {
-          continue;
-        }
-
-        // j_loop:
-        for (int j = i + 1; j < this->n; ++j) {
-          if (!this->is_less(j, i)) {
-            continue;
-          }
-
-          if (1 == greater[j]) {
-            comps -= 1;
-
-            if (comps <= max_comparisons) {
-              return true;
-            }
-          } else {
-            bool breaked = false;
-            for (int k = 0; k < this->n; ++k) {
-              if (i != k && j != k && this->is_less(j, k) && this->is_less(k, i)) {
-                // continue j_loop;
-                breaked = true;
-                break;
-              }
-            }
-            if (breaked) {
-              continue;
-            }
-
-            comps -= 1;
-
-            if (comps <= max_comparisons) {
-              return true;
-            }
-          }
-        }
-      }
-
-      return comps <= max_comparisons;
-    } else {
-      return true;
-    }
   }
 
   /// @brief returns how many elements are less or greater than it
@@ -494,8 +197,6 @@ class Poset {
   //          Kriterium `test` und keine unnötigen Vergleiche gespeichert haben
   inline std::unordered_set<Poset<maxN>> remove_less(Normalizer<maxN> &normalizer, const uint16_t i, const uint16_t j,
                                                      const std::function<bool(const Poset<maxN> &)> &test) const {
-    // assert(this->is_closed());  // check if input closed
-
     std::unordered_set<Poset<maxN>> result;
     if (!this->is_less(i, j) || this->is_redundant(i, j)) {
       return result;
@@ -560,11 +261,6 @@ class Poset {
       }
     }
 
-    // check if output closed
-    // for (auto item : result) {
-    //   assert(item.is_closed());  // check if item closed
-    // }
-
     return result;
   }
 
@@ -586,21 +282,6 @@ class Poset {
   /// @return true, if *this is a subset of `poset`
   bool subset_of(const Poset<maxN> &poset) const {
     return n == poset.n && nthSmallest == poset.nthSmallest && (~comparisonTable | poset.comparisonTable).all();
-  }
-
-  uint64_t hash1(uint64_t a, uint64_t b) const {
-    uint64_t hash = 9118271012717746669;
-    hash = hash * a;
-    hash = hash << 7;
-    hash = hash + 3032928155878307119;
-    hash = hash * b;
-    hash = hash >> 9;
-    hash = hash + 16728691407311227577ull;
-    hash = hash << 11;
-    hash = hash * 1536811303;
-    hash = hash >> 15;
-    hash = hash + 2072583677;
-    return hash;
   }
 
   inline void swap(const uint16_t i1, const uint16_t j1, const uint16_t i2, const uint16_t j2) {
@@ -797,24 +478,6 @@ inline bool can_reduce_element_less(const Poset<maxN> &poset, const uint8_t elem
   return (poset.size() - 1) - poset.nth() < less;
 }
 
-template <std::size_t maxN>
-std::unordered_set<Poset<maxN>> filter(const std::unordered_set<Poset<maxN>> &unfiltered) {
-  std::unordered_set<Poset<maxN>> filtered;
-  for (const Poset<maxN> &item : unfiltered) {
-    bool found = false;
-    for (const Poset<maxN> &temp : unfiltered) {
-      if (temp != item && temp.subsetBruteForce(item)) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      filtered.insert(item);
-    }
-  }
-  return filtered;
-}
-
 // gibt ALLE closed, canonfified Posets zurück, die sich durch die Menge bilden lassen und das letzte wegreduziert
 // werden kann
 template <std::size_t maxN>
@@ -928,6 +591,5 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
     tempSet[n0][k].reset();
   }
 
-  // return tempSet[n][k].entries(n, k, false);
-  return filter(tempSet[n][k].entries(n, k, false));
+  return tempSet[n][k].entries(n, k, false);
 }

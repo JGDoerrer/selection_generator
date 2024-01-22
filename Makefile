@@ -18,16 +18,8 @@ else
 CXXFLAGS+=-Wall -Wextra -Wconversion -Wno-unknown-pragmas -Wmaybe-uninitialized -Wshadow -fsanitize=undefined,address -D_GLIBCXX_DEBUG -g
 endif
 
-forwardSearch: ${OBJ_FORWARD}
-	$(CXX) $(CXXFLAGS) ${OBJ_FORWARD} -o build/$(TARGET) ${LDFLAGS}
-	./build/$(TARGET)
-
 backwardSearch: ${OBJ_BACKWARD}
 	$(CXX) $(CXXFLAGS) ${OBJ_BACKWARD} -o build/$(TARGET) ${LDFLAGS}
-	./build/$(TARGET)
-
-bidirectionalSearch: ${OBJ_BIDRECTIONAL}
-	$(CXX) $(CXXFLAGS) ${OBJ_BIDRECTIONAL} -o build/$(TARGET) ${LDFLAGS}
 	./build/$(TARGET)
 
 build/%.o : %.cpp

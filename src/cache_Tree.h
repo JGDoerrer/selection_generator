@@ -4,11 +4,6 @@
 
 #include "poset.h"
 
-// immer in 4 bit Blöcke
-// => 2^6 = 16 Einträge a 6 bit = 512 Bit = 8 Byte
-
-// remove on insert
-
 struct PosetStructRecursive {
   std::unique_ptr<PosetStructRecursive> branchIsLess, branchIsNotLess;
 
