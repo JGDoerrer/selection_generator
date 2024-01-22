@@ -143,7 +143,7 @@ class Poset {
 
     bool sol = rec(poset, new_indices, visited, poset.n, 0, this->count(), poset.count());
     // assert(sol == is_iso);
-    return is_iso;
+    return sol;
   }
 
   std::bitset<maxN * maxN> comparisonTable;
