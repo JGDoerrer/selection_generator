@@ -1,7 +1,5 @@
 #include "main.h"
 
-std::array<std::array<std::optional<std::unordered_set<Poset<globalMaxN>>>, globalMaxN>, globalMaxN> myBigCache;
-
 template <size_t maxN>
 std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanoseconds> startSearchBackward(
     PosetCacheSet<maxN, globalMaxComparisons> &poset_cache, const uint8_t n, const uint8_t nthSmallest,
@@ -58,14 +56,6 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
   }
 
   return {std::nullopt, duration_build_posets_total, duration_test_posets_total};
-}
-
-int factorial(int n) {
-  if (n <= 1) {
-    return 1;
-  } else {
-    return n * factorial(n - 1);
-  }
 }
 
 int main() {

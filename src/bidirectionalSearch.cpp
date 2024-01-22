@@ -3,34 +3,7 @@
 PosetCacheSet<globalMaxN, globalMaxComparisons> poset_cache;
 std::atomic<int> dynLevel = 0;
 
-constexpr bool SORT_DFS_BRANCHES = true;
 constexpr bool TOP_TO_BOTTOM_SEARCH = true;
-
-const auto randomDataTable = ([]() {
-  std::array<std::array<std::array<std::array<std::pair<int, int>, globalMaxN>, globalMaxN>, globalMaxComparisons>,
-             globalMaxN>
-      randomDataTable;
-  auto rng = std::default_random_engine{1234};
-
-  for (int n = 0; n < globalMaxN; ++n) {
-    for (int comparison = 0; comparison < globalMaxComparisons; ++comparison) {
-      std::vector<std::pair<int, int>> items;
-      for (int i = 0; i < n; ++i) {
-        for (int j = i + 1; j < n; ++j) {
-          items.push_back({i, j});
-        }
-      }
-      std::shuffle(items.begin(), items.end(), rng);
-      int pos = 0;
-      for (int i = 0; i < n; ++i) {
-        for (int j = i + 1; j < n; ++j) {
-          randomDataTable[n][comparison][i][j] = items[pos++];
-        }
-      }
-    }
-  }
-  return randomDataTable;
-})();
 
 template <size_t maxN>
 Poset<maxN> createPosetWithComparison(Normalizer<maxN> &normalizer, Poset<maxN> poset, const uint16_t i,
@@ -106,45 +79,33 @@ SearchResult searchRecursive(BS::thread_pool_light &threadpool, const Poset<maxN
         result = FoundSolution;
       }
     } else {
-      if constexpr (SORT_DFS_BRANCHES) {
-        uint8_t less[poset.size()];
-        uint8_t greater[poset.size()];
-        poset.calculate_relations(less, greater);
+      uint8_t less[poset.size()];
+      uint8_t greater[poset.size()];
+      poset.calculate_relations(less, greater);
 
-        const auto cmp = [&](const std::pair<int, int> &a, const std::pair<int, int> &b) {
-          return greater[b.first] + less[b.second] < greater[a.first] + less[a.second];
-        };
+      const auto cmp = [&](const std::pair<int, int> &a, const std::pair<int, int> &b) {
+        return greater[b.first] + less[b.second] < greater[a.first] + less[a.second];
+      };
 
-        std::vector<std::pair<int, int>> temp;
-        for (int i = 0; i < poset.size(); ++i) {
-          for (int j = i + 1; j < poset.size(); ++j) {
-            if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
-              // Soll zuerst i<j oder j<i vergleicht werden? -> langsamer
-              if (cmp({j, i}, {i, j})) {
-                temp.push_back({i, j});
-              } else {
-                temp.push_back({j, i});
-              }
+      std::vector<std::pair<int, int>> temp;
+      for (int i = 0; i < poset.size(); ++i) {
+        for (int j = i + 1; j < poset.size(); ++j) {
+          if (!poset.is_less(i, j) && !poset.is_less(j, i)) {
+            if (cmp({j, i}, {i, j})) {
+              temp.push_back({i, j});
+            } else {
+              temp.push_back({j, i});
             }
           }
         }
+      }
 
-        std::sort(temp.begin(), temp.end(), cmp);
+      std::sort(temp.begin(), temp.end(), cmp);
 
-        for (const auto &[i, j] : temp) {
-          result = recursiveSearch(atomicBreak, i, j, normalizer);
-          if (result == FoundSolution) {
-            break;
-          }
-        }
-      } else {
-        for (int i = 0; i < poset.size() && result != FoundSolution; ++i) {
-          for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
-            const auto [new_i, new_j] = randomDataTable[poset.size()][remainingComparisons][i][j];
-            if (!poset.is_less(new_i, new_j) && !poset.is_less(new_j, new_i)) {
-              result = recursiveSearch(atomicBreak, new_i, new_j, normalizer);
-            }
-          }
+      for (const auto &[i, j] : temp) {
+        result = recursiveSearch(atomicBreak, i, j, normalizer);
+        if (result == FoundSolution) {
+          break;
         }
       }
     }

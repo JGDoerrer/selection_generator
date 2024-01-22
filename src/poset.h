@@ -4,6 +4,25 @@
 #include "normalizer.h"
 // =============
 #include "cache_Tree.h"
+// ==
+// #include <boost/graph/adjacency_matrix.hpp>
+// #include <boost/graph/vf2_sub_graph_iso.hpp>
+
+// struct Graph : public boost::adjacency_matrix<boost::directedS> {
+//   using Impl = boost::adjacency_matrix<boost::directedS>;
+//   // using Impl::Impl;
+//   // using Impl::operator=;
+// };
+
+// namespace boost {
+// template <>
+// struct graph_traits<Graph> : graph_traits<Graph::Impl> {
+//   struct traversal_category : boost::bidirectional_graph_tag, Graph::Impl::traversal_category {};
+// };
+
+// // O(2N)
+// auto degree(Graph::vertex_descriptor u, Graph const &g) { return size(out_edges(u, g)) + size(in_edges(u, g)); }
+// };  // namespace boost
 
 template <std::size_t maxN>
 class Poset {
@@ -74,14 +93,35 @@ class Poset {
     return false;
   }
 
-  // is *this subst of poset?
+  // is *this subset of poset?
   // Frage: exisitert eine Permutation new_indicies, sodass Teilmenge?
   // new: 96.148s': n = 8, i = 3, (cache_l: 5535, cache_u: 2387, noSol: 0, bruteForce: 416), cache = 683
   // old: 0.089s': n = 8, i = 3, (cache_l: 11590, cache_u: 3508, noSol: 0, bruteForce: 778), cache = 1081
   bool subsetBruteForce(const Poset &poset) const {
-    if (n != poset.n || nthSmallest != poset.nthSmallest) {
-      return false;
-    }
+    // eigentlich nicht nötig
+    // if (n != poset.n || nthSmallest != poset.nthSmallest) {
+    //   return false;
+    // }
+
+    // Graph graph_this(n), graph_poset(n + 1); // TODO: why is this only working with n + 1???
+    // for (uint8_t i = 0; i < n; ++i) {
+    //   for (uint8_t j = 0; j < n; ++j) {
+    //     if (this->is_less(i, j)) {
+    //       add_edge(i, j, graph_this);
+    //     }
+    //     if (poset.is_less(i, j)) {
+    //       add_edge(i, j, graph_poset);
+    //     }
+    //   }
+    // }
+
+    // bool is_iso = false;
+    // auto callback = [&](auto f, auto) {
+    //   is_iso = true;
+    //   return false;
+    // };
+
+    // vf2_subgraph_iso(graph_this, graph_poset, callback);
 
     std::vector<int> new_indices(poset.n, -1);
     std::vector<bool> visited(poset.n, false);
@@ -101,7 +141,9 @@ class Poset {
     //   }
     // }
 
-    return rec(poset, new_indices, visited, poset.n, 0, this->count(), poset.count());
+    bool sol = rec(poset, new_indices, visited, poset.n, 0, this->count(), poset.count());
+    // assert(sol == is_iso);
+    return is_iso;
   }
 
   std::bitset<maxN * maxN> comparisonTable;
@@ -886,6 +928,6 @@ std::unordered_set<Poset<maxN>> enlarge(Normalizer<maxN> &normalizer,
     tempSet[n0][k].reset();
   }
 
-  return tempSet[n][k].entries(n, k, false);
-  // return filter(tempSet[n][k].entries(n, k, false));
+  // return tempSet[n][k].entries(n, k, false);
+  return filter(tempSet[n][k].entries(n, k, false));
 }
