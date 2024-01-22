@@ -47,7 +47,7 @@ struct Args {
     /// The name of the cache file to use.
     #[arg(long, default_value = "cache.dat", value_hint = clap::ValueHint::FilePath)]
     cache_file: String,
-    /// Dont use a cache file
+    /// Do not use a cache file
     #[arg(long, default_value_t = false)]
     no_cache_file: bool,
     /// Explore the cache interactively
