@@ -56,6 +56,7 @@ struct PosetStructRecursive {
     }
   }
 
+  // TODO: can be implemented mor effient
   template <std::size_t maxN>
   void entries(std::unordered_set<Poset<maxN>> &entries, Poset<maxN> temp, const uint8_t index,
                std::unique_ptr<PosetStructRecursive> &rootStruct, std::unique_ptr<PosetStructRecursive> &topLevel,
