@@ -3,7 +3,7 @@ use std::time::Instant;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
-use crate::{cache::Cache, poset::Poset};
+use crate::{cache::Cache, poset::Poset, KNOWN_MIN_VALUES};
 
 pub struct Search<'a> {
     n: u8,
@@ -237,7 +237,7 @@ impl<'a> Search<'a> {
 
             // take the min of all comparisons
             result = Cost::Solved(new_result.min(result.value()));
-            current_max = result.value();
+            current_max = result.value() - 1;
 
             if let Some(progress) = &progress {
                 progress.inc(1);
@@ -267,10 +267,13 @@ impl<'a> Search<'a> {
                 let less = poset.with_less(i, j);
                 let greater = poset.with_less(j, i);
 
-                let pair = if Self::estimate_hardness(&less) < Self::estimate_hardness(&greater) {
-                    (less, greater)
+                let hardness_less = Self::estimate_hardness(&less);
+                let hardness_greater = Self::estimate_hardness(&greater);
+
+                let pair = if hardness_less < hardness_greater {
+                    (less, greater, hardness_greater)
                 } else {
-                    (greater, less)
+                    (greater, less, hardness_less)
                 };
 
                 if !pairs.contains(&pair) {
@@ -279,23 +282,23 @@ impl<'a> Search<'a> {
             }
         }
 
-        pairs.sort_by_cached_key(|pair| Self::estimate_hardness(&pair.1));
+        pairs.sort_by_key(|pair| pair.2);
 
-        pairs
+        pairs.into_iter().map(|(a, b, _)| (a, b)).collect()
     }
 
     fn estimate_hardness(poset: &Poset) -> u32 {
-        let mut hardness = 0;
         let (less, greater) = poset.calculate_relations();
 
-        for i in 0..poset.n() as usize {
-            let d = greater[i].abs_diff(less[i]);
-            let u = poset.n() - greater[i] - less[i];
+        less.into_iter()
+            .zip(greater.into_iter())
+            .map(|(less, greater)| {
+                let d = greater.abs_diff(less);
+                let u = poset.n() - greater - less;
 
-            hardness += (d + 2 * u) as u32;
-        }
-
-        hardness
+                (d + 2 * u) as u32
+            })
+            .sum()
     }
 
     fn estimate_solvable(
@@ -319,16 +322,16 @@ impl<'a> Search<'a> {
             }
         }
 
-        if self.current_max - max_comparisons >= poset.n() && poset.n() >= self.n {
+        if self.current_max - max_comparisons >= poset.n() && poset.n() + 1 >= self.n {
             let compatible_posets = poset.num_compatible_posets();
             if compatible_posets == 0 || max_comparisons < compatible_posets.ilog2() as u8 {
                 return Some(false);
             }
         }
 
-        if !poset.is_solvable_in(max_comparisons) {
-            return Some(false);
-        }
+        // if !poset.is_solvable_in(max_comparisons) {
+        //     return Some(false);
+        // }
 
         let (less, greater) = poset.calculate_relations();
 
@@ -357,23 +360,23 @@ impl<'a> Search<'a> {
             }
         }
 
-        // if start_i != 0 && start_j != 0 {
-        //     let cost = self.search_rec(poset, max_comparisons, _depth);
-        //     match cost {
-        //         Cost::Solved(solved) => {
-        //             if solved <= max_comparisons {
-        //                 return Some(true);
-        //             } else {
-        //                 return Some(false);
-        //             }
-        //         }
-        //         Cost::Minimum(min) => {
-        //             if min > max_comparisons {
-        //                 return Some(false);
-        //             }
-        //         }
-        //     }
-        // }
+        if start_i != 0 && start_j != 0 {
+            let cost = self.search_rec(poset, max_comparisons, _depth);
+            match cost {
+                Cost::Solved(solved) => {
+                    if solved <= max_comparisons {
+                        return Some(true);
+                    } else {
+                        return Some(false);
+                    }
+                }
+                Cost::Minimum(min) => {
+                    if min > max_comparisons {
+                        return Some(false);
+                    }
+                }
+            }
+        }
 
         None
     }
