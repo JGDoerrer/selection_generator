@@ -2,12 +2,12 @@ use std::collections::HashSet;
 use std::time::Duration;
 
 mod cache_set;
-mod cache_tree;
+// mod cache_tree;
 mod poset;
 mod util;
 
 use cache_set::*;
-use cache_tree::*;
+// use cache_tree::*;
 use poset::*;
 use util::*;
 
@@ -105,7 +105,7 @@ fn main() {
       CacheSetDual::test();
       // CacheSetSingle::test();
 
-      CacheTreeDual::test();
+      // CacheTreeDual::test();
       // CacheTreeSingle::test();
       // CacheTreeFixed::test();
 

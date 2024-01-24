@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::fmt;
 use std::hash::Hash;
 
-use super::cache_tree::*;
+// use super::cache_tree::*;
 use super::util::{MAX_N, MAX_N_BITS};
 
 use std::os::raw::c_int;
@@ -98,11 +98,11 @@ impl Poset {
     self.set_index(self.to_internal_pos(i, j) as u8, value);
   }
 
-  pub fn subset_of(&self, other: Poset) -> bool {
+  pub fn subset_of(&self, other: &Poset) -> bool {
     if !(self.n == other.n && self.nth_smallest == other.nth_smallest) {
       return false;
     }
-    for i in 0..(MAX_N * MAX_N) {
+    for i in 0..(self.n * self.n) {
       if self.get_index(i as u8) && !other.get_index(i as u8) {
         return false;
       }
@@ -147,7 +147,7 @@ impl Poset {
           bigger += 1;
         }
       }
-      if 1 + smaller + bigger == self.n as u8 && smaller == self.nth_smallest {
+      if 1 + smaller + bigger == self.n && smaller == self.nth_smallest {
         return true;
       }
     }
@@ -164,7 +164,8 @@ impl Poset {
       let temp = self.is_less(i, k);
       self.set_less(i, k, self.is_less(j, k));
       self.set_less(j, k, temp);
-
+    }
+    for k in 0..self.n {
       let temp = self.is_less(k, i);
       self.set_less(k, i, self.is_less(k, j));
       self.set_less(k, j, temp);
@@ -174,7 +175,7 @@ impl Poset {
   fn dual(&mut self) {
     self.nth_smallest = (self.n - 1) - self.nth_smallest;
     for i in 0..self.n {
-      for j in 0..self.n {
+      for j in (i + 1)..self.n {
         let temp = self.is_less(i, j);
         self.set_less(i, j, self.is_less(j, i));
         self.set_less(j, i, temp);
@@ -273,6 +274,7 @@ impl Poset {
 
     dbg!("ERRROR NAUTY");
     dbg!(labels);
+    unimplemented!();
 
     // TODO
     //     if canonical[i as usize] & nauty_Traces_sys::bit[j as usize] != 0 {
@@ -295,7 +297,7 @@ impl Poset {
       let mut greater = [0; MAX_N];
       self.calculate_relations(&mut less, &mut greater);
 
-      let mut in_out_degree = vec![0; MAX_N];
+      let mut in_out_degree = [0 as u64; MAX_N];
       for i in 0..self.n as usize {
         in_out_degree[i] = (MAX_N as u64) * (greater[i] as u64) + (less[i] as u64);
       }
@@ -557,33 +559,33 @@ fn enlarge_nk(set_of_posets: &HashSet<Poset>) -> HashSet<Poset> {
 }
 
 pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
-  let mut temp_set: Vec<Vec<CacheTreeFixed<false>>> = Vec::with_capacity((n + 1) as usize);
+  let mut temp_set: Vec<Vec<HashSet<Poset>>> = Vec::with_capacity((n + 1) as usize);
   for _ in 0..(n + 1) {
-    let mut inner_vec: Vec<CacheTreeFixed<false>> = Vec::with_capacity((k + 1) as usize);
+    let mut inner_vec: Vec<HashSet<Poset>> = Vec::with_capacity((k + 1) as usize);
     for _ in 0..(k + 1) {
-      inner_vec.push(CacheTreeFixed::new(n + 1, k + 1));
+      inner_vec.push(HashSet::new());
     }
     temp_set.push(inner_vec);
   }
 
   for item in set_of_posets.iter() {
     if item.n <= n && item.nth_smallest <= k {
-      temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
+      temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
     }
   }
   for n0 in 0..n {
     for k0 in 0..k {
-      for item in enlarge_nk(&temp_set[n0 as usize][k0 as usize].entries()) {
-        temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
+      for item in enlarge_nk(&temp_set[n0 as usize][k0 as usize]) {
+        temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
       }
-      temp_set[n0 as usize][k0 as usize].reset();
+      // temp_set[n0 as usize][k0 as usize].reset();
     }
 
-    for item in enlarge_n(&temp_set[n0 as usize][k as usize].entries()) {
-        temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
+    for item in enlarge_n(&temp_set[n0 as usize][k as usize]) {
+        temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
     }
-    temp_set[n0 as usize][k as usize].reset();
+    // temp_set[n0 as usize][k as usize].reset();
   }
 
-  temp_set[n as usize][k as usize].entries()
+  temp_set[n as usize][k as usize].clone()
 }
