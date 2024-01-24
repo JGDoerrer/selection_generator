@@ -1,82 +1,60 @@
-use std::collections::{HashMap, HashSet};
-use std::sync::{Arc, Mutex, RwLock};
+use std::collections::HashMap;
+use std::sync::RwLock;
 
-const GLOBAL_MAX_N: usize = 15;
+use super::poset::*;
+use super::util::*;
 
-struct PosetCacheSet<N: usize, C: usize> {
-  cache: [[HashMap<Poset<N>, u8>; GLOBAL_MAX_N]; GLOBAL_MAX_N],
-  mutex_cache: [[RwLock<()>; GLOBAL_MAX_N]; GLOBAL_MAX_N],
+pub struct CacheSetSingle<const is_solvable: bool> {
+  cache: [[HashMap<Poset, u8>; MAX_N]; MAX_N],
+  mutex: [[RwLock<()>; MAX_N]; MAX_N],
 }
 
-impl<N: usize, C: usize> PosetCacheSet<N, C> {
-  fn new() -> Self {
-    PosetCacheSet {
+impl<const is_solvable: bool> CacheSetSingle<is_solvable> {
+  pub fn new() -> Self {
+    CacheSetSingle {
       cache: Default::default(),
-      mutex_cache: Default::default(),
+      mutex: Default::default(),
     }
   }
 
-  fn insert_not_solvable(&self, poset: &Poset<N>, remaining_comparisons: u8) {
-    let _lock = self.mutex_cache[poset.size()][poset.nth()].write().unwrap();
-    let temp = self.cache[poset.size()][poset.nth()].get_mut(poset);
-    match temp {
+  pub fn insert(&mut self, poset: &Poset, remaining_comparisons: u8) {
+    let _lock = self.mutex[poset.n() as usize][poset.nth_smallest() as usize]
+      .write()
+      .unwrap();
+
+    match self.cache[poset.n() as usize][poset.nth_smallest() as usize].get_mut(poset) {
       Some(value) => {
-        if remaining_comparisons > *value {
+        if (is_solvable && remaining_comparisons < *value)
+          || (!is_solvable && remaining_comparisons > *value)
+        {
           *value = remaining_comparisons;
         }
       }
       None => {
-        self.cache[poset.size()][poset.nth()].insert(poset.clone(), remaining_comparisons);
+        self.cache[poset.n() as usize][poset.nth_smallest() as usize]
+          .insert(poset.clone(), remaining_comparisons);
       }
     }
   }
 
-  fn insert_solvable(&self, poset: &Poset<N>, remaining_comparisons: u8) {
-    let _lock = self.mutex_cache[poset.size()][poset.nth()].write().unwrap();
-    let temp = self.cache[poset.size()][poset.nth()].get_mut(poset);
-    match temp {
+  pub fn check(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
+    let _lock = self.mutex[poset.n() as usize][poset.nth_smallest() as usize]
+      .read()
+      .unwrap();
+    match self.cache[poset.n() as usize][poset.nth_smallest() as usize].get(poset) {
       Some(value) => {
-        if remaining_comparisons < *value {
-          *value = remaining_comparisons;
-        }
+        (is_solvable && remaining_comparisons >= *value)
+          || (!is_solvable && remaining_comparisons <= *value)
       }
-      None => {
-        self.cache[poset.size()][poset.nth()].insert(poset.clone(), remaining_comparisons);
-      }
+      None => false,
     }
   }
 
-  fn check_not_solvable(
-    &self,
-    poset: &Poset<N>,
-    remaining_comparisons: u8,
-    _special: bool,
-  ) -> bool {
-    let _lock = self.mutex_cache[poset.size()][poset.nth()].read().unwrap();
-    if let Some(value) = self.cache[poset.size()][poset.nth()].get(poset) {
-      return remaining_comparisons <= *value;
-    }
-    false
-  }
-
-  fn check_solvable(&self, poset: &Poset<N>, remaining_comparisons: u8, _special: bool) -> bool {
-    let _lock = self.mutex_cache[poset.size()][poset.nth()].read().unwrap();
-    if let Some(value) = self.cache[poset.size()][poset.nth()].get(poset) {
-      return remaining_comparisons >= *value;
-    }
-    false
-  }
-
-  fn clean(&self, is_not_solvable: bool) {
-    // Implement cleaning logic if needed
-    // ...
-  }
-
-  fn size(&self) -> usize {
+  pub fn size(&self) -> usize {
     let mut sum = 0;
-    for n in 0..GLOBAL_MAX_N {
-      for i in 0..GLOBAL_MAX_N {
-        let _lock = self.mutex_cache[n][i].read().unwrap();
+    for n in 0..MAX_N {
+      for i in 0..MAX_N {
+        let _lock = self.mutex[n][i].read().unwrap();
         sum += self.cache[n][i].len();
       }
     }
@@ -84,58 +62,69 @@ impl<N: usize, C: usize> PosetCacheSet<N, C> {
   }
 }
 
-struct CacheSet<N: usize, C: usize> {
-  cache_not_solvable: PosetCacheSet<N, C>,
-  cache_solvable: PosetCacheSet<N, C>,
+pub struct CacheSetDual {
+  cache_solvable: CacheSetSingle<true>,
+  cache_not_solvable: CacheSetSingle<false>,
 }
 
-impl<N: usize, C: usize> CacheSet<N, C> {
-  fn new() -> Self {
-    CacheSet {
-      cache_not_solvable: PosetCacheSet::new(),
-      cache_solvable: PosetCacheSet::new(),
+impl CacheSetDual {
+  pub fn new() -> Self {
+    Self {
+      cache_solvable: CacheSetSingle::new(),
+      cache_not_solvable: CacheSetSingle::new(),
     }
   }
 
-  fn check_not_solvable(
-    &self,
-    poset: &Poset<N>,
-    remaining_comparisons: u8,
-    _special: bool,
-  ) -> bool {
-    assert!(2 * poset.nth() < poset.size());
-    self
-      .cache_not_solvable
-      .check_not_solvable(poset, remaining_comparisons, _special)
+  pub fn check_not_solvable(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
+    debug_assert!(2 * poset.nth_smallest() < poset.n());
+    self.cache_not_solvable.check(poset, remaining_comparisons)
   }
 
-  fn check_solvable(&self, poset: &Poset<N>, remaining_comparisons: u8, _special: bool) -> bool {
-    assert!(2 * poset.nth() < poset.size());
-    self
-      .cache_solvable
-      .check_solvable(poset, remaining_comparisons, _special)
+  pub fn check_solvable(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
+    debug_assert!(2 * poset.nth_smallest() < poset.n());
+    self.cache_solvable.check(poset, remaining_comparisons)
   }
 
-  fn insert_not_solvable(&self, poset: &Poset<N>, remaining_comparisons: u8) {
-    assert!(2 * poset.nth() < poset.size());
-    self
-      .cache_not_solvable
-      .insert_not_solvable(poset, remaining_comparisons);
+  pub fn insert_not_solvable(&mut self, poset: &Poset, remaining_comparisons: u8) {
+    debug_assert!(2 * poset.nth_smallest() < poset.n());
+    self.cache_not_solvable.insert(poset, remaining_comparisons);
   }
 
-  fn insert_solvable(&self, poset: &Poset<N>, remaining_comparisons: u8) {
-    assert!(2 * poset.nth() < poset.size());
-    self
-      .cache_solvable
-      .insert_solvable(poset, remaining_comparisons);
+  pub fn insert_solvable(&mut self, poset: &Poset, remaining_comparisons: u8) {
+    debug_assert!(2 * poset.nth_smallest() < poset.n());
+    self.cache_solvable.insert(poset, remaining_comparisons);
   }
 
-  fn clean(&self) {
-    self.cache_not_solvable.clean(true);
-    self.cache_solvable.clean(false);
-  }
-
-  fn size(&self) -> usize {
+  pub fn size(&self) -> usize {
     self.cache_not_solvable.size() + self.cache_solvable.size()
+  }
+
+  pub fn test() {
+    let mut poset = Poset::new(10, 2);
+    poset.add_less(3, 7);
+
+    let mut poset2 = Poset::new(10, 2);
+    poset2.add_less(2, 7);
+
+    let mut cache = CacheSetDual::new();
+    cache.insert_solvable(&poset, 2);
+
+    cache.insert_not_solvable(&poset2, 2);
+
+    debug_assert!(!cache.check_solvable(&poset, 1));
+    debug_assert!(cache.check_solvable(&poset, 2));
+    debug_assert!(cache.check_solvable(&poset, 3));
+
+    debug_assert!(!cache.check_solvable(&poset2, 1));
+    debug_assert!(!cache.check_solvable(&poset2, 2));
+    debug_assert!(!cache.check_solvable(&poset2, 3));
+
+    debug_assert!(!cache.check_not_solvable(&poset, 1));
+    debug_assert!(!cache.check_not_solvable(&poset, 2));
+    debug_assert!(!cache.check_not_solvable(&poset, 3));
+
+    debug_assert!(cache.check_not_solvable(&poset2, 1));
+    debug_assert!(cache.check_not_solvable(&poset2, 2));
+    debug_assert!(!cache.check_not_solvable(&poset2, 3));
   }
 }

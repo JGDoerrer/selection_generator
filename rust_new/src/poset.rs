@@ -23,7 +23,11 @@ impl fmt::Debug for Poset {
     for i in 0..self.n {
       write!(f, "\n")?;
       for j in 0..self.n {
-        write!(f, "{} ", self.is_less(i, j))?;
+        if self.is_less(i, j) {
+          write!(f, "1 ")?;
+        } else {
+          write!(f, "0 ")?;
+        }
       }
     }
 
@@ -33,10 +37,6 @@ impl fmt::Debug for Poset {
 
 impl Poset {
   // general utils (private)
-  fn get_comparison_table_size(&self) -> usize {
-    (self.n as usize) * (self.n as usize)
-  }
-
   fn to_internal_pos(&self, i: u8, j: u8) -> usize {
     (i as usize) * (self.n as usize) + (j as usize)
   }
@@ -58,37 +58,54 @@ impl Poset {
   }
 
   // general utils (public)
+  pub fn n(&self) -> u8 {
+    self.n
+  }
+
+  pub fn nth_smallest(&self) -> u8 {
+    self.nth_smallest
+  }
+
+  pub fn get_comparison_table_size(&self) -> usize {
+    (self.n as usize) * (self.n as usize)
+  }
+
   pub fn new(n: u8, nth_smallest: u8) -> Poset {
     Poset {
-      n: n,
-      nth_smallest: nth_smallest,
+      n,
+      nth_smallest,
       comparison_table: [0; MAX_N_BITS],
     }
   }
 
+  pub fn get_index(&self, pos: u8) -> bool {
+    (self.comparison_table[(pos as usize) >> 6] & (1 << ((pos as usize) & 63))) != 0
+  }
+
+  pub fn set_index(&mut self, pos: u8, value: bool) {
+    if value {
+      self.comparison_table[pos as usize >> 6] |= 1 << (pos & 63);
+    } else {
+      self.comparison_table[pos as usize >> 6] &= !(1 << (pos & 63));
+    }
+  }
+
   pub fn is_less(&self, i: u8, j: u8) -> bool {
-    let pos = self.to_internal_pos(i, j);
-    (self.comparison_table[pos >> 6] & (1 << (pos & 63))) != 0
+    self.get_index(self.to_internal_pos(i, j) as u8)
   }
 
   pub fn set_less(&mut self, i: u8, j: u8, value: bool) {
-    let pos = self.to_internal_pos(i, j);
-    if value {
-      self.comparison_table[pos >> 6] |= 1 << (pos & 63);
-    } else {
-      self.comparison_table[pos >> 6] &= !(1 << (pos & 63));
-    }
+    self.set_index(self.to_internal_pos(i, j) as u8, value);
   }
 
   pub fn subset_of(&self, other: Poset) -> bool {
     if !(self.n == other.n && self.nth_smallest == other.nth_smallest) {
       return false;
     }
-    for i in 0..MAX_N_BITS - 1 {
-      // TODO
-      // if !((~self.comparison_table[i] | other.comparison_table[i]).all()) {
-      return false;
-      // }
+    for i in 0..(MAX_N * MAX_N) {
+      if self.get_index(i as u8) && !other.get_index(i as u8) {
+        return false;
+      }
     }
     true
   }
@@ -254,9 +271,12 @@ impl Poset {
       );
     }
 
+    dbg!("ERRROR NAUTY");
+    dbg!(labels);
+
     // TODO
-//     if canonical[i as usize] & nauty_Traces_sys::bit[j as usize] != 0 {
-//       new.set_bit(i, j)
+    //     if canonical[i as usize] & nauty_Traces_sys::bit[j as usize] != 0 {
+    //       new.set_bit(i, j)
 
     let res: Vec<u8> = Vec::new();
     res
@@ -450,6 +470,12 @@ impl Poset {
     }
     (self.n - 1) - self.nth_smallest < less
   }
+
+  pub fn test() {
+    let mut poset = Poset::new(4, 1);
+    poset.add_less(2, 3);
+    dbg!(&poset);
+  }
 }
 
 fn enlarge_n(set_of_posets: &HashSet<Poset>) -> HashSet<Poset> {
@@ -531,23 +557,30 @@ fn enlarge_nk(set_of_posets: &HashSet<Poset>) -> HashSet<Poset> {
 }
 
 pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
-  let mut temp_set: Vec<Vec<PosetSet<false>>> =
-    vec![vec![PosetSet::new(n + 1, k + 1); (k + 1) as usize]; (n + 1) as usize];
+  let mut temp_set: Vec<Vec<CacheTreeFixed<false>>> = Vec::with_capacity((n + 1) as usize);
+  for _ in 0..(n + 1) {
+    let mut inner_vec: Vec<CacheTreeFixed<false>> = Vec::with_capacity((k + 1) as usize);
+    for _ in 0..(k + 1) {
+      inner_vec.push(CacheTreeFixed::new(n + 1, k + 1));
+    }
+    temp_set.push(inner_vec);
+  }
+
   for item in set_of_posets.iter() {
     if item.n <= n && item.nth_smallest <= k {
-      temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
+      temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
     }
   }
   for n0 in 0..n {
     for k0 in 0..k {
       for item in enlarge_nk(&temp_set[n0 as usize][k0 as usize].entries()) {
-        temp_set[item.n as usize][item.nth_smallest as usize].insert(item);
+        temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
       }
       temp_set[n0 as usize][k0 as usize].reset();
     }
 
     for item in enlarge_n(&temp_set[n0 as usize][k as usize].entries()) {
-      temp_set[item.n as usize][item.nth_smallest as usize].insert(item);
+        temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
     }
     temp_set[n0 as usize][k as usize].reset();
   }
