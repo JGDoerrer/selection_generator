@@ -42,7 +42,7 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
   for (int k = 1; k < maxComparisons; ++k) {
     std::chrono::nanoseconds duration_build_posets{}, duration_test_posets{};
     const auto start = std::chrono::high_resolution_clock::now();
-    const auto source_new = enlarge(normalizer, source, n, nthSmallest);
+    const auto source_new = Poset<maxN>::enlarge(normalizer, source, n, nthSmallest);
     const auto mid = std::chrono::high_resolution_clock::now();
     duration_build_posets = mid - start;
     duration_build_posets_total += duration_build_posets;
