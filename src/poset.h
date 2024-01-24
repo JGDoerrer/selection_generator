@@ -12,6 +12,121 @@ class Poset {
   uint8_t nthSmallest;
 
  public:
+  bool rec(const Poset<maxN> &poset, std::vector<int> &new_indices, std::vector<bool> &visited, const int n, int k,
+           int a, int b) const {
+    if (a > b) {
+      return false;
+    }
+    if (-1 != new_indices[k]) {
+      int na = a, nb = b;
+      bool maybe = true;
+      for (uint8_t q = 0; q < k; ++q) {
+        if (this->is_less(k, q)) {
+          --na;
+        }
+        if (new_indices[k] != new_indices[q]) {
+          if (poset.is_less(new_indices[k], new_indices[q])) {
+            --nb;
+          }
+          if ((this->is_less(k, q) && !poset.is_less(new_indices[k], new_indices[q])) ||
+              (this->is_less(q, k) && !poset.is_less(new_indices[q], new_indices[k]))) {
+            maybe = false;
+            break;
+          }
+        }
+      }
+
+      if (maybe && (k + 1 == n || rec(poset, new_indices, visited, n, k + 1, na, nb))) {
+        return true;
+      }
+    } else {
+      for (int i = 0; i < n; ++i) {
+        if (!visited[i]) {
+          visited[i] = true;
+          new_indices[k] = i;
+
+          int na = a, nb = b;
+          bool maybe = true;
+          for (uint8_t q = 0; q < k; ++q) {
+            if (this->is_less(k, q)) {
+              --na;
+            }
+            if (new_indices[k] != new_indices[q]) {
+              if (poset.is_less(new_indices[k], new_indices[q])) {
+                --nb;
+              }
+              if ((this->is_less(k, q) && !poset.is_less(new_indices[k], new_indices[q])) ||
+                  (this->is_less(q, k) && !poset.is_less(new_indices[q], new_indices[k]))) {
+                maybe = false;
+                break;
+              }
+            }
+          }
+
+          if (maybe && (k + 1 == n || rec(poset, new_indices, visited, n, k + 1, na, nb))) {
+            return true;
+          }
+          new_indices[k] = -1;
+          visited[i] = false;
+        }
+      }
+    }
+    return false;
+  }
+
+  // is *this subset of poset?
+  // Frage: exisitert eine Permutation new_indicies, sodass Teilmenge?
+  // new: 96.148s': n = 8, i = 3, (cache_l: 5535, cache_u: 2387, noSol: 0, bruteForce: 416), cache = 683
+  // old: 0.089s': n = 8, i = 3, (cache_l: 11590, cache_u: 3508, noSol: 0, bruteForce: 778), cache = 1081
+  bool subsetBruteForce(const Poset &poset) const {
+    // eigentlich nicht nötig
+    if (n != poset.n || nthSmallest != poset.nthSmallest) {
+      return false;
+    }
+
+    // Graph graph_this(n), graph_poset(n + 1); // TODO: why is this only working with n + 1???
+    // for (uint8_t i = 0; i < n; ++i) {
+    //   for (uint8_t j = 0; j < n; ++j) {
+    //     if (this->is_less(i, j)) {
+    //       add_edge(i, j, graph_this);
+    //     }
+    //     if (poset.is_less(i, j)) {
+    //       add_edge(i, j, graph_poset);
+    //     }
+    //   }
+    // }
+
+    // bool is_iso = false;
+    // auto callback = [&](auto f, auto) {
+    //   is_iso = true;
+    //   return false;
+    // };
+
+    // vf2_subgraph_iso(graph_this, graph_poset, callback);
+
+    std::vector<int> new_indices(poset.n, -1);
+    std::vector<bool> visited(poset.n, false);
+    // for (int i = 0; i < poset.n; ++i) {
+    //   for (int j = 0; j < poset.n; ++j) {
+    //     bool is_same = true;
+    //     for (int k = 0; k < poset.n; ++k) {
+    //       if (this->is_less(i, k) != poset.is_less(j, k)) {
+    //         is_same = false;
+    //         break;
+    //       }
+    //     }
+    //     if (is_same && -1 == new_indices[i] && !visited[j]) {
+    //       new_indices[i] = j;
+    //       visited[j] = true;
+    //     }
+    //   }
+    // }
+
+    bool sol = rec(poset, new_indices, visited, poset.n, 0, this->count(), poset.count());
+    // assert(sol == is_iso);
+    return sol;
+  }
+
   std::bitset<maxN * maxN> comparisonTable;
 
   inline std::size_t getComparisonTableSize() const { return this->n * this->n; }
@@ -551,7 +666,7 @@ class Poset {
       tempSet[n0][k].reset();
     }
 
-    return tempSet[n][k].entries(n, k, false);
+    return filter2(tempSet[n][k].entries(n, k, false));
   }
 
   static std::unordered_set<Poset<maxN>> filter(const std::unordered_set<Poset<maxN>> &unfiltered) {
@@ -562,6 +677,25 @@ class Poset {
       bool found = false;
       for (const Poset<maxN> &temp : unfiltered) {
         if (temp != item && temp.subset_of(item)) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        filtered.insert(item);
+      }
+    }
+    return filtered;
+  }
+
+  static std::unordered_set<Poset<maxN>> filter2(const std::unordered_set<Poset<maxN>> &unfiltered) {
+    // TODO: OPTIMIERUNG BUCKETS NACH ANZAHL EINSEN IN POSET
+    // TODO: OPtimierung: betrachte element nicht mehr, wenn schon in filtered -> n^2 Schritte zu n^2/2 Schritte
+    std::unordered_set<Poset<maxN>> filtered;
+    for (const Poset<maxN> &item : unfiltered) {
+      bool found = false;
+      for (const Poset<maxN> &temp : unfiltered) {
+        if (temp != item && temp.subsetBruteForce(item)) {
           found = true;
           break;
         }

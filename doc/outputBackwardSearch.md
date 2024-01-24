@@ -18,7 +18,7 @@ time '0.000s + 0.000s = 0.000s': n = 4, i = 0, comparisons: 3
 # 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 4
 # 2: 1 => 1 in 0.000s ~ 0.000s | total cached: 5
 # 3: 3 => 3 in 0.000s ~ 0.000s | total cached: 8
-# 4: 3 => 2 in 0.000s ~ 0.000s | total cached: 8 (found solution)
+# 4: 3 => 1 in 0.000s ~ 0.000s | total cached: 8 (found solution)
 time '0.000s + 0.000s = 0.000s': n = 4, i = 1, comparisons: 4
 
 # 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 8
@@ -29,16 +29,16 @@ time '0.000s + 0.000s = 0.000s': n = 5, i = 0, comparisons: 4
 # 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 9
 # 2: 1 => 2 in 0.000s ~ 0.000s | total cached: 9
 # 3: 3 => 4 in 0.000s ~ 0.000s | total cached: 10
-# 4: 5 => 6 in 0.000s ~ 0.000s | total cached: 14
+# 4: 5 => 5 in 0.000s ~ 0.000s | total cached: 14
 # 5: 4 => 3 in 0.000s ~ 0.000s | total cached: 15
 # 6: 1 => 1 in 0.000s ~ 0.000s | total cached: 15 (found solution)
 time '0.000s + 0.000s = 0.000s': n = 5, i = 1, comparisons: 6
 # 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 15
 # 2: 1 => 1 in 0.000s ~ 0.000s | total cached: 15
-# 3: 3 => 6 in 0.000s ~ 0.000s | total cached: 18
-# 4: 6 => 7 in 0.000s ~ 0.000s | total cached: 23
-# 5: 6 => 5 in 0.000s ~ 0.000s | total cached: 26
-# 6: 3 => 2 in 0.000s ~ 0.000s | total cached: 26 (found solution)
+# 3: 3 => 4 in 0.000s ~ 0.000s | total cached: 18
+# 4: 6 => 5 in 0.000s ~ 0.000s | total cached: 23
+# 5: 6 => 3 in 0.000s ~ 0.000s | total cached: 26
+# 6: 3 => 1 in 0.000s ~ 0.000s | total cached: 26 (found solution)
 time '0.000s + 0.000s = 0.000s': n = 5, i = 2, comparisons: 6
 
 # 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 26
@@ -49,132 +49,132 @@ time '0.000s + 0.000s = 0.000s': n = 5, i = 2, comparisons: 6
 time '0.000s + 0.000s = 0.000s': n = 6, i = 0, comparisons: 5
 # 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 27
 # 2: 1 => 2 in 0.000s ~ 0.000s | total cached: 27
-# 3: 3 => 8 in 0.000s ~ 0.000s | total cached: 28
-# 4: 6 => 13 in 0.000s ~ 0.000s | total cached: 31
-# 5: 8 => 13 in 0.000s ~ 0.000s | total cached: 35
-# 6: 5 => 3 in 0.000s ~ 0.000s | total cached: 37
-# 7: 2 => 2 in 0.000s ~ 0.000s | total cached: 37 (found solution)
-time '0.000s + 0.000s = 0.000s': n = 6, i = 1, comparisons: 7
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 37
-# 2: 1 => 2 in 0.000s ~ 0.000s | total cached: 37
-# 3: 3 => 10 in 0.000s ~ 0.000s | total cached: 41
-# 4: 12 => 19 in 0.000s ~ 0.000s | total cached: 51
-# 5: 19 => 22 in 0.000s ~ 0.000s | total cached: 65
-# 6: 18 => 15 in 0.000s ~ 0.000s | total cached: 72
-# 7: 7 => 6 in 0.000s ~ 0.000s | total cached: 75
-# 8: 3 => 2 in 0.000s ~ 0.000s | total cached: 75 (found solution)
-time '0.000s + 0.000s = 0.001s': n = 6, i = 2, comparisons: 8
+# 3: 3 => 7 in 0.000s ~ 0.000s | total cached: 28
+# 4: 6 => 10 in 0.000s ~ 0.000s | total cached: 31
+# 5: 8 => 7 in 0.000s ~ 0.000s | total cached: 35
+# 6: 5 => 2 in 0.000s ~ 0.000s | total cached: 36
+# 7: 1 => 1 in 0.000s ~ 0.000s | total cached: 36 (found solution)
+time '0.001s + 0.000s = 0.002s': n = 6, i = 1, comparisons: 7
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 36
+# 2: 1 => 2 in 0.000s ~ 0.000s | total cached: 36
+# 3: 3 => 6 in 0.000s ~ 0.000s | total cached: 40
+# 4: 12 => 14 in 0.000s ~ 0.000s | total cached: 50
+# 5: 19 => 13 in 0.001s ~ 0.000s | total cached: 62
+# 6: 15 => 14 in 0.001s ~ 0.000s | total cached: 69
+# 7: 7 => 4 in 0.000s ~ 0.000s | total cached: 72
+# 8: 3 => 1 in 0.000s ~ 0.000s | total cached: 72 (found solution)
+time '0.003s + 0.000s = 0.004s': n = 6, i = 2, comparisons: 8
 
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 75
-# 2: 1 => 3 in 0.000s ~ 0.000s | total cached: 75
-# 3: 1 => 4 in 0.000s ~ 0.000s | total cached: 75
-# 4: 1 => 3 in 0.000s ~ 0.000s | total cached: 75
-# 5: 1 => 2 in 0.000s ~ 0.000s | total cached: 76
-# 6: 1 => 1 in 0.000s ~ 0.000s | total cached: 76 (found solution)
-time '0.000s + 0.000s = 0.000s': n = 7, i = 0, comparisons: 6
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 76
-# 2: 1 => 3 in 0.000s ~ 0.000s | total cached: 76
-# 3: 3 => 11 in 0.000s ~ 0.000s | total cached: 77
-# 4: 7 => 24 in 0.000s ~ 0.000s | total cached: 79
-# 5: 10 => 31 in 0.000s ~ 0.000s | total cached: 84
-# 6: 11 => 16 in 0.000s ~ 0.000s | total cached: 89
-# 7: 7 => 5 in 0.000s ~ 0.000s | total cached: 91
-# 8: 2 => 2 in 0.000s ~ 0.000s | total cached: 91 (found solution)
-time '0.000s + 0.001s = 0.002s': n = 7, i = 1, comparisons: 8
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 91
-# 2: 1 => 2 in 0.000s ~ 0.000s | total cached: 91
-# 3: 3 => 15 in 0.000s ~ 0.000s | total cached: 92
-# 4: 14 => 41 in 0.000s ~ 0.001s | total cached: 108
-# 5: 40 => 75 in 0.000s ~ 0.001s | total cached: 144
-# 6: 55 => 75 in 0.000s ~ 0.001s | total cached: 174
-# 7: 38 => 41 in 0.000s ~ 0.000s | total cached: 188
-# 8: 17 => 15 in 0.000s ~ 0.000s | total cached: 193
-# 9: 5 => 4 in 0.000s ~ 0.000s | total cached: 194
-# 10: 1 => 1 in 0.000s ~ 0.000s | total cached: 194 (found solution)
-time '0.001s + 0.006s = 0.007s': n = 7, i = 2, comparisons: 10
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 194
-# 2: 1 => 2 in 0.000s ~ 0.000s | total cached: 194
-# 3: 3 => 11 in 0.000s ~ 0.000s | total cached: 194
-# 4: 12 => 45 in 0.000s ~ 0.001s | total cached: 217
-# 5: 43 => 73 in 0.000s ~ 0.002s | total cached: 286
-# 6: 87 => 86 in 0.000s ~ 0.002s | total cached: 353
-# 7: 74 => 56 in 0.000s ~ 0.001s | total cached: 385
-# 8: 35 => 22 in 0.000s ~ 0.000s | total cached: 393
-# 9: 9 => 6 in 0.000s ~ 0.000s | total cached: 396
-# 10: 3 => 2 in 0.000s ~ 0.000s | total cached: 396 (found solution)
-time '0.001s + 0.008s = 0.009s': n = 7, i = 3, comparisons: 10
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 72
+# 2: 1 => 3 in 0.000s ~ 0.000s | total cached: 72
+# 3: 1 => 4 in 0.000s ~ 0.000s | total cached: 72
+# 4: 1 => 3 in 0.000s ~ 0.000s | total cached: 72
+# 5: 1 => 2 in 0.000s ~ 0.000s | total cached: 73
+# 6: 1 => 1 in 0.000s ~ 0.000s | total cached: 73 (found solution)
+time '0.002s + 0.000s = 0.002s': n = 7, i = 0, comparisons: 6
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 73
+# 2: 1 => 3 in 0.000s ~ 0.000s | total cached: 73
+# 3: 3 => 10 in 0.002s ~ 0.000s | total cached: 74
+# 4: 7 => 19 in 0.010s ~ 0.000s | total cached: 76
+# 5: 10 => 13 in 0.015s ~ 0.000s | total cached: 81
+# 6: 11 => 4 in 0.004s ~ 0.000s | total cached: 85
+# 7: 5 => 2 in 0.000s ~ 0.000s | total cached: 86
+# 8: 1 => 1 in 0.000s ~ 0.000s | total cached: 86 (found solution)
+time '0.033s + 0.001s = 0.034s': n = 7, i = 1, comparisons: 8
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 86
+# 2: 1 => 2 in 0.000s ~ 0.000s | total cached: 86
+# 3: 3 => 10 in 0.001s ~ 0.000s | total cached: 87
+# 4: 14 => 31 in 0.017s ~ 0.001s | total cached: 103
+# 5: 38 => 42 in 0.046s ~ 0.001s | total cached: 138
+# 6: 51 => 38 in 0.064s ~ 0.000s | total cached: 168
+# 7: 38 => 14 in 0.021s ~ 0.000s | total cached: 180
+# 8: 13 => 6 in 0.001s ~ 0.000s | total cached: 184
+# 9: 4 => 3 in 0.000s ~ 0.000s | total cached: 185
+# 10: 1 => 1 in 0.000s ~ 0.000s | total cached: 185 (found solution)
+time '0.153s + 0.004s = 0.158s': n = 7, i = 2, comparisons: 10
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 185
+# 2: 1 => 2 in 0.000s ~ 0.000s | total cached: 185
+# 3: 3 => 9 in 0.000s ~ 0.000s | total cached: 185
+# 4: 12 => 29 in 0.008s ~ 0.001s | total cached: 208
+# 5: 42 => 46 in 0.033s ~ 0.001s | total cached: 271
+# 6: 79 => 50 in 0.056s ~ 0.001s | total cached: 333
+# 7: 69 => 25 in 0.025s ~ 0.000s | total cached: 360
+# 8: 28 => 13 in 0.009s ~ 0.000s | total cached: 367
+# 9: 7 => 4 in 0.001s ~ 0.000s | total cached: 370
+# 10: 3 => 1 in 0.000s ~ 0.000s | total cached: 370 (found solution)
+time '0.134s + 0.006s = 0.140s': n = 7, i = 3, comparisons: 10
 
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 396
-# 2: 1 => 4 in 0.000s ~ 0.000s | total cached: 396
-# 3: 1 => 5 in 0.000s ~ 0.000s | total cached: 396
-# 4: 1 => 5 in 0.000s ~ 0.000s | total cached: 396
-# 5: 1 => 3 in 0.000s ~ 0.000s | total cached: 396
-# 6: 1 => 2 in 0.000s ~ 0.000s | total cached: 397
-# 7: 1 => 1 in 0.000s ~ 0.000s | total cached: 397 (found solution)
-time '0.000s + 0.000s = 0.000s': n = 8, i = 0, comparisons: 7
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 397
-# 2: 1 => 3 in 0.000s ~ 0.000s | total cached: 397
-# 3: 3 => 14 in 0.000s ~ 0.000s | total cached: 397
-# 4: 7 => 43 in 0.000s ~ 0.002s | total cached: 398
-# 5: 11 => 72 in 0.001s ~ 0.003s | total cached: 404
-# 6: 17 => 51 in 0.000s ~ 0.002s | total cached: 410
-# 7: 13 => 21 in 0.000s ~ 0.000s | total cached: 416
-# 8: 8 => 7 in 0.000s ~ 0.000s | total cached: 419
-# 9: 3 => 2 in 0.000s ~ 0.000s | total cached: 419 (found solution)
-time '0.003s + 0.009s = 0.012s': n = 8, i = 1, comparisons: 9
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 419
-# 2: 1 => 3 in 0.000s ~ 0.000s | total cached: 419
-# 3: 3 => 23 in 0.000s ~ 0.000s | total cached: 419
-# 4: 15 => 82 in 0.000s ~ 0.003s | total cached: 428
-# 5: 51 => 213 in 0.001s ~ 0.011s | total cached: 488
-# 6: 123 => 292 in 0.002s ~ 0.013s | total cached: 586
-# 7: 140 => 216 in 0.001s ~ 0.011s | total cached: 652
-# 8: 84 => 95 in 0.000s ~ 0.004s | total cached: 675
-# 9: 28 => 28 in 0.000s ~ 0.001s | total cached: 682
-# 10: 8 => 6 in 0.000s ~ 0.000s | total cached: 685
-# 11: 3 => 3 in 0.000s ~ 0.000s | total cached: 685 (found solution)
-time '0.007s + 0.045s = 0.052s': n = 8, i = 2, comparisons: 11
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 685
-# 2: 1 => 2 in 0.000s ~ 0.000s | total cached: 685
-# 3: 3 => 21 in 0.000s ~ 0.001s | total cached: 685
-# 4: 14 => 100 in 0.000s ~ 0.005s | total cached: 708
-# 5: 86 => 265 in 0.001s ~ 0.015s | total cached: 887
-# 6: 305 => 467 in 0.003s ~ 0.023s | total cached: 1255
-# 7: 471 => 444 in 0.003s ~ 0.021s | total cached: 1546
-# 8: 339 => 259 in 0.001s ~ 0.011s | total cached: 1659
-# 9: 124 => 90 in 0.000s ~ 0.004s | total cached: 1691
-# 10: 35 => 25 in 0.000s ~ 0.000s | total cached: 1700
-# 11: 9 => 7 in 0.000s ~ 0.000s | total cached: 1703
-# 12: 3 => 2 in 0.000s ~ 0.000s | total cached: 1703 (found solution)
-time '0.011s + 0.083s = 0.095s': n = 8, i = 3, comparisons: 12
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 370
+# 2: 1 => 4 in 0.004s ~ 0.000s | total cached: 370
+# 3: 1 => 5 in 0.006s ~ 0.000s | total cached: 370
+# 4: 1 => 5 in 0.006s ~ 0.000s | total cached: 370
+# 5: 1 => 3 in 0.003s ~ 0.000s | total cached: 370
+# 6: 1 => 2 in 0.001s ~ 0.000s | total cached: 371
+# 7: 1 => 1 in 0.000s ~ 0.000s | total cached: 371 (found solution)
+time '0.021s + 0.000s = 0.022s': n = 8, i = 0, comparisons: 7
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 371
+# 2: 1 => 3 in 0.001s ~ 0.000s | total cached: 371
+# 3: 3 => 14 in 0.019s ~ 0.000s | total cached: 371
+# 4: 7 => 32 in 0.174s ~ 0.001s | total cached: 372
+# 5: 11 => 25 in 0.333s ~ 0.001s | total cached: 378
+# 6: 17 => 15 in 0.129s ~ 0.001s | total cached: 383
+# 7: 11 => 9 in 0.041s ~ 0.000s | total cached: 387
+# 8: 5 => 3 in 0.004s ~ 0.000s | total cached: 390
+# 9: 3 => 1 in 0.000s ~ 0.000s | total cached: 390 (found solution)
+time '0.703s + 0.004s = 0.708s': n = 8, i = 1, comparisons: 9
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 390
+# 2: 1 => 3 in 0.000s ~ 0.000s | total cached: 390
+# 3: 3 => 15 in 0.014s ~ 0.000s | total cached: 390
+# 4: 15 => 63 in 0.249s ~ 0.002s | total cached: 399
+# 5: 49 => 112 in 1.543s ~ 0.006s | total cached: 455
+# 6: 115 => 103 in 3.053s ~ 0.005s | total cached: 545
+# 7: 131 => 45 in 1.466s ~ 0.001s | total cached: 602
+# 8: 69 => 20 in 0.307s ~ 0.001s | total cached: 623
+# 9: 24 => 7 in 0.081s ~ 0.000s | total cached: 630
+# 10: 7 => 2 in 0.001s ~ 0.000s | total cached: 631
+# 11: 1 => 1 in 0.000s ~ 0.000s | total cached: 631 (found solution)
+time '6.718s + 0.019s = 6.737s': n = 8, i = 2, comparisons: 11
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 631
+# 2: 1 => 2 in 0.000s ~ 0.000s | total cached: 631
+# 3: 3 => 15 in 0.005s ~ 0.000s | total cached: 631
+# 4: 14 => 68 in 0.184s ~ 0.004s | total cached: 652
+# 5: 80 => 170 in 1.618s ~ 0.010s | total cached: 816
+# 6: 272 => 211 in 5.423s ~ 0.010s | total cached: 1134
+# 7: 406 => 151 in 5.503s ~ 0.006s | total cached: 1390
+# 8: 285 => 79 in 2.235s ~ 0.003s | total cached: 1494
+# 9: 114 => 35 in 0.478s ~ 0.001s | total cached: 1525
+# 10: 32 => 14 in 0.080s ~ 0.000s | total cached: 1532
+# 11: 7 => 4 in 0.010s ~ 0.000s | total cached: 1535
+# 12: 3 => 1 in 0.000s ~ 0.000s | total cached: 1535 (found solution)
+time '15.540s + 0.039s = 15.579s': n = 8, i = 3, comparisons: 12
 
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 1703
-# 2: 1 => 4 in 0.000s ~ 0.000s | total cached: 1703
-# 3: 1 => 7 in 0.000s ~ 0.000s | total cached: 1703
-# 4: 1 => 6 in 0.000s ~ 0.000s | total cached: 1703
-# 5: 1 => 5 in 0.000s ~ 0.000s | total cached: 1703
-# 6: 1 => 3 in 0.000s ~ 0.000s | total cached: 1703
-# 7: 1 => 2 in 0.000s ~ 0.000s | total cached: 1704
-# 8: 1 => 1 in 0.000s ~ 0.000s | total cached: 1704 (found solution)
-time '0.001s + 0.001s = 0.002s': n = 9, i = 0, comparisons: 8
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 1704
-# 2: 1 => 4 in 0.000s ~ 0.000s | total cached: 1704
-# 3: 3 => 20 in 0.000s ~ 0.000s | total cached: 1704
-# 4: 7 => 68 in 0.001s ~ 0.004s | total cached: 1705
-# 5: 12 => 150 in 0.003s ~ 0.013s | total cached: 1709
-# 6: 21 => 154 in 0.003s ~ 0.015s | total cached: 1718
-# 7: 22 => 76 in 0.002s ~ 0.005s | total cached: 1725
-# 8: 15 => 29 in 0.001s ~ 0.002s | total cached: 1732
-# 9: 10 => 8 in 0.000s ~ 0.000s | total cached: 1735
-# 10: 3 => 3 in 0.000s ~ 0.000s | total cached: 1736
-# 11: 1 => 1 in 0.000s ~ 0.000s | total cached: 1736 (found solution)
-time '0.013s + 0.042s = 0.055s': n = 9, i = 1, comparisons: 11
-# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 1736
-# 2: 1 => 3 in 0.000s ~ 0.000s | total cached: 1736
-# 3: 3 => 29 in 0.000s ~ 0.001s | total cached: 1736
-# 4: 15 => 147 in 0.002s ~ 0.009s | total cached: 1739
-# 5: 55 => 529 in 0.005s ~ 0.045s | total cached: 1789
-# 6: 179 => 997 in 0.012s ~ 0.075s | total cached: 1997
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 1535
+# 2: 1 => 4 in 0.038s ~ 0.000s | total cached: 1535
+# 3: 1 => 7 in 0.098s ~ 0.000s | total cached: 1535
+# 4: 1 => 6 in 0.075s ~ 0.000s | total cached: 1535
+# 5: 1 => 5 in 0.065s ~ 0.000s | total cached: 1535
+# 6: 1 => 3 in 0.028s ~ 0.000s | total cached: 1535
+# 7: 1 => 2 in 0.015s ~ 0.000s | total cached: 1536
+# 8: 1 => 1 in 0.000s ~ 0.000s | total cached: 1536 (found solution)
+time '0.322s + 0.001s = 0.324s': n = 9, i = 0, comparisons: 8
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 1536
+# 2: 1 => 4 in 0.011s ~ 0.000s | total cached: 1536
+# 3: 3 => 17 in 0.202s ~ 0.001s | total cached: 1536
+# 4: 7 => 49 in 2.505s ~ 0.002s | total cached: 1537
+# 5: 12 => 47 in 5.771s ~ 0.004s | total cached: 1541
+# 6: 21 => 44 in 6.264s ~ 0.008s | total cached: 1550
+# 7: 20 => 25 in 3.197s ~ 0.002s | total cached: 1556
+# 8: 12 => 11 in 0.603s ~ 0.000s | total cached: 1561
+# 9: 8 => 6 in 0.132s ~ 0.000s | total cached: 1564
+# 10: 3 => 3 in 0.046s ~ 0.000s | total cached: 1565
+# 11: 1 => 1 in 0.000s ~ 0.000s | total cached: 1565 (found solution)
+time '18.734s + 0.020s = 18.755s': n = 9, i = 1, comparisons: 11
+# 1: 1 => 1 in 0.000s ~ 0.000s | total cached: 1565
+# 2: 1 => 3 in 0.001s ~ 0.000s | total cached: 1565
+# 3: 3 => 21 in 0.123s ~ 0.001s | total cached: 1565
+# 4: 15 => 116 in 4.083s ~ 0.008s | total cached: 1568
+# 5: 53 => 274 in 41.887s ~ 0.025s | total cached: 1611
+# 6: 164 => 316 in 139.102s ~ 0.029s | total cached: 1792
 # 7: 353 => 1025 in 0.010s ~ 0.092s | total cached: 2225
 # 8: 314 => 594 in 0.006s ~ 0.057s | total cached: 2355
 # 9: 159 => 198 in 0.002s ~ 0.018s | total cached: 2399
