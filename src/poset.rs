@@ -3,7 +3,7 @@ use std::{fmt::Debug, os::raw::c_int};
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use serde::{Deserialize, Serialize};
 
-use crate::{bitset::BitSet, KNOWN_MIN_VALUES};
+use crate::bitset::BitSet;
 
 pub const MAX_N: usize = 15;
 
@@ -101,14 +101,14 @@ impl Poset {
         let mut less = [0u8; MAX_N];
         let mut greater = [0u8; MAX_N];
 
-        for i in 0..self.n as usize {
-            greater[i] = self.get_all_greater_than(i as u8).len() as u8;
+        for (i, greater) in greater.iter_mut().enumerate().take(self.n as usize) {
+            *greater = self.get_all_greater_than(i as u8).len() as u8;
         }
 
-        for i in 0..self.n as usize {
+        for (i, less) in less.iter_mut().enumerate().take(self.n as usize) {
             let i_bitset = BitSet::single(i);
             for j in 0..self.n {
-                less[i] += (!self.get_all_greater_than(j).intersect(i_bitset).is_empty()) as u8;
+                *less += (!self.get_all_greater_than(j).intersect(i_bitset).is_empty()) as u8;
             }
         }
 
@@ -554,6 +554,8 @@ impl Debug for Poset {
 #[cfg(test)]
 mod test {
     use std::collections::HashSet;
+
+    use crate::KNOWN_MIN_VALUES;
 
     use super::*;
 

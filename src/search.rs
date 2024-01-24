@@ -3,7 +3,7 @@ use std::time::Instant;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
-use crate::{cache::Cache, poset::Poset, KNOWN_MIN_VALUES};
+use crate::{cache::Cache, poset::Poset};
 
 pub struct Search<'a> {
     n: u8,
@@ -291,7 +291,7 @@ impl<'a> Search<'a> {
         let (less, greater) = poset.calculate_relations();
 
         less.into_iter()
-            .zip(greater.into_iter())
+            .zip(greater)
             .map(|(less, greater)| {
                 let d = greater.abs_diff(less);
                 let u = poset.n() - greater - less;
