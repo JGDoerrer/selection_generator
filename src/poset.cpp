@@ -378,12 +378,26 @@ std::unordered_set<Poset> Poset::remove_less(const uint16_t i, const uint16_t j,
     }
   }
 
-  // check if output closed
-  // for (auto item : result) {
-  //   assert(item.is_closed());  // check if item closed
-  // }
-
   return result;
+}
+
+std::unordered_set<Poset> Poset::filter(const std::unordered_set<Poset> &unfiltered) {
+  // TODO: OPTIMIERUNG BUCKETS NACH ANZAHL EINSEN IN POSET
+  // TODO: OPtimierung: betrachte element nicht mehr, wenn schon in filtered -> n^2 Schritte zu n^2/2 Schritte
+  std::unordered_set<Poset> filtered;
+  for (const Poset &item : unfiltered) {
+    bool found = false;
+    for (const Poset &temp : unfiltered) {
+      if (temp != item && temp.subset_of(item)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      filtered.insert(item);
+    }
+  }
+  return filtered;
 }
 
 bool Poset::can_reduce_element_greater(const uint8_t element) const {
@@ -473,25 +487,6 @@ void Poset::enlarge_nk(std::unordered_set<Poset> &result) const {
     item.canonify();
     result.insert(item);
   }
-}
-
-std::unordered_set<Poset> Poset::filter(const std::unordered_set<Poset> &unfiltered) {
-  // TODO: OPTIMIERUNG BUCKETS NACH ANZAHL EINSEN IN POSET
-  // TODO: OPtimierung: betrachte element nicht mehr, wenn schon in filtered -> n^2 Schritte zu n^2/2 Schritte
-  std::unordered_set<Poset> filtered;
-  for (const Poset &item : unfiltered) {
-    bool found = false;
-    for (const Poset &temp : unfiltered) {
-      if (temp != item && temp.subset_of(item)) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      filtered.insert(item);
-    }
-  }
-  return filtered;
 }
 
 std::unordered_set<Poset> Poset::enlarge(const std::unordered_set<Poset> &setOfPosets, const int n, const int k) {

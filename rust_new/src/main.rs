@@ -27,7 +27,7 @@ fn start_search_backward(
     let duration_test_posets;
 
     let start = std::time::Instant::now();
-    let source_new = enlarge(&source, n, nth_smallest);
+    let source_new = Poset::enlarge(&source, n, nth_smallest);
     let mid = std::time::Instant::now();
     duration_build_posets = mid - start;
     duration_build_posets_total += duration_build_posets;

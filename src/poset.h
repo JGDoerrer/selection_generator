@@ -66,6 +66,8 @@ class Poset {
                                         const std::function<bool(const Poset &)> &test) const;
 
   // enlarge
+  static std::unordered_set<Poset> filter(const std::unordered_set<Poset> &unfiltered);
+
   bool can_reduce_element_greater(const uint8_t element) const;
 
   void enlarge_n(std::unordered_set<Poset> &result) const;
@@ -73,8 +75,6 @@ class Poset {
   bool can_reduce_element_less(const uint8_t element) const;
 
   void enlarge_nk(std::unordered_set<Poset> &result) const;
-
-  static std::unordered_set<Poset> filter(const std::unordered_set<Poset> &unfiltered);
 
   static std::unordered_set<Poset> enlarge(const std::unordered_set<Poset> &setOfPosets, const int n, const int k);
 
