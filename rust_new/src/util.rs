@@ -1,3 +1,5 @@
+pub const DEBUG: bool = true;
+
 pub const MAX_THREAD_COUNT: usize = 20;
 pub const MAX_COMPARISONS: usize = 25;
 pub const MAX_N: usize = 15;
@@ -21,3 +23,5 @@ pub const KNOWN_MIN_VALUES: [&[u8]; 16] = [
   /* n=14 */ &[13, 16, 19, 21, 23, 24, 24, 24, 24, 23, 21, 19, 16, 13],
   /* n=15 */ &[14, 17, 20, 23, 25, 25, 23, 24, 24, 23, 25, 25, 25, 23, 20, 17, 14],
 ];
+
+pub const min_n_comparisons_len: usize = 15;

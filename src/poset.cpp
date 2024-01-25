@@ -8,14 +8,43 @@
 #define MAXN WORDSIZE
 #include "../nauty2_8_8/nauty.h"
 
+/// @brief constructs an empty Poset
+/// @param n
+/// @param nthSmallest
+Poset::Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest), comparisonTable() {}
+
+/// @return size of the Poset
+uint8_t Poset::size() const { return this->n; }
+
+/// @return the nthSmallest Element
+uint8_t Poset::nth() const { return this->nthSmallest; }
+
+bool Poset::get_index(uint8_t pos) const { return comparisonTable[pos]; }
+
+void Poset::set_index(const uint8_t pos, const bool value) { comparisonTable[pos] = value; }
+
 std::size_t Poset::getComparisonTableSize() const { return this->n * this->n; }
 
 std::size_t Poset::toInternalPos(const uint16_t i, const uint16_t j) const { return i * this->n + j; }
 
+/// @brief checks, whether it holds `arr[i] < arr[j]`, e.g. `is_less(i, j) == true` => `arr[i] < arr[j]`
+//         Attention: `!is_less(i, j)` IMPLIES NOT `arr[i] > arr[j]`
+/// @param i
+/// @param j
+/// @return
+bool Poset::is_less(const uint16_t i, const uint16_t j) const {
+  return this->get_index(this->toInternalPos(i, j));
+}
+
 void Poset::set_less(const uint16_t i, const uint16_t j, const bool value) {
-  // if (i != j && 0 != n) {
-  this->comparisonTable[toInternalPos(i, j)] = value;
-  // }
+  this->set_index(this->toInternalPos(i, j), value);
+}
+
+/// @brief
+/// @param poset
+/// @return true, if *this is a subset of `poset`
+bool Poset::subset_of(const Poset &poset) const {
+  return n == poset.n && nthSmallest == poset.nthSmallest && (~comparisonTable | poset.comparisonTable).all();
 }
 
 Poset &Poset::add_and_close_recursive(const uint16_t i, const uint16_t j) {
@@ -30,6 +59,64 @@ Poset &Poset::add_and_close_recursive(const uint16_t i, const uint16_t j) {
           this->add_and_close_recursive(k, j);
         }
       }
+    }
+  }
+  return *this;
+}
+
+/// @brief adds i < j to the poset
+/// @param i
+/// @param j
+/// @return
+Poset &Poset::add_less(const uint16_t i, const uint16_t j) {
+  return this->add_and_close_recursive(i, j);  // faster than iterative
+}
+
+/// @brief
+/// @param i
+/// @param j
+/// @return retunrs a clone of the poset, with i < j added
+Poset Poset::with_less(const uint16_t i, const uint16_t j) const { return Poset{*this}.add_less(i, j); }
+
+/// @brief returns how many elements are less or greater than it
+/// @param less wenn `less[3] = 2`, dann gibt es {a, b} mit a != b, is_less(a, 3) und is_less(b, 3)
+/// @param greater
+void Poset::calculate_relations(uint8_t less[], uint8_t greater[]) const {
+  std::memset(less, 0, this->n);
+  std::memset(greater, 0, this->n);
+  for (uint8_t i = 0; i < this->n; ++i) {
+    for (uint8_t j = 0; j < this->n; ++j) {
+      if (this->is_less(i, j)) {
+        ++less[j];
+        ++greater[i];
+      }
+    }
+  }
+}
+
+void Poset::swap(const uint16_t i1, const uint16_t j1, const uint16_t i2, const uint16_t j2) {
+  const bool temp = this->is_less(i1, j1);
+  this->set_less(i1, j1, this->is_less(i2, j2));
+  this->set_less(i2, j2, temp);
+}
+
+void Poset::swap(const uint16_t i, const uint16_t j) {
+  for (uint8_t k = 0; k < this->n; ++k) {
+    this->swap(i, k, j, k);
+  }
+  for (uint8_t k = 0; k < this->n; ++k) {
+    this->swap(k, i, k, j);
+  }
+}
+
+// invariant after method: 2 * i < n
+Poset &Poset::dual() {
+  this->nthSmallest = this->n - 1 - this->nthSmallest;
+  for (uint8_t i = 0; i < this->n; ++i) {
+    for (uint8_t j = i + 1; j < this->n; ++j) {
+      const bool temp = this->is_less(i, j);
+      this->set_less(i, j, this->is_less(j, i));
+      this->set_less(j, i, temp);
     }
   }
   return *this;
@@ -77,60 +164,131 @@ Poset &Poset::reduce_n() {
   return *this;
 }
 
-/// @brief constructs an empty Poset
-/// @param n
-/// @param nthSmallest
-Poset::Poset(const uint8_t n, const uint8_t nthSmallest) : n(n), nthSmallest(nthSmallest), comparisonTable() {}
+std::array<int, MAX_N> Poset::canonify_nauty_indicies() const {
+  constexpr static int m = SETWORDSNEEDED(MAX_N);
+  constexpr static int ms = SETWORDSNEEDED(MAX_N) * MAX_N;
 
-/// @brief clones a poset
-/// @param poset
-Poset::Poset(const Poset &poset) : n(poset.n), nthSmallest(poset.nthSmallest), comparisonTable(poset.comparisonTable) {}
+  if constexpr (debug) {
+    assert(MAX_N <= WORDSIZE);
+    nauty_check(WORDSIZE, m, MAX_N, NAUTYVERSIONID);
+  }
 
-/// @return size of the Poset
-uint8_t Poset::size() const { return this->n; }
+  graph g[ms];
 
-/// @return the nthSmallest Element
-uint8_t Poset::nth() const { return this->nthSmallest; }
-
-/// @brief checks, whether it holds `arr[i] < arr[j]`, e.g. `is_less(i, j) == true` => `arr[i] < arr[j]`
-//         Attention: `!is_less(i, j)` IMPLIES NOT `arr[i] > arr[j]`
-/// @param i
-/// @param j
-/// @return
-bool Poset::is_less(const uint16_t i, const uint16_t j) const {
-  // 0 != n && i != j &&
-  return this->comparisonTable[toInternalPos(i, j)];
-}
-
-/// @brief adds i < j to the poset
-/// @param i
-/// @param j
-/// @return
-Poset &Poset::add_less(const uint16_t i, const uint16_t j) {
-  return this->add_and_close_recursive(i, j);  // faster than iterative
-}
-
-/// @brief
-/// @param i
-/// @param j
-/// @return retunrs a clone of the poset, with i < j added
-Poset Poset::with_less(const uint16_t i, const uint16_t j) const { return Poset{*this}.add_less(i, j); }
-
-/// @brief returns how many elements are less or greater than it
-/// @param less wenn `less[3] = 2`, dann gibt es {a, b} mit a != b, is_less(a, 3) und is_less(b, 3)
-/// @param greater
-void Poset::calculate_relations(uint8_t less[], uint8_t greater[]) const {
-  std::memset(less, 0, this->n);
-  std::memset(greater, 0, this->n);
-  for (uint8_t i = 0; i < this->n; ++i) {
-    for (uint8_t j = 0; j < this->n; ++j) {
+  EMPTYGRAPH(g, m, this->n);
+  for (uint16_t i = 0; i < this->n; ++i) {
+    for (uint16_t j = 0; j < this->n; ++j) {
       if (this->is_less(i, j)) {
-        ++less[j];
-        ++greater[i];
+        ADDONEARC(g, i, j, m);
       }
     }
   }
+
+  std::array<int, MAX_N> lab, ptn, orbits;
+  for (uint8_t i = 0; i < this->n; ++i) {
+    lab[i] = i;
+    ptn[i] = 0;  // hier 0 oder 1?
+  }
+  ptn[this->n - 1] = 0;
+
+  graph result[ms];
+  EMPTYGRAPH(result, m, this->n);
+
+  DEFAULTOPTIONS_GRAPH(options);
+  options.getcanon = TRUE;
+  options.digraph = TRUE;
+
+  statsblk stats;
+  densenauty(g, lab.data(), ptn.data(), orbits.data(), &options, &stats, m, this->n, result);
+  assert(stats.errstatus == 0);
+
+  return lab;
 }
+
+Poset &Poset::canonify() {
+  constexpr bool ONLY_NAUTY = false;
+
+  const Poset oldPoset(*this);
+  std::array<int, MAX_N> new_indices;
+  if constexpr (ONLY_NAUTY) {
+    new_indices = this->canonify_nauty_indicies();
+  } else {
+    uint8_t less[this->n];
+    uint8_t greater[this->n];
+    this->calculate_relations(less, greater);
+
+    std::vector<uint64_t> in_out_degree(this->n);
+    for (uint8_t i = 0; i < this->n; ++i) {
+      in_out_degree[i] = uint64_t(MAX_N) * uint64_t(greater[i]) + uint64_t(less[i]);
+    }
+
+    std::vector<uint64_t> hash = in_out_degree;
+    for (int q = 0; q < 2; ++q) {
+      uint64_t sum_hash[MAX_N];
+      for (int k = 0; k < MAX_N; ++k) {
+        sum_hash[k] = 0;
+      }
+
+      for (size_t i = 0; i < this->n; ++i) {
+        uint64_t sum = hash[i];
+
+        for (size_t j = 0; j < this->n; ++j) {
+          if (i != j && (this->is_less(i, j) || this->is_less(j, i))) {
+            sum ^= hash[j];
+          }
+        }
+
+        sum_hash[i] = sum;
+      }
+
+      for (size_t i = 0; i < this->n; ++i) {
+        hash[i] = sum_hash[i] * (MAX_N * MAX_N) + in_out_degree[i];
+      }
+    }
+
+    std::iota(new_indices.begin(), new_indices.begin() + this->n, 0);
+
+    std::stable_sort(new_indices.begin(), new_indices.begin() + this->n, [&](const int a, const int b) {
+      return in_out_degree[a] < in_out_degree[b] || (in_out_degree[a] == in_out_degree[b] && hash[a] < hash[b]);
+    });
+
+    bool isUnique = true;
+    for (uint8_t i = 1; i < this->n; ++i) {
+      if (in_out_degree[new_indices[i - 1]] == in_out_degree[new_indices[i]] &&
+          hash[new_indices[i - 1]] == hash[new_indices[i]]) {
+        this->swap(new_indices[i - 1], new_indices[i]);
+        if (*this != oldPoset) {
+          isUnique = false;
+          break;
+        }
+      }
+    }
+
+    if (!isUnique) {
+      new_indices = this->canonify_nauty_indicies();
+
+      std::stable_sort(new_indices.begin(), new_indices.begin() + this->n, [&](const int a, const int b) {
+        return in_out_degree[a] < in_out_degree[b] || (in_out_degree[a] == in_out_degree[b] && hash[a] < hash[b]);
+      });
+    }
+  }
+
+  for (uint8_t i = 0; i < this->n; ++i) {
+    for (uint8_t j = 0; j < this->n; ++j) {
+      this->set_less(i, j, oldPoset.is_less(new_indices[i], new_indices[j]));
+    }
+  }
+
+  for (uint8_t i = 0; i < this->n; ++i) {
+    for (uint8_t j = i + 1; j < this->n; ++j) {
+      assert(!this->is_less(i, j));
+    }
+  }
+
+  return *this;
+}
+
+Poset &Poset::normalize() { return this->reduce_n().canonify(); }
 
 /// @brief
 /// @param i
@@ -228,224 +386,6 @@ std::unordered_set<Poset> Poset::remove_less(const uint16_t i, const uint16_t j,
   return result;
 }
 
-// invariant after method: 2 * i < n
-Poset &Poset::dual() {
-  this->nthSmallest = this->n - 1 - this->nthSmallest;
-  for (uint8_t i = 0; i < this->n; ++i) {
-    for (uint8_t j = i + 1; j < this->n; ++j) {
-      const bool temp = this->is_less(i, j);
-      this->set_less(i, j, this->is_less(j, i));
-      this->set_less(j, i, temp);
-    }
-  }
-  return *this;
-}
-
-/// @brief
-/// @param poset
-/// @return true, if *this is a subset of `poset`
-bool Poset::subset_of(const Poset &poset) const {
-  return n == poset.n && nthSmallest == poset.nthSmallest && (~comparisonTable | poset.comparisonTable).all();
-}
-
-uint64_t hash1(uint64_t a, uint64_t b) {
-  uint64_t hash = 9118271012717746669;
-  hash = hash * a;
-  hash = hash << 7;
-  hash = hash + 3032928155878307119;
-  hash = hash * b;
-  hash = hash >> 9;
-  hash = hash + 16728691407311227577ull;
-  hash = hash << 11;
-  hash = hash * 1536811303;
-  hash = hash >> 15;
-  hash = hash + 2072583677;
-  return hash;
-}
-
-void Poset::swap(const uint16_t i1, const uint16_t j1, const uint16_t i2, const uint16_t j2) {
-  const bool temp = this->is_less(i1, j1);
-  this->set_less(i1, j1, this->is_less(i2, j2));
-  this->set_less(i2, j2, temp);
-}
-
-void Poset::swap(const uint16_t i, const uint16_t j) {
-  for (uint8_t k = 0; k < this->n; ++k) {
-    this->swap(i, k, j, k);
-  }
-  for (uint8_t k = 0; k < this->n; ++k) {
-    this->swap(k, i, k, j);
-  }
-}
-
-std::array<int, MAX_N> Poset::canonify_nauty_indicies() const {
-  constexpr static int m = SETWORDSNEEDED(MAX_N);
-  constexpr static int ms = SETWORDSNEEDED(MAX_N) * MAX_N;
-
-  if constexpr (debug) {
-    assert(MAX_N <= WORDSIZE);
-    nauty_check(WORDSIZE, m, MAX_N, NAUTYVERSIONID);
-  }
-
-  graph g[ms];
-
-  EMPTYGRAPH(g, m, this->n);
-  for (uint16_t i = 0; i < this->n; ++i) {
-    for (uint16_t j = 0; j < this->n; ++j) {
-      if (this->is_less(i, j)) {
-        ADDONEARC(g, i, j, m);
-      }
-    }
-  }
-
-  std::array<int, MAX_N> lab, ptn, orbits;
-  for (uint8_t i = 0; i < this->n; ++i) {
-    lab[i] = i;
-    ptn[i] = 0;  // hier 0 oder 1?
-  }
-  ptn[this->n - 1] = 0;
-
-  graph result[ms];
-  EMPTYGRAPH(result, m, this->n);
-
-  DEFAULTOPTIONS_GRAPH(options);
-  options.getcanon = TRUE;
-  options.digraph = TRUE;
-
-  statsblk stats;
-  densenauty(g, lab.data(), ptn.data(), orbits.data(), &options, &stats, m, this->n, result);
-  assert(stats.errstatus == 0);
-
-  return lab;
-}
-
-Poset &Poset::normalize() { return this->reduce_n().canonify(); }
-
-// TODO: iterator for all "ones"
-
-/// @brief
-/// @param poset
-/// @return
-bool Poset::operator==(const Poset &poset) const {
-  return n == poset.n && nthSmallest == poset.nthSmallest && comparisonTable == poset.comparisonTable;
-}
-
-/// @brief
-/// @return hash of poset
-std::size_t Poset::hash() const {
-  const std::hash<std::bitset<MAX_N * MAX_N>> hash1;
-  return ((std::size_t)n << (std::size_t)4) ^ nthSmallest ^ hash1(comparisonTable);
-}
-
-Poset &Poset::canonify() {
-  // static std::array<std::array<int, MAX_N>, MAX_N> table;
-  // static int debug = 0;
-
-  // for (uint8_t i = 0; i < this->n; ++i) {
-  //   for (uint8_t j = 0; j < this->n; ++j) {
-  //     if (this->is_less(i, j)) {
-  //       ++table[i][j];
-  //     }
-  //   }
-  // }
-  // ++debug;
-  // if (debug % 1000000 == 0) {
-  //   int max = 0;
-  //   for (uint8_t i = 0; i < this->n; ++i) {
-  //     for (uint8_t j = 0; j < this->n; ++j) {
-  //       max = std::max(max, table[i][j]);
-  //     }
-  //   }
-  //   for (uint8_t i = 0; i < this->n; ++i) {
-  //     for (uint8_t j = 0; j < this->n; ++j) {
-  //       std::cout << (int)std::ceil(1000 * table[i][j] / float(max)) << "\t ";
-  //     }
-  //     std::cout << std::endl;
-  //   }
-  // }
-
-  constexpr bool ONLY_NAUTY = true;
-
-  const Poset oldPoset(*this);
-  std::array<int, MAX_N> new_indices;
-  if constexpr (ONLY_NAUTY) {
-    new_indices = this->canonify_nauty_indicies();
-  } else {
-    uint8_t less[this->n];
-    uint8_t greater[this->n];
-    this->calculate_relations(less, greater);
-
-    std::vector<uint64_t> in_out_degree(this->n);
-    for (uint8_t i = 0; i < this->n; ++i) {
-      in_out_degree[i] = uint64_t(MAX_N) * uint64_t(greater[i]) + uint64_t(less[i]);
-    }
-
-    std::vector<uint64_t> hash = in_out_degree;
-    for (int q = 0; q < 2; ++q) {
-      uint64_t sum_hash[MAX_N];
-      for (int k = 0; k < MAX_N; ++k) {
-        sum_hash[k] = 0;
-      }
-
-      for (size_t i = 0; i < this->n; ++i) {
-        uint64_t sum = hash[i];
-
-        for (size_t j = 0; j < this->n; ++j) {
-          if (i != j && (this->is_less(i, j) || this->is_less(j, i))) {
-            sum ^= hash[j];
-          }
-        }
-
-        sum_hash[i] = sum;
-      }
-
-      for (size_t i = 0; i < this->n; ++i) {
-        hash[i] = sum_hash[i] * (MAX_N * MAX_N) + in_out_degree[i];
-      }
-    }
-
-    std::iota(new_indices.begin(), new_indices.begin() + MAX_N, 0);
-
-    std::stable_sort(new_indices.begin(), new_indices.begin() + MAX_N, [&](const int a, const int b) {
-      return in_out_degree[a] < in_out_degree[b] || (in_out_degree[a] == in_out_degree[b] && hash[a] < hash[b]);
-    });
-
-    bool isUnique = true;
-    for (uint8_t i = 1; i < this->n; ++i) {
-      if (in_out_degree[new_indices[i - 1]] == in_out_degree[new_indices[i]] &&
-          hash[new_indices[i - 1]] == hash[new_indices[i]]) {
-        this->swap(new_indices[i - 1], new_indices[i]);
-        if (*this != oldPoset) {
-          isUnique = false;
-          break;
-        }
-      }
-    }
-
-    if (!isUnique) {
-      new_indices = this->canonify_nauty_indicies();
-
-      std::stable_sort(new_indices.begin(), new_indices.begin() + MAX_N, [&](const int a, const int b) {
-        return in_out_degree[a] < in_out_degree[b] || (in_out_degree[a] == in_out_degree[b] && hash[a] < hash[b]);
-      });
-    }
-  }
-
-  for (uint8_t i = 0; i < this->n; ++i) {
-    for (uint8_t j = 0; j < this->n; ++j) {
-      this->set_less(i, j, oldPoset.is_less(new_indices[i], new_indices[j]));
-    }
-  }
-
-  for (uint8_t i = 0; i < this->n; ++i) {
-    for (uint8_t j = i + 1; j < this->n; ++j) {
-      assert(!this->is_less(i, j));
-    }
-  }
-
-  return *this;
-}
-
 bool Poset::can_reduce_element_greater(const uint8_t element) const {
   uint8_t greater = 0;
   for (uint8_t k = 0; k < this->n; ++k) {
@@ -535,6 +475,25 @@ void Poset::enlarge_nk(std::unordered_set<Poset> &result) const {
   }
 }
 
+std::unordered_set<Poset> Poset::filter(const std::unordered_set<Poset> &unfiltered) {
+  // TODO: OPTIMIERUNG BUCKETS NACH ANZAHL EINSEN IN POSET
+  // TODO: OPtimierung: betrachte element nicht mehr, wenn schon in filtered -> n^2 Schritte zu n^2/2 Schritte
+  std::unordered_set<Poset> filtered;
+  for (const Poset &item : unfiltered) {
+    bool found = false;
+    for (const Poset &temp : unfiltered) {
+      if (temp != item && temp.subset_of(item)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      filtered.insert(item);
+    }
+  }
+  return filtered;
+}
+
 std::unordered_set<Poset> Poset::enlarge(const std::unordered_set<Poset> &setOfPosets, const int n, const int k) {
   assert(2 * k < n);
 
@@ -565,26 +524,6 @@ std::unordered_set<Poset> Poset::enlarge(const std::unordered_set<Poset> &setOfP
   }
 
   return tempSet[n][k].entries(n, k);
-  // return filter2(tempSet[n][k].entries(n, k));
-}
-
-std::unordered_set<Poset> Poset::filter(const std::unordered_set<Poset> &unfiltered) {
-  // TODO: OPTIMIERUNG BUCKETS NACH ANZAHL EINSEN IN POSET
-  // TODO: OPtimierung: betrachte element nicht mehr, wenn schon in filtered -> n^2 Schritte zu n^2/2 Schritte
-  std::unordered_set<Poset> filtered;
-  for (const Poset &item : unfiltered) {
-    bool found = false;
-    for (const Poset &temp : unfiltered) {
-      if (temp != item && temp.subset_of(item)) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      filtered.insert(item);
-    }
-  }
-  return filtered;
 }
 
 std::ostream &operator<<(std::ostream &os, const Poset &poset) {
@@ -596,4 +535,18 @@ std::ostream &operator<<(std::ostream &os, const Poset &poset) {
     }
   }
   return os;
+}
+
+/// @brief
+/// @param poset
+/// @return
+bool Poset::operator==(const Poset &poset) const {
+  return n == poset.n && nthSmallest == poset.nthSmallest && comparisonTable == poset.comparisonTable;
+}
+
+/// @brief
+/// @return hash of poset
+std::size_t Poset::hash() const {
+  const std::hash<std::bitset<MAX_N * MAX_N>> hash1;
+  return ((std::size_t)n << (std::size_t)4) ^ nthSmallest ^ hash1(comparisonTable);
 }

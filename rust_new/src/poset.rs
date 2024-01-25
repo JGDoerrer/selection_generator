@@ -36,46 +36,22 @@ impl fmt::Debug for Poset {
 }
 
 impl Poset {
-  // general utils (private)
-  fn to_internal_pos(&self, i: u8, j: u8) -> usize {
-    (i as usize) * (self.n as usize) + (j as usize)
-  }
-
-  fn add_and_close_recursive(&mut self, i: u8, j: u8) {
-    if !self.is_less(i, j) {
-      self.set_less(i, j, true);
-
-      for k in 0..self.n as u8 {
-        if i != k && j != k {
-          if self.is_less(j, k) && !self.is_less(i, k) {
-            self.add_and_close_recursive(i, k);
-          } else if self.is_less(k, i) && !self.is_less(k, j) {
-            self.add_and_close_recursive(k, j);
-          }
-        }
-      }
-    }
-  }
-
-  // general utils (public)
-  pub fn n(&self) -> u8 {
-    self.n
-  }
-
-  pub fn nth_smallest(&self) -> u8 {
-    self.nth_smallest
-  }
-
-  pub fn get_comparison_table_size(&self) -> usize {
-    (self.n as usize) * (self.n as usize)
-  }
-
+  // constructor
   pub fn new(n: u8, nth_smallest: u8) -> Poset {
     Poset {
       n,
       nth_smallest,
       comparison_table: [0; MAX_N_BITS],
     }
+  }
+
+  // getter
+  pub fn n(&self) -> u8 {
+    self.n
+  }
+
+  pub fn nth_smallest(&self) -> u8 {
+    self.nth_smallest
   }
 
   pub fn get_index(&self, pos: u8) -> bool {
@@ -88,6 +64,14 @@ impl Poset {
     } else {
       self.comparison_table[pos as usize >> 6] &= !(1 << (pos & 63));
     }
+  }
+
+  pub fn get_comparison_table_size(&self) -> usize {
+    (self.n as usize) * (self.n as usize)
+  }
+
+  fn to_internal_pos(&self, i: u8, j: u8) -> usize {
+    (i as usize) * (self.n as usize) + (j as usize)
   }
 
   pub fn is_less(&self, i: u8, j: u8) -> bool {
@@ -110,18 +94,34 @@ impl Poset {
     true
   }
 
-  pub fn count(&self) -> usize {
-    self
-      .comparison_table
-      .iter()
-      .map(|word| word.count_ones() as usize)
-      .sum()
+  // add
+  fn add_and_close_recursive(&mut self, i: u8, j: u8) {
+    if !self.is_less(i, j) {
+      self.set_less(i, j, true);
+
+      for k in 0..self.n as u8 {
+        if i != k && j != k {
+          if self.is_less(j, k) && !self.is_less(i, k) {
+            self.add_and_close_recursive(i, k);
+          } else if self.is_less(k, i) && !self.is_less(k, j) {
+            self.add_and_close_recursive(k, j);
+          }
+        }
+      }
+    }
   }
 
   pub fn add_less(&mut self, i: u8, j: u8) {
     self.add_and_close_recursive(i, j);
   }
 
+  pub fn with_less(&self, i: u8, j: u8) -> Poset {
+    let mut poset = self.clone();
+    poset.add_less(i, j);
+    poset
+  }
+
+  // reduce
   pub fn calculate_relations(&self, less: &mut [u8; MAX_N], greater: &mut [u8; MAX_N]) {
     for i in 0..self.n {
       for j in 0..self.n {
@@ -133,32 +133,6 @@ impl Poset {
     }
   }
 
-  pub fn is_solvable(&self) -> bool {
-    if self.n == 0 {
-      return true;
-    }
-    for k in 0..self.n {
-      let mut smaller = 0;
-      let mut bigger = 0;
-      for i in 0..self.n {
-        if self.is_less(i, k) {
-          smaller += 1;
-        } else if self.is_less(k, i) {
-          bigger += 1;
-        }
-      }
-      if 1 + smaller + bigger == self.n && smaller == self.nth_smallest {
-        return true;
-      }
-    }
-    false
-  }
-
-  pub fn is_not_solvable_in(&self, remaining_comparisons: u8) -> bool {
-    remaining_comparisons == 0
-  }
-
-  // canonify / normalize
   fn swap(&mut self, i: u8, j: u8) {
     for k in 0..self.n {
       let temp = self.is_less(i, k);
@@ -228,7 +202,11 @@ impl Poset {
     }
   }
 
+  // canonify
   fn canonify_nauty_indicies(&self) -> Vec<u8> {
+    dbg!("ERRROR NAUTY");
+    unimplemented!();
+
     let n = self.n as usize;
 
     let mut options = optionblk {
@@ -272,9 +250,7 @@ impl Poset {
       );
     }
 
-    dbg!("ERRROR NAUTY");
     dbg!(labels);
-    unimplemented!();
 
     // TODO
     //     if canonical[i as usize] & nauty_Traces_sys::bit[j as usize] != 0 {
@@ -287,8 +263,8 @@ impl Poset {
   pub fn canonify(&mut self) {
     const ONLY_NAUTY: bool = false;
 
-    let mut new_indices: Vec<u8>;
     let old_poset = self.clone();
+    let mut new_indices: Vec<u8>;
 
     if ONLY_NAUTY {
       new_indices = self.canonify_nauty_indicies();
@@ -369,12 +345,13 @@ impl Poset {
     }
   }
 
+  // normalize
   pub fn normalize(&mut self) {
     self.reduce_n();
     self.canonify();
   }
 
-  // remove comparison
+  // remove less
   fn is_redundant(&self, i: u8, j: u8) -> bool {
     for k in 0..self.n {
       if self.is_less(i, k) && self.is_less(k, j) {
@@ -463,6 +440,44 @@ impl Poset {
     self.nth_smallest < greater
   }
 
+  fn enlarge_n(set_of_posets: &HashSet<Poset>) -> HashSet<Poset> {
+    let mut swap_init: HashMap<Poset, i32> = HashMap::new();
+    for poset in set_of_posets {
+      let mut temp = Poset::new(poset.n + 1, poset.nth_smallest);
+      for i in 0..poset.n {
+        for j in 0..poset.n {
+          temp.set_less(i, j, poset.is_less(i, j));
+        }
+      }
+      swap_init.insert(temp, -1);
+    }
+
+    let mut result: HashSet<Poset> = HashSet::new();
+    while !swap_init.is_empty() {
+      let mut temp: HashMap<Poset, i32> = HashMap::new();
+      for (poset, number) in swap_init.iter() {
+        for k in (*number + 1) as u8..poset.n - 1 {
+          if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
+            let mut new_poset = poset.clone();
+            new_poset.add_less(k, poset.n - 1);
+            if !result.contains(&new_poset) && new_poset.can_reduce_element_greater(poset.n - 1) {
+              result.insert(new_poset.clone());
+              temp.insert(new_poset, k as i32);
+            }
+          }
+        }
+      }
+      swap_init = temp;
+    }
+
+    let mut result_canonified: HashSet<Poset> = HashSet::new();
+    for mut item in result {
+      item.canonify();
+      result_canonified.insert(item);
+    }
+    result_canonified
+  }
+
   fn can_reduce_element_less(&self, element: u8) -> bool {
     let mut less = 0 as u8;
     for k in 0..self.n as u8 {
@@ -473,119 +488,83 @@ impl Poset {
     (self.n - 1) - self.nth_smallest < less
   }
 
+  fn enlarge_nk(set_of_posets: &HashSet<Poset>) -> HashSet<Poset> {
+    let mut swap_init: HashMap<Poset, i32> = HashMap::new();
+    for poset in set_of_posets {
+      let mut temp = Poset::new(poset.n + 1, poset.nth_smallest + 1);
+      for i in 0..poset.n {
+        for j in 0..poset.n {
+          temp.set_less(i, j, poset.is_less(i, j));
+        }
+      }
+      swap_init.insert(temp, -1);
+    }
+
+    let mut result: HashSet<Poset> = HashSet::new();
+    while !swap_init.is_empty() {
+      let mut temp: HashMap<Poset, i32> = HashMap::new();
+      for (poset, number) in swap_init.iter() {
+        for k in (*number + 1) as u8..poset.n - 1 {
+          if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
+            let mut new_poset = poset.clone();
+            new_poset.add_less(poset.n - 1, k);
+            if !result.contains(&new_poset) {
+              result.insert(new_poset.clone());
+              temp.insert(new_poset, k as i32);
+            }
+          }
+        }
+      }
+      swap_init = temp;
+    }
+
+    let mut result_canonified: HashSet<Poset> = HashSet::new();
+    for mut item in result {
+      if item.can_reduce_element_less(item.n - 1) {
+        item.canonify();
+        result_canonified.insert(item);
+      }
+    }
+    result_canonified
+  }
+
+  // static std::unordered_set<Poset> filter(const std::unordered_set<Poset> &unfiltered);
+
+  pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
+    let mut temp_set: Vec<Vec<HashSet<Poset>>> = Vec::with_capacity((n + 1) as usize);
+    for _ in 0..(n + 1) {
+      let mut inner_vec: Vec<HashSet<Poset>> = Vec::with_capacity((k + 1) as usize);
+      for _ in 0..(k + 1) {
+        inner_vec.push(HashSet::new());
+      }
+      temp_set.push(inner_vec);
+    }
+
+    for item in set_of_posets.iter() {
+      if item.n <= n && item.nth_smallest <= k {
+        temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
+      }
+    }
+    for n0 in 0..n {
+      for k0 in 0..k {
+        for item in enlarge_nk(&temp_set[n0 as usize][k0 as usize]) {
+          temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
+        }
+        // temp_set[n0 as usize][k0 as usize].reset();
+      }
+
+      for item in enlarge_n(&temp_set[n0 as usize][k as usize]) {
+        temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
+      }
+      // temp_set[n0 as usize][k as usize].reset();
+    }
+
+    temp_set[n as usize][k as usize].clone()
+  }
+
   pub fn test() {
     let mut poset = Poset::new(4, 1);
     poset.add_less(2, 3);
     dbg!(&poset);
   }
-}
-
-fn enlarge_n(set_of_posets: &HashSet<Poset>) -> HashSet<Poset> {
-  let mut swap_init: HashMap<Poset, i32> = HashMap::new();
-  for poset in set_of_posets {
-    let mut temp = Poset::new(poset.n + 1, poset.nth_smallest);
-    for i in 0..poset.n {
-      for j in 0..poset.n {
-        temp.set_less(i, j, poset.is_less(i, j));
-      }
-    }
-    swap_init.insert(temp, -1);
-  }
-
-  let mut result: HashSet<Poset> = HashSet::new();
-  while !swap_init.is_empty() {
-    let mut temp: HashMap<Poset, i32> = HashMap::new();
-    for (poset, number) in swap_init.iter() {
-      for k in (*number + 1) as u8..poset.n - 1 {
-        if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
-          let mut new_poset = poset.clone();
-          new_poset.add_less(k, poset.n - 1);
-          if !result.contains(&new_poset) && new_poset.can_reduce_element_greater(poset.n - 1) {
-            result.insert(new_poset.clone());
-            temp.insert(new_poset, k as i32);
-          }
-        }
-      }
-    }
-    swap_init = temp;
-  }
-
-  let mut result_canonified: HashSet<Poset> = HashSet::new();
-  for mut item in result {
-    item.canonify();
-    result_canonified.insert(item);
-  }
-  result_canonified
-}
-
-fn enlarge_nk(set_of_posets: &HashSet<Poset>) -> HashSet<Poset> {
-  let mut swap_init: HashMap<Poset, i32> = HashMap::new();
-  for poset in set_of_posets {
-    let mut temp = Poset::new(poset.n + 1, poset.nth_smallest + 1);
-    for i in 0..poset.n {
-      for j in 0..poset.n {
-        temp.set_less(i, j, poset.is_less(i, j));
-      }
-    }
-    swap_init.insert(temp, -1);
-  }
-
-  let mut result: HashSet<Poset> = HashSet::new();
-  while !swap_init.is_empty() {
-    let mut temp: HashMap<Poset, i32> = HashMap::new();
-    for (poset, number) in swap_init.iter() {
-      for k in (*number + 1) as u8..poset.n - 1 {
-        if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
-          let mut new_poset = poset.clone();
-          new_poset.add_less(poset.n - 1, k);
-          if !result.contains(&new_poset) {
-            result.insert(new_poset.clone());
-            temp.insert(new_poset, k as i32);
-          }
-        }
-      }
-    }
-    swap_init = temp;
-  }
-
-  let mut result_canonified: HashSet<Poset> = HashSet::new();
-  for mut item in result {
-    if item.can_reduce_element_less(item.n - 1) {
-      item.canonify();
-      result_canonified.insert(item);
-    }
-  }
-  result_canonified
-}
-
-pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
-  let mut temp_set: Vec<Vec<HashSet<Poset>>> = Vec::with_capacity((n + 1) as usize);
-  for _ in 0..(n + 1) {
-    let mut inner_vec: Vec<HashSet<Poset>> = Vec::with_capacity((k + 1) as usize);
-    for _ in 0..(k + 1) {
-      inner_vec.push(HashSet::new());
-    }
-    temp_set.push(inner_vec);
-  }
-
-  for item in set_of_posets.iter() {
-    if item.n <= n && item.nth_smallest <= k {
-      temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
-    }
-  }
-  for n0 in 0..n {
-    for k0 in 0..k {
-      for item in enlarge_nk(&temp_set[n0 as usize][k0 as usize]) {
-        temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
-      }
-      // temp_set[n0 as usize][k0 as usize].reset();
-    }
-
-    for item in enlarge_n(&temp_set[n0 as usize][k as usize]) {
-        temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
-    }
-    // temp_set[n0 as usize][k as usize].reset();
-  }
-
-  temp_set[n as usize][k as usize].clone()
 }
