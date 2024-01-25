@@ -2,12 +2,12 @@ use std::collections::HashSet;
 use std::time::Duration;
 
 mod cache_set;
-// mod cache_tree;
+mod cache_tree;
 mod poset;
 mod util;
 
 use cache_set::*;
-// use cache_tree::*;
+use cache_tree::*;
 use poset::*;
 use util::*;
 
@@ -100,7 +100,7 @@ fn main() {
     MultiRun,
   }
 
-  match Mode::MultiRun {
+  match Mode::SingleRun {
     Mode::Test => {
       CacheSetDual::test();
       // CacheSetSingle::test();
@@ -115,8 +115,8 @@ fn main() {
       let mut poset_cache: CacheSetSingle<true> = CacheSetSingle::new();
       poset_cache.insert(&Poset::new(1, 0), 0);
 
-      let n = 11;
-      let nth_smallest = 3;
+      let n = 9;
+      let nth_smallest = 4;
 
       let (comparisons, duration_generate_posets, duration_search) =
         start_search_backward(&mut poset_cache, n, nth_smallest, n * n);

@@ -1,24 +1,18 @@
 #include <bits/stdc++.h>
 
-#include "util.h"
-#include "poset.h"
-// ====
 #include "cache_set.h"
-#include "cache_tree.h"
+#include "poset.h"
+#include "util.h"
 
 std::ostream &operator<<(std::ostream &os, const std::chrono::nanoseconds &nanos) {
   os << (std::chrono::duration_cast<std::chrono::milliseconds>(nanos).count() / 1000.0) << "s";
   return os;
 }
 
-// using Cache = CacheTreeMemoryEffient;
-using Cache = CacheTree;
-// using Cache = CacheSet;
-
 enum SearchResult : uint8_t { FoundSolution, NoSolution, Unknown };
 
 std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanoseconds> startSearchBackward(
-    PosetCacheSet<true> &poset_cache, const uint8_t n, const uint8_t nthSmallest, const int maxComparisons) {
+    CacheSetSingle<true> &poset_cache, const uint8_t n, const uint8_t nthSmallest, const int maxComparisons) {
   std::chrono::nanoseconds duration_build_posets_total{}, duration_test_posets_total{};
   std::unordered_set<Poset> source{{Poset(1, 0)}};
   for (int k = 1; k < maxComparisons; ++k) {
@@ -34,9 +28,8 @@ std::tuple<std::optional<int>, std::chrono::nanoseconds, std::chrono::nanosecond
       for (uint8_t i = 0; i < n; ++i) {
         for (uint8_t j = 0; j < n; ++j) {
           if (item.is_less(i, j)) {
-            for (const Poset &predecessor : item.remove_less(i, j, [&poset_cache, k](const Poset &poset) {
-                   return poset_cache.check(poset, k - 1);
-                 })) {
+            for (const Poset &predecessor : item.remove_less(
+                     i, j, [&poset_cache, k](const Poset &poset) { return poset_cache.check(poset, k - 1); })) {
               if (predecessor == Poset{(uint8_t)n, (uint8_t)nthSmallest}) {
                 duration_test_posets = std::chrono::high_resolution_clock::now() - mid;
                 duration_test_posets_total += duration_test_posets;
@@ -76,11 +69,11 @@ int main() {
   std::cout.precision(3);
 
   if constexpr (false) {
-    PosetCacheSet<true> poset_cache;
+    CacheSetSingle<true> poset_cache;
     poset_cache.insert(Poset(1, 0), 0);
 
-    const int n = 11;
-    const int nthSmallest = 3;
+    const int n = 9;
+    const int nthSmallest = 4;
 
     const auto &[comparisons, durationGeneratePosets, durationSearch] =
         startSearchBackward(poset_cache, n, nthSmallest, n * n);
@@ -101,7 +94,7 @@ int main() {
   } else {
     constexpr size_t nBound = 0;
 
-    PosetCacheSet<true> poset_cache;
+    CacheSetSingle<true> poset_cache;
     poset_cache.insert(Poset(1, 0), 0);
 
     for (int n = 2; n < 15; ++n) {

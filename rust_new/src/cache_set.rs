@@ -23,16 +23,16 @@ impl<const is_solvable: bool> CacheSetSingle<is_solvable> {
       .unwrap();
 
     match self.cache[poset.n() as usize][poset.nth_smallest() as usize].get_mut(poset) {
+      None => {
+        self.cache[poset.n() as usize][poset.nth_smallest() as usize]
+          .insert(poset.clone(), remaining_comparisons);
+      }
       Some(value) => {
         if (is_solvable && remaining_comparisons < *value)
           || (!is_solvable && remaining_comparisons > *value)
         {
           *value = remaining_comparisons;
         }
-      }
-      None => {
-        self.cache[poset.n() as usize][poset.nth_smallest() as usize]
-          .insert(poset.clone(), remaining_comparisons);
       }
     }
   }

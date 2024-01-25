@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt;
 use std::hash::Hash;
 
-// use super::cache_tree::*;
+use super::cache_tree::*;
 use super::util::{MAX_N, MAX_N_BITS};
 
 use std::os::raw::c_int;
@@ -13,7 +13,7 @@ use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 pub struct Poset {
   n: u8,
   nth_smallest: u8,
-  comparison_table: [u64; MAX_N_BITS],
+  comparison_table: [u8; MAX_N * MAX_N],
 }
 
 impl fmt::Debug for Poset {
@@ -41,7 +41,7 @@ impl Poset {
     Poset {
       n,
       nth_smallest,
-      comparison_table: [0; MAX_N_BITS],
+      comparison_table: [0; MAX_N * MAX_N],
     }
   }
 
@@ -55,14 +55,17 @@ impl Poset {
   }
 
   pub fn get_index(&self, pos: u8) -> bool {
-    (self.comparison_table[(pos as usize) >> 6] & (1 << ((pos as usize) & 63))) != 0
+    return self.comparison_table[pos as usize] == 1;
+    // (self.comparison_table[(pos as usize) >> 6] & (1 << ((pos as usize) & 63))) != 0
   }
 
   pub fn set_index(&mut self, pos: u8, value: bool) {
     if value {
-      self.comparison_table[pos as usize >> 6] |= 1 << (pos & 63);
+      self.comparison_table[pos as usize] = 1;
+      //   self.comparison_table[pos as usize >> 6] |= 1 << (pos & 63);
     } else {
-      self.comparison_table[pos as usize >> 6] &= !(1 << (pos & 63));
+      self.comparison_table[pos as usize] = 0;
+      // self.comparison_table[pos as usize >> 6] &= !(1 << (pos & 63));
     }
   }
 
@@ -185,7 +188,7 @@ impl Poset {
       let old_poset = self.clone();
       self.n = new_n as u8;
       self.nth_smallest -= n_less_dropped;
-      self.comparison_table = [0; MAX_N_BITS];
+      self.comparison_table = [0; MAX_N * MAX_N];
       for i in 0..new_n {
         for j in 0..new_n {
           self.set_less(
@@ -204,9 +207,6 @@ impl Poset {
 
   // canonify
   fn canonify_nauty_indicies(&self) -> Vec<u8> {
-    dbg!("ERRROR NAUTY");
-    unimplemented!();
-
     let n = self.n as usize;
 
     let mut options = optionblk {
@@ -217,15 +217,15 @@ impl Poset {
     };
     let mut stats = statsblk::default();
 
-    let mut labels: [c_int; 64] = (0..64 as c_int).collect::<Vec<_>>().try_into().unwrap();
+    let mut labels: [c_int; MAX_N] = (0..MAX_N as c_int).collect::<Vec<_>>().try_into().unwrap();
 
-    let mut ptn = [c_int::from(1); 64];
+    let mut ptn = [c_int::from(0); MAX_N];
     ptn[n - 1] = 0;
-    let mut zeroes2 = [c_int::from(0); 64];
+    let mut zeroes2 = [c_int::from(0); MAX_N];
 
     // use nauty_Traces_sys::bit as bitmask for the adjacency matrix.
     // E.g. (g[i] & bit[j]) != 0 checks whether there is an edge i -> j.
-    let mut dg = [0; 64];
+    let mut dg = [0; MAX_N];
     for (i, mask) in dg.iter_mut().enumerate().take(n) {
       for j in 0..n {
         if self.is_less(i as u8, j as u8) {
@@ -234,7 +234,7 @@ impl Poset {
       }
     }
 
-    let mut canonical = [0; 64];
+    let mut canonical = [0; MAX_N];
 
     unsafe {
       densenauty(
@@ -250,14 +250,11 @@ impl Poset {
       );
     }
 
-    dbg!(labels);
-
-    // TODO
-    //     if canonical[i as usize] & nauty_Traces_sys::bit[j as usize] != 0 {
-    //       new.set_bit(i, j)
-
-    let res: Vec<u8> = Vec::new();
-    res
+    let mut result: Vec<u8> = Vec::new();
+    for i in 0..self.n {
+      result.push(labels[i as usize] as u8);
+    }
+    result
   }
 
   pub fn canonify(&mut self) {
@@ -567,6 +564,43 @@ impl Poset {
 
     temp_set[n as usize][k as usize].clone()
   }
+
+  // pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
+  //   let mut temp_set: Vec<Vec<CacheTreeFixed<true>>> = Vec::with_capacity((n + 1) as usize);
+  //   for _ in 0..(n + 1) {
+  //     let mut inner_vec: Vec<CacheTreeFixed<true>> = Vec::with_capacity((k + 1) as usize);
+  //     for _ in 0..(k + 1) {
+  //       inner_vec.push(CacheTreeFixed::new(n, k));
+  //     }
+  //     temp_set.push(inner_vec);
+  //   }
+
+  //   for item in set_of_posets.iter() {
+  //     if item.n <= n && item.nth_smallest <= k {
+  //       temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
+  //     }
+  //   }
+
+  //   for n0 in 0..n {
+  //     let mut result: HashSet<Poset> = HashSet::new();
+
+  //     for k0 in 0..k {
+  //       for item in &temp_set[n0 as usize][k0 as usize].entries() {
+  //         item.enlarge_nk(&mut result);
+  //       }
+  //     }
+
+  //     for item in &temp_set[n0 as usize][k as usize].entries() {
+  //       item.enlarge_n(&mut result);
+  //     }
+
+  //     for item in result {
+  //       temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
+  //     }
+  //   }
+
+  //   temp_set[n as usize][k as usize].entries()
+  // }
 
   pub fn test() {
     let mut poset = Poset::new(4, 1);

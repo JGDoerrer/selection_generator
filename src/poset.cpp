@@ -492,7 +492,7 @@ void Poset::enlarge_nk(std::unordered_set<Poset> &result) const {
 std::unordered_set<Poset> Poset::enlarge(const std::unordered_set<Poset> &setOfPosets, const int n, const int k) {
   assert(2 * k < n);
 
-  PosetSet<true> tempSet[n + 1][k + 1];
+  CacheTreeFixed<true> tempSet[n + 1][k + 1];
   for (const Poset &item : setOfPosets) {
     if (item.n <= n && item.nthSmallest <= k) {
       tempSet[item.n][item.nthSmallest].insert(item);

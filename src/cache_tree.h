@@ -5,10 +5,10 @@
 #include "poset.h"
 
 template <bool is_solvable>
-struct PosetStructRecursive {
-  std::unique_ptr<PosetStructRecursive<is_solvable>> branchIsLess, branchIsNotLess;
+struct CacheNode {
+  std::unique_ptr<CacheNode<is_solvable>> branchIsLess, branchIsNotLess;
 
-  PosetStructRecursive() : branchIsLess(nullptr), branchIsNotLess(nullptr){};
+  CacheNode() : branchIsLess(nullptr), branchIsNotLess(nullptr){};
 
   bool contains(const Poset &poset, const uint8_t index) const {
     if (0 == index) {
@@ -23,11 +23,11 @@ struct PosetStructRecursive {
   }
 
   void entries(std::unordered_set<Poset> &entries, Poset temp, const uint8_t index,
-               std::unique_ptr<PosetStructRecursive<is_solvable>> &rootStruct,
-               std::unique_ptr<PosetStructRecursive<is_solvable>> &topLevel) {
+               std::unique_ptr<CacheNode<is_solvable>> &rootStruct,
+               std::unique_ptr<CacheNode<is_solvable>> &topLevel) {
     if (0 == index) {
       if (nullptr != topLevel) {
-        std::unique_ptr<PosetStructRecursive<is_solvable>> temp1 = move(topLevel);
+        std::unique_ptr<CacheNode<is_solvable>> temp1 = move(topLevel);
         topLevel = nullptr;
 
         if (!rootStruct->contains(temp, temp.getComparisonTableSize())) {
@@ -49,31 +49,31 @@ struct PosetStructRecursive {
 };
 
 template <bool is_solvable>
-class PosetSet {
+class CacheTreeFixed {
  private:
-  std::unique_ptr<PosetStructRecursive<is_solvable>> root;
+  std::unique_ptr<CacheNode<is_solvable>> root;
   std::size_t _size;
 
  public:
-  PosetSet() : root(std::make_unique<PosetStructRecursive<is_solvable>>()) {}
+  CacheTreeFixed() : root(std::make_unique<CacheNode<is_solvable>>()) {}
 
   inline void insert(const Poset &poset) {
     bool lastInsert = false;
     if constexpr (false) {
       lastInsert = root->insert(poset, poset.getComparisonTableSize());
     } else {
-      PosetStructRecursive<is_solvable> *level = root.get();
+      CacheNode<is_solvable> *level = root.get();
       for (int i = poset.getComparisonTableSize() - 1; i >= 0; --i) {
         lastInsert = false;
         if (poset.comparisonTable[i]) {
           if (nullptr == level->branchIsLess) {
-            level->branchIsLess = std::make_unique<PosetStructRecursive<is_solvable>>();
+            level->branchIsLess = std::make_unique<CacheNode<is_solvable>>();
             lastInsert = true;
           }
           level = level->branchIsLess.get();
         } else {
           if (nullptr == level->branchIsNotLess) {
-            level->branchIsNotLess = std::make_unique<PosetStructRecursive<is_solvable>>();
+            level->branchIsNotLess = std::make_unique<CacheNode<is_solvable>>();
             lastInsert = true;
           }
           level = level->branchIsNotLess.get();
@@ -89,7 +89,7 @@ class PosetSet {
 
   inline std::unordered_set<Poset> entries(const uint8_t n, const uint8_t i) {
     std::unordered_set<Poset> entries;
-    std::unique_ptr<PosetStructRecursive<is_solvable>> a = std::make_unique<PosetStructRecursive<is_solvable>>();
+    std::unique_ptr<CacheNode<is_solvable>> a = std::make_unique<CacheNode<is_solvable>>();
     root->entries(entries, Poset(n, i), n * n, root, a);
     return entries;
   }
@@ -103,14 +103,14 @@ class PosetSet {
 };
 
 template <bool is_solvable>
-class PosetCache {
+class CacheTreeSingle {
  private:
   /**
    * 1. dimension: poset Size, 1 <= n <= MAX_N
    * 2. dimension: poset nthSmallest, 0 <= i <= MAX_N / 2
    * 3. dimension: remaining Comparisons, 0 <= c <= MAX_COMPARISONS
    */
-  PosetSet<is_solvable> cache[MAX_N][MAX_N][MAX_COMPARISONS];
+  CacheTreeFixed<is_solvable> cache[MAX_N][MAX_N][MAX_COMPARISONS];
   std::shared_mutex mutex_cache[MAX_N][MAX_N][MAX_COMPARISONS];
 
  public:
@@ -154,7 +154,7 @@ class PosetCache {
   }
 };
 
-class CacheTree {
+class CacheTreeDual {
  private:
   /// TODO: doku aktualisieren
   /// @param cache_not_solvable enthält alle Posets, für die mit max. `maxComparisons` Schritten keine Lösung bestimmt
@@ -162,8 +162,8 @@ class CacheTree {
   ///                         um Poset zu lösen
   /// @param cache_solvable enhält alle Posets, für die bereits eine Lösung gefunden wurde; z.B. wenn
   ///                         cache_solvable[poset] = 2, dann kann poset IN 2 Schrittem gelöst werden
-  PosetCache<true> cache_solvable;
-  PosetCache<false> cache_not_solvable;
+  CacheTreeSingle<true> cache_solvable;
+  CacheTreeSingle<false> cache_not_solvable;
 
  public:
   inline bool check_not_solvable(const Poset &poset, const uint8_t remainingComparisons) {
