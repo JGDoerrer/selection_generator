@@ -191,10 +191,6 @@ impl Poset {
             }
         }
 
-        if new.i > new.n / 2 {
-            new = new.dual();
-        }
-
         // dbg!(&self, &new);
         debug_assert!(new.is_closed(), "{new:?}");
         *self = new;
@@ -247,6 +243,10 @@ impl Poset {
                     new.set_bit(i, j)
                 }
             }
+        }
+
+        if new.i > new.n / 2 {
+            new = new.dual();
         }
 
         // dbg!(&self, &new);
@@ -399,16 +399,25 @@ impl Poset {
     }
 
     /// adds i < j and makes sure, that i < j && j < k => i < k is true
+    #[inline]
     pub fn add_and_close(&mut self, i: PosetIndex, j: PosetIndex) {
-        self.set_bit(i, j);
-        for k in 0..self.n {
-            if i != k && j != k {
-                if self.is_less(k, i) && !self.is_less(k, j) {
-                    self.add_and_close(k, j)
-                }
-                if self.is_less(j, k) && !self.is_less(i, k) {
-                    self.add_and_close(i, k)
-                }
+        let mut stack = vec![(i, j)];
+
+        while let Some((i, j)) = stack.pop() {
+            self.set_bit(i, j);
+
+            for k in self
+                .get_all_greater_than(j)
+                .intersect(self.get_all_greater_than(i).complement())
+            {
+                stack.push((i, k as u8));
+            }
+
+            for k in self
+                .get_all_less_than(i)
+                .intersect(self.get_all_less_than(j).complement())
+            {
+                stack.push((k as u8, j));
             }
         }
     }
