@@ -401,7 +401,8 @@ impl Poset {
     /// adds i < j and makes sure, that i < j && j < k => i < k is true
     #[inline]
     pub fn add_and_close(&mut self, i: PosetIndex, j: PosetIndex) {
-        let mut stack = vec![(i, j)];
+        let mut stack = Vec::with_capacity(self.n as usize);
+        stack.push((i, j));
 
         while let Some((i, j)) = stack.pop() {
             self.set_bit(i, j);
@@ -463,31 +464,7 @@ impl Poset {
             let less_than_i = canonified.get_all_less_than(i);
             let greater_than_i = canonified.get_all_greater_than(i);
 
-            // let mut counts = [0; MAX_N];
-            // counts[0] = 1;
-
-            // for j in 0..canonified.n {
-            //     if j == i || greater_than_i.contains(j as usize) {
-            //         continue;
-            //     }
-
-            //     // try adding j to all previous subsets
-            //     if less_than_i.contains(j as usize) {
-            //         // all subsets must contain j to be valid
-            //         for i in (1..=canonified.i as usize).rev() {
-            //             counts[i] = counts[i - 1];
-            //         }
-            //         counts[0] = 0;
-            //     } else {
-            //         for i in (1..=canonified.i as usize).rev() {
-            //             counts[i] += counts[i - 1];
-            //         }
-            //     }
-            // }
-
-            // sum += counts[canonified.i as usize];
-
-            let mut less_subsets = Vec::new();
+            let mut less_subsets = Vec::with_capacity(1000);
             less_subsets.push(BitSet::empty());
 
             for j in 0..canonified.n {
@@ -522,6 +499,44 @@ impl Poset {
                 .into_iter()
                 .filter(|s| s.len() == canonified.i as usize)
                 .count();
+        }
+
+        sum
+    }
+
+    pub fn num_compatible_posets_upper_bound(&self) -> usize {
+        let canonified = self.canonify_lower_matrix();
+
+        let mut sum = 0;
+        for i in 0..canonified.n {
+            // assume the ith element is the solution
+
+            let less_than_i = canonified.get_all_less_than(i);
+            let greater_than_i = canonified.get_all_greater_than(i);
+
+            let mut counts = [0; MAX_N];
+            counts[0] = 1;
+
+            for j in 0..canonified.n {
+                if j == i || greater_than_i.contains(j as usize) {
+                    continue;
+                }
+
+                // try adding j to all previous subsets
+                if less_than_i.contains(j as usize) {
+                    // all subsets must contain j to be valid
+                    for i in (1..=canonified.i as usize).rev() {
+                        counts[i] = counts[i - 1];
+                    }
+                    counts[0] = 0;
+                } else {
+                    for i in (1..=canonified.i as usize).rev() {
+                        counts[i] += counts[i - 1];
+                    }
+                }
+            }
+
+            sum += counts[canonified.i as usize];
         }
 
         sum
