@@ -6,10 +6,10 @@ mod cache_tree;
 mod poset;
 mod util;
 
-use cache_set::*;
-use cache_tree::*;
-use poset::*;
-use util::*;
+use cache_set::CacheSetSingle;
+use cache_tree::CacheTreeDual;
+use poset::Poset;
+use util::{KNOWN_MIN_VALUES, MAX_N};
 
 fn start_search_backward(
   poset_cache: &mut CacheSetSingle<true>,
@@ -23,13 +23,12 @@ fn start_search_backward(
   source.insert(Poset::new(1, 0));
 
   for k in 1..max_comparisons {
-    let duration_build_posets;
     let duration_test_posets;
 
     let start = std::time::Instant::now();
     let source_new = Poset::enlarge(&source, n, nth_smallest);
     let mid = std::time::Instant::now();
-    duration_build_posets = mid - start;
+    let duration_build_posets = mid - start;
     duration_build_posets_total += duration_build_posets;
 
     let mut destination: HashSet<Poset> = HashSet::new();
@@ -42,7 +41,7 @@ fn start_search_backward(
                 duration_test_posets = std::time::Instant::now() - mid;
                 duration_test_posets_total += duration_test_posets;
                 println!(
-                  "# {}: {} => {} in {} ~ {} | total cached: {} (found solution)",
+                  "# {}: {} => {} in {:.3}s ~ {:.3}s | total cached: {} (found solution)",
                   k,
                   source.len(),
                   source_new.len(),
@@ -74,7 +73,7 @@ fn start_search_backward(
     duration_test_posets_total += duration_test_posets;
 
     println!(
-      "# {}: {} => {} in {} ~ {} | total cached: {}",
+      "# {}: {} => {} in {:.3}s ~ {:.3}s | total cached: {}",
       k,
       source.len(),
       source_new.len(),
@@ -100,12 +99,12 @@ fn main() {
     MultiRun,
   }
 
-  match Mode::SingleRun {
+  match Mode::MultiRun {
     Mode::Test => {
-      CacheSetDual::test();
+      // CacheSetDual::test();
       // CacheSetSingle::test();
 
-      // CacheTreeDual::test();
+      CacheTreeDual::test();
       // CacheTreeSingle::test();
       // CacheTreeFixed::test();
 
@@ -123,7 +122,7 @@ fn main() {
 
       if let Some(comparisons) = comparisons {
         println!(
-          "time '{} + {} = {}': n = {}, i = {}, comparisons: {}",
+          "time '{:.3}s + {:.3}s = {:.3}s': n = {}, i = {}, comparisons: {}",
           duration_generate_posets.as_secs_f64(),
           duration_search.as_secs_f64(),
           (duration_generate_posets + duration_search).as_secs_f64(),
@@ -154,14 +153,14 @@ fn main() {
       poset_cache.insert(&Poset::new(1, 0), 0);
 
       for n in 2..MAX_N {
-        for nth_smallest in 0..=(n + 1) / 2 {
+        for nth_smallest in 0..((n + 1) / 2) {
           let (comparisons, duration_generate_posets, duration_search) =
             start_search_backward(&mut poset_cache, n as u8, nth_smallest as u8, (n * n) as u8);
 
           if let Some(comparisons) = comparisons {
             if n >= N_BOUND {
               println!(
-                "time '{} + {} = {}': n = {}, i = {}, comparisons: {}",
+                "time '{:.3}s + {:.3}s = {:.3}s': n = {}, i = {}, comparisons: {}",
                 duration_generate_posets.as_secs_f64(),
                 duration_search.as_secs_f64(),
                 (duration_generate_posets + duration_search).as_secs_f64(),

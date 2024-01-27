@@ -1,8 +1,152 @@
 #include <bits/stdc++.h>
+#include <cxxabi.h>
+#include <execinfo.h>
 
 #include "cache_set.h"
 #include "poset.h"
 #include "util.h"
+
+template <class T>
+struct is_map {
+  static constexpr bool value = false;
+};
+
+template <class Key, class Value>
+struct is_map<std::map<Key, Value>> {
+  static constexpr bool value = true;
+};
+
+template <class T>
+struct is_stack {
+  static constexpr bool value = false;
+};
+
+template <class T>
+struct is_stack<std::stack<T>> {
+  static constexpr bool value = true;
+};
+
+template <class T>
+struct is_queue {
+  static constexpr bool value = false;
+};
+
+template <class T>
+struct is_queue<std::queue<T>> {
+  static constexpr bool value = true;
+};
+
+template <class T>
+struct is_pair {
+  static constexpr bool value = false;
+};
+
+template <class F, class G>
+struct is_pair<std::pair<F, G>> {
+  static constexpr bool value = true;
+};
+
+template <class T>
+struct is_set {
+  static constexpr bool value = false;
+};
+
+template <class T>
+struct is_set<std::set<T>> {
+  static constexpr bool value = true;
+};
+
+template <class T>
+struct is_set<std::unordered_set<T>> {
+  static constexpr bool value = true;
+};
+
+template <typename T>
+std::ostream &print_container(std::ostream &os, T container) {
+  if constexpr (is_map<T>::value) {
+    os << '[';
+    bool isNotFirst = false;
+    for (const auto &[k, v] : container) {
+      if (isNotFirst) os << ", ";
+      isNotFirst = true;
+      os << k << ": " << v;
+    }
+    os << ']';
+  } else if constexpr (is_stack<T>::value || is_queue<T>::value) {
+    os << '<';
+    bool isNotFirst = false;
+    while (!container.empty()) {
+      if (isNotFirst) os << ", ";
+      isNotFirst = true;
+      if constexpr (is_stack<T>::value)
+        os << container.top();
+      else if constexpr (is_queue<T>::value)
+        os << container.front();
+      container.pop();
+    }
+    os << '>';
+  } else if constexpr (is_pair<T>::value)
+    os << '(' << container.first << ", " << container.second << ')';
+  else  // copy(container.begin(), container.end(), ostream_iterator<typename
+        // T::value_type>(os, ", "));
+  {
+    if constexpr (is_set<T>::value)
+      os << '{';
+    else
+      os << '[';
+    bool isNotFirst = false;
+    for (const auto &data : container) {
+      if (isNotFirst) os << ", ";
+      isNotFirst = true;
+      os << data;
+    }
+    if constexpr (is_set<T>::value)
+      os << '}';
+    else
+      os << ']';
+  }
+  return os;
+}
+
+template <typename F, typename G>
+std::ostream &operator<<(std::ostream &os, const std::map<F, G> &container) {
+  return print_container(os, container);
+}
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const std::stack<T> &container) {
+  return print_container(os, container);
+}
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const std::queue<T> &container) {
+  return print_container(os, container);
+}
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const std::vector<T> &container) {
+  return print_container(os, container);
+}
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const std::list<T> &container) {
+  return print_container(os, container);
+}
+
+template <typename F, typename G>
+std::ostream &operator<<(std::ostream &os, const std::pair<F, G> &container) {
+  return print_container(os, container);
+}
+
+template <typename F, typename G>
+std::ostream &operator<<(std::ostream &os, const std::set<F, G> &container) {
+  return print_container(os, container);
+}
+
+template <typename F, typename G>
+std::ostream &operator<<(std::ostream &os, const std::unordered_set<F, G> &container) {
+  return print_container(os, container);
+}
 
 std::ostream &operator<<(std::ostream &os, const std::chrono::nanoseconds &nanos) {
   os << (std::chrono::duration_cast<std::chrono::milliseconds>(nanos).count() / 1000.0) << "s";

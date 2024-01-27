@@ -1,16 +1,13 @@
 use std::collections::HashSet;
-use std::f32::NAN;
-use std::mem::swap;
-use std::ptr::null;
 use std::sync::RwLock;
 
 // #[allow(clippy::wildcard_imports)]
-use super::poset::*;
-use super::util::*;
+use super::poset::Poset;
+use super::util::{MAX_COMPARISONS, MAX_N};
 
 struct CacheNode<const is_solvable: bool> {
-  branch_is_less: Option<Box<CacheNode<is_solvable>>>,
-  branch_is_not_less: Option<Box<CacheNode<is_solvable>>>,
+  branch_is_less: Option<Box<Self>>,
+  branch_is_not_less: Option<Box<Self>>,
 }
 
 impl<const is_solvable: bool> CacheNode<is_solvable> {
@@ -21,72 +18,54 @@ impl<const is_solvable: bool> CacheNode<is_solvable> {
     }
   }
 
-  fn contains(&self, poset: &Poset, index: u8) -> bool {
+  fn contains_multi_path(&self, poset: &Poset, index: u8, took_other_path: bool) -> bool {
     if index == 0 {
-      true
+      took_other_path
     } else if poset.get_index(index - 1) {
-      self
-        .branch_is_less
-        .as_ref()
-        .map_or(false, |less| less.contains(poset, index - 1))
-        || (is_solvable
-          && self
-            .branch_is_not_less
-            .as_ref()
-            .map_or(false, |not_less| not_less.contains(poset, index - 1)))
+      self.branch_is_less.as_ref().map_or(false, |less| {
+        less.contains_multi_path(poset, index - 1, took_other_path)
+      }) || (is_solvable
+        && self.branch_is_not_less.as_ref().map_or(false, |not_less| {
+          not_less.contains_multi_path(poset, index - 1, true)
+        }))
     } else {
-      (self
-        .branch_is_not_less
-        .as_ref()
-        .map_or(false, |not_less| not_less.contains(poset, index - 1)))
+      (self.branch_is_not_less.as_ref().map_or(false, |not_less| {
+        not_less.contains_multi_path(poset, index - 1, took_other_path)
+      }))
         || (!is_solvable
-          && self
-            .branch_is_less
-            .as_ref()
-            .map_or(false, |less| less.contains(poset, index - 1)))
+          && self.branch_is_less.as_ref().map_or(false, |less| {
+            less.contains_multi_path(poset, index - 1, true)
+          }))
     }
   }
 
+  fn contains(&self, poset: &Poset, index: u8) -> bool {
+    self.contains_multi_path(poset, index, true)
+  }
+
   fn entries(
-    &mut self,
+    &self,
     entries: &mut HashSet<Poset>,
     temp: &mut Poset,
     index: u8,
-    root_struct: &Box<CacheNode<is_solvable>>,
+    root_struct: &Box<Self>,
   ) {
-    if 1 == index {
-      if self.branch_is_less.is_some() {
-        let temp1 = self.branch_is_less.take();
-        temp.set_index(index - 1, true);
-        if !root_struct
-          .as_ref()
-          .contains(temp, temp.get_comparison_table_size() as u8)
-        {
-          entries.insert(temp.clone());
-        }
-        self.branch_is_less = temp1;
-      }
-      if self.branch_is_not_less.is_some() {
-        let temp1 = self.branch_is_not_less.take();
-        temp.set_index(index - 1, false);
-        if !root_struct
-          .as_ref()
-          .contains(temp, temp.get_comparison_table_size() as u8)
-        {
-          entries.insert(temp.clone());
-        }
-        self.branch_is_not_less = temp1;
+    if 0 == index {
+      if !root_struct.as_ref().contains_multi_path(
+        temp,
+        temp.get_comparison_table_size() as u8,
+        false,
+      ) {
+        entries.insert(temp.clone());
       }
     } else if 0 != index {
-      if let Some(mut branch_is_less) = self.branch_is_less.take() {
+      if let Some(branch_is_less) = self.branch_is_less.as_ref() {
         temp.set_index(index - 1, true);
         branch_is_less.entries(entries, temp, index - 1, root_struct);
-        self.branch_is_less = Some(branch_is_less);
       }
-      if let Some(mut branch_is_not_less) = self.branch_is_not_less.take() {
+      if let Some(branch_is_not_less) = self.branch_is_not_less.as_ref() {
         temp.set_index(index - 1, false);
         branch_is_not_less.entries(entries, temp, index - 1, root_struct);
-        self.branch_is_not_less = Some(branch_is_not_less);
       }
     }
   }
@@ -151,20 +130,10 @@ impl<const is_solvable: bool> CacheTreeFixed<is_solvable> {
 
   pub fn entries(&mut self) -> HashSet<Poset> {
     let mut entries = HashSet::new();
-    if let Some(root) = self.root.as_mut() {
+    if let Some(root) = self.root.as_ref() {
       let mut temp = Poset::new(self.n, self.nth_smallest);
-      let index = self.n * self.n;
 
-      if let Some(mut branch_is_less) = root.branch_is_less.take() {
-        temp.set_index(index - 1, true);
-        branch_is_less.entries(&mut entries, &mut temp, index - 1, root);
-        root.branch_is_less = Some(branch_is_less);
-      }
-      if let Some(mut branch_is_not_less) = root.branch_is_not_less.take() {
-        temp.set_index(index - 1, false);
-        branch_is_not_less.entries(&mut entries, &mut temp, index - 1, root);
-        root.branch_is_not_less = Some(branch_is_not_less);
-      }
+      root.entries(&mut entries, &mut temp, self.n * self.n, root);
     }
     entries
   }
@@ -311,5 +280,9 @@ impl CacheTreeDual {
     debug_assert!(cache.check_not_solvable(&poset2, 1));
     debug_assert!(cache.check_not_solvable(&poset2, 2));
     debug_assert!(!cache.check_not_solvable(&poset2, 3));
+
+    debug_assert!(cache.cache_solvable.cache[10][2][2].entries().len() == 1);
+
+    println!("CacheTreeDual -- success");
   }
 }

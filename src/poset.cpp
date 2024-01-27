@@ -32,9 +32,7 @@ std::size_t Poset::toInternalPos(const uint16_t i, const uint16_t j) const { ret
 /// @param i
 /// @param j
 /// @return
-bool Poset::is_less(const uint16_t i, const uint16_t j) const {
-  return this->get_index(this->toInternalPos(i, j));
-}
+bool Poset::is_less(const uint16_t i, const uint16_t j) const { return this->get_index(this->toInternalPos(i, j)); }
 
 void Poset::set_less(const uint16_t i, const uint16_t j, const bool value) {
   this->set_index(this->toInternalPos(i, j), value);
@@ -505,7 +503,7 @@ std::unordered_set<Poset> Poset::enlarge(const std::unordered_set<Poset> &setOfP
       for (auto item : tempSet[n0][k0].entries(n0, k0)) {
         item.enlarge_nk(result);
       }
-      tempSet[n0][k0].reset();
+      // tempSet[n0][k0].reset();
     }
 
     for (auto item : tempSet[n0][k].entries(n0, k)) {
@@ -515,7 +513,7 @@ std::unordered_set<Poset> Poset::enlarge(const std::unordered_set<Poset> &setOfP
     for (const Poset &item : result) {
       tempSet[item.n][item.nthSmallest].insert(item);
     }
-    tempSet[n0][k].reset();
+    // tempSet[n0][k].reset();
   }
 
   return tempSet[n][k].entries(n, k);

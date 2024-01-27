@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::sync::RwLock;
 
-use super::poset::*;
-use super::util::*;
+use super::poset::Poset;
+use super::util::MAX_N;
 
 pub struct CacheSetSingle<const is_solvable: bool> {
   cache: [[HashMap<Poset, u8>; MAX_N]; MAX_N],

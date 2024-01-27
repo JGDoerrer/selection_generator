@@ -1,9 +1,9 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashSet, VecDeque};
 use std::fmt;
 use std::hash::Hash;
 
-use super::cache_tree::*;
-use super::util::{MAX_N, MAX_N_BITS};
+use super::cache_tree::CacheTreeFixed;
+use super::util::MAX_N;
 
 use std::os::raw::c_int;
 
@@ -217,15 +217,15 @@ impl Poset {
     };
     let mut stats = statsblk::default();
 
-    let mut labels: [c_int; MAX_N] = (0..MAX_N as c_int).collect::<Vec<_>>().try_into().unwrap();
+    let mut labels: [c_int; 64] = (0..64 as c_int).collect::<Vec<_>>().try_into().unwrap();
 
-    let mut ptn = [c_int::from(0); MAX_N];
+    let mut ptn = [c_int::from(1); 64];
     ptn[n - 1] = 0;
-    let mut zeroes2 = [c_int::from(0); MAX_N];
+    let mut zeroes2 = [c_int::from(0); 64];
 
     // use nauty_Traces_sys::bit as bitmask for the adjacency matrix.
     // E.g. (g[i] & bit[j]) != 0 checks whether there is an edge i -> j.
-    let mut dg = [0; MAX_N];
+    let mut dg = [0; 64];
     for (i, mask) in dg.iter_mut().enumerate().take(n) {
       for j in 0..n {
         if self.is_less(i as u8, j as u8) {
@@ -234,7 +234,7 @@ impl Poset {
       }
     }
 
-    let mut canonical = [0; MAX_N];
+    let mut canonical = [0; 64];
 
     unsafe {
       densenauty(
@@ -484,7 +484,7 @@ impl Poset {
     for item in Poset::filter(&unfiltered) {
       let mut it = item.clone();
       it.canonify();
-      result.insert(item);
+      result.insert(it);
     }
   }
 
@@ -524,60 +524,23 @@ impl Poset {
     for item in Poset::filter(&unfiltered) {
       let mut it = item.clone();
       it.canonify();
-      result.insert(item);
+      result.insert(it);
     }
-  }
-
-  pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
-    let mut temp_set: Vec<Vec<HashSet<Poset>>> = Vec::with_capacity((n + 1) as usize);
-    for _ in 0..(n + 1) {
-      let mut inner_vec: Vec<HashSet<Poset>> = Vec::with_capacity((k + 1) as usize);
-      for _ in 0..(k + 1) {
-        inner_vec.push(HashSet::new());
-      }
-      temp_set.push(inner_vec);
-    }
-
-    for item in set_of_posets.iter() {
-      if item.n <= n && item.nth_smallest <= k {
-        temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
-      }
-    }
-
-    for n0 in 0..n {
-      let mut result: HashSet<Poset> = HashSet::new();
-
-      for k0 in 0..k {
-        for item in &temp_set[n0 as usize][k0 as usize] {
-          item.enlarge_nk(&mut result);
-        }
-      }
-
-      for item in &temp_set[n0 as usize][k as usize] {
-        item.enlarge_n(&mut result);
-      }
-
-      for item in result {
-        temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
-      }
-    }
-
-    temp_set[n as usize][k as usize].clone()
   }
 
   // pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
-  //   let mut temp_set: Vec<Vec<CacheTreeFixed<true>>> = Vec::with_capacity((n + 1) as usize);
+  //   let mut temp_set: Vec<Vec<HashSet<Poset>>> = Vec::with_capacity((n + 1) as usize);
   //   for _ in 0..(n + 1) {
-  //     let mut inner_vec: Vec<CacheTreeFixed<true>> = Vec::with_capacity((k + 1) as usize);
+  //     let mut inner_vec: Vec<HashSet<Poset>> = Vec::with_capacity((k + 1) as usize);
   //     for _ in 0..(k + 1) {
-  //       inner_vec.push(CacheTreeFixed::new(n, k));
+  //       inner_vec.push(HashSet::new());
   //     }
   //     temp_set.push(inner_vec);
   //   }
 
   //   for item in set_of_posets.iter() {
   //     if item.n <= n && item.nth_smallest <= k {
-  //       temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
+  //       temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
   //     }
   //   }
 
@@ -585,22 +548,59 @@ impl Poset {
   //     let mut result: HashSet<Poset> = HashSet::new();
 
   //     for k0 in 0..k {
-  //       for item in &temp_set[n0 as usize][k0 as usize].entries() {
+  //       for item in &temp_set[n0 as usize][k0 as usize] {
   //         item.enlarge_nk(&mut result);
   //       }
   //     }
 
-  //     for item in &temp_set[n0 as usize][k as usize].entries() {
+  //     for item in &temp_set[n0 as usize][k as usize] {
   //       item.enlarge_n(&mut result);
   //     }
 
   //     for item in result {
-  //       temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
+  //       temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
   //     }
   //   }
 
-  //   temp_set[n as usize][k as usize].entries()
+  //   temp_set[n as usize][k as usize].clone()
   // }
+
+  pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
+    let mut temp_set: Vec<Vec<CacheTreeFixed<true>>> = Vec::with_capacity((n + 1) as usize);
+    for _ in 0..(n + 1) {
+      let mut inner_vec: Vec<CacheTreeFixed<true>> = Vec::with_capacity((k + 1) as usize);
+      for _ in 0..(k + 1) {
+        inner_vec.push(CacheTreeFixed::new(n, k));
+      }
+      temp_set.push(inner_vec);
+    }
+
+    for item in set_of_posets.iter() {
+      if item.n <= n && item.nth_smallest <= k {
+        temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
+      }
+    }
+
+    for n0 in 0..n {
+      let mut result: HashSet<Poset> = HashSet::new();
+
+      for k0 in 0..k {
+        for item in &temp_set[n0 as usize][k0 as usize].entries() {
+          item.enlarge_nk(&mut result);
+        }
+      }
+
+      for item in &temp_set[n0 as usize][k as usize].entries() {
+        item.enlarge_n(&mut result);
+      }
+
+      for item in result {
+        temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
+      }
+    }
+
+    temp_set[n as usize][k as usize].entries()
+  }
 
   pub fn test() {
     let mut poset = Poset::new(4, 1);
