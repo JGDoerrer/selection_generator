@@ -566,18 +566,16 @@ impl Poset {
   // }
 
   pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
-    let mut temp_set: Vec<Vec<CacheTreeFixed<true>>> = Vec::with_capacity((n + 1) as usize);
-    for _ in 0..(n + 1) {
-      let mut inner_vec: Vec<CacheTreeFixed<true>> = Vec::with_capacity((k + 1) as usize);
-      for _ in 0..(k + 1) {
-        inner_vec.push(CacheTreeFixed::new(n, k));
+    let mut temp_set: [[CacheTreeFixed<true>; MAX_N]; MAX_N] = Default::default();
+    for n0 in 0..=n {
+      for k0 in 0..=k {
+        temp_set[n0 as usize][k0 as usize] = CacheTreeFixed::new(n0, k0);
       }
-      temp_set.push(inner_vec);
     }
 
     for item in set_of_posets.iter() {
       if item.n <= n && item.nth_smallest <= k {
-        temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
+        temp_set[item.n as usize][item.nth_smallest as usize].insert(item);
       }
     }
 

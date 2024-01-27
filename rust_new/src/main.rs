@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, env};
 use std::time::Duration;
 
 mod cache_set;
@@ -93,6 +93,8 @@ fn start_search_backward(
 }
 
 fn main() {
+  env::set_var("RUST_BACKTRACE", "1");
+
   enum Mode {
     Test,
     SingleRun,

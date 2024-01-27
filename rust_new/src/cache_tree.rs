@@ -5,6 +5,9 @@ use std::sync::RwLock;
 use super::poset::Poset;
 use super::util::{MAX_COMPARISONS, MAX_N};
 
+// TODO: ARENA !!!!!!!!
+// TODO: get_index-> order
+
 struct CacheNode<const is_solvable: bool> {
   branch_is_less: Option<Box<Self>>,
   branch_is_not_less: Option<Box<Self>>,
@@ -96,22 +99,22 @@ impl<const is_solvable: bool> CacheTreeFixed<is_solvable> {
 
   pub fn insert(&mut self, poset: &Poset) {
     let mut last_insert = false;
-    let mut level = self.root.as_mut();
+    let mut level = self.root.as_mut().unwrap();
 
-    for i in (0..poset.get_comparison_table_size()).rev() {
+    for i in (0..poset.get_comparison_table_size()).rev() { // TODO: iterator
       last_insert = false;
       if poset.get_index(i as u8) {
-        if level.as_mut().unwrap().branch_is_less.is_none() {
-          level.as_mut().unwrap().branch_is_less = Some(Box::new(CacheNode::new()));
+        if level.branch_is_less.is_none() {
+          level.branch_is_less = Some(Box::new(CacheNode::new()));
           last_insert = true;
         }
-        level = level.unwrap().branch_is_less.as_mut();
+        level = level.branch_is_less.as_mut().unwrap();
       } else {
-        if level.as_mut().unwrap().branch_is_not_less.is_none() {
-          level.as_mut().unwrap().branch_is_not_less = Some(Box::new(CacheNode::new()));
+        if level.branch_is_not_less.is_none() {
+          level.branch_is_not_less = Some(Box::new(CacheNode::new()));
           last_insert = true;
         }
-        level = level.unwrap().branch_is_not_less.as_mut();
+        level = level.branch_is_not_less.as_mut().unwrap();
       }
     }
 
@@ -128,7 +131,7 @@ impl<const is_solvable: bool> CacheTreeFixed<is_solvable> {
       .contains(poset, poset.get_comparison_table_size() as u8)
   }
 
-  pub fn entries(&mut self) -> HashSet<Poset> {
+  pub fn entries(&self) -> HashSet<Poset> {
     let mut entries = HashSet::new();
     if let Some(root) = self.root.as_ref() {
       let mut temp = Poset::new(self.n, self.nth_smallest);
@@ -139,7 +142,7 @@ impl<const is_solvable: bool> CacheTreeFixed<is_solvable> {
   }
 
   pub fn size(&self) -> usize {
-    self.size
+    self.size // TODO: eigentlich falsch => clean & count & entries???
   }
 }
 
