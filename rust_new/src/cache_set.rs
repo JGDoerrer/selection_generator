@@ -4,12 +4,12 @@ use std::sync::RwLock;
 use super::poset::Poset;
 use super::util::MAX_N;
 
-pub struct CacheSetSingle<const is_solvable: bool> {
+pub struct CacheSetSingle<const IS_SOLVABLE: bool> {
   cache: [[HashMap<Poset, u8>; MAX_N]; MAX_N],
   mutex: [[RwLock<()>; MAX_N]; MAX_N],
 }
 
-impl<const is_solvable: bool> CacheSetSingle<is_solvable> {
+impl<const IS_SOLVABLE: bool> CacheSetSingle<IS_SOLVABLE> {
   pub fn new() -> Self {
     CacheSetSingle {
       cache: Default::default(),
@@ -18,18 +18,18 @@ impl<const is_solvable: bool> CacheSetSingle<is_solvable> {
   }
 
   pub fn insert(&mut self, poset: &Poset, remaining_comparisons: u8) {
-    let _lock = self.mutex[poset.n() as usize][poset.nth_smallest() as usize]
+    let _lock = self.mutex[poset.n() as usize][poset.i() as usize]
       .write()
       .unwrap();
 
-    match self.cache[poset.n() as usize][poset.nth_smallest() as usize].get_mut(poset) {
+    match self.cache[poset.n() as usize][poset.i() as usize].get_mut(poset) {
       None => {
-        self.cache[poset.n() as usize][poset.nth_smallest() as usize]
+        self.cache[poset.n() as usize][poset.i() as usize]
           .insert(poset.clone(), remaining_comparisons);
       }
       Some(value) => {
-        if (is_solvable && remaining_comparisons < *value)
-          || (!is_solvable && remaining_comparisons > *value)
+        if (IS_SOLVABLE && remaining_comparisons < *value)
+          || (!IS_SOLVABLE && remaining_comparisons > *value)
         {
           *value = remaining_comparisons;
         }
@@ -38,13 +38,13 @@ impl<const is_solvable: bool> CacheSetSingle<is_solvable> {
   }
 
   pub fn check(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
-    let _lock = self.mutex[poset.n() as usize][poset.nth_smallest() as usize]
+    let _lock = self.mutex[poset.n() as usize][poset.i() as usize]
       .read()
       .unwrap();
-    match self.cache[poset.n() as usize][poset.nth_smallest() as usize].get(poset) {
+    match self.cache[poset.n() as usize][poset.i() as usize].get(poset) {
       Some(value) => {
-        (is_solvable && remaining_comparisons >= *value)
-          || (!is_solvable && remaining_comparisons <= *value)
+        (IS_SOLVABLE && remaining_comparisons >= *value)
+          || (!IS_SOLVABLE && remaining_comparisons <= *value)
       }
       None => false,
     }
@@ -76,22 +76,22 @@ impl CacheSetDual {
   }
 
   pub fn check_not_solvable(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
-    debug_assert!(2 * poset.nth_smallest() < poset.n());
+    debug_assert!(2 * poset.i() < poset.n());
     self.cache_not_solvable.check(poset, remaining_comparisons)
   }
 
   pub fn check_solvable(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
-    debug_assert!(2 * poset.nth_smallest() < poset.n());
+    debug_assert!(2 * poset.i() < poset.n());
     self.cache_solvable.check(poset, remaining_comparisons)
   }
 
   pub fn insert_not_solvable(&mut self, poset: &Poset, remaining_comparisons: u8) {
-    debug_assert!(2 * poset.nth_smallest() < poset.n());
+    debug_assert!(2 * poset.i() < poset.n());
     self.cache_not_solvable.insert(poset, remaining_comparisons);
   }
 
   pub fn insert_solvable(&mut self, poset: &Poset, remaining_comparisons: u8) {
-    debug_assert!(2 * poset.nth_smallest() < poset.n());
+    debug_assert!(2 * poset.i() < poset.n());
     self.cache_solvable.insert(poset, remaining_comparisons);
   }
 

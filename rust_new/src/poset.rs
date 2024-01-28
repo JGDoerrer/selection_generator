@@ -12,16 +12,16 @@ use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct Poset {
   n: u8,
-  nth_smallest: u8,
-  comparison_table: [u8; MAX_N * MAX_N],
+  i: u8,
+  adjacency: [u16; MAX_N],
 }
 
 impl fmt::Debug for Poset {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "n = {}, nth_smallest = {}", self.n, self.nth_smallest)?;
+    write!(f, "n = {}, i = {}", self.n, self.i)?;
 
     for i in 0..self.n {
-      write!(f, "\n")?;
+      writeln!(f)?;
       for j in 0..self.n {
         if self.is_less(i, j) {
           write!(f, "1 ")?;
@@ -37,11 +37,11 @@ impl fmt::Debug for Poset {
 
 impl Poset {
   // constructor
-  pub fn new(n: u8, nth_smallest: u8) -> Poset {
-    Poset {
+  pub fn new(n: u8, i: u8) -> Self {
+    Self {
       n,
-      nth_smallest,
-      comparison_table: [0; MAX_N * MAX_N],
+      i,
+      adjacency: [0; MAX_N],
     }
   }
 
@@ -50,72 +50,74 @@ impl Poset {
     self.n
   }
 
-  pub fn nth_smallest(&self) -> u8 {
-    self.nth_smallest
-  }
-
-  pub fn get_index(&self, pos: u8) -> bool {
-    return self.comparison_table[pos as usize] == 1;
-    // (self.comparison_table[(pos as usize) >> 6] & (1 << ((pos as usize) & 63))) != 0
-  }
-
-  pub fn set_index(&mut self, pos: u8, value: bool) {
-    if value {
-      self.comparison_table[pos as usize] = 1;
-      //   self.comparison_table[pos as usize >> 6] |= 1 << (pos & 63);
-    } else {
-      self.comparison_table[pos as usize] = 0;
-      // self.comparison_table[pos as usize >> 6] &= !(1 << (pos & 63));
-    }
-  }
-
-  pub fn get_comparison_table_size(&self) -> usize {
-    (self.n as usize) * (self.n as usize)
-  }
-
-  fn to_internal_pos(&self, i: u8, j: u8) -> usize {
-    (i as usize) * (self.n as usize) + (j as usize)
+  pub fn i(&self) -> u8 {
+    self.i
   }
 
   pub fn is_less(&self, i: u8, j: u8) -> bool {
-    self.get_index(self.to_internal_pos(i, j) as u8)
+    0 != self.adjacency[i as usize] & (1 << (j as usize))
   }
 
   pub fn set_less(&mut self, i: u8, j: u8, value: bool) {
-    self.set_index(self.to_internal_pos(i, j) as u8, value);
+    if value {
+      self.adjacency[i as usize] |= 1 << (j as usize);
+    } else {
+      self.adjacency[i as usize] &= !(1 << (j as usize));
+    }
   }
 
   pub fn subset_of(&self, other: &Poset) -> bool {
-    if !(self.n == other.n && self.nth_smallest == other.nth_smallest) {
+    if !(self.n == other.n && self.i == other.i) {
       return false;
     }
-    for i in 0..(self.n * self.n) {
-      if self.get_index(i as u8) && !other.get_index(i as u8) {
+    // TODO: instead of `0..self.n`: faster due to loop unrolling?
+    for k in 0..self.n as usize {
+      if 0 != self.adjacency[k] & !other.adjacency[k] {
         return false;
       }
     }
     true
   }
 
+  // TODO: implement Iterator instead of `adjacency_size` and `is_index`
+  pub fn adjacency_size(&self) -> usize {
+    (self.n as usize) * (self.n as usize)
+  }
+
+  pub fn is_index(&self, pos: usize) -> bool {
+    self.is_less(
+      (pos % (self.n as usize)) as u8,
+      (pos / (self.n as usize)) as u8,
+    )
+  }
+
+  pub fn set_index(&mut self, pos: usize, value: bool) {
+    self.set_less(
+      (pos % (self.n as usize)) as u8,
+      (pos / (self.n as usize)) as u8,
+      value,
+    );
+  }
+
   // add
   fn add_and_close_recursive(&mut self, i: u8, j: u8) {
-    if !self.is_less(i, j) {
-      self.set_less(i, j, true);
+    self.set_less(i, j, true);
 
-      for k in 0..self.n as u8 {
-        if i != k && j != k {
-          if self.is_less(j, k) && !self.is_less(i, k) {
-            self.add_and_close_recursive(i, k);
-          } else if self.is_less(k, i) && !self.is_less(k, j) {
-            self.add_and_close_recursive(k, j);
-          }
+    for k in 0..self.n {
+      if i != k && j != k {
+        if self.is_less(j, k) && !self.is_less(i, k) {
+          self.add_and_close_recursive(i, k);
+        } else if self.is_less(k, i) && !self.is_less(k, j) {
+          self.add_and_close_recursive(k, j);
         }
       }
     }
   }
 
   pub fn add_less(&mut self, i: u8, j: u8) {
-    self.add_and_close_recursive(i, j);
+    if !self.is_less(i, j) {
+      self.add_and_close_recursive(i, j);
+    }
   }
 
   pub fn with_less(&self, i: u8, j: u8) -> Poset {
@@ -124,8 +126,18 @@ impl Poset {
     poset
   }
 
+  pub fn with_less_normalized(&self, i: u8, j: u8) -> Poset {
+    let mut poset = self.clone();
+    poset.add_less(i, j);
+    poset.normalize();
+    poset
+  }
+
   // reduce
-  pub fn calculate_relations(&self, less: &mut [u8; MAX_N], greater: &mut [u8; MAX_N]) {
+  pub fn calculate_relations(&self) -> ([u8; MAX_N], [u8; MAX_N]) {
+    let mut less = [0u8; MAX_N];
+    let mut greater = [0u8; MAX_N];
+
     for i in 0..self.n {
       for j in 0..self.n {
         if self.is_less(i, j) {
@@ -134,47 +146,47 @@ impl Poset {
         }
       }
     }
+
+    (less, greater)
+  }
+
+  fn swap_positions(&mut self, i0: u8, j0: u8, i1: u8, j1: u8) {
+    let temp = self.is_less(i0, j0);
+    self.set_less(i0, j0, self.is_less(i1, j1));
+    self.set_less(i1, j1, temp);
   }
 
   fn swap(&mut self, i: u8, j: u8) {
     for k in 0..self.n {
-      let temp = self.is_less(i, k);
-      self.set_less(i, k, self.is_less(j, k));
-      self.set_less(j, k, temp);
-    }
-    for k in 0..self.n {
-      let temp = self.is_less(k, i);
-      self.set_less(k, i, self.is_less(k, j));
-      self.set_less(k, j, temp);
-    }
-  }
-
-  fn dual(&mut self) {
-    self.nth_smallest = (self.n - 1) - self.nth_smallest;
-    for i in 0..self.n {
-      for j in (i + 1)..self.n {
-        let temp = self.is_less(i, j);
-        self.set_less(i, j, self.is_less(j, i));
-        self.set_less(j, i, temp);
+      if i != k && j != k {
+        self.swap_positions(i, k, j, k);
+        self.swap_positions(k, i, k, j);
       }
     }
   }
 
-  fn reduce_n(&mut self) {
-    let mut less = [0; MAX_N];
-    let mut greater = [0; MAX_N];
-    self.calculate_relations(&mut greater, &mut less);
+  fn dual(&mut self) {
+    self.i = (self.n - 1) - self.i;
+    for i in 0..self.n {
+      for j in (i + 1)..self.n {
+        self.swap_positions(i, j, j, i);
+      }
+    }
+  }
 
-    let mut new_indices = [0 as u8; MAX_N];
+  fn reduce_elements(&mut self) {
+    let (less, greater) = self.calculate_relations();
+
+    let mut new_indices = [0u8; MAX_N];
     let mut n_less_dropped = 0;
-    let mut new_n = 0 as u8;
+    let mut new_n = 0u8;
     let mut b = (self.n - 1) as usize;
 
-    for i in 0..self.n as u8 {
-      if self.nth_smallest < greater[i as usize] {
+    for i in 0..self.n {
+      if self.i < less[i as usize] {
         new_indices[b] = i;
         b -= 1;
-      } else if (self.n - 1) - self.nth_smallest < less[i as usize] {
+      } else if (self.n - 1) - self.i < greater[i as usize] {
         n_less_dropped += 1;
         new_indices[b] = i;
         b -= 1;
@@ -185,21 +197,19 @@ impl Poset {
     }
 
     if new_n != self.n {
-      let old_poset = self.clone();
-      self.n = new_n as u8;
-      self.nth_smallest -= n_less_dropped;
-      self.comparison_table = [0; MAX_N * MAX_N];
-      for i in 0..new_n {
-        for j in 0..new_n {
-          self.set_less(
+      let mut new_poset = Poset::new(new_n, self.i - n_less_dropped);
+      for i in 0..new_poset.n {
+        for j in 0..new_poset.n {
+          new_poset.set_less(
             i,
             j,
-            old_poset.is_less(new_indices[i as usize], new_indices[j as usize]),
+            self.is_less(new_indices[i as usize], new_indices[j as usize]),
           );
         }
       }
+      *self = new_poset;
 
-      if self.n <= 2 * self.nth_smallest {
+      if self.n <= 2 * self.i {
         self.dual();
       }
     }
@@ -207,8 +217,6 @@ impl Poset {
 
   // canonify
   fn canonify_nauty_indicies(&self) -> Vec<u8> {
-    let n = self.n as usize;
-
     let mut options = optionblk {
       getcanon: TRUE,
       defaultptn: FALSE,
@@ -217,24 +225,22 @@ impl Poset {
     };
     let mut stats = statsblk::default();
 
-    let mut labels: [c_int; 64] = (0..64 as c_int).collect::<Vec<_>>().try_into().unwrap();
+    let mut labels: [c_int; MAX_N] = (0..MAX_N as c_int).collect::<Vec<_>>().try_into().unwrap();
 
-    let mut ptn = [c_int::from(1); 64];
-    ptn[n - 1] = 0;
-    let mut zeroes2 = [c_int::from(0); 64];
+    let mut ptn = [c_int::from(1); MAX_N];
+    ptn[self.n as usize - 1] = 0;
+    let mut zeroes2 = [c_int::from(0); MAX_N];
 
-    // use nauty_Traces_sys::bit as bitmask for the adjacency matrix.
-    // E.g. (g[i] & bit[j]) != 0 checks whether there is an edge i -> j.
-    let mut dg = [0; 64];
-    for (i, mask) in dg.iter_mut().enumerate().take(n) {
-      for j in 0..n {
-        if self.is_less(i as u8, j as u8) {
-          *mask |= nauty_Traces_sys::bit[j];
+    let mut dg = [0; MAX_N];
+    for (i, mask) in dg.iter_mut().enumerate().take(self.n as usize) {
+      for j in 0..self.n {
+        if self.is_less(i as u8, j) {
+          *mask |= nauty_Traces_sys::bit[j as usize];
         }
       }
     }
 
-    let mut canonical = [0; 64];
+    let mut canonical = [0; MAX_N];
 
     unsafe {
       densenauty(
@@ -245,14 +251,14 @@ impl Poset {
         &mut options,
         &mut stats,
         1 as c_int,
-        n as c_int,
+        self.n as c_int,
         canonical.as_mut_ptr(),
       );
     }
 
-    let mut result: Vec<u8> = Vec::new();
-    for i in 0..self.n {
-      result.push(labels[i as usize] as u8);
+    let mut result = vec![0u8; self.n as usize];
+    for i in 0..self.n as usize {
+      result[i] = labels[i] as u8;
     }
     result
   }
@@ -266,11 +272,9 @@ impl Poset {
     if ONLY_NAUTY {
       new_indices = self.canonify_nauty_indicies();
     } else {
-      let mut less = [0; MAX_N];
-      let mut greater = [0; MAX_N];
-      self.calculate_relations(&mut less, &mut greater);
+      let (less, greater) = self.calculate_relations();
 
-      let mut in_out_degree = [0 as u64; MAX_N];
+      let mut in_out_degree = [0u64; MAX_N];
       for i in 0..self.n as usize {
         in_out_degree[i] = (MAX_N as u64) * (greater[i] as u64) + (less[i] as u64);
       }
@@ -284,7 +288,7 @@ impl Poset {
 
           for j in 0..self.n {
             if i != j && (self.is_less(i, j) || self.is_less(j, i)) {
-              sum ^= hash[j as usize];
+              sum ^= hash[j as usize]; // TODO: `sum += hash[j as usize]` is faster ...
             }
           }
 
@@ -344,7 +348,7 @@ impl Poset {
 
   // normalize
   pub fn normalize(&mut self) {
-    self.reduce_n();
+    self.reduce_elements();
     self.canonify();
   }
 
@@ -363,7 +367,6 @@ impl Poset {
     F: Fn(&Poset) -> bool,
   {
     let mut result = HashSet::new();
-
     if !self.is_less(i, j) || self.is_redundant(i, j) {
       return result;
     }
@@ -371,9 +374,7 @@ impl Poset {
     let mut poset_initial = self.clone();
     poset_initial.set_less(i, j, false);
 
-    let mut poset_check = poset_initial.clone();
-    poset_check.add_less(j, i);
-    poset_check.normalize();
+    let poset_check = poset_initial.with_less_normalized(j, i);
     if !test(&poset_check) {
       return result;
     }
@@ -398,15 +399,12 @@ impl Poset {
           let mut poset_next = poset.clone();
           poset_next.set_less(i1, j1, false);
 
-          let mut poset_next_normal = poset_next.clone();
-          poset_next_normal.add_less(i, j);
+          let poset_next_normal = poset_next.with_less(i, j);
           if self != &poset_next_normal {
             continue;
           }
 
-          let mut poset_check = poset_next.clone();
-          poset_check.add_less(j, i);
-          poset_check.normalize();
+          let poset_check = poset_next.with_less_normalized(j, i);
           if !test(&poset_check) {
             continue;
           }
@@ -427,7 +425,14 @@ impl Poset {
   }
 
   // enlarge
-  fn filter(unfiltered: &HashSet<Poset>) -> HashSet<Poset> {
+  fn filter(unfiltered: &HashSet<Poset>, n: u8, i: u8) -> HashSet<Poset> {
+    // TODO: in theory faster, practical not
+    // let mut tree: CacheTreeFixed<true> = CacheTreeFixed::new(n, i);
+    // for item in unfiltered {
+    //   tree.insert(item);
+    // }
+    // tree.entries()
+
     let mut filtered = HashSet::new();
 
     for item in unfiltered {
@@ -449,17 +454,17 @@ impl Poset {
   }
 
   fn can_reduce_element_greater(&self, element: u8) -> bool {
-    let mut greater = 0 as u8;
+    let mut greater = 0u8;
     for k in 0..self.n {
       if self.is_less(k, element) {
         greater += 1;
       }
     }
-    self.nth_smallest < greater
+    self.i < greater
   }
 
   fn enlarge_n(&self, result: &mut HashSet<Poset>) {
-    let mut temp = Poset::new(self.n + 1, self.nth_smallest);
+    let mut temp = Poset::new(self.n + 1, self.i);
     for i in 0..self.n {
       for j in 0..self.n {
         temp.set_less(i, j, self.is_less(i, j));
@@ -468,7 +473,7 @@ impl Poset {
 
     let mut unfiltered = HashSet::new();
     let mut swap_init = VecDeque::new();
-    swap_init.push_back((temp, -1 as i32));
+    swap_init.push_back((temp, -1));
     while let Some((poset, number)) = swap_init.pop_back() {
       for k in ((number + 1) as u8)..(poset.n - 1) {
         if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
@@ -481,7 +486,7 @@ impl Poset {
       }
     }
 
-    for item in Poset::filter(&unfiltered) {
+    for item in Poset::filter(&unfiltered, self.n + 1, self.i) {
       let mut it = item.clone();
       it.canonify();
       result.insert(it);
@@ -489,17 +494,17 @@ impl Poset {
   }
 
   fn can_reduce_element_less(&self, element: u8) -> bool {
-    let mut less = 0 as u8;
-    for k in 0..self.n as u8 {
+    let mut less = 0u8;
+    for k in 0..self.n {
       if self.is_less(element, k) {
         less += 1;
       }
     }
-    (self.n - 1) - self.nth_smallest < less
+    (self.n - 1) - self.i < less
   }
 
   fn enlarge_nk(&self, result: &mut HashSet<Poset>) {
-    let mut temp = Poset::new(self.n + 1, self.nth_smallest + 1);
+    let mut temp = Poset::new(self.n + 1, self.i + 1);
     for i in 0..self.n {
       for j in 0..self.n {
         temp.set_less(i, j, self.is_less(i, j));
@@ -508,7 +513,7 @@ impl Poset {
 
     let mut unfiltered = HashSet::new();
     let mut swap_init = VecDeque::new();
-    swap_init.push_back((temp, -1 as i32));
+    swap_init.push_back((temp, -1));
     while let Some((poset, number)) = swap_init.pop_back() {
       for k in ((number + 1) as u8)..(poset.n - 1) {
         if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
@@ -521,49 +526,12 @@ impl Poset {
       }
     }
 
-    for item in Poset::filter(&unfiltered) {
+    for item in Poset::filter(&unfiltered, self.n + 1, self.i + 1) {
       let mut it = item.clone();
       it.canonify();
       result.insert(it);
     }
   }
-
-  // pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
-  //   let mut temp_set: Vec<Vec<HashSet<Poset>>> = Vec::with_capacity((n + 1) as usize);
-  //   for _ in 0..(n + 1) {
-  //     let mut inner_vec: Vec<HashSet<Poset>> = Vec::with_capacity((k + 1) as usize);
-  //     for _ in 0..(k + 1) {
-  //       inner_vec.push(HashSet::new());
-  //     }
-  //     temp_set.push(inner_vec);
-  //   }
-
-  //   for item in set_of_posets.iter() {
-  //     if item.n <= n && item.nth_smallest <= k {
-  //       temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
-  //     }
-  //   }
-
-  //   for n0 in 0..n {
-  //     let mut result: HashSet<Poset> = HashSet::new();
-
-  //     for k0 in 0..k {
-  //       for item in &temp_set[n0 as usize][k0 as usize] {
-  //         item.enlarge_nk(&mut result);
-  //       }
-  //     }
-
-  //     for item in &temp_set[n0 as usize][k as usize] {
-  //       item.enlarge_n(&mut result);
-  //     }
-
-  //     for item in result {
-  //       temp_set[item.n as usize][item.nth_smallest as usize].insert(item.clone());
-  //     }
-  //   }
-
-  //   temp_set[n as usize][k as usize].clone()
-  // }
 
   pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
     let mut temp_set: [[CacheTreeFixed<true>; MAX_N]; MAX_N] = Default::default();
@@ -573,9 +541,9 @@ impl Poset {
       }
     }
 
-    for item in set_of_posets.iter() {
-      if item.n <= n && item.nth_smallest <= k {
-        temp_set[item.n as usize][item.nth_smallest as usize].insert(item);
+    for item in set_of_posets {
+      if item.n <= n && item.i <= k {
+        temp_set[item.n as usize][item.i as usize].insert(item);
       }
     }
 
@@ -586,14 +554,16 @@ impl Poset {
         for item in &temp_set[n0 as usize][k0 as usize].entries() {
           item.enlarge_nk(&mut result);
         }
+        temp_set[n0 as usize][k0 as usize].reset();
       }
 
       for item in &temp_set[n0 as usize][k as usize].entries() {
         item.enlarge_n(&mut result);
       }
+      temp_set[n0 as usize][k as usize].reset();
 
       for item in result {
-        temp_set[item.n as usize][item.nth_smallest as usize].insert(&item);
+        temp_set[item.n as usize][item.i as usize].insert(&item);
       }
     }
 

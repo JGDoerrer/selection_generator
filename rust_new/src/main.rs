@@ -1,5 +1,5 @@
-use std::{collections::HashSet, env};
 use std::time::Duration;
+use std::{collections::HashSet, env};
 
 mod cache_set;
 mod cache_tree;
@@ -10,6 +10,12 @@ use cache_set::CacheSetSingle;
 use cache_tree::CacheTreeDual;
 use poset::Poset;
 use util::{KNOWN_MIN_VALUES, MAX_N};
+
+enum Mode {
+  Test,
+  SingleRun,
+  MultiRun,
+}
 
 fn start_search_backward(
   poset_cache: &mut CacheSetSingle<true>,
@@ -32,13 +38,13 @@ fn start_search_backward(
     duration_build_posets_total += duration_build_posets;
 
     let mut destination: HashSet<Poset> = HashSet::new();
-    for item in source_new.iter() {
+    for item in &source_new {
       for i in 0..n {
         for j in 0..n {
           if item.is_less(i, j) {
-            for predecessor in item.remove_less(i, j, |p| poset_cache.check(&p, k - 1)) {
+            for predecessor in item.remove_less(i, j, |poset| poset_cache.check(poset, k - 1)) {
               if predecessor == Poset::new(n, nth_smallest) {
-                duration_test_posets = std::time::Instant::now() - mid;
+                duration_test_posets = mid.elapsed();
                 duration_test_posets_total += duration_test_posets;
                 println!(
                   "# {}: {} => {} in {:.3}s ~ {:.3}s | total cached: {} (found solution)",
@@ -69,7 +75,7 @@ fn start_search_backward(
         }
       }
     }
-    duration_test_posets = std::time::Instant::now() - mid;
+    duration_test_posets = mid.elapsed();
     duration_test_posets_total += duration_test_posets;
 
     println!(
@@ -95,13 +101,21 @@ fn start_search_backward(
 fn main() {
   env::set_var("RUST_BACKTRACE", "1");
 
-  enum Mode {
-    Test,
-    SingleRun,
-    MultiRun,
-  }
+  // use indextree::Arena;
 
-  match Mode::MultiRun {
+  // // Create a new arena
+  // let arena = &mut Arena::new();
+
+  // // Add some new nodes to the arena
+  // let a = arena.new_node(1);
+  // let b = arena.new_node(2);
+
+  // // Append b to a
+  // a.append(b, arena);
+  // assert_eq!(b.ancestors(arena).into_iter().count(), 2);
+  // exit(0);
+  let mode = Mode::MultiRun;
+  match mode {
     Mode::Test => {
       // CacheSetDual::test();
       // CacheSetSingle::test();
@@ -171,17 +185,17 @@ fn main() {
                 comparisons
               );
             }
-            if comparisons != KNOWN_MIN_VALUES[n as usize][nth_smallest as usize] {
+            if comparisons != KNOWN_MIN_VALUES[n][nth_smallest] {
               eprintln!(
                 "Error: got {}, but expected {}",
-                comparisons, KNOWN_MIN_VALUES[n as usize][nth_smallest as usize]
+                comparisons, KNOWN_MIN_VALUES[n][nth_smallest]
               );
               std::process::exit(0);
             }
           } else {
             eprintln!(
               "Error: got 'nothing' but expected {}",
-              KNOWN_MIN_VALUES[n as usize][nth_smallest as usize]
+              KNOWN_MIN_VALUES[n][nth_smallest]
             );
             std::process::exit(0);
           }
