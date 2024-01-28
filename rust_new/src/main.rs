@@ -101,19 +101,8 @@ fn start_search_backward(
 fn main() {
   env::set_var("RUST_BACKTRACE", "1");
 
-  // use indextree::Arena;
+  poset::init_table();
 
-  // // Create a new arena
-  // let arena = &mut Arena::new();
-
-  // // Add some new nodes to the arena
-  // let a = arena.new_node(1);
-  // let b = arena.new_node(2);
-
-  // // Append b to a
-  // a.append(b, arena);
-  // assert_eq!(b.ancestors(arena).into_iter().count(), 2);
-  // exit(0);
   let mode = Mode::MultiRun;
   match mode {
     Mode::Test => {

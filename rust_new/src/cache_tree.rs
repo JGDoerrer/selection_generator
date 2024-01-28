@@ -7,6 +7,10 @@ use super::util::{MAX_COMPARISONS, MAX_N};
 
 // TODO: ARENA!!!
 // TODO: get_index -> order
+// TODO: clean
+
+// Idee: 0. Platz "leer"
+// anstatt Option<Box<Self>> => u32
 
 struct CacheNode<const IS_SOLVABLE: bool> {
   branch_is_less: Option<Box<Self>>,
@@ -15,7 +19,7 @@ struct CacheNode<const IS_SOLVABLE: bool> {
 
 impl<const IS_SOLVABLE: bool> CacheNode<IS_SOLVABLE> {
   fn new() -> Self {
-    CacheNode {
+    Self {
       branch_is_less: None,
       branch_is_not_less: None,
     }
@@ -94,6 +98,12 @@ impl<const IS_SOLVABLE: bool> CacheTreeFixed<IS_SOLVABLE> {
   }
 
   pub fn insert(&mut self, poset: &Poset) {
+    for i in 0..self.n {
+      for j in i..self.n {
+        debug_assert!(!poset.is_less(i, j));
+      }
+    }
+
     let mut last_insert = false;
     let mut level = self.root.as_mut().unwrap();
 
@@ -132,8 +142,9 @@ impl<const IS_SOLVABLE: bool> CacheTreeFixed<IS_SOLVABLE> {
     let mut entries = HashSet::new();
     if let Some(root) = self.root.as_ref() {
       let mut temp = Poset::new(self.n, self.nth_smallest);
+      let items = temp.adjacency_size();
 
-      root.entries(&mut entries, &mut temp, (self.n * self.n) as usize, root); //  TODO
+      root.entries(&mut entries, &mut temp, items, root);
     }
     entries
   }

@@ -7,5 +7,4 @@ edition = "2021"
 
 [dependencies]
 bit-set = "0.5.3"
-indextree = "4.6.0"
 nauty-Traces-sys = { version = "0.7.0", features = ["native"] }

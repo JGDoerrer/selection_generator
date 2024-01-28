@@ -1,3 +1,4 @@
+use std::cell::OnceCell;
 use std::collections::{HashSet, VecDeque};
 use std::fmt;
 use std::hash::Hash;
@@ -8,6 +9,32 @@ use super::util::MAX_N;
 use std::os::raw::c_int;
 
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
+
+static mut TABLE_ORDER: OnceCell<[Vec<(u8, u8)>; MAX_N]> = OnceCell::new();
+
+pub fn init_table() {
+  let mut table1: [Vec<(u8, u8)>; MAX_N] = Default::default();
+  table1[0] = vec![];
+  table1[1] = vec![(0, 0)];
+  for (n, item) in table1.iter_mut().enumerate().take(MAX_N).skip(2) {
+    *item = (0..((n * n - n) / 2))
+      .map(|pos| {
+        let mut a = 0;
+        for k in 0..MAX_N {
+          if pos < (k * k + k) / 2 {
+            break;
+          }
+          a = k;
+        }
+        let b: usize = pos - ((a * a + a) / 2);
+        ((a + 1) as u8, b as u8)
+      })
+      .collect::<Vec<(u8, u8)>>();
+  }
+  unsafe {
+    let _ = TABLE_ORDER.set(table1);
+  }
+}
 
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct Poset {
@@ -81,22 +108,21 @@ impl Poset {
 
   // TODO: implement Iterator instead of `adjacency_size` and `is_index`
   pub fn adjacency_size(&self) -> usize {
-    (self.n as usize) * (self.n as usize)
+    unsafe { TABLE_ORDER.get().unwrap()[self.n as usize].len() }
   }
 
   pub fn is_index(&self, pos: usize) -> bool {
-    self.is_less(
-      (pos % (self.n as usize)) as u8,
-      (pos / (self.n as usize)) as u8,
-    )
+    unsafe {
+      let item = TABLE_ORDER.get().unwrap()[self.n as usize][pos];
+      self.is_less(item.0, item.1)
+    }
   }
 
   pub fn set_index(&mut self, pos: usize, value: bool) {
-    self.set_less(
-      (pos % (self.n as usize)) as u8,
-      (pos / (self.n as usize)) as u8,
-      value,
-    );
+    unsafe {
+      let item = TABLE_ORDER.get().unwrap()[self.n as usize][pos];
+      self.set_less(item.0, item.1, value);
+    }
   }
 
   // add
