@@ -98,35 +98,36 @@ impl CacheSetDual {
   pub fn size(&self) -> usize {
     self.cache_not_solvable.size() + self.cache_solvable.size()
   }
-
-  pub fn test() {
-    let mut poset = Poset::new(10, 2);
-    poset.add_less(3, 7);
-
-    let mut poset2 = Poset::new(10, 2);
-    poset2.add_less(2, 7);
-
-    let mut cache = CacheSetDual::new();
-    cache.insert_solvable(&poset, 2);
-
-    cache.insert_not_solvable(&poset2, 2);
-
-    debug_assert!(!cache.check_solvable(&poset, 1));
-    debug_assert!(cache.check_solvable(&poset, 2));
-    debug_assert!(cache.check_solvable(&poset, 3));
-
-    debug_assert!(!cache.check_solvable(&poset2, 1));
-    debug_assert!(!cache.check_solvable(&poset2, 2));
-    debug_assert!(!cache.check_solvable(&poset2, 3));
-
-    debug_assert!(!cache.check_not_solvable(&poset, 1));
-    debug_assert!(!cache.check_not_solvable(&poset, 2));
-    debug_assert!(!cache.check_not_solvable(&poset, 3));
-
-    debug_assert!(cache.check_not_solvable(&poset2, 1));
-    debug_assert!(cache.check_not_solvable(&poset2, 2));
-    debug_assert!(!cache.check_not_solvable(&poset2, 3));
-  }
 }
 
 // TODO: toString for cache instead of size
+
+#[test]
+fn test() {
+  let mut poset = Poset::new(10, 2);
+  poset.add_less(3, 7);
+
+  let mut poset2 = Poset::new(10, 2);
+  poset2.add_less(2, 7);
+
+  let mut cache = CacheSetDual::new();
+  cache.insert_solvable(&poset, 2);
+
+  cache.insert_not_solvable(&poset2, 2);
+
+  assert!(!cache.check_solvable(&poset, 1));
+  assert!(cache.check_solvable(&poset, 2));
+  assert!(cache.check_solvable(&poset, 3));
+
+  assert!(!cache.check_solvable(&poset2, 1));
+  assert!(!cache.check_solvable(&poset2, 2));
+  assert!(!cache.check_solvable(&poset2, 3));
+
+  assert!(!cache.check_not_solvable(&poset, 1));
+  assert!(!cache.check_not_solvable(&poset, 2));
+  assert!(!cache.check_not_solvable(&poset, 3));
+
+  assert!(cache.check_not_solvable(&poset2, 1));
+  assert!(cache.check_not_solvable(&poset2, 2));
+  assert!(!cache.check_not_solvable(&poset2, 3));
+}

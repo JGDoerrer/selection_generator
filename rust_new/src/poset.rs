@@ -1,46 +1,50 @@
-use std::cell::OnceCell;
 use std::collections::{HashSet, VecDeque};
 use std::fmt;
-use std::hash::Hash;
+use std::hash::{Hash, Hasher};
 
 use super::cache_tree::CacheTreeFixed;
 use super::util::MAX_N;
 
+use const_for::const_for;
 use std::os::raw::c_int;
 
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 
-static mut TABLE_ORDER: OnceCell<[Vec<(u8, u8)>; MAX_N]> = OnceCell::new();
-
-pub fn init_table() {
-  let mut table1: [Vec<(u8, u8)>; MAX_N] = Default::default();
-  table1[0] = vec![];
-  table1[1] = vec![(0, 0)];
-  for (n, item) in table1.iter_mut().enumerate().take(MAX_N).skip(2) {
-    *item = (0..((n * n - n) / 2))
-      .map(|pos| {
-        let mut a = 0;
-        for k in 0..MAX_N {
-          if pos < (k * k + k) / 2 {
-            break;
-          }
-          a = k;
+const fn init_table() -> [([(u8, u8); MAX_N * MAX_N], usize); MAX_N] {
+  let mut table1 = [([(0u8, 0u8); MAX_N * MAX_N], 0); MAX_N];
+  table1[0] = ([(0, 0); MAX_N * MAX_N], 0);
+  table1[1] = ([(0, 0); MAX_N * MAX_N], 1);
+  const_for!(n in 2..MAX_N => {
+    table1[n].1 = (n * n - n) / 2;
+    const_for!(pos in 0..table1[n].1 => {
+      let mut a = 0;
+      const_for!(k in 0..MAX_N => {
+        if pos < (k * k + k) / 2 {
+          break;
         }
-        let b: usize = pos - ((a * a + a) / 2);
-        ((a + 1) as u8, b as u8)
-      })
-      .collect::<Vec<(u8, u8)>>();
-  }
-  unsafe {
-    let _ = TABLE_ORDER.set(table1);
-  }
+        a = k;
+      });
+      let b: usize = pos - ((a * a + a) / 2);
+      table1[n].0[pos] = ((a + 1) as u8, b as u8);
+    });
+  });
+  table1
 }
+const TABLE_ORDER: [([(u8, u8); MAX_N * MAX_N], usize); MAX_N] = init_table();
 
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Poset {
   n: u8,
   i: u8,
   adjacency: [u16; MAX_N],
+}
+
+impl Hash for Poset {
+  fn hash<H: Hasher>(&self, ra_expand_state: &mut H) {
+    // self.n.hash(ra_expand_state);
+    // self.i.hash(ra_expand_state);
+    self.adjacency.hash(ra_expand_state);
+  }
 }
 
 impl fmt::Debug for Poset {
@@ -65,6 +69,9 @@ impl fmt::Debug for Poset {
 impl Poset {
   // constructor
   pub fn new(n: u8, i: u8) -> Self {
+    debug_assert!(i < n);
+    debug_assert!(n < MAX_N as u8);
+
     Self {
       n,
       i,
@@ -108,21 +115,17 @@ impl Poset {
 
   // TODO: implement Iterator instead of `adjacency_size` and `is_index`
   pub fn adjacency_size(&self) -> usize {
-    unsafe { TABLE_ORDER.get().unwrap()[self.n as usize].len() }
+    TABLE_ORDER[self.n as usize].1
   }
 
   pub fn is_index(&self, pos: usize) -> bool {
-    unsafe {
-      let item = TABLE_ORDER.get().unwrap()[self.n as usize][pos];
-      self.is_less(item.0, item.1)
-    }
+    let item = TABLE_ORDER[self.n as usize].0[pos];
+    self.is_less(item.0, item.1)
   }
 
   pub fn set_index(&mut self, pos: usize, value: bool) {
-    unsafe {
-      let item = TABLE_ORDER.get().unwrap()[self.n as usize][pos];
-      self.set_less(item.0, item.1, value);
-    }
+    let item = TABLE_ORDER[self.n as usize].0[pos];
+    self.set_less(item.0, item.1, value);
   }
 
   // add

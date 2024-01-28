@@ -2,7 +2,7 @@ use std::fmt::{self, Display};
 use std::time::Duration;
 use std::time::Instant;
 use std::vec;
-use std::{collections::HashSet, env};
+use std::collections::HashSet;
 
 use super::cache_set::CacheSetSingle;
 use super::cache_tree::CacheTreeDual;
@@ -276,7 +276,7 @@ fn start_search(
       }
     }
 
-    return (Some(lower), search_duration, validate_duration);
+    (Some(lower), search_duration, validate_duration)
   } else {
     // searchRecursive from bottom
     for i in lower..upper {
@@ -308,12 +308,6 @@ fn start_search(
 }
 
 pub fn main() {
-  super::poset::init_table();
-
-  env::set_var("RUST_BACKTRACE", "1");
-
-  super::poset::init_table();
-
   const N_BOUND: usize = 1;
 
   let mut cache = CacheTreeDual::new();
@@ -325,6 +319,22 @@ pub fn main() {
   for n in 2..MAX_N {
     for nth_smallest in 0..((n + 1) / 2) {
       let mut statistics = Statistics::default();
+
+      // // Arc<Mutex<Cache>>
+
+      // thread::spawn(move || {
+      //   // some work here
+      // });
+
+      // let thread_join_handle = thread::spawn(move || {
+      //   // some work here
+      // });
+      // // some work here
+      // let res = thread_join_handle.join();
+
+      // let (comparisons2, duration_generate_posets2, duration_search2) =
+      //   start_search_backward(&mut poset_cache, n as u8, nth_smallest as u8, (n * n) as u8);
+
       let (comparisons, duration_search, duration_validate) = start_search(
         n as u8,
         nth_smallest as u8,
@@ -332,8 +342,6 @@ pub fn main() {
         &mut statistics,
         false,
       );
-      // let (comparisons2, duration_generate_posets2, duration_search2) =
-      //   start_search_backward(&mut poset_cache, n as u8, nth_smallest as u8, (n * n) as u8);
 
       if let Some(comparisons_value) = comparisons {
         if n >= N_BOUND {

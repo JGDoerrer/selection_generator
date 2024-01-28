@@ -1,3 +1,5 @@
+use std::env;
+
 mod search_backward;
 mod search_bidirectional;
 mod search_forward;
@@ -8,7 +10,9 @@ mod poset;
 mod util;
 
 fn main() {
+  env::set_var("RUST_BACKTRACE", "1");
+
+  search_forward::main();
   // search_backward::main();
-  // search_forward::main();
-  search_bidirectional::main();
+  // search_bidirectional::main();
 }
