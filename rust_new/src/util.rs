@@ -27,3 +27,35 @@ pub const KNOWN_MIN_VALUES: [&[u8]; 16] = [
 ];
 
 pub const min_n_comparisons_len: usize = 15;
+
+pub fn upper_bound(n: i32, i0: i32) -> i32 {
+  let i = i0 + 1;
+  if 1 == i {
+    return n - 1;
+  } else if 2 == i {
+    return ((n - 2) as f64 + (n as f64).log2().ceil()) as i32;
+  } else if 3 == i {
+    return ((n + 1) as f64
+      + ((n - 1) as f64 / 4.0).log2().ceil()
+      + ((n - 1) as f64 / 5.0).log2().ceil()) as i32;
+  }
+
+  let res1 = n - i + (i - 1) * ((n + 2 - i) as f64).log2().ceil() as i32;
+  let res2 =
+    n - (n + 1 - i) + ((n + 1 - i) - 1) * ((n + 2 - (n + 1 - i)) as f64).log2().ceil() as i32;
+  res1.min(res2)
+}
+
+pub fn lower_bound(n: i32, i0: i32) -> i32 {
+  let i = i0 + 1;
+  if i == 1 {
+    return n - 1;
+  } else if i == 2 {
+    return n - 2 + (n as f64).log2().ceil() as i32;
+  }
+  let mut sum = 0;
+  for j in 0..=i - 2 {
+    sum += ((n - i + 2) as f64 / (i + j) as f64).log2().ceil() as i32;
+  }
+  n + i - 3 + sum
+}

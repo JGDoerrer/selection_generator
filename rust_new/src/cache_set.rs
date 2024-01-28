@@ -128,3 +128,5 @@ impl CacheSetDual {
     debug_assert!(!cache.check_not_solvable(&poset2, 3));
   }
 }
+
+// TODO: toString for cache instead of size
