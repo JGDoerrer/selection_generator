@@ -54,11 +54,7 @@ impl<const IS_SOLVABLE: bool> CacheNode<IS_SOLVABLE> {
     root_struct: &Self,
   ) {
     if 0 == index {
-      if !root_struct.contains_multi_path(
-        temp,
-        temp.adjacency_size(),
-        false,
-      ) {
+      if !root_struct.contains_multi_path(temp, temp.adjacency_size(), false) {
         entries.insert(temp.clone());
       }
     } else if 0 != index {
@@ -101,7 +97,8 @@ impl<const IS_SOLVABLE: bool> CacheTreeFixed<IS_SOLVABLE> {
     let mut last_insert = false;
     let mut level = self.root.as_mut().unwrap();
 
-    for i in (0..poset.adjacency_size()).rev() { // TODO: iterator
+    for i in (0..poset.adjacency_size()).rev() {
+      // TODO: iterator
       last_insert = false;
       if poset.is_index(i) {
         if level.branch_is_less.is_none() {
@@ -172,8 +169,7 @@ impl<const IS_SOLVABLE: bool> CacheTreeSingle<IS_SOLVABLE> {
 
   pub fn insert(&mut self, poset: &Poset, remaining_comparisons: u8) {
     assert!(2 * poset.i() < poset.n());
-    let _lock = self.mutex[poset.n() as usize][poset.i() as usize]
-      [remaining_comparisons as usize]
+    let _lock = self.mutex[poset.n() as usize][poset.i() as usize][remaining_comparisons as usize]
       .write()
       .unwrap();
     self.cache[poset.n() as usize][poset.i() as usize][remaining_comparisons as usize]
@@ -186,8 +182,7 @@ impl<const IS_SOLVABLE: bool> CacheTreeSingle<IS_SOLVABLE> {
         let _lock = self.mutex[poset.n() as usize][poset.i() as usize][c as usize]
           .read()
           .unwrap();
-        if self.cache[poset.n() as usize][poset.i() as usize][c as usize].contains(poset)
-        {
+        if self.cache[poset.n() as usize][poset.i() as usize][c as usize].contains(poset) {
           return true;
         }
       }
@@ -196,8 +191,7 @@ impl<const IS_SOLVABLE: bool> CacheTreeSingle<IS_SOLVABLE> {
         let _lock = self.mutex[poset.n() as usize][poset.i() as usize][c as usize]
           .read()
           .unwrap();
-        if self.cache[poset.n() as usize][poset.i() as usize][c as usize].contains(poset)
-        {
+        if self.cache[poset.n() as usize][poset.i() as usize][c as usize].contains(poset) {
           return true;
         }
       }
