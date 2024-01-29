@@ -1,11 +1,9 @@
 use std::collections::HashSet;
-use std::mem::swap;
-use std::rc::Rc;
-use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, RwLock};
 use std::time::Duration;
 
-use std::sync::mpsc::channel;
-use threadpool::ThreadPool;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use super::cache_set::CacheSetSolvable;
 use super::poset::Poset;
@@ -14,8 +12,7 @@ use super::util::{KNOWN_MIN_VALUES, MAX_N};
 type CacheSolvable = CacheSetSolvable;
 
 fn start_search_backward(
-  threadpool: &mut ThreadPool,
-  poset_cache: &mut CacheSolvable,
+  poset_cache: Arc<RwLock<CacheSolvable>>,
   n: u8,
   i0: u8,
   max_comparisons: u8,
@@ -34,74 +31,56 @@ fn start_search_backward(
     let duration_build_posets = mid - start;
     duration_build_posets_total += duration_build_posets;
 
-    let atomic_break_global = Arc::new(Mutex::new(false));
-    let mut poset_cache2 = CacheSolvable::new();
-    swap(poset_cache, &mut poset_cache2); // ist das effizient?
-    let poset_cache_global = Arc::new(Mutex::new(poset_cache2));
+    let atomic_break = Arc::new(AtomicBool::new(false));
 
-    let (tx, rx) = channel();
     let n_source_new = source_new.len();
-    for item in &source_new {
-      let tx = tx.clone();
-      let item2 = item.clone();
-      let atomic_break_local = atomic_break_global.clone();
-      let poset_cache_local = poset_cache_global.clone();
-      threadpool.execute(move || {
-        let mut destination: HashSet<Poset> = HashSet::new();
-        for i in 0..n {
-          for j in 0..n {
-            if item2.is_less(i, j) {
-              for predecessor in item2.remove_less(i, j, |poset| {
-                (*poset_cache_local.lock().unwrap()).check(poset, k - 1)
-              }) {
-                if predecessor == Poset::new(n, i0) {
-                  let mut atomic_break = atomic_break_local.lock().unwrap();
-                  *atomic_break = true;
-                }
 
-                let mut predecessor_normalized = predecessor.clone();
-                predecessor_normalized.normalize();
-                if (*poset_cache_local.lock().unwrap()).check(&predecessor_normalized, k - 1) {
-                  continue;
-                }
+    let results: Vec<HashSet<Poset>> = source_new.par_iter().map(|item| {
+      let mut destination: HashSet<Poset> = HashSet::new();
+      for i in 0..n {
+        for j in 0..n {
+          if item.is_less(i, j) {
+            for mut predecessor in item.remove_less(i, j, |poset| {
+              poset_cache.read().expect("cache shouldn't be poisoned").check(poset, k - 1)
+            }) {
+              if predecessor == Poset::new(n, i0) {
+                atomic_break.store(true, Ordering::Relaxed);
+              }
+              predecessor.normalize();
+              if poset_cache.read().expect("cache shouldn't be poisoned").check(&predecessor, k - 1) {
+                continue;
+              }
+              poset_cache.write().expect("cache shouldn't be poisoned").insert(&predecessor, k);
+              destination.insert(predecessor);
 
-                destination.insert(predecessor_normalized.clone());
-                (*poset_cache_local.lock().unwrap()).insert(&predecessor_normalized, k);
-
-                let atomic_break = atomic_break_local.lock().unwrap();
-                if *atomic_break {
-                  tx.send(destination)
-                    .expect("channel will be there waiting for the pool");
-                  return;
-                }
+              if atomic_break.load(Ordering::Relaxed) {
+                return destination;
               }
             }
           }
         }
-        tx.send(destination)
-          .expect("channel will be there waiting for the pool");
-      });
-    }
+      }
+      destination
+    }).collect();
 
     let mut destination: HashSet<Poset> = HashSet::new();
-    for item in rx.iter().take(n_source_new) {
+    for item in results {
       for poset in item {
         destination.insert(poset);
       }
     }
-    swap(poset_cache, &mut *poset_cache_global.lock().unwrap());
 
-    if destination.contains(&Poset::new(n, i0)) {
+    if atomic_break.load(Ordering::Acquire) {
       duration_test_posets = mid.elapsed();
       duration_test_posets_total += duration_test_posets;
       println!(
         "# {}: {} => {} in {:.3?} ~ {:.3?} | total cached: {} (found solution)",
         k,
         source.len(),
-        source_new.len(),
+        n_source_new,
         duration_build_posets,
         duration_test_posets,
-        poset_cache.size()
+        poset_cache.read().expect("cache shouldn't be poisoned").size()
       );
       return (
         Some(k),
@@ -117,10 +96,10 @@ fn start_search_backward(
       "# {}: {} => {} in {:.3?} ~ {:.3?} | total cached: {}",
       k,
       source.len(),
-      source_new.len(),
+      n_source_new,
       duration_build_posets,
       duration_test_posets,
-      poset_cache.size()
+      poset_cache.read().expect("cache shouldn't be poisoned").size()
     );
 
     source = destination;
@@ -133,9 +112,9 @@ fn start_search_backward(
   )
 }
 
-fn single(threadpool: &mut ThreadPool, poset_cache: &mut CacheSolvable, n: usize, i: usize) {
+fn single(poset_cache: Arc<RwLock<CacheSolvable>>, n: usize, i: usize) {
   let (comparisons, duration_generate_posets, duration_search) =
-    start_search_backward(threadpool, poset_cache, n as u8, i as u8, (n * n) as u8);
+    start_search_backward(poset_cache, n as u8, i as u8, (n * n) as u8);
 
   if let Some(comparisons) = comparisons {
     println!(
@@ -164,17 +143,15 @@ fn single(threadpool: &mut ThreadPool, poset_cache: &mut CacheSolvable, n: usize
 }
 
 pub fn main() {
-  let mut poset_cache = CacheSolvable::new();
-  poset_cache.insert(&Poset::new(1, 0), 0);
-
-  let mut pool = ThreadPool::new(20);
+  let poset_cache = Arc::new(RwLock::new(CacheSolvable::new()));
+  poset_cache.write().expect("cache shouldn't be poisoned").insert(&Poset::new(1, 0), 0);
 
   if false {
-    single(&mut pool, &mut poset_cache, 9, 4);
+    single(poset_cache, 9, 4);
   } else {
     for n in 2..MAX_N {
       for i in 0..((n + 1) / 2) {
-        single(&mut pool, &mut poset_cache, n, i);
+        single(poset_cache.clone(), n, i);
       }
       println!();
     }
