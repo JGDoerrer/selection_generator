@@ -1,65 +1,83 @@
 # Program Output (search from Bottom to Top)
 ```
-...
-time '0.000s + 0.000s = 0.000s': n = 9, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (892 + 183 = 1075), cache_cleaned = (892 + 183 = 1075), comparisons: 8
-time '0.000s + 0.000s = 0.000s': n = 9, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (892 + 183 = 1075), cache_cleaned = (892 + 183 = 1075), comparisons: 11
-time '0.000s + 0.000s = 0.000s': n = 9, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (892 + 183 = 1075), cache_cleaned = (892 + 183 = 1075), comparisons: 12
-# search with Pair-Optimisation & maxComparisons = 13 -> NoSolution in 0.125s
-# search with maxComparisons = 13 -> NoSolution in 0.081s
-time '0.125s + 0.081s = 0.207s': n = 9, i = 3, (cache_l: 72573, cache_u: 20803, noSol: 4, bruteForce: 3708), cache = (4057 + 730 = 4787), cache_cleaned = (4057 + 730 = 4787), comparisons: 14
-# search with Pair-Optimisation & maxComparisons = 12 -> NoSolution in 0.055s
-# search with maxComparisons = 12 -> NoSolution in 0.047s
-# search with Pair-Optimisation & maxComparisons = 13 -> NoSolution in 0.123s
-# search with maxComparisons = 13 -> NoSolution in 0.082s
-# search with Pair-Optimisation & maxComparisons = 14 -> FoundSolution in 0.112s
-time '0.291s + 0.130s = 0.421s': n = 9, i = 4, (cache_l: 146262, cache_u: 36163, noSol: 0, bruteForce: 6803), cache = (10335 + 1255 = 11590), cache_cleaned = (10335 + 1255 = 11590), comparisons: 14
+time '0.000ns' + '0.000ns' = '0.000ns': n = 2, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 1
 
-time '0.000s + 0.000s = 0.000s': n = 10, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (10335 + 1255 = 11590), cache_cleaned = (10335 + 1255 = 11590), comparisons: 9
-time '0.000s + 0.000s = 0.000s': n = 10, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (10335 + 1255 = 11590), cache_cleaned = (10335 + 1255 = 11590), comparisons: 12
-time '0.000s + 0.000s = 0.000s': n = 10, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (10335 + 1255 = 11590), cache_cleaned = (10335 + 1255 = 11590), comparisons: 14
-# search with Pair-Optimisation & maxComparisons = 14 -> NoSolution in 0.115s
-# search with maxComparisons = 14 -> NoSolution in 0.424s
-time '0.115s + 0.424s = 0.540s': n = 10, i = 3, (cache_l: 163621, cache_u: 31981, noSol: 1, bruteForce: 5766), cache = (15721 + 1636 = 17357), cache_cleaned = (15721 + 1636 = 17357), comparisons: 15
-# search with Pair-Optimisation & maxComparisons = 14 -> NoSolution in 0.237s
-# search with maxComparisons = 14 -> NoSolution in 0.722s
-# search with Pair-Optimisation & maxComparisons = 15 -> NoSolution in 0.571s
-# search with maxComparisons = 15 -> NoSolution in 1.844s
-# search with Pair-Optimisation & maxComparisons = 16 -> FoundSolution in 0.169s
-time '0.977s + 2.566s = 3.544s': n = 10, i = 4, (cache_l: 1045465, cache_u: 217507, noSol: 3, bruteForce: 38855), cache = (51909 + 4306 = 56215), cache_cleaned = (51909 + 4306 = 56215), comparisons: 16
+time '0.000ns' + '0.000ns' = '0.000ns': n = 3, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 2
+time '0.000ns' + '0.000ns' = '0.000ns': n = 3, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 3
 
-time '0.000s + 0.000s = 0.000s': n = 11, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (51909 + 4306 = 56215), cache_cleaned = (51909 + 4306 = 56215), comparisons: 10
-time '0.000s + 0.000s = 0.000s': n = 11, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (51909 + 4306 = 56215), cache_cleaned = (51909 + 4306 = 56215), comparisons: 13
-time '0.000s + 0.000s = 0.000s': n = 11, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (51909 + 4306 = 56215), cache_cleaned = (51909 + 4306 = 56215), comparisons: 15
-# search with Pair-Optimisation & maxComparisons = 16 -> NoSolution in 3.345s
-# search with maxComparisons = 16 -> NoSolution in 3.174s
-# search with Pair-Optimisation & maxComparisons = 17 -> FoundSolution in 0.425s
-time '3.770s + 3.174s = 6.945s': n = 11, i = 3, (cache_l: 1445153, cache_u: 272185, noSol: 17, bruteForce: 43067), cache = (91331 + 7968 = 99299), cache_cleaned = (91331 + 7968 = 99299), comparisons: 17
-# search with Pair-Optimisation & maxComparisons = 16 -> NoSolution in 6.062s
-# search with maxComparisons = 16 -> NoSolution in 5.122s
-# search with Pair-Optimisation & maxComparisons = 17 -> NoSolution in 18.884s
-# search with maxComparisons = 17 -> NoSolution in 11.341s
-time '24.947s + 16.464s = 41.411s': n = 11, i = 4, (cache_l: 8420663, cache_u: 1576521, noSol: 40, bruteForce: 250676), cache = (326085 + 23930 = 350015), cache_cleaned = (326085 + 23930 = 350015), comparisons: 18
-# search with Pair-Optimisation & maxComparisons = 15 -> NoSolution in 3.037s
-# search with maxComparisons = 15 -> NoSolution in 2.207s
-# search with Pair-Optimisation & maxComparisons = 16 -> NoSolution in 7.125s
-# search with maxComparisons = 16 -> NoSolution in 6.358s
-# search with Pair-Optimisation & maxComparisons = 17 -> NoSolution in 23.575s
-# search with maxComparisons = 17 -> NoSolution in 16.083s
-# search with Pair-Optimisation & maxComparisons = 18 -> FoundSolution in 19.097s
-time '52.836s + 24.649s = 77.485s': n = 11, i = 5, (cache_l: 16972443, cache_u: 2757472, noSol: 31, bruteForce: 493872), cache = (801449 + 42469 = 843918), cache_cleaned = (801449 + 42469 = 843918), comparisons: 18
+time '0.000ns' + '0.000ns' = '0.000ns': n = 4, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 3
+time '0.000ns' + '0.000ns' = '0.000ns': n = 4, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 4
 
-time '0.000s + 0.000s = 0.000s': n = 12, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (801449 + 42469 = 843918), cache_cleaned = (801449 + 42469 = 843918), comparisons: 11
-time '0.000s + 0.000s = 0.000s': n = 12, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = (801449 + 42469 = 843918), cache_cleaned = (801449 + 42469 = 843918), comparisons: 14
-# search with Pair-Optimisation & maxComparisons = 16 -> NoSolution in 0.256s
-# search with maxComparisons = 16 -> NoSolution in 3.176s
-time '0.256s + 3.176s = 3.433s': n = 12, i = 2, (cache_l: 262944, cache_u: 41096, noSol: 17, bruteForce: 6023), cache = (806901 + 43057 = 849958), cache_cleaned = (806901 + 43057 = 849958), comparisons: 17
-# search with Pair-Optimisation & maxComparisons = 17 -> NoSolution in 1.991s
-# search with maxComparisons = 17 -> NoSolution in 15.824s
-# search with Pair-Optimisation & maxComparisons = 18 -> FoundSolution in 0.073s
-time '2.064s + 15.824s = 17.888s': n = 12, i = 3, (cache_l: 2486992, cache_u: 328673, noSol: 2, bruteForce: 54573), cache = (859391 + 45142 = 904533), cache_cleaned = (859391 + 45142 = 904533), comparisons: 18
-# search with Pair-Optimisation & maxComparisons = 18 -> NoSolution in 37.026s
-# search with maxComparisons = 18 -> NoSolution in 128.680s
-# search with Pair-Optimisation & maxComparisons = 19 -> NoSolution in 126.662s
-# search with maxComparisons = 19 -> FoundSolution in 250.143s
-time '163.689s + 378.824s = 542.513s': n = 12, i = 4, (cache_l: 64773998, cache_u: 10759433, noSol: 169, bruteForce: 1570676), cache = (2343333 + 132045 = 2475378), cache_clea
+time '0.000ns' + '0.000ns' = '0.000ns': n = 5, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 4
+time '0.000ns' + '0.000ns' = '0.000ns': n = 5, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 6
+time '0.000ns' + '0.000ns' = '0.000ns': n = 5, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 6
+
+time '0.000ns' + '0.000ns' = '0.000ns': n = 6, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 5
+time '0.000ns' + '0.000ns' = '0.000ns': n = 6, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 7
+time '0.000ns' + '0.000ns' = '0.000ns': n = 6, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 8
+
+time '0.000ns' + '0.000ns' = '0.000ns': n = 7, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 6
+time '0.000ns' + '0.000ns' = '0.000ns': n = 7, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 1 + 0 = 1, comparisons: 8
+# search with Pair-Optimisation & maxComparisons = 9 -> NoSolution in 1.354ms
+# search with maxComparisons = 9 -> NoSolution in 951.134µs
+time '1.354ms' + '951.134µs' = '2.305ms': n = 7, i = 2, (cache_l: 1444, cache_u: 598, noSol: 3, bruteForce: 174), cache = 42 + 125 = 167, comparisons: 10
+# search with Pair-Optimisation & maxComparisons = 9 -> NoSolution in 868.329µs
+# search with maxComparisons = 9 -> NoSolution in 904.704µs
+# search with Pair-Optimisation & maxComparisons = 10 -> FoundSolution in 75.935µs
+time '944.264µs' + '904.704µs' = '1.849ms': n = 7, i = 3, (cache_l: 1189, cache_u: 436, noSol: 0, bruteForce: 103), cache = 55 + 213 = 268, comparisons: 10
+
+time '0.000ns' + '0.000ns' = '0.000ns': n = 8, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 55 + 213 = 268, comparisons: 7
+time '0.000ns' + '0.000ns' = '0.000ns': n = 8, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 55 + 213 = 268, comparisons: 9
+time '0.000ns' + '0.000ns' = '0.000ns': n = 8, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 55 + 213 = 268, comparisons: 11
+# search with Pair-Optimisation & maxComparisons = 11 -> NoSolution in 4.624ms
+# search with maxComparisons = 11 -> NoSolution in 13.641ms
+# search with Pair-Optimisation & maxComparisons = 12 -> FoundSolution in 48.916µs
+time '4.673ms' + '13.641ms' = '18.314ms': n = 8, i = 3, (cache_l: 10000, cache_u: 2993, noSol: 0, bruteForce: 686), cache = 165 + 694 = 859, comparisons: 12
+
+time '0.000ns' + '0.000ns' = '0.000ns': n = 9, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 165 + 694 = 859, comparisons: 8
+time '0.000ns' + '0.000ns' = '0.000ns': n = 9, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 165 + 694 = 859, comparisons: 11
+time '0.000ns' + '0.000ns' = '0.000ns': n = 9, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 165 + 694 = 859, comparisons: 12
+# search with Pair-Optimisation & maxComparisons = 13 -> NoSolution in 114.888ms
+# search with maxComparisons = 13 -> NoSolution in 65.975ms
+time '114.888ms' + '65.975ms' = '180.863ms': n = 9, i = 3, (cache_l: 78856, cache_u: 20917, noSol: 2, bruteForce: 3987), cache = 665 + 3434 = 4099, comparisons: 14
+# search with Pair-Optimisation & maxComparisons = 12 -> NoSolution in 41.340ms
+# search with maxComparisons = 12 -> NoSolution in 24.606ms
+# search with Pair-Optimisation & maxComparisons = 13 -> NoSolution in 103.943ms
+# search with maxComparisons = 13 -> NoSolution in 76.270ms
+# search with Pair-Optimisation & maxComparisons = 14 -> FoundSolution in 12.138ms
+time '157.421ms' + '100.875ms' = '258.296ms': n = 9, i = 4, (cache_l: 117345, cache_u: 26116, noSol: 0, bruteForce: 5388), cache = 982 + 7349 = 8331, comparisons: 14
+
+time '0.000ns' + '0.000ns' = '0.000ns': n = 10, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 982 + 7349 = 8331, comparisons: 9
+time '0.000ns' + '0.000ns' = '0.000ns': n = 10, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 982 + 7349 = 8331, comparisons: 12
+time '0.000ns' + '0.000ns' = '0.000ns': n = 10, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 982 + 7349 = 8331, comparisons: 14
+# search with Pair-Optimisation & maxComparisons = 14 -> NoSolution in 81.951ms
+# search with maxComparisons = 14 -> NoSolution in 362.938ms
+time '81.951ms' + '362.938ms' = '444.889ms': n = 10, i = 3, (cache_l: 146068, cache_u: 27014, noSol: 0, bruteForce: 5185), cache = 1301 + 11537 = 12838, comparisons: 15
+# search with Pair-Optimisation & maxComparisons = 14 -> NoSolution in 248.077ms
+# search with maxComparisons = 14 -> NoSolution in 603.537ms
+# search with Pair-Optimisation & maxComparisons = 15 -> NoSolution in 625.463ms
+# search with maxComparisons = 15 -> NoSolution in 1.651s
+# search with Pair-Optimisation & maxComparisons = 16 -> FoundSolution in 351.424µs
+time '873.891ms' + '2.254s' = '3.128s': n = 10, i = 4, (cache_l: 1097160, cache_u: 213497, noSol: 3, bruteForce: 40884), cache = 3813 + 38901 = 42714, comparisons: 16
+
+time '0.000ns' + '0.000ns' = '0.000ns': n = 11, i = 0, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 3813 + 38901 = 42714, comparisons: 10
+time '0.000ns' + '0.000ns' = '0.000ns': n = 11, i = 1, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 3813 + 38901 = 42714, comparisons: 13
+time '0.000ns' + '0.000ns' = '0.000ns': n = 11, i = 2, (cache_l: 0, cache_u: 0, noSol: 0, bruteForce: 0), cache = 3813 + 38901 = 42714, comparisons: 15
+# search with Pair-Optimisation & maxComparisons = 16 -> NoSolution in 2.912s
+# search with maxComparisons = 16 -> NoSolution in 2.973s
+# search with Pair-Optimisation & maxComparisons = 17 -> FoundSolution in 63.500ms
+time '2.976s' + '2.973s' = '5.949s': n = 11, i = 3, (cache_l: 1663844, cache_u: 275479, noSol: 10, bruteForce: 49412), cache = 7084 + 76014 = 83098, comparisons: 17
+# search with Pair-Optimisation & maxComparisons = 16 -> NoSolution in 5.805s
+# search with maxComparisons = 16 -> NoSolution in 4.135s
+# search with Pair-Optimisation & maxComparisons = 17 -> NoSolution in 18.724s
+# search with maxComparisons = 17 -> NoSolution in 10.659s
+time '24.529s' + '14.794s' = '39.323s': n = 11, i = 4, (cache_l: 9975843, cache_u: 1683629, noSol: 46, bruteForce: 295581), cache = 21912 + 272659 = 294571, comparisons: 18
+# search with Pair-Optimisation & maxComparisons = 15 -> NoSolution in 2.490s
+# search with maxComparisons = 15 -> NoSolution in 1.690s
+# search with Pair-Optimisation & maxComparisons = 16 -> NoSolution in 6.505s
+# search with maxComparisons = 16 -> NoSolution in 4.923s
+# search with Pair-Optimisation & maxComparisons = 17 -> NoSolution in 20.983s
+# search with maxComparisons = 17 -> NoSolution in 14.479s
+# search with Pair-Optimisation & maxComparisons = 18 -> FoundSolution in 5.976s
+time '35.954s' + '21.091s' = '57.046s': n = 11, i = 5, (cache_l: 15407890, cache_u: 2316918, noSol: 38, bruteForce: 446469), cache = 35360 + 585106 = 620466, comparisons: 18
 ```
