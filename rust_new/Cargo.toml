@@ -9,3 +9,4 @@ edition = "2021"
 bit-set = "0.5.3"
 const_for = "0.1.4"
 nauty-Traces-sys = { version = "0.7.0", features = ["native"] }
+threadpool = "1.8.1"
