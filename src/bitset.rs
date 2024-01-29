@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use crate::poset::MAX_N;
+use crate::constants::MAX_N;
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 pub struct BitSet {

@@ -3,9 +3,7 @@ use std::{fmt::Debug, os::raw::c_int};
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use serde::{Deserialize, Serialize};
 
-use crate::bitset::BitSet;
-
-pub const MAX_N: usize = 15;
+use crate::{bitset::BitSet, constants::MAX_N};
 
 pub type PosetIndex = u8;
 
@@ -579,7 +577,7 @@ impl Debug for Poset {
 mod test {
     use std::collections::HashSet;
 
-    use crate::KNOWN_MIN_VALUES;
+    use crate::constants::KNOWN_MIN_VALUES;
 
     use super::*;
 

@@ -5,32 +5,19 @@ use std::{
     io::{Read, Write},
 };
 
-use poset::{Poset, MAX_N};
+use poset::Poset;
 
-use crate::{cache::Cache, search::Search};
+use crate::{
+    cache::Cache,
+    constants::{KNOWN_MIN_VALUES, MAX_N},
+    search::Search,
+};
 
 mod bitset;
 mod cache;
+mod constants;
 mod poset;
 mod search;
-
-const KNOWN_MIN_VALUES: [&[u8]; 15] = [
-    &[0],
-    &[1],
-    &[2, 3],
-    &[3, 4],
-    &[4, 6, 6],
-    &[5, 7, 8],
-    &[6, 8, 10, 10],
-    &[7, 9, 11, 12],
-    &[8, 11, 12, 14, 14],
-    &[9, 12, 14, 15, 16],
-    &[10, 13, 15, 17, 18, 18],
-    &[11, 14, 17, 18, 19, 20],
-    &[12, 15, 18, 20, 21, 22, 23],
-    &[13, 16, 19, 21, 23, 24, 24],
-    &[14, 17, 20, 23, 25, 25, 23, 24],
-];
 
 #[derive(Parser, Debug)]
 #[command(author, version)]

@@ -3,7 +3,11 @@ use std::time::Instant;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
-use crate::{cache::Cache, poset::Poset};
+use crate::{
+    cache::Cache,
+    constants::{LOWER_BOUNDS, UPPER_BOUNDS},
+    poset::Poset,
+};
 
 pub struct Search<'a> {
     n: u8,
@@ -24,6 +28,19 @@ pub enum Cost {
     Minimum(u8),
     /// Solved in the number of comparisons
     Solved(u8),
+}
+
+impl Cost {
+    pub fn value(&self) -> u8 {
+        match self {
+            Cost::Minimum(min) => *min,
+            Cost::Solved(solved) => *solved,
+        }
+    }
+
+    pub fn is_solved(&self) -> bool {
+        matches!(self, Cost::Solved(_))
+    }
 }
 
 impl<'a> Search<'a> {
@@ -80,7 +97,11 @@ impl<'a> Search<'a> {
     pub fn search(&mut self) -> Cost {
         self.start = Instant::now();
 
-        for max in self.n..u8::MAX {
+        let min = LOWER_BOUNDS[self.n as usize][self.i as usize];
+        let max = UPPER_BOUNDS[self.n as usize][self.i as usize];
+
+        for max in min..=max {
+            let max = max as u8;
             self.current_max = max;
 
             let res = match self.search_rec(Poset::new(self.n, self.i), max, 0) {
@@ -379,18 +400,5 @@ impl<'a> Search<'a> {
         }
 
         None
-    }
-}
-
-impl Cost {
-    pub fn value(&self) -> u8 {
-        match self {
-            Cost::Minimum(min) => *min,
-            Cost::Solved(solved) => *solved,
-        }
-    }
-
-    pub fn is_solved(&self) -> bool {
-        matches!(self, Cost::Solved(_))
     }
 }
