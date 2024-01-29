@@ -200,7 +200,11 @@ fn start_search(
           &mut validate_duration,
         ) == SearchResult::NoSolution
       {
-        return (Some(max_comparisons + 1), search_duration, validate_duration);
+        return (
+          Some(max_comparisons + 1),
+          search_duration,
+          validate_duration,
+        );
       }
     }
 
@@ -251,10 +255,12 @@ pub fn main() {
         &mut cache_solvable,
         &mut cache_not_solvable,
         &mut statistics,
-        true,
+        false,
       );
 
       if let Some(comparisons_value) = comparisons {
+        cache_solvable.reheap();
+        cache_not_solvable.reheap();
         println!(
             "\rtime '{:.3?}' + '{:.3?}' = '{:.3?}': n = {}, i = {}, {}, cache = {} + {} = {}, comparisons: {}",
             duration_search,

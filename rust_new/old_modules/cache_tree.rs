@@ -105,7 +105,7 @@ impl<const IS_SOLVABLE: bool> CacheTreeItem<IS_SOLVABLE> {
     let mut last_insert = false;
     let mut level = 0;
 
-    if self.arena.capacity() < 100 {
+    if self.arena.capacity() < 20 {
       self.arena.reserve(10000);
     }
 
@@ -147,16 +147,9 @@ impl<const IS_SOLVABLE: bool> CacheTreeItem<IS_SOLVABLE> {
     entries
   }
 
-  pub fn reheap(&mut self) {
-    let entries = self.entries();
-    self.reset();
-    for poset in entries {
-      self.insert(&poset);
-    }
-  }
-
   pub fn size(&self) -> usize {
-    self.size
+    
+    self.size // TODO: eigentlich falsch => clean & count & entries???
   }
 }
 
@@ -225,17 +218,6 @@ impl<const IS_SOLVABLE: bool> CacheTree<IS_SOLVABLE> {
       }
     }
     false
-  }
-
-  pub fn reheap(&mut self) {
-    for n in 1..MAX_N {
-      for i in 0..MAX_N {
-        for c in 0..MAX_COMPARISONS {
-          let _lock = self.mutex[n][i][c].write().unwrap();
-          self.cache[n][i][c].reheap();
-        }
-      }
-    }
   }
 
   pub fn size(&self) -> usize {
