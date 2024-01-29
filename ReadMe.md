@@ -1,19 +1,19 @@
 # Lower Bounds for Selection 13, 14, 15 Elements
 ## short overview
-| n  | k | bidirection search | forward search (Top to Bottom) | forward search (Bottom to Top) | backward search |
-| -  | - | - | -       | -         | -      |
-| 10 | 0 | ? | 0.000s  | 0.000s  | 0.009s   |
-| 10 | 1 | ? | 0.000s  | 0.000s  | 0.372s   |
-| 10 | 2 | ? | 0.000s  | 0.000s  | 3.249s   |
-| 10 | 3 | ? | 0.365s  | 0.445s  | 11.245s  |
-| 10 | 4 | ? | 2.449s  | 3.128s  | 19.716s  |
-| -  | - | - | -       | -       | -        |
-| 11 | 0 | ? | 0.000s  | 0.000s  | 0.033s   |
-| 11 | 1 | ? | 0.000s  | 0.000s  | 2.894s   |
-| 11 | 2 | ? | 0.000s  | 0.000s  | 40.128s  |
-| 11 | 3 | ? | 5.490s  | 5.949s  | 177.189s |
-| 11 | 4 | ? | 33.909s | 39.323s | 392.825s |
-| 11 | 5 | ? | 43.906s | 57.046s | 422.529s |
+| n  | k | bidirection search | forward search (Top to Bottom) | forward search (Bottom to Top) | backward search (multi-threaded) | backward search |
+| -  | - | - | -       | -       | -       | -        |
+| 10 | 0 | ? | 0.000s  | 0.000s  | 0.008s  | 0.009s   |
+| 10 | 1 | ? | 0.000s  | 0.000s  | 0.139s  | 0.372s   |
+| 10 | 2 | ? | 0.000s  | 0.000s  | 0.760s  | 3.249s   |
+| 10 | 3 | ? | 0.365s  | 0.445s  | 2.136s  | 11.245s  |
+| 10 | 4 | ? | 2.449s  | 3.128s  | 3.599s  | 19.716s  |
+| -  | - | - | -       | -       | -       | -        |
+| 11 | 0 | ? | 0.000s  | 0.000s  | 0.027s  | 0.033s   |
+| 11 | 1 | ? | 0.000s  | 0.000s  | 0.841s  | 2.894s   |
+| 11 | 2 | ? | 0.000s  | 0.000s  | 7.158s  | 40.128s  |
+| 11 | 3 | ? | 5.490s  | 5.949s  | 31.136s | 177.189s |
+| 11 | 4 | ? | 33.909s | 39.323s | 68.978s | 392.825s |
+| 11 | 5 | ? | 43.906s | 57.046s | 75.315s | 422.529s |
 
 ## interne Links
 - [Github Repo](https://github.com/JGDoerrer/selection_generator/)

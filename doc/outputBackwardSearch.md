@@ -1,4 +1,4 @@
-# Program Output (search from Bottom to Top)
+# Program Output (backward search)
 ```
 # 1: 1 => 1 in 15.327µs ~ 2.720µs | total cached: 1 (found solution)
 time '15.327µs + 2.720µs = 18.047µs': n = 2, i = 0, comparisons: 1
