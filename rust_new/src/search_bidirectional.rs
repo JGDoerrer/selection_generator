@@ -291,7 +291,7 @@ fn start_search(
     (Some(lower), search_duration, validate_duration)
   } else {
     // searchRecursive from bottom
-    for i in lower..upper {
+    for max_comparisons in lower..upper {
       if start_search_now(
         n,
         i,
@@ -299,7 +299,7 @@ fn start_search(
         cache_not_solvable,
         statistics,
         true,
-        i,
+        max_comparisons,
         &mut search_duration,
       ) == SearchResult::FoundSolution
         || start_search_now(
@@ -309,11 +309,11 @@ fn start_search(
           cache_not_solvable,
           statistics,
           false,
-          i,
+          max_comparisons,
           &mut validate_duration,
         ) == SearchResult::FoundSolution
       {
-        return (Some(i), search_duration, validate_duration);
+        return (Some(max_comparisons), search_duration, validate_duration);
       }
     }
 
