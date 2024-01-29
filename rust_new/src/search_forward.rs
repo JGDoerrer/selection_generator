@@ -3,9 +3,12 @@ use std::time::Duration;
 use std::time::Instant;
 use std::vec;
 
-use super::cache_tree::CacheTreeDual;
+use super::cache_tree::{CacheTreeNotSolvable, CacheTreeSolvable};
 use super::poset::Poset;
 use super::util::{lower_bound, upper_bound, KNOWN_MIN_VALUES, MAX_N};
+
+type CacheSolvable = CacheTreeSolvable;
+type CacheNotSolvable = CacheTreeNotSolvable;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 enum SearchResult {
@@ -33,16 +36,17 @@ impl Display for Statistics {
 
 fn search_recursive(
   poset: &Poset,
-  cache: &mut CacheTreeDual,
+  cache_solvable: &mut CacheSolvable,
+  cache_not_solvable: &mut CacheNotSolvable,
   remaining_comparisons: u8,
   statistics: &mut Statistics,
 ) -> SearchResult {
   let mut result = SearchResult::NoSolution;
 
-  if cache.check_not_solvable(poset, remaining_comparisons) {
+  if cache_not_solvable.check(poset, remaining_comparisons) {
     statistics.hash_match_lower_bound += 1;
     return SearchResult::NoSolution;
-  } else if cache.check_solvable(poset, remaining_comparisons) {
+  } else if cache_solvable.check(poset, remaining_comparisons) {
     statistics.hash_match_upper_bound += 1;
     return SearchResult::FoundSolution;
   } else if 0 == remaining_comparisons {
@@ -76,13 +80,15 @@ fn search_recursive(
     for &(i, j) in &temp {
       if search_recursive(
         &poset.with_less_normalized(i, j),
-        cache,
+        cache_solvable,
+        cache_not_solvable,
         remaining_comparisons - 1,
         statistics,
       ) == SearchResult::FoundSolution
         && search_recursive(
           &poset.with_less_normalized(j, i),
-          cache,
+          cache_solvable,
+          cache_not_solvable,
           remaining_comparisons - 1,
           statistics,
         ) == SearchResult::FoundSolution
@@ -94,9 +100,9 @@ fn search_recursive(
   }
 
   if result == SearchResult::NoSolution {
-    cache.insert_not_solvable(poset, remaining_comparisons);
+    cache_not_solvable.insert(poset, remaining_comparisons);
   } else if result == SearchResult::FoundSolution {
-    cache.insert_solvable(poset, remaining_comparisons);
+    cache_solvable.insert(poset, remaining_comparisons);
   }
 
   result
@@ -104,15 +110,16 @@ fn search_recursive(
 
 fn start_search_now(
   n: u8,
-  nth_smallest: u8,
-  cache: &mut CacheTreeDual,
+  i: u8,
+  cache_solvable: &mut CacheSolvable,
+  cache_not_solvable: &mut CacheNotSolvable,
   statistics: &mut Statistics,
   pair_wise_optimization: bool,
   max_comparisons: u8,
   time: &mut Duration,
 ) -> SearchResult {
   let start = Instant::now();
-  let mut poset = Poset::new(n, nth_smallest);
+  let mut poset = Poset::new(n, i);
   let mut comparisons_done = 0u8;
 
   if pair_wise_optimization {
@@ -130,7 +137,8 @@ fn start_search_now(
 
   let result = search_recursive(
     &poset,
-    cache,
+    cache_solvable,
+    cache_not_solvable,
     max_comparisons - comparisons_done,
     statistics,
   );
@@ -142,7 +150,7 @@ fn start_search_now(
   }
 
   let end = Instant::now();
-  print!(" in {:?}", end - start);
+  println!(" in {:.3?}", end - start);
   *time += end - start;
 
   result
@@ -150,16 +158,17 @@ fn start_search_now(
 
 fn start_search(
   n: u8,
-  nth_smallest: u8,
-  cache: &mut CacheTreeDual,
+  i: u8,
+  cache_solvable: &mut CacheSolvable,
+  cache_not_solvable: &mut CacheNotSolvable,
   statistics: &mut Statistics,
   top_to_bottom: bool,
 ) -> (Option<u8>, Duration, Duration) {
   let mut search_duration = Duration::from_secs(0);
   let mut validate_duration = Duration::from_secs(0);
 
-  let lower: u8 = lower_bound(n as i32, nth_smallest as i32) as u8;
-  let upper: u8 = upper_bound(n as i32, nth_smallest as i32) as u8;
+  let lower: u8 = lower_bound(n as i32, i as i32) as u8;
+  let upper: u8 = upper_bound(n as i32, i as i32) as u8;
 
   if lower == upper {
     return (Some(lower), search_duration, validate_duration);
@@ -169,27 +178,29 @@ fn start_search(
 
   if top_to_bottom {
     // searchRecursive from top
-    for i in (lower..upper).rev() {
+    for max_comparisons in (lower..upper).rev() {
       if start_search_now(
         n,
-        nth_smallest,
-        cache,
+        i,
+        cache_solvable,
+        cache_not_solvable,
         statistics,
         true,
-        i,
+        max_comparisons,
         &mut search_duration,
       ) == SearchResult::NoSolution
         && start_search_now(
           n,
-          nth_smallest,
-          cache,
+          i,
+          cache_solvable,
+          cache_not_solvable,
           statistics,
           false,
-          i,
+          max_comparisons,
           &mut validate_duration,
         ) == SearchResult::NoSolution
       {
-        return (Some(i + 1), search_duration, validate_duration);
+        return (Some(max_comparisons + 1), search_duration, validate_duration);
       }
     }
 
@@ -199,8 +210,9 @@ fn start_search(
     for i in lower..upper {
       if start_search_now(
         n,
-        nth_smallest,
-        cache,
+        i,
+        cache_solvable,
+        cache_not_solvable,
         statistics,
         true,
         i,
@@ -208,8 +220,9 @@ fn start_search(
       ) == SearchResult::FoundSolution
         || start_search_now(
           n,
-          nth_smallest,
-          cache,
+          i,
+          cache_solvable,
+          cache_not_solvable,
           statistics,
           false,
           i,
@@ -225,40 +238,40 @@ fn start_search(
 }
 
 pub fn main() {
-  const N_BOUND: usize = 1;
+  let mut cache_solvable = CacheSolvable::new();
+  let mut cache_not_solvable = CacheNotSolvable::new();
+  cache_solvable.insert(&Poset::new(1, 0), 0);
 
-  let mut cache = CacheTreeDual::new();
-  cache.insert_solvable(&Poset::new(1, 0), 0);
-
-  for n in 2..MAX_N {
-    for nth_smallest in 0..((n + 1) / 2) {
+  for n in 2..MAX_N as u8 {
+    for i in 0..(((n + 1) / 2) as u8) {
       let mut statistics = Statistics::default();
       let (comparisons, duration_search, duration_validate) = start_search(
-        n as u8,
-        nth_smallest as u8,
-        &mut cache,
+        n,
+        i,
+        &mut cache_solvable,
+        &mut cache_not_solvable,
         &mut statistics,
-        false,
+        true,
       );
 
       if let Some(comparisons_value) = comparisons {
-        if n >= N_BOUND {
-          println!(
-            "\rtime '{:?}' + '{:?}' = '{:?}': n = {}, i = {}, {}, cache = {}, comparisons: {}",
+        println!(
+            "\rtime '{:.3?}' + '{:.3?}' = '{:.3?}': n = {}, i = {}, {}, cache = {} + {} = {}, comparisons: {}",
             duration_search,
             duration_validate,
             duration_search + duration_validate,
             n,
-            nth_smallest,
+            i,
             statistics,
-            cache.size(),
+            cache_solvable.size(),
+            cache_not_solvable.size(),
+            cache_solvable.size() + cache_not_solvable.size(),
             comparisons_value
           );
-        }
-        if comparisons_value != KNOWN_MIN_VALUES[n][nth_smallest] {
+        if comparisons_value != KNOWN_MIN_VALUES[n as usize][i as usize] {
           eprintln!(
             "Error: got {}, but expected {}",
-            comparisons_value, KNOWN_MIN_VALUES[n][nth_smallest]
+            comparisons_value, KNOWN_MIN_VALUES[n as usize][i as usize]
           );
           std::process::exit(0);
         }
@@ -266,9 +279,7 @@ pub fn main() {
         eprintln!("Error, maxComparisons exceeded");
         std::process::exit(0);
       }
-      if n >= N_BOUND {
-        println!();
-      }
     }
+    println!();
   }
 }

@@ -4,14 +4,14 @@ use std::sync::RwLock;
 use super::poset::Poset;
 use super::util::MAX_N;
 
-pub struct CacheSetSingle<const IS_SOLVABLE: bool> {
+pub struct CacheSet<const IS_SOLVABLE: bool> {
   cache: [[HashMap<Poset, u8>; MAX_N]; MAX_N],
   mutex: [[RwLock<()>; MAX_N]; MAX_N],
 }
 
-impl<const IS_SOLVABLE: bool> CacheSetSingle<IS_SOLVABLE> {
+impl<const IS_SOLVABLE: bool> CacheSet<IS_SOLVABLE> {
   pub fn new() -> Self {
-    CacheSetSingle {
+    CacheSet {
       cache: Default::default(),
       mutex: Default::default(),
     }
@@ -62,72 +62,34 @@ impl<const IS_SOLVABLE: bool> CacheSetSingle<IS_SOLVABLE> {
   }
 }
 
-pub struct CacheSetDual {
-  cache_solvable: CacheSetSingle<true>,
-  cache_not_solvable: CacheSetSingle<false>,
-}
+pub type CacheSetSolvable = CacheSet<true>;
 
-impl CacheSetDual {
-  pub fn new() -> Self {
-    Self {
-      cache_solvable: CacheSetSingle::new(),
-      cache_not_solvable: CacheSetSingle::new(),
-    }
-  }
-
-  pub fn check_not_solvable(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
-    debug_assert!(2 * poset.i() < poset.n());
-    self.cache_not_solvable.check(poset, remaining_comparisons)
-  }
-
-  pub fn check_solvable(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
-    debug_assert!(2 * poset.i() < poset.n());
-    self.cache_solvable.check(poset, remaining_comparisons)
-  }
-
-  pub fn insert_not_solvable(&mut self, poset: &Poset, remaining_comparisons: u8) {
-    debug_assert!(2 * poset.i() < poset.n());
-    self.cache_not_solvable.insert(poset, remaining_comparisons);
-  }
-
-  pub fn insert_solvable(&mut self, poset: &Poset, remaining_comparisons: u8) {
-    debug_assert!(2 * poset.i() < poset.n());
-    self.cache_solvable.insert(poset, remaining_comparisons);
-  }
-
-  pub fn size(&self) -> usize {
-    self.cache_not_solvable.size() + self.cache_solvable.size()
-  }
-}
-
-// TODO: toString for cache instead of size
+pub type CacheSetNotSolvable = CacheSet<false>;
 
 #[test]
-fn test() {
+fn test1() {
   let mut poset = Poset::new(10, 2);
   poset.add_less(3, 7);
+  poset.normalize();
 
-  let mut poset2 = Poset::new(10, 2);
-  poset2.add_less(2, 7);
+  let mut cache_solvable = CacheSetSolvable::new();
+  cache_solvable.insert(&poset, 2);
 
-  let mut cache = CacheSetDual::new();
-  cache.insert_solvable(&poset, 2);
+  assert!(!cache_solvable.check(&poset, 1));
+  assert!(cache_solvable.check(&poset, 2));
+  assert!(cache_solvable.check(&poset, 3));
+}
 
-  cache.insert_not_solvable(&poset2, 2);
+#[test]
+fn test2() {
+  let mut poset = Poset::new(10, 2);
+  poset.add_less(2, 7);
+  poset.normalize();
 
-  assert!(!cache.check_solvable(&poset, 1));
-  assert!(cache.check_solvable(&poset, 2));
-  assert!(cache.check_solvable(&poset, 3));
+  let mut cache_not_solvable = CacheSetNotSolvable::new();
+  cache_not_solvable.insert(&poset, 2);
 
-  assert!(!cache.check_solvable(&poset2, 1));
-  assert!(!cache.check_solvable(&poset2, 2));
-  assert!(!cache.check_solvable(&poset2, 3));
-
-  assert!(!cache.check_not_solvable(&poset, 1));
-  assert!(!cache.check_not_solvable(&poset, 2));
-  assert!(!cache.check_not_solvable(&poset, 3));
-
-  assert!(cache.check_not_solvable(&poset2, 1));
-  assert!(cache.check_not_solvable(&poset2, 2));
-  assert!(!cache.check_not_solvable(&poset2, 3));
+  assert!(cache_not_solvable.check(&poset, 1));
+  assert!(cache_not_solvable.check(&poset, 2));
+  assert!(!cache_not_solvable.check(&poset, 3));
 }

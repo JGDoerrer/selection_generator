@@ -9,10 +9,21 @@ mod cache_tree;
 mod poset;
 mod util;
 
+enum SearchMode {
+  ForwardSearch,
+  BackwardSearch,
+  BidirectionalSearch,
+}
+
 fn main() {
   env::set_var("RUST_BACKTRACE", "1");
 
-  search_forward::main();
-  // search_backward::main();
-  // search_bidirectional::main();
+  let mut mode = SearchMode::ForwardSearch;
+  mode = SearchMode::BackwardSearch;
+  // mode = SearchMode::BidirectionalSearch;
+  match mode {
+    SearchMode::ForwardSearch => search_forward::main(),
+    SearchMode::BackwardSearch => search_backward::main(),
+    SearchMode::BidirectionalSearch => search_bidirectional::main(),
+  }
 }

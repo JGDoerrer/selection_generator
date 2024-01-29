@@ -1,19 +1,16 @@
-use std::time::Duration;
 use std::collections::HashSet;
+use std::time::Duration;
 
-use super::cache_set::CacheSetSingle;
+use super::cache_set::CacheSetSolvable;
 use super::poset::Poset;
 use super::util::{KNOWN_MIN_VALUES, MAX_N};
 
-enum Mode {
-  SingleRun,
-  MultiRun,
-}
+type CacheSolvable = CacheSetSolvable;
 
 fn start_search_backward(
-  poset_cache: &mut CacheSetSingle<true>,
+  poset_cache: &mut CacheSolvable,
   n: u8,
-  nth_smallest: u8,
+  i0: u8,
   max_comparisons: u8,
 ) -> (Option<u8>, Duration, Duration) {
   let mut duration_build_posets_total = Duration::from_secs(0);
@@ -25,7 +22,7 @@ fn start_search_backward(
     let duration_test_posets;
 
     let start = std::time::Instant::now();
-    let source_new = Poset::enlarge(&source, n, nth_smallest);
+    let source_new = Poset::enlarge(&source, n, i0);
     let mid = std::time::Instant::now();
     let duration_build_posets = mid - start;
     duration_build_posets_total += duration_build_posets;
@@ -36,16 +33,16 @@ fn start_search_backward(
         for j in 0..n {
           if item.is_less(i, j) {
             for predecessor in item.remove_less(i, j, |poset| poset_cache.check(poset, k - 1)) {
-              if predecessor == Poset::new(n, nth_smallest) {
+              if predecessor == Poset::new(n, i0) {
                 duration_test_posets = mid.elapsed();
                 duration_test_posets_total += duration_test_posets;
                 println!(
-                  "# {}: {} => {} in {:.3}s ~ {:.3}s | total cached: {} (found solution)",
+                  "# {}: {} => {} in {:.3?} ~ {:.3?} | total cached: {} (found solution)",
                   k,
                   source.len(),
                   source_new.len(),
-                  duration_build_posets.as_secs_f64(),
-                  duration_test_posets.as_secs_f64(),
+                  duration_build_posets,
+                  duration_test_posets,
                   poset_cache.size()
                 );
                 return (
@@ -72,12 +69,12 @@ fn start_search_backward(
     duration_test_posets_total += duration_test_posets;
 
     println!(
-      "# {}: {} => {} in {:.3}s ~ {:.3}s | total cached: {}",
+      "# {}: {} => {} in {:.3?} ~ {:.3?} | total cached: {}",
       k,
       source.len(),
       source_new.len(),
-      duration_build_posets.as_secs_f64(),
-      duration_test_posets.as_secs_f64(),
+      duration_build_posets,
+      duration_test_posets,
       poset_cache.size()
     );
 
@@ -92,88 +89,76 @@ fn start_search_backward(
 }
 
 pub fn main() {
-  let mode = Mode::MultiRun;
-  match mode {
-    Mode::SingleRun => {
-      let mut poset_cache: CacheSetSingle<true> = CacheSetSingle::new();
-      poset_cache.insert(&Poset::new(1, 0), 0);
+  if false {
+    let mut poset_cache = CacheSolvable::new();
+    poset_cache.insert(&Poset::new(1, 0), 0);
 
-      let n = 9;
-      let nth_smallest = 4;
+    let n = 9;
+    let i = 4;
 
-      let (comparisons, duration_generate_posets, duration_search) =
-        start_search_backward(&mut poset_cache, n, nth_smallest, n * n);
+    let (comparisons, duration_generate_posets, duration_search) =
+      start_search_backward(&mut poset_cache, n, i, n * n);
 
-      if let Some(comparisons) = comparisons {
-        println!(
-          "time '{:.3}s + {:.3}s = {:.3}s': n = {}, i = {}, comparisons: {}",
-          duration_generate_posets.as_secs_f64(),
-          duration_search.as_secs_f64(),
-          (duration_generate_posets + duration_search).as_secs_f64(),
-          n,
-          nth_smallest,
-          comparisons
-        );
+    if let Some(comparisons) = comparisons {
+      println!(
+        "time '{:.3?} + {:.3?} = {:.3?}': n = {}, i = {}, comparisons: {}",
+        duration_generate_posets,
+        duration_search,
+        (duration_generate_posets + duration_search),
+        n,
+        i,
+        comparisons
+      );
 
-        if comparisons != KNOWN_MIN_VALUES[n as usize][nth_smallest as usize] {
-          eprintln!(
-            "Error: got {}, but expected {}",
-            comparisons, KNOWN_MIN_VALUES[n as usize][nth_smallest as usize]
-          );
-          std::process::exit(0);
-        }
-      } else {
+      if comparisons != KNOWN_MIN_VALUES[n as usize][i as usize] {
         eprintln!(
-          "Error: got 'nothing' but expected {}",
-          KNOWN_MIN_VALUES[n as usize][nth_smallest as usize]
+          "Error: got {}, but expected {}",
+          comparisons, KNOWN_MIN_VALUES[n as usize][i as usize]
         );
         std::process::exit(0);
       }
+    } else {
+      eprintln!(
+        "Error: got 'nothing' but expected {}",
+        KNOWN_MIN_VALUES[n as usize][i as usize]
+      );
+      std::process::exit(0);
     }
-    Mode::MultiRun => {
-      const N_BOUND: usize = 1;
+  } else {
+    let mut poset_cache = CacheSolvable::new();
+    poset_cache.insert(&Poset::new(1, 0), 0);
 
-      let mut poset_cache: CacheSetSingle<true> = CacheSetSingle::new();
-      poset_cache.insert(&Poset::new(1, 0), 0);
+    for n in 2..MAX_N {
+      for i in 0..((n + 1) / 2) {
+        let (comparisons, duration_generate_posets, duration_search) =
+          start_search_backward(&mut poset_cache, n as u8, i as u8, (n * n) as u8);
 
-      for n in 2..MAX_N {
-        for nth_smallest in 0..((n + 1) / 2) {
-          let (comparisons, duration_generate_posets, duration_search) =
-            start_search_backward(&mut poset_cache, n as u8, nth_smallest as u8, (n * n) as u8);
-
-          if let Some(comparisons) = comparisons {
-            if n >= N_BOUND {
-              println!(
-                "time '{:.3}s + {:.3}s = {:.3}s': n = {}, i = {}, comparisons: {}",
-                duration_generate_posets.as_secs_f64(),
-                duration_search.as_secs_f64(),
-                (duration_generate_posets + duration_search).as_secs_f64(),
-                n,
-                nth_smallest,
-                comparisons
-              );
-            }
-            if comparisons != KNOWN_MIN_VALUES[n][nth_smallest] {
-              eprintln!(
-                "Error: got {}, but expected {}",
-                comparisons, KNOWN_MIN_VALUES[n][nth_smallest]
-              );
-              std::process::exit(0);
-            }
-          } else {
+        if let Some(comparisons) = comparisons {
+          println!(
+            "time '{:.3?} + {:.3?} = {:.3?}': n = {}, i = {}, comparisons: {}",
+            duration_generate_posets,
+            duration_search,
+            (duration_generate_posets + duration_search),
+            n,
+            i,
+            comparisons
+          );
+          if comparisons != KNOWN_MIN_VALUES[n][i] {
             eprintln!(
-              "Error: got 'nothing' but expected {}",
-              KNOWN_MIN_VALUES[n][nth_smallest]
+              "Error: got {}, but expected {}",
+              comparisons, KNOWN_MIN_VALUES[n][i]
             );
             std::process::exit(0);
           }
-        }
-        if n >= N_BOUND {
-          println!();
+        } else {
+          eprintln!(
+            "Error: got 'nothing' but expected {}",
+            KNOWN_MIN_VALUES[n][i]
+          );
+          std::process::exit(0);
         }
       }
+      println!();
     }
   }
-
-  dbg!("success");
 }

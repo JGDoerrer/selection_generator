@@ -2,8 +2,8 @@ use std::collections::{HashSet, VecDeque};
 use std::fmt;
 use std::hash::{Hash, Hasher};
 
-use super::cache_tree::CacheTreeFixed;
-use super::util::MAX_N;
+use super::cache_tree::CacheTreeItem;
+use super::util::{MAX_N, ONLY_NAUTY_CANONIFY};
 
 use const_for::const_for;
 use std::os::raw::c_int;
@@ -69,8 +69,8 @@ impl fmt::Debug for Poset {
 impl Poset {
   // constructor
   pub fn new(n: u8, i: u8) -> Self {
-    debug_assert!(i < n);
-    debug_assert!(n < MAX_N as u8);
+    // debug_assert!(i < n);
+    debug_assert!((n as usize) < MAX_N);
 
     Self {
       n,
@@ -293,12 +293,10 @@ impl Poset {
   }
 
   pub fn canonify(&mut self) {
-    const ONLY_NAUTY: bool = false;
-
     let old_poset = self.clone();
     let mut new_indices: Vec<u8>;
 
-    if ONLY_NAUTY {
+    if ONLY_NAUTY_CANONIFY {
       new_indices = self.canonify_nauty_indicies();
     } else {
       let (less, greater) = self.calculate_relations();
@@ -456,7 +454,7 @@ impl Poset {
   // enlarge
   fn filter(unfiltered: &HashSet<Poset>, n: u8, i: u8) -> HashSet<Poset> {
     // TODO: in theory faster, practical not
-    // let mut tree: CacheTreeFixed<true> = CacheTreeFixed::new(n, i);
+    // let mut tree: CacheTreeItem<true> = CacheTreeItem::new(n, i);
     // for item in unfiltered {
     //   tree.insert(item);
     // }
@@ -562,46 +560,50 @@ impl Poset {
     }
   }
 
-  pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, k: u8) -> HashSet<Poset> {
-    let mut temp_set: [[CacheTreeFixed<true>; MAX_N]; MAX_N] = Default::default();
+  pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, i: u8) -> HashSet<Poset> {
+    debug_assert!(2 * i < n);
+
+    let mut temp_set: [[CacheTreeItem<true>; MAX_N]; MAX_N] = Default::default();
     for n0 in 0..=n {
-      for k0 in 0..=k {
-        temp_set[n0 as usize][k0 as usize] = CacheTreeFixed::new(n0, k0);
+      for i0 in 0..=i {
+        temp_set[n0 as usize][i0 as usize] = CacheTreeItem::new(n0, i0);
       }
     }
 
     for item in set_of_posets {
-      if item.n <= n && item.i <= k {
+      if item.n <= n && item.i <= i {
+        debug_assert!(2 * item.i < item.n);
         temp_set[item.n as usize][item.i as usize].insert(item);
       }
     }
 
-    for n0 in 0..n {
+    for n0 in 1..n {
       let mut result: HashSet<Poset> = HashSet::new();
 
-      for k0 in 0..k {
-        for item in &temp_set[n0 as usize][k0 as usize].entries() {
+      for i0 in 0..i {
+        for item in &temp_set[n0 as usize][i0 as usize].entries() {
           item.enlarge_nk(&mut result);
         }
-        temp_set[n0 as usize][k0 as usize].reset();
+        temp_set[n0 as usize][i0 as usize].reset();
       }
 
-      for item in &temp_set[n0 as usize][k as usize].entries() {
+      for item in &temp_set[n0 as usize][i as usize].entries() {
         item.enlarge_n(&mut result);
       }
-      temp_set[n0 as usize][k as usize].reset();
+      temp_set[n0 as usize][i as usize].reset();
 
       for item in result {
         temp_set[item.n as usize][item.i as usize].insert(&item);
       }
     }
 
-    temp_set[n as usize][k as usize].entries()
+    temp_set[n as usize][i as usize].entries()
   }
+}
 
-  pub fn test() {
-    let mut poset = Poset::new(4, 1);
-    poset.add_less(2, 3);
-    dbg!(&poset);
-  }
+#[test]
+pub fn test1() {
+  let mut poset = Poset::new(4, 1);
+  poset.add_less(2, 3);
+  dbg!(&poset);
 }

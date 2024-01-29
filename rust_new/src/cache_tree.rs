@@ -75,18 +75,18 @@ impl<const IS_SOLVABLE: bool> CacheNode<IS_SOLVABLE> {
 }
 
 #[derive(Default)]
-pub struct CacheTreeFixed<const IS_SOLVABLE: bool> {
+pub struct CacheTreeItem<const IS_SOLVABLE: bool> {
   n: u8,
-  nth_smallest: u8,
+  i: u8,
   root: Option<Box<CacheNode<IS_SOLVABLE>>>,
   size: usize,
 }
 
-impl<const IS_SOLVABLE: bool> CacheTreeFixed<IS_SOLVABLE> {
-  pub fn new(n: u8, nth_smallest: u8) -> Self {
+impl<const IS_SOLVABLE: bool> CacheTreeItem<IS_SOLVABLE> {
+  pub fn new(n: u8, i: u8) -> Self {
     Self {
       n,
-      nth_smallest,
+      i,
       root: Some(Box::new(CacheNode::new())),
       size: 0,
     }
@@ -98,12 +98,6 @@ impl<const IS_SOLVABLE: bool> CacheTreeFixed<IS_SOLVABLE> {
   }
 
   pub fn insert(&mut self, poset: &Poset) {
-    for i in 0..self.n {
-      for j in i..self.n {
-        debug_assert!(!poset.is_less(i, j));
-      }
-    }
-
     let mut last_insert = false;
     let mut level = self.root.as_mut().unwrap();
 
@@ -141,7 +135,7 @@ impl<const IS_SOLVABLE: bool> CacheTreeFixed<IS_SOLVABLE> {
   pub fn entries(&self) -> HashSet<Poset> {
     let mut entries = HashSet::new();
     if let Some(root) = self.root.as_ref() {
-      let mut temp = Poset::new(self.n, self.nth_smallest);
+      let mut temp = Poset::new(self.n, self.i);
       let items = temp.adjacency_size();
 
       root.entries(&mut entries, &mut temp, items, root);
@@ -154,23 +148,23 @@ impl<const IS_SOLVABLE: bool> CacheTreeFixed<IS_SOLVABLE> {
   }
 }
 
-struct CacheTreeSingle<const IS_SOLVABLE: bool> {
-  cache: [[[CacheTreeFixed<IS_SOLVABLE>; MAX_COMPARISONS]; MAX_N]; MAX_N],
-  mutex: [[[RwLock<CacheTreeFixed<IS_SOLVABLE>>; MAX_COMPARISONS]; MAX_N]; MAX_N],
+pub struct CacheTree<const IS_SOLVABLE: bool> {
+  cache: [[[CacheTreeItem<IS_SOLVABLE>; MAX_COMPARISONS]; MAX_N]; MAX_N],
+  mutex: [[[RwLock<CacheTreeItem<IS_SOLVABLE>>; MAX_COMPARISONS]; MAX_N]; MAX_N],
 }
 
-impl<const IS_SOLVABLE: bool> CacheTreeSingle<IS_SOLVABLE> {
-  fn new() -> Self {
-    let mut cache: [[[CacheTreeFixed<IS_SOLVABLE>; MAX_COMPARISONS]; MAX_N]; MAX_N] =
+impl<const IS_SOLVABLE: bool> CacheTree<IS_SOLVABLE> {
+  pub fn new() -> Self {
+    let mut cache: [[[CacheTreeItem<IS_SOLVABLE>; MAX_COMPARISONS]; MAX_N]; MAX_N] =
       Default::default();
-    let mut mutex: [[[RwLock<CacheTreeFixed<IS_SOLVABLE>>; MAX_COMPARISONS]; MAX_N]; MAX_N] =
+    let mut mutex: [[[RwLock<CacheTreeItem<IS_SOLVABLE>>; MAX_COMPARISONS]; MAX_N]; MAX_N] =
       Default::default();
 
     for n in 1..MAX_N as u8 {
-      for k in 0..MAX_N as u8 {
+      for i in 0..MAX_N as u8 {
         for c in 0..MAX_COMPARISONS as u8 {
-          cache[n as usize][k as usize][c as usize] = CacheTreeFixed::new(n, k);
-          mutex[n as usize][k as usize][c as usize] = RwLock::new(CacheTreeFixed::new(n, k));
+          cache[n as usize][i as usize][c as usize] = CacheTreeItem::new(n, i);
+          mutex[n as usize][i as usize][c as usize] = RwLock::new(CacheTreeItem::new(n, i));
         }
       }
     }
@@ -179,7 +173,12 @@ impl<const IS_SOLVABLE: bool> CacheTreeSingle<IS_SOLVABLE> {
   }
 
   pub fn insert(&mut self, poset: &Poset, remaining_comparisons: u8) {
-    assert!(2 * poset.i() < poset.n());
+    debug_assert!(2 * poset.i() < poset.n());
+    for i in 0..poset.n() {
+      for j in i..poset.n() {
+        debug_assert!(!poset.is_less(i, j));
+      }
+    }
     let _lock = self.mutex[poset.n() as usize][poset.i() as usize][remaining_comparisons as usize]
       .write()
       .unwrap();
@@ -188,6 +187,12 @@ impl<const IS_SOLVABLE: bool> CacheTreeSingle<IS_SOLVABLE> {
   }
 
   pub fn check(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
+    debug_assert!(2 * poset.i() < poset.n());
+    for i in 0..poset.n() {
+      for j in i..poset.n() {
+        debug_assert!(!poset.is_less(i, j));
+      }
+    }
     if IS_SOLVABLE {
       for c in (0..=remaining_comparisons).rev() {
         let _lock = self.mutex[poset.n() as usize][poset.i() as usize][c as usize]
@@ -224,76 +229,36 @@ impl<const IS_SOLVABLE: bool> CacheTreeSingle<IS_SOLVABLE> {
   }
 }
 
-pub struct CacheTreeDual {
-  cache_solvable: CacheTreeSingle<true>,
-  cache_not_solvable: CacheTreeSingle<false>,
-}
+pub type CacheTreeSolvable = CacheTree<true>;
 
-impl CacheTreeDual {
-  pub fn new() -> Self {
-    Self {
-      cache_solvable: CacheTreeSingle::new(),
-      cache_not_solvable: CacheTreeSingle::new(),
-    }
-  }
-
-  pub fn check_not_solvable(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
-    debug_assert!(2 * poset.i() < poset.n());
-    self.cache_not_solvable.check(poset, remaining_comparisons)
-  }
-
-  pub fn check_solvable(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
-    debug_assert!(2 * poset.i() < poset.n());
-    self.cache_solvable.check(poset, remaining_comparisons)
-  }
-
-  pub fn insert_not_solvable(&mut self, poset: &Poset, remaining_comparisons: u8) {
-    debug_assert!(2 * poset.i() < poset.n());
-    self.cache_not_solvable.insert(poset, remaining_comparisons);
-  }
-
-  pub fn insert_solvable(&mut self, poset: &Poset, remaining_comparisons: u8) {
-    debug_assert!(2 * poset.i() < poset.n());
-    self.cache_solvable.insert(poset, remaining_comparisons);
-  }
-
-  pub fn size(&self) -> usize {
-    self.cache_not_solvable.size() + self.cache_solvable.size()
-  }
-}
+pub type CacheTreeNotSolvable = CacheTree<false>;
 
 #[test]
-fn test() {
+fn test1() {
   let mut poset = Poset::new(10, 2);
   poset.add_less(3, 7);
   poset.normalize();
 
-  let mut poset2 = Poset::new(10, 2);
-  poset2.add_less(2, 7);
-  poset2.normalize();
+  let mut cache_solvable = CacheTreeSolvable::new();
+  cache_solvable.insert(&poset, 2);
 
-  let mut cache = CacheTreeDual::new();
-  cache.insert_solvable(&poset, 2);
+  assert!(!cache_solvable.check(&poset, 1));
+  assert!(cache_solvable.check(&poset, 2));
+  assert!(cache_solvable.check(&poset, 3));
 
-  cache.insert_not_solvable(&poset2, 2);
+  assert!(cache_solvable.cache[10][2][2].entries().len() == 1);
+}
 
-  assert!(!cache.check_solvable(&poset, 1));
-  assert!(cache.check_solvable(&poset, 2));
-  assert!(cache.check_solvable(&poset, 3));
+#[test]
+fn test2() {
+  let mut poset = Poset::new(10, 2);
+  poset.add_less(2, 7);
+  poset.normalize();
 
-  assert!(!cache.check_solvable(&poset2, 1));
-  assert!(!cache.check_solvable(&poset2, 2));
-  assert!(!cache.check_solvable(&poset2, 3));
+  let mut cache_not_solvable = CacheTreeNotSolvable::new();
+  cache_not_solvable.insert(&poset, 2);
 
-  assert!(!cache.check_not_solvable(&poset, 1));
-  assert!(!cache.check_not_solvable(&poset, 2));
-  assert!(!cache.check_not_solvable(&poset, 3));
-
-  assert!(cache.check_not_solvable(&poset2, 1));
-  assert!(cache.check_not_solvable(&poset2, 2));
-  assert!(!cache.check_not_solvable(&poset2, 3));
-
-  assert!(cache.cache_solvable.cache[10][2][2].entries().len() == 1);
-
-  println!("CacheTreeDual -- success");
+  assert!(cache_not_solvable.check(&poset, 1));
+  assert!(cache_not_solvable.check(&poset, 2));
+  assert!(!cache_not_solvable.check(&poset, 3));
 }
