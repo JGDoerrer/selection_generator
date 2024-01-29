@@ -1,8 +1,12 @@
 use std::collections::HashSet;
 use std::fmt::{self, Display};
+use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
+use std::sync::{Arc, RwLock};
 use std::time::Duration;
 use std::time::Instant;
-use std::vec;
+use std::{thread, vec};
+
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use super::cache_set::{CacheSetNotSolvable, CacheSetSolvable};
 use super::cache_tree::{CacheTreeNotSolvable, CacheTreeSolvable};
@@ -10,7 +14,9 @@ use super::poset::Poset;
 use super::util::{lower_bound, upper_bound, KNOWN_MIN_VALUES, MAX_N};
 
 fn start_search_backward(
-  poset_cache: &mut CacheSetSolvable,
+  interrupt: &Arc<AtomicBool>,
+  dyn_level: &Arc<AtomicU8>,
+  poset_cache: &Arc<RwLock<CacheSetSolvable>>,
   n: u8,
   i0: u8,
   max_comparisons: u8,
@@ -21,64 +27,95 @@ fn start_search_backward(
   source.insert(Poset::new(1, 0));
 
   for k in 1..max_comparisons {
-    let duration_test_posets;
-
     let start = std::time::Instant::now();
-    let source_new = Poset::enlarge(&source, n, i0);
+    let source_new = Poset::enlarge(interrupt, &source, n, i0);
     let mid = std::time::Instant::now();
     let duration_build_posets = mid - start;
     duration_build_posets_total += duration_build_posets;
 
-    let mut destination: HashSet<Poset> = HashSet::new();
-    for item in &source_new {
-      for i in 0..n {
-        for j in 0..n {
-          if item.is_less(i, j) {
-            for predecessor in item.remove_less(i, j, |poset| poset_cache.check(poset, k - 1)) {
-              if predecessor == Poset::new(n, i0) {
-                duration_test_posets = mid.elapsed();
-                duration_test_posets_total += duration_test_posets;
-                println!(
-                  "# {}: {} => {} in {:.3?} ~ {:.3?} | total cached: {} (found solution)",
-                  k,
-                  source.len(),
-                  source_new.len(),
-                  duration_build_posets,
-                  duration_test_posets,
-                  poset_cache.size()
-                );
-                return (
-                  Some(k),
-                  duration_build_posets_total,
-                  duration_test_posets_total,
-                );
-              }
+    let atomic_break = Arc::new(AtomicBool::new(false));
+    let interrupt_local = interrupt.clone();
+    let results: Vec<HashSet<Poset>> = source_new
+      .par_iter()
+      .map(|item| {
+        let mut destination: HashSet<Poset> = HashSet::new();
+        for i in 0..n {
+          for j in 0..n {
+            if item.is_less(i, j) {
+              for mut predecessor in item.remove_less(i, j, |poset| {
+                poset_cache
+                  .read()
+                  .expect("cache shouldn't be poisoned")
+                  .check(poset, k - 1)
+              }) {
+                if predecessor == Poset::new(n, i0) {
+                  atomic_break.store(true, Ordering::Relaxed);
+                }
+                predecessor.normalize();
+                if poset_cache
+                  .read()
+                  .expect("cache shouldn't be poisoned")
+                  .check(&predecessor, k - 1)
+                {
+                  continue;
+                }
+                poset_cache
+                  .write()
+                  .expect("cache shouldn't be poisoned")
+                  .insert(&predecessor, k);
+                destination.insert(predecessor);
 
-              let mut predecessor_normalized = predecessor.clone();
-              predecessor_normalized.normalize();
-              if poset_cache.check(&predecessor_normalized, k - 1) {
-                continue;
+                if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
+                  return destination;
+                }
               }
-
-              destination.insert(predecessor_normalized.clone());
-              poset_cache.insert(&predecessor_normalized, k);
             }
           }
         }
+        destination
+      })
+      .collect();
+
+    if interrupt.load(Ordering::Relaxed) {
+      return (
+        None,
+        duration_build_posets_total,
+        duration_test_posets_total,
+      );
+    }
+
+    let mut destination: HashSet<Poset> = HashSet::new();
+    for item in results {
+      for poset in item {
+        destination.insert(poset);
       }
     }
-    duration_test_posets = mid.elapsed();
+    dyn_level.store(k, Ordering::Relaxed);
+
+    let duration_test_posets = mid.elapsed();
     duration_test_posets_total += duration_test_posets;
 
-    println!(
+    print!(
       "# {}: {} => {} in {:.3?} ~ {:.3?} | total cached: {}",
       k,
       source.len(),
       source_new.len(),
       duration_build_posets,
       duration_test_posets,
-      poset_cache.size()
+      poset_cache
+        .read()
+        .expect("cache shouldn't be poisoned")
+        .size()
     );
+    if atomic_break.load(Ordering::Acquire) {
+      println!(" (found solution)");
+      return (
+        Some(k),
+        duration_build_posets_total,
+        duration_test_posets_total,
+      );
+    }
+    println!();
 
     source = destination;
   }
@@ -115,12 +152,32 @@ impl Display for Statistics {
 }
 
 fn search_recursive(
+  poset_cache: &Arc<RwLock<CacheSetSolvable>>,
+  dyn_level: &Arc<AtomicU8>,
   poset: &Poset,
   cache_solvable: &mut CacheTreeSolvable,
   cache_not_solvable: &mut CacheTreeNotSolvable,
   remaining_comparisons: u8,
   statistics: &mut Statistics,
 ) -> SearchResult {
+  if remaining_comparisons <= dyn_level.load(Ordering::Relaxed) {
+    if poset_cache
+      .read()
+      .unwrap()
+      .check(poset, remaining_comparisons)
+    {
+      return SearchResult::FoundSolution;
+    }
+    return SearchResult::NoSolution;
+  } else if remaining_comparisons <= dyn_level.load(Ordering::Relaxed) + 1
+    && poset_cache
+      .read()
+      .unwrap()
+      .check(poset, remaining_comparisons)
+  {
+    return SearchResult::FoundSolution;
+  }
+
   let mut result = SearchResult::NoSolution;
 
   if cache_not_solvable.check(poset, remaining_comparisons) {
@@ -159,6 +216,8 @@ fn search_recursive(
 
     for &(i, j) in &temp {
       if search_recursive(
+        poset_cache,
+        dyn_level,
         &poset.with_less_normalized(i, j),
         cache_solvable,
         cache_not_solvable,
@@ -166,6 +225,8 @@ fn search_recursive(
         statistics,
       ) == SearchResult::FoundSolution
         && search_recursive(
+          poset_cache,
+          dyn_level,
           &poset.with_less_normalized(j, i),
           cache_solvable,
           cache_not_solvable,
@@ -189,6 +250,8 @@ fn search_recursive(
 }
 
 fn start_search_now(
+  poset_cache: &Arc<RwLock<CacheSetSolvable>>,
+  dyn_level: &Arc<AtomicU8>,
   n: u8,
   i: u8,
   cache_solvable: &mut CacheTreeSolvable,
@@ -216,6 +279,8 @@ fn start_search_now(
   poset.normalize();
 
   let result = search_recursive(
+    poset_cache,
+    dyn_level,
     &poset,
     cache_solvable,
     cache_not_solvable,
@@ -237,6 +302,8 @@ fn start_search_now(
 }
 
 fn start_search(
+  poset_cache: &Arc<RwLock<CacheSetSolvable>>,
+  dyn_level: &Arc<AtomicU8>,
   n: u8,
   i: u8,
   cache_solvable: &mut CacheTreeSolvable,
@@ -260,6 +327,8 @@ fn start_search(
     // searchRecursive from top
     for max_comparisons in (lower..upper).rev() {
       if start_search_now(
+        poset_cache,
+        dyn_level,
         n,
         i,
         cache_solvable,
@@ -270,6 +339,8 @@ fn start_search(
         &mut search_duration,
       ) == SearchResult::NoSolution
         && start_search_now(
+          poset_cache,
+          dyn_level,
           n,
           i,
           cache_solvable,
@@ -293,6 +364,8 @@ fn start_search(
     // searchRecursive from bottom
     for max_comparisons in lower..upper {
       if start_search_now(
+        poset_cache,
+        dyn_level,
         n,
         i,
         cache_solvable,
@@ -303,6 +376,8 @@ fn start_search(
         &mut search_duration,
       ) == SearchResult::FoundSolution
         || start_search_now(
+          poset_cache,
+          dyn_level,
           n,
           i,
           cache_solvable,
@@ -322,33 +397,42 @@ fn start_search(
 }
 
 pub fn main() {
-  let mut poset_cache = CacheSetSolvable::new();
-  poset_cache.insert(&Poset::new(1, 0), 0);
+  let poset_cache = Arc::new(RwLock::new(CacheSetSolvable::new()));
+  poset_cache
+    .write()
+    .expect("cache shouldn't be poisoned")
+    .insert(&Poset::new(1, 0), 0);
 
   let mut cache_solvable = CacheTreeSolvable::new();
   let mut cache_not_solvable = CacheTreeNotSolvable::new();
   cache_solvable.insert(&Poset::new(1, 0), 0);
 
   for n in 2..MAX_N as u8 {
-    for i in 0..(((n + 1) / 2) as u8) {
+    for i in 0..((n + 1) / 2) {
       let mut statistics = Statistics::default();
 
-      // // Arc<Mutex<Cache>>
+      let poset_cache_global = poset_cache.clone();
 
-      // thread::spawn(move || {
-      //   // some work here
-      // });
-
-      // let thread_join_handle = thread::spawn(move || {
-      //   // some work here
-      // });
-      // // some work here
-      // let res = thread_join_handle.join();
-
-      // let (comparisons, duration_search, duration_validate) =
-      //   start_search_backward(&mut poset_cache, n, i, n * n);
+      let interrupt = Arc::new(AtomicBool::new(false));
+      let dyn_level = Arc::new(AtomicU8::new(0));
+      let handle = {
+        let interrupt_local = interrupt.clone();
+        let dyn_level_local = dyn_level.clone();
+        thread::spawn(move || {
+          start_search_backward(
+            &interrupt_local,
+            &dyn_level_local,
+            &poset_cache_global,
+            n,
+            i,
+            n * n,
+          );
+        })
+      };
 
       let (comparisons, duration_search, duration_validate) = start_search(
+        &poset_cache.clone(),
+        &dyn_level.clone(),
         n,
         i,
         &mut cache_solvable,
@@ -356,6 +440,9 @@ pub fn main() {
         &mut statistics,
         true,
       );
+
+      interrupt.store(true, Ordering::Relaxed);
+      handle.join().unwrap();
 
       if let Some(comparisons_value) = comparisons {
         println!(

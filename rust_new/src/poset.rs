@@ -1,6 +1,9 @@
 use std::collections::{HashSet, VecDeque};
 use std::fmt;
 use std::hash::{Hash, Hasher};
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+use std::sync::Arc;
 
 use super::cache_tree::CacheTreeItem;
 use super::util::{MAX_N, ONLY_NAUTY_CANONIFY};
@@ -452,28 +455,23 @@ impl Poset {
   }
 
   // enlarge
-  fn filter(unfiltered: &HashSet<Poset>, n: u8, i: u8) -> HashSet<Poset> {
-    // TODO: in theory faster, practical not
+  fn filter(interrupt: &Arc<AtomicBool>, unfiltered: &HashSet<Poset>) -> Vec<Poset> {
+    // TODO: in theory faster, practical not, Rroblem: cache only normalized items
     // let mut tree: CacheTreeItem<true> = CacheTreeItem::new(n, i);
     // for item in unfiltered {
     //   tree.insert(item);
     // }
     // tree.entries()
 
-    let mut filtered = HashSet::new();
+    let mut filtered: Vec<Poset> = vec![];
 
     for item in unfiltered {
-      let mut found = false;
-
-      for temp in unfiltered {
-        if temp != item && temp.subset_of(item) {
-          found = true;
-          break;
-        }
+      if !filtered.iter().any(|poset| poset.subset_of(item)) {
+        filtered.retain(|poset| !item.subset_of(poset));
+        filtered.push(item.clone());
       }
-
-      if !found {
-        filtered.insert(item.clone());
+      if interrupt.load(Ordering::Relaxed) {
+        break;
       }
     }
 
@@ -490,7 +488,7 @@ impl Poset {
     self.i < greater
   }
 
-  fn enlarge_n(&self, result: &mut HashSet<Poset>) {
+  fn enlarge_n(&self, interrupt: &Arc<AtomicBool>, result: &mut HashSet<Poset>) {
     let mut temp = Poset::new(self.n + 1, self.i);
     for i in 0..self.n {
       for j in 0..self.n {
@@ -511,12 +509,18 @@ impl Poset {
           }
         }
       }
+      if interrupt.load(Ordering::Relaxed) {
+        return;
+      }
     }
 
-    for item in Poset::filter(&unfiltered, self.n + 1, self.i) {
+    for item in Poset::filter(interrupt, &unfiltered) {
       let mut it = item.clone();
       it.canonify();
       result.insert(it);
+      if interrupt.load(Ordering::Relaxed) {
+        return;
+      }
     }
   }
 
@@ -530,7 +534,7 @@ impl Poset {
     (self.n - 1) - self.i < less
   }
 
-  fn enlarge_nk(&self, result: &mut HashSet<Poset>) {
+  fn enlarge_nk(&self, interrupt: &Arc<AtomicBool>, result: &mut HashSet<Poset>) {
     let mut temp = Poset::new(self.n + 1, self.i + 1);
     for i in 0..self.n {
       for j in 0..self.n {
@@ -551,16 +555,27 @@ impl Poset {
           }
         }
       }
+      if interrupt.load(Ordering::Relaxed) {
+        return;
+      }
     }
 
-    for item in Poset::filter(&unfiltered, self.n + 1, self.i + 1) {
+    for item in Poset::filter(interrupt, &unfiltered) {
       let mut it = item.clone();
       it.canonify();
       result.insert(it);
+      if interrupt.load(Ordering::Relaxed) {
+        return;
+      }
     }
   }
 
-  pub fn enlarge(set_of_posets: &HashSet<Poset>, n: u8, i: u8) -> HashSet<Poset> {
+  pub fn enlarge(
+    interrupt: &Arc<AtomicBool>,
+    set_of_posets: &HashSet<Poset>,
+    n: u8,
+    i: u8,
+  ) -> HashSet<Poset> {
     debug_assert!(2 * i < n);
 
     let mut temp_set: [[CacheTreeItem<true>; MAX_N]; MAX_N] = Default::default();
@@ -582,13 +597,19 @@ impl Poset {
 
       for i0 in 0..i {
         for item in &temp_set[n0 as usize][i0 as usize].entries() {
-          item.enlarge_nk(&mut result);
+          item.enlarge_nk(interrupt, &mut result);
+          if interrupt.load(Ordering::Relaxed) {
+            return HashSet::default();
+          }
         }
         temp_set[n0 as usize][i0 as usize].reset();
       }
 
       for item in &temp_set[n0 as usize][i as usize].entries() {
-        item.enlarge_n(&mut result);
+        item.enlarge_n(interrupt, &mut result);
+        if interrupt.load(Ordering::Relaxed) {
+          return HashSet::default();
+        }
       }
       temp_set[n0 as usize][i as usize].reset();
 

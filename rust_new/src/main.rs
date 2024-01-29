@@ -18,9 +18,10 @@ enum SearchMode {
 fn main() {
   env::set_var("RUST_BACKTRACE", "1");
 
+  // TODO: cmd param searchtype
   let mut mode = SearchMode::ForwardSearch;
   mode = SearchMode::BackwardSearch;
-  // mode = SearchMode::BidirectionalSearch;
+  mode = SearchMode::BidirectionalSearch;
   match mode {
     SearchMode::ForwardSearch => search_forward::main(),
     SearchMode::BackwardSearch => search_backward::main(),

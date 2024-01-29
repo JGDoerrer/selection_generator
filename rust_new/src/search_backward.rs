@@ -12,6 +12,7 @@ use super::util::{KNOWN_MIN_VALUES, MAX_N};
 type CacheSolvable = CacheSetSolvable;
 
 fn start_search_backward(
+  interrupt: &Arc<AtomicBool>,
   poset_cache: &Arc<RwLock<CacheSolvable>>,
   n: u8,
   i0: u8,
@@ -24,12 +25,13 @@ fn start_search_backward(
 
   for k in 1..max_comparisons {
     let start = std::time::Instant::now();
-    let source_new = Poset::enlarge(&source, n, i0);
+    let source_new = Poset::enlarge(interrupt, &source, n, i0);
     let mid = std::time::Instant::now();
     let duration_build_posets = mid - start;
     duration_build_posets_total += duration_build_posets;
 
     let atomic_break = Arc::new(AtomicBool::new(false));
+    let interrupt_local = interrupt.clone();
     let results: Vec<HashSet<Poset>> = source_new
       .par_iter()
       .map(|item| {
@@ -60,7 +62,7 @@ fn start_search_backward(
                   .insert(&predecessor, k);
                 destination.insert(predecessor);
 
-                if atomic_break.load(Ordering::Relaxed) {
+                if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
                   return destination;
                 }
               }
@@ -70,6 +72,14 @@ fn start_search_backward(
         destination
       })
       .collect();
+
+    if interrupt.load(Ordering::Relaxed) {
+      return (
+        None,
+        duration_build_posets_total,
+        duration_test_posets_total,
+      );
+    }
 
     let mut destination: HashSet<Poset> = HashSet::new();
     for item in results {
@@ -113,9 +123,9 @@ fn start_search_backward(
   )
 }
 
-fn single(poset_cache: &Arc<RwLock<CacheSolvable>>, n: u8, i: u8) {
+fn single(interrupt: &Arc<AtomicBool>, poset_cache: &Arc<RwLock<CacheSolvable>>, n: u8, i: u8) {
   let (comparisons, duration_generate_posets, duration_search) =
-    start_search_backward(poset_cache, n, i, n * n);
+    start_search_backward(interrupt, poset_cache, n, i, n * n);
 
   if let Some(comparisons) = comparisons {
     println!(
@@ -144,6 +154,7 @@ fn single(poset_cache: &Arc<RwLock<CacheSolvable>>, n: u8, i: u8) {
 }
 
 pub fn main() {
+  let interrupt = Arc::new(AtomicBool::new(false));
   let poset_cache = Arc::new(RwLock::new(CacheSolvable::new()));
   poset_cache
     .write()
@@ -151,11 +162,11 @@ pub fn main() {
     .insert(&Poset::new(1, 0), 0);
 
   if false {
-    single(&poset_cache, 9, 4);
+    single(&interrupt, &poset_cache, 9, 4);
   } else {
     for n in 2..MAX_N as u8 {
-      for i in 0..((n + 1) / 2) as u8 {
-        single(&poset_cache, n, i);
+      for i in 0..((n + 1) / 2) {
+        single(&interrupt, &poset_cache, n, i);
       }
       println!();
     }
