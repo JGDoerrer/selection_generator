@@ -50,6 +50,20 @@ impl<const IS_SOLVABLE: bool> CacheSet<IS_SOLVABLE> {
     }
   }
 
+  pub fn check_subgraph(&self, poset: &Poset, remaining_comparisons: u8) -> bool {
+    let _lock = self.mutex[poset.n() as usize][poset.i() as usize]
+      .read()
+      .unwrap();
+    for item in &self.cache[poset.n() as usize][poset.i() as usize] {
+      if (IS_SOLVABLE && remaining_comparisons >= *item.1 && item.0.subset_of_brute_force(poset))
+        || (!IS_SOLVABLE && remaining_comparisons <= *item.1 && poset.subset_of_brute_force(item.0))
+      {
+        return true;
+      }
+    }
+    false
+  }
+
   pub fn size(&self) -> usize {
     let mut sum = 0;
     for n in 0..MAX_N {

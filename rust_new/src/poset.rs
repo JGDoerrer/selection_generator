@@ -5,6 +5,7 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
 
+use super::util::ALWAYS_USE_SUBGRAPH_ISOMORPHISM;
 use super::cache_tree::CacheTreeItem;
 use super::util::{MAX_N, ONLY_NAUTY_CANONIFY};
 
@@ -101,6 +102,116 @@ impl Poset {
     } else {
       self.adjacency[i as usize] &= !(1 << (j as usize));
     }
+  }
+
+  fn subset_of_brute_force_rec(
+    &self,
+    poset: &Poset,
+    new_indices: &mut Vec<u8>,
+    is_possible: [[bool; MAX_N]; MAX_N],
+    k: u8,
+  ) -> bool {
+    for i in k..self.n {
+      if is_possible[k as usize][new_indices[i as usize] as usize] {
+        new_indices.swap(i as usize, k as usize);
+
+        let mut maybe = true;
+        for q in 0..self.n {
+          if self.is_less(k, q) && !poset.is_less(new_indices[k as usize], new_indices[q as usize])
+          {
+            maybe = false;
+            break;
+          }
+        }
+
+        if maybe
+          && (k + 1 == self.n
+            || self.subset_of_brute_force_rec(poset, new_indices, is_possible, k + 1))
+        {
+          return true;
+        }
+
+        new_indices.swap(i as usize, k as usize);
+      }
+    }
+    false
+  }
+
+  // new: 96.148s': n = 8, i = 3, (cache_l: 5535, cache_u: 2387, noSol: 0, bruteForce: 416), cache = 683
+  // old: 0.089s': n = 8, i = 3, (cache_l: 11590, cache_u: 3508, noSol: 0, bruteForce: 778), cache = 1081
+  pub fn subset_of_brute_force(&self, poset: &Poset) -> bool {
+    // TODO: eigentlich nicht nötig
+    if self.n != poset.n || self.i != poset.i {
+      return false;
+    }
+
+    let mut rows_poset = [0; MAX_N];
+    let mut cols_poset = [0; MAX_N];
+    let mut rows_self = [0; MAX_N];
+    let mut cols_self = [0; MAX_N];
+    for i in 0..self.n {
+      for j in 0..self.n {
+        if poset.is_less(i, j) {
+          rows_poset[i as usize] += 1;
+          cols_poset[j as usize] += 1;
+        }
+        if self.is_less(i, j) {
+          rows_self[i as usize] += 1;
+          cols_self[j as usize] += 1;
+        }
+      }
+    }
+
+    let mut is_possible = [[true; MAX_N]; MAX_N];
+    for i in 0..self.n {
+      for j in 0..self.n {
+        if rows_self[i as usize] > rows_poset[j as usize]
+          || cols_self[i as usize] > cols_poset[j as usize]
+        {
+          is_possible[i as usize][j as usize] = false;
+        }
+      }
+    }
+
+    let mut changed = true;
+    while changed {
+      changed = false;
+      for i in 0..self.n {
+        let mut count_row = 0;
+        let mut count_col = 0;
+        let mut num_row = 0;
+        let mut num_col = 0;
+        for j in 0..self.n {
+          if is_possible[i as usize][j as usize] {
+            count_row += 1;
+            num_row = j;
+          }
+          if is_possible[j as usize][i as usize] {
+            count_col += 1;
+            num_col = j;
+          }
+        }
+        if 1 == count_row {
+          for j in 0..self.n {
+            if i != j && is_possible[j as usize][num_row as usize] {
+              // changed = true;
+              is_possible[j as usize][num_row as usize] = false;
+            }
+          }
+        }
+        if 1 == count_col {
+          for j in 0..self.n {
+            if i != j && is_possible[num_col as usize][j as usize] {
+              // changed = true;
+              is_possible[num_col as usize][j as usize] = false;
+            }
+          }
+        }
+      }
+    }
+
+    let mut new_indices: Vec<u8> = (0..poset.n).collect::<Vec<_>>();
+    self.subset_of_brute_force_rec(poset, &mut new_indices, is_possible, 0)
   }
 
   pub fn subset_of(&self, other: &Poset) -> bool {
@@ -478,6 +589,29 @@ impl Poset {
     filtered
   }
 
+  fn filter_subgraph(interrupt: &Arc<AtomicBool>, unfiltered: &HashSet<Poset>) -> HashSet<Poset> {
+    let mut filtered: Vec<Poset> = vec![];
+
+    for item in unfiltered {
+      if !filtered
+        .iter()
+        .any(|poset| poset.subset_of_brute_force(item))
+      {
+        filtered.retain(|poset| !item.subset_of_brute_force(poset));
+        filtered.push(item.clone());
+      }
+      if interrupt.load(Ordering::Relaxed) {
+        break;
+      }
+    }
+
+    let mut result: HashSet<Poset> = HashSet::new();
+    for item in filtered {
+      result.insert(item);
+    }
+    result
+  }
+
   fn can_reduce_element_greater(&self, element: u8) -> bool {
     let mut greater = 0u8;
     for k in 0..self.n {
@@ -596,7 +730,11 @@ impl Poset {
       let mut result: HashSet<Poset> = HashSet::new();
 
       for i0 in 0..i {
-        for item in &temp_set[n0 as usize][i0 as usize].entries_interruptable(interrupt) {
+        let mut temp = temp_set[n0 as usize][i0 as usize].entries_interruptable(interrupt);
+        if ALWAYS_USE_SUBGRAPH_ISOMORPHISM {
+          temp = Poset::filter_subgraph(interrupt, &temp);
+        }
+        for item in temp {
           item.enlarge_nk(interrupt, &mut result);
           if interrupt.load(Ordering::Relaxed) {
             return HashSet::default();
@@ -605,7 +743,11 @@ impl Poset {
         temp_set[n0 as usize][i0 as usize].reset();
       }
 
-      for item in &temp_set[n0 as usize][i as usize].entries_interruptable(interrupt) {
+      let mut temp = temp_set[n0 as usize][i as usize].entries_interruptable(interrupt);
+      if ALWAYS_USE_SUBGRAPH_ISOMORPHISM {
+        temp = Poset::filter_subgraph(interrupt, &temp);
+      }
+      for item in temp {
         item.enlarge_n(interrupt, &mut result);
         if interrupt.load(Ordering::Relaxed) {
           return HashSet::default();
@@ -618,7 +760,11 @@ impl Poset {
       }
     }
 
-    temp_set[n as usize][i as usize].entries_interruptable(interrupt)
+    let mut result = temp_set[n as usize][i as usize].entries_interruptable(interrupt);
+    if ALWAYS_USE_SUBGRAPH_ISOMORPHISM {
+      result = Poset::filter_subgraph(interrupt, &result);
+    }
+    result
   }
 }
 

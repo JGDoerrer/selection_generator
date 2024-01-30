@@ -168,6 +168,13 @@ fn search_recursive(
     {
       return SearchResult::FoundSolution;
     } else if remaining_comparisons <= dyn_level.load(Ordering::Relaxed) {
+      // if poset_cache
+      //   .read()
+      //   .unwrap()
+      //   .check_subgraph(poset, remaining_comparisons)
+      // {
+      //   return SearchResult::FoundSolution;
+      // }
       return SearchResult::NoSolution;
     }
   }

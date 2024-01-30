@@ -1,6 +1,7 @@
 pub const DEBUG: bool = true;
 
 pub const ONLY_NAUTY_CANONIFY: bool = false;
+pub const ALWAYS_USE_SUBGRAPH_ISOMORPHISM: bool = false;
 
 pub const MAX_THREAD_COUNT: usize = 20;
 pub const MAX_COMPARISONS: usize = 25;
