@@ -1,5 +1,6 @@
 use std::collections::HashSet;
-use std::sync::RwLock;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, RwLock};
 
 // #[allow(clippy::wildcard_imports)]
 use super::poset::Poset;
@@ -52,6 +53,45 @@ impl<const IS_SOLVABLE: bool> CacheNode<IS_SOLVABLE> {
 
   fn contains(&self, arena: &Vec<CacheNode<IS_SOLVABLE>>, poset: &Poset, index: usize) -> bool {
     self.contains_multi_path(arena, poset, index, true)
+  }
+
+  fn entries_interruptable(
+    &self,
+    interrupt: &Arc<AtomicBool>,
+    arena: &Vec<CacheNode<IS_SOLVABLE>>,
+    entries: &mut HashSet<Poset>,
+    temp: &mut Poset,
+    index: usize,
+  ) {
+    if interrupt.load(Ordering::Relaxed) {
+      return;
+    }
+    if 0 == index {
+      if !arena[0].contains_multi_path(arena, temp, temp.adjacency_size(), false) {
+        entries.insert(temp.clone());
+      }
+    } else if 0 != index {
+      if 0 != self.branch_is_less {
+        temp.set_index(index - 1, true);
+        arena[self.branch_is_less].entries_interruptable(
+          interrupt,
+          arena,
+          entries,
+          temp,
+          index - 1,
+        );
+      }
+      if 0 != self.branch_is_not_less {
+        temp.set_index(index - 1, false);
+        arena[self.branch_is_not_less].entries_interruptable(
+          interrupt,
+          arena,
+          entries,
+          temp,
+          index - 1,
+        );
+      }
+    }
   }
 
   fn entries(
@@ -138,7 +178,18 @@ impl<const IS_SOLVABLE: bool> CacheTreeItem<IS_SOLVABLE> {
     self.arena[0].contains(&self.arena, poset, poset.adjacency_size())
   }
 
+  pub fn entries_interruptable(&self, interrupt: &Arc<AtomicBool>) -> HashSet<Poset> {
+    // TODO: as iterator
+    let mut entries = HashSet::new();
+    let mut temp = Poset::new(self.n, self.i);
+    let items = temp.adjacency_size();
+
+    self.arena[0].entries_interruptable(interrupt, &self.arena, &mut entries, &mut temp, items);
+    entries
+  }
+
   pub fn entries(&self) -> HashSet<Poset> {
+    // TODO: as iterator
     let mut entries = HashSet::new();
     let mut temp = Poset::new(self.n, self.i);
     let items = temp.adjacency_size();

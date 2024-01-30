@@ -596,7 +596,7 @@ impl Poset {
       let mut result: HashSet<Poset> = HashSet::new();
 
       for i0 in 0..i {
-        for item in &temp_set[n0 as usize][i0 as usize].entries() {
+        for item in &temp_set[n0 as usize][i0 as usize].entries_interruptable(interrupt) {
           item.enlarge_nk(interrupt, &mut result);
           if interrupt.load(Ordering::Relaxed) {
             return HashSet::default();
@@ -605,7 +605,7 @@ impl Poset {
         temp_set[n0 as usize][i0 as usize].reset();
       }
 
-      for item in &temp_set[n0 as usize][i as usize].entries() {
+      for item in &temp_set[n0 as usize][i as usize].entries_interruptable(interrupt) {
         item.enlarge_n(interrupt, &mut result);
         if interrupt.load(Ordering::Relaxed) {
           return HashSet::default();
@@ -618,7 +618,7 @@ impl Poset {
       }
     }
 
-    temp_set[n as usize][i as usize].entries()
+    temp_set[n as usize][i as usize].entries_interruptable(interrupt)
   }
 }
 
