@@ -282,7 +282,7 @@ impl<'a> Search<'a> {
         counts
             .into_iter()
             .enumerate()
-            .map(|(i, c)| (0x10000 >> i) * c)
+            .map(|(i, c)| ((MAX_N - i) as u32).pow(2) * c)
             .sum::<u32>()
     }
 
