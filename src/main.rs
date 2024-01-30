@@ -64,32 +64,28 @@ fn main() {
 
         for i in start_i..(n + 1) / 2 {
             let old_cache_len = cache.len();
-            let cost = Search::new(n, i, &mut cache).search();
+            let _result = Search::new(n, i, &mut cache).search();
 
-            if let Cost::Solved(_comparisons) = cost {
-                if n < KNOWN_MIN_VALUES.len() as u8 {
-                    // assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
-                }
+            if n < KNOWN_MIN_VALUES.len() as u8 {
+                // assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
+            }
 
-                if !args.no_cache_file && cache.len() != old_cache_len {
-                    save_cache(&args.cache_file, &cache);
-                }
+            if !args.no_cache_file && cache.len() != old_cache_len {
+                save_cache(&args.cache_file, &cache);
+            }
 
-                if args.explore {
-                    let mapping = {
-                        let mut mapping = [0; MAX_N];
-                        mapping
-                            .iter_mut()
-                            .enumerate()
-                            .for_each(|(i, elem)| *elem = i as u8);
-                        mapping
-                    };
+            if args.explore {
+                let mapping = {
+                    let mut mapping = [0; MAX_N];
+                    mapping
+                        .iter_mut()
+                        .enumerate()
+                        .for_each(|(i, elem)| *elem = i as u8);
+                    mapping
+                };
 
-                    explore(Poset::new(n, i), mapping, &cache);
-                    return;
-                }
-            } else {
-                unreachable!()
+                explore(Poset::new(n, i), mapping, &cache);
+                return;
             }
 
             if args.single {

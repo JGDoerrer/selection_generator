@@ -54,11 +54,11 @@ pub const fn upper_bound(n: u32, i0: u32) -> u32 {
     let i = i0 + 1;
     match i {
         1 => n - 1,
-        2 => (n - 2) + n.next_power_of_two().ilog2(),
+        2 => n - 2 + n.next_power_of_two().ilog2(),
         3 => {
             n + 1
-                + (((n + 2) / 4).next_power_of_two().ilog2()
-                    + ((n + 3) / 5).next_power_of_two().ilog2())
+                + ((n + 2) / 4).next_power_of_two().ilog2()
+                + ((n + 3) / 5).next_power_of_two().ilog2()
         }
         _ => {
             let res1 = n - i + (i - 1) * (n + 2 - i).next_power_of_two().ilog2();

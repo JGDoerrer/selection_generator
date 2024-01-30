@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     cache::Cache,
-    constants::{LOWER_BOUNDS, UPPER_BOUNDS},
+    constants::{LOWER_BOUNDS, MAX_N, UPPER_BOUNDS},
     poset::Poset,
 };
 
@@ -94,84 +94,46 @@ impl<'a> Search<'a> {
         }
     }
 
-    pub fn search(&mut self) -> Cost {
+    pub fn search(&mut self) -> u8 {
         self.start = Instant::now();
 
         let min = LOWER_BOUNDS[self.n as usize][self.i as usize];
         let max = UPPER_BOUNDS[self.n as usize][self.i as usize];
 
-        for max in min..=max {
-            let max = max as u8;
-            self.current_max = max;
+        let mut result = max as u8;
 
-            let res = match self.search_rec(Poset::new(self.n, self.i), max, 0) {
+        for current in min..max {
+            let current = current as u8;
+            self.current_max = current;
+
+            result = match self.search_rec(Poset::new(self.n, self.i), current, 0) {
                 Cost::Solved(solved) => solved,
                 Cost::Minimum(_) => {
-                    // println!(
-                    //     "found no solution for n = {}, i = {}, comparisons = {max}",
-                    //     self.n, self.i
-                    // );
-
-                    // let duration = Instant::now() - self.start;
-                    // let seconds = duration.as_secs_f32() % 60.0;
-                    // let minutes = (duration.as_secs() / 60) % 60;
-                    // let hours = (duration.as_secs() / (60 * 60)) % 24;
-                    // let days = duration.as_secs() / (60 * 60 * 24);
-                    // println!(
-                    //     "time since start: {}d {}h {}m {}s",
-                    //     days, hours, minutes, seconds
-                    // );
                     continue;
                 }
             };
-
-            println!();
-            println!(
-                "found solution for n = {}, i = {}: comparisons = {}",
-                self.n, self.i, res
-            );
-            println!("cache entries: {}", self.cache.len());
-            println!("cache hits: {}", self.cache_hits);
-            println!("cache misses: {}", self.cache_misses);
-            println!("cache replaced: {}", self.cache_replaced);
-            println!("posets searched: {}", self.total_posets);
-            let duration = Instant::now() - self.start;
-            let seconds = duration.as_secs_f32() % 60.0;
-            let minutes = (duration.as_secs() / 60) % 60;
-            let hours = (duration.as_secs() / (60 * 60)) % 24;
-            let days = duration.as_secs() / (60 * 60 * 24);
-            println!("time taken: {}d {}h {}m {}s", days, hours, minutes, seconds);
-
-            // println!("poset counts by number of comparisons: ");
-            // let counts = self.cache.counts();
-
-            // for (i, count) in counts.iter().enumerate() {
-            //     println!("{i:2}: {count:12}");
-            // }
-
-            // for entry in self.cache.iter() {
-            //     if entry.cost.is_solved()
-            //         && (entry.cost.value()
-            //             < (entry.poset.compatible_posets().max(1) as f32)
-            //                 .log2()
-            //                 .floor() as u8)
-            //     {
-            //         dbg!(
-            //             entry.cost,
-            //             entry.poset,
-            //             entry.poset.compatible_posets(),
-            //             (entry.poset.compatible_posets().max(1) as f32)
-            //                 .log2()
-            //                 .floor()
-            //         );
-            //     }
-            // }
-
-            // assert_eq!(comps, max);
-            return Cost::Solved(res);
+            break;
         }
 
-        unreachable!()
+        let duration = Instant::now() - self.start;
+        let seconds = duration.as_secs_f32() % 60.0;
+        let minutes = (duration.as_secs() / 60) % 60;
+        let hours = (duration.as_secs() / (60 * 60)) % 24;
+        let days = duration.as_secs() / (60 * 60 * 24);
+
+        println!();
+        println!(
+            "found solution for n = {}, i = {}: comparisons = {}",
+            self.n, self.i, result
+        );
+        println!("cache entries: {}", self.cache.len());
+        println!("cache hits: {}", self.cache_hits);
+        println!("cache misses: {}", self.cache_misses);
+        println!("cache replaced: {}", self.cache_replaced);
+        println!("posets searched: {}", self.total_posets);
+        println!("time taken: {}d {}h {}m {}s", days, hours, minutes, seconds);
+
+        result as u8
     }
 
     fn search_rec(&mut self, poset: Poset, max_comparisons: u8, depth: u8) -> Cost {
@@ -311,15 +273,17 @@ impl<'a> Search<'a> {
     fn estimate_hardness(poset: &Poset) -> u32 {
         let (less, greater) = poset.calculate_relations();
 
-        less.into_iter()
-            .zip(greater)
-            .map(|(less, greater)| {
-                let d = greater.abs_diff(less);
-                let u = poset.n() - greater - less;
+        let mut counts = [0; MAX_N];
 
-                (d + 2 * u) as u32
-            })
-            .sum()
+        for i in 0..poset.n() as usize {
+            counts[(poset.i() - greater[i]) as usize] += 1;
+            counts[(poset.n() - poset.i() - 1 - less[i]) as usize] += 1;
+        }
+        counts
+            .into_iter()
+            .enumerate()
+            .map(|(i, c)| (0x10000 >> i) * c)
+            .sum::<u32>()
     }
 
     fn estimate_solvable(
@@ -349,10 +313,6 @@ impl<'a> Search<'a> {
                 return Some(false);
             }
         }
-
-        // if !poset.is_solvable_in(max_comparisons) {
-        //     return Some(false);
-        // }
 
         let (less, greater) = poset.calculate_relations();
 
