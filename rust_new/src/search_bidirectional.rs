@@ -160,25 +160,17 @@ fn search_recursive(
   remaining_comparisons: u8,
   statistics: &mut Statistics,
 ) -> SearchResult {
-  if remaining_comparisons <= dyn_level.load(Ordering::Relaxed) {
+  if remaining_comparisons <= dyn_level.load(Ordering::Relaxed) + 1 {
     if poset_cache
       .read()
       .unwrap()
       .check(poset, remaining_comparisons)
     {
       return SearchResult::FoundSolution;
+    } else if remaining_comparisons <= dyn_level.load(Ordering::Relaxed) {
+      return SearchResult::NoSolution;
     }
-    return SearchResult::NoSolution;
-  } else if remaining_comparisons <= dyn_level.load(Ordering::Relaxed) + 1
-    && poset_cache
-      .read()
-      .unwrap()
-      .check(poset, remaining_comparisons)
-  {
-    return SearchResult::FoundSolution;
   }
-
-  let mut result = SearchResult::NoSolution;
 
   if cache_not_solvable.check(poset, remaining_comparisons) {
     statistics.hash_match_lower_bound += 1;
@@ -187,56 +179,56 @@ fn search_recursive(
     statistics.hash_match_upper_bound += 1;
     return SearchResult::FoundSolution;
   } else if 0 == remaining_comparisons {
-    result = SearchResult::NoSolution;
     statistics.no_solution += 1;
-  } else {
-    statistics.brute_force += 1;
+    return SearchResult::NoSolution;
+  }
 
-    let (less, greater) = poset.calculate_relations();
+  let mut result = SearchResult::NoSolution;
+  statistics.brute_force += 1;
 
-    let cmp = |a: &(u8, u8), b: &(u8, u8)| {
-      (greater[b.0 as usize] + less[b.1 as usize])
-        .cmp(&(greater[a.0 as usize] + less[a.1 as usize]))
-    };
+  let (less, greater) = poset.calculate_relations();
 
-    let mut temp: Vec<(u8, u8)> = vec![];
-    for i in 0..poset.n() {
-      for j in i + 1..poset.n() {
-        if !poset.is_less(i, j) && !poset.is_less(j, i) {
-          if cmp(&(j, i), &(i, j)).is_le() {
-            temp.push((i, j));
-          } else {
-            temp.push((j, i));
-          }
+  let cmp = |a: &(u8, u8), b: &(u8, u8)| {
+    (greater[b.0 as usize] + less[b.1 as usize]).cmp(&(greater[a.0 as usize] + less[a.1 as usize]))
+  };
+
+  let mut temp: Vec<(u8, u8)> = vec![];
+  for i in 0..poset.n() {
+    for j in i + 1..poset.n() {
+      if !poset.is_less(i, j) && !poset.is_less(j, i) {
+        if cmp(&(j, i), &(i, j)).is_le() {
+          temp.push((i, j));
+        } else {
+          temp.push((j, i));
         }
       }
     }
+  }
 
-    temp.sort_by(cmp);
+  temp.sort_by(cmp);
 
-    for &(i, j) in &temp {
-      if search_recursive(
+  for &(i, j) in &temp {
+    if search_recursive(
+      poset_cache,
+      dyn_level,
+      &poset.with_less_normalized(i, j),
+      cache_solvable,
+      cache_not_solvable,
+      remaining_comparisons - 1,
+      statistics,
+    ) == SearchResult::FoundSolution
+      && search_recursive(
         poset_cache,
         dyn_level,
-        &poset.with_less_normalized(i, j),
+        &poset.with_less_normalized(j, i),
         cache_solvable,
         cache_not_solvable,
         remaining_comparisons - 1,
         statistics,
       ) == SearchResult::FoundSolution
-        && search_recursive(
-          poset_cache,
-          dyn_level,
-          &poset.with_less_normalized(j, i),
-          cache_solvable,
-          cache_not_solvable,
-          remaining_comparisons - 1,
-          statistics,
-        ) == SearchResult::FoundSolution
-      {
-        result = SearchResult::FoundSolution;
-        break;
-      }
+    {
+      result = SearchResult::FoundSolution;
+      break;
     }
   }
 
