@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{ArgAction, Parser};
 use search::Cost;
 use std::{
     fs::OpenOptions,
@@ -18,6 +18,7 @@ mod cache;
 mod constants;
 mod poset;
 mod search;
+mod utils;
 
 #[derive(Parser, Debug)]
 #[command(author, version)]
@@ -43,6 +44,9 @@ struct Args {
     /// The max amount of bytes of the cache
     #[arg(long, default_value_t = 1 << 33)]
     max_cache_size: usize,
+    /// Increase verbosity level
+    #[clap(short, long, action = ArgAction::Count)]
+    verbose: u8,
 }
 
 fn main() {
@@ -56,8 +60,14 @@ fn main() {
         load_cache(&args.cache_file).unwrap_or_else(|| Cache::new(args.max_cache_size))
     };
 
-    println!("cache_entries = {}", cache.len());
-    println!("max_cache_entries = {}", cache.max_entries());
+    println!("Cache entries: {}", cache.len());
+    println!("Maximum cache entries: {}", cache.max_entries());
+
+    // additional meta information
+    if args.verbose != 0 {
+        utils::print_git_info();
+        utils::print_lscpu();
+    }
 
     for n in start_n..=MAX_N as u8 {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };

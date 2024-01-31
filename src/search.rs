@@ -121,17 +121,17 @@ impl<'a> Search<'a> {
         let hours = (duration.as_secs() / (60 * 60)) % 24;
         let days = duration.as_secs() / (60 * 60 * 24);
 
+        // Print the found solution
         println!();
         println!(
-            "found solution for n = {}, i = {}: comparisons = {}",
-            self.n, self.i, result
+            "Congratulations. A solution was found!\n\nn: {}, i: {}",
+            self.n, self.i
         );
-        println!("cache entries: {}", self.cache.len());
-        println!("cache hits: {}", self.cache_hits);
-        println!("cache misses: {}", self.cache_misses);
-        println!("cache replaced: {}", self.cache_replaced);
-        println!("posets searched: {}", self.total_posets);
-        println!("time taken: {}d {}h {}m {}s", days, hours, minutes, seconds);
+        println!("Comparisons: {}", result);
+        println!();
+
+        self.print_cache();
+        self.print_duration();
 
         result as u8
     }
@@ -360,5 +360,32 @@ impl<'a> Search<'a> {
         }
 
         None
+    }
+
+    /// Print out a human readable duration in the format:
+    /// days, hours, minutes, seconds
+    pub fn print_duration(&self) {
+        // Calculate the values for a human readable duration
+        println!();
+
+        let duration = Instant::now() - self.start;
+        let seconds = duration.as_secs_f32() % 60.0;
+        let minutes = (duration.as_secs() / 60) % 60;
+        let hours = (duration.as_secs() / (60 * 60)) % 24;
+        let days = duration.as_secs() / (60 * 60 * 24);
+
+        println!("Duration: {}d {}h {}m {}s", days, hours, minutes, seconds);
+        println!();
+    }
+
+    /// Print information out the cache, e.g. cache entries, hits, misses etc.
+    pub fn print_cache(&self) {
+        // Print information about the cache
+        println!("Cache entries: {}", self.cache.len());
+        println!("Cache hits: {}", self.cache_hits);
+        println!("Cache misses: {}", self.cache_misses);
+        println!("Cache replaced: {}", self.cache_replaced);
+        println!();
+        println!("Posets searched: {}", self.total_posets);
     }
 }
