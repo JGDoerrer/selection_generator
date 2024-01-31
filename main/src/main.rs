@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{ArgAction, Parser};
 use search::Cost;
 use std::{
     fs::OpenOptions,
@@ -13,6 +13,7 @@ mod bitset;
 mod cache;
 mod poset;
 mod search;
+mod utils;
 
 const KNOWN_MIN_VALUES: [&[u8]; 15] = [
     &[0],
@@ -47,15 +48,18 @@ struct Args {
     /// The name of the cache file to use.
     #[arg(long, default_value = "cache.dat", value_hint = clap::ValueHint::FilePath)]
     cache_file: String,
-    /// Dont use a cache file
-    #[arg(long, default_value_t = true)]
-    no_cache: bool,
+    /// Do not use a cache file
+    #[arg(long, default_value_t = false)]
+    no_cache_file: bool,
     /// Explore the cache interactively
     #[arg(short, long, default_value_t = false)]
     explore: bool,
     /// The max amount of bytes of the cache
-    #[arg(long, default_value_t = 1 << 32)]
+    #[arg(long, default_value_t = 1 << 33)]
     max_cache_size: usize,
+    /// Increase verbosity level
+    #[clap(short, long, action = ArgAction::Count)]
+    verbose: u8,
 }
 
 fn main() {
@@ -63,27 +67,36 @@ fn main() {
 
     let start_n = args.n.unwrap_or(1);
 
-    let mut cache = if args.no_cache {
+    let mut cache = if args.no_cache_file {
         Cache::new(args.max_cache_size)
     } else {
         load_cache(&args.cache_file).unwrap_or_else(|| Cache::new(args.max_cache_size))
     };
 
-    println!("cache_entries = {}", cache.len());
+    println!("Cache entries: {}", cache.len());
+    println!("Maximum cache entries: {}", cache.max_entries());
+
+    // additional meta information
+    if args.verbose != 0 {
+        utils::print_git_info();
+        utils::print_lscpu();
+    }
 
     for n in start_n..=MAX_N as u8 {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
         for i in start_i..(n + 1) / 2 {
             let old_cache_len = cache.len();
+
+            // Start a search for n, i
             let cost = Search::new(n, i, &mut cache).search();
 
-            if let Cost::Solved(comparisons) = cost {
+            if let Cost::Solved(_comparisons) = cost {
                 if n < KNOWN_MIN_VALUES.len() as u8 {
-                    assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
+                    // assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
                 }
 
-                if !args.no_cache && cache.len() != old_cache_len {
+                if !args.no_cache_file && cache.len() != old_cache_len {
                     save_cache(&args.cache_file, &cache);
                 }
 

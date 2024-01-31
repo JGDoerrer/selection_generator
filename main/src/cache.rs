@@ -21,11 +21,15 @@ impl Cache {
     const ROW_LEN: usize = 8;
 
     pub fn new(max_bytes: usize) -> Self {
-        let len = max_bytes / (Self::ROW_LEN * size_of::<Entry>());
+        let len = max_bytes / size_of::<[Option<Entry>; Self::ROW_LEN]>();
         Cache {
             arrays: vec![[None; Self::ROW_LEN]; len].into_boxed_slice(),
             len: 0,
         }
+    }
+
+    pub fn max_entries(&self) -> usize {
+        self.arrays.len() * Self::ROW_LEN
     }
 
     pub fn get(&self, poset: &Poset) -> Option<Cost> {
@@ -58,8 +62,9 @@ impl Cache {
         if let Some(index) = index {
             let entry = row.get_mut(index).unwrap().as_mut().unwrap();
             let cost = entry.cost;
-            let priority = KNOWN_MIN_VALUES[poset.n() as usize]
-                [poset.i().min(poset.n() - poset.i()) as usize] as i16;
+            let priority = KNOWN_MIN_VALUES[poset.n() as usize - 1]
+                [poset.i().min(poset.n() - poset.i() - 1) as usize]
+                as i16;
 
             entry.priority = entry.priority.saturating_add(priority);
 
@@ -69,7 +74,8 @@ impl Cache {
         }
     }
 
-    pub fn insert(&mut self, poset: Poset, cost: Cost) {
+    /// returns true if an entry has been replaced
+    pub fn insert(&mut self, poset: Poset, cost: Cost) -> bool {
         let mut hasher = DefaultHasher::new();
         poset.hash(&mut hasher);
         let hash = hasher.finish();
@@ -101,6 +107,7 @@ impl Cache {
             }
         }
 
+        let mut replace = false;
         let index = match match_index {
             Some(i) => i,
             None => match free_index {
@@ -110,11 +117,11 @@ impl Cache {
                 }
                 None => match lowest_unsolved_prio_index {
                     Some(i) => {
-                        let _old_entry = row[i].unwrap();
+                        replace = true;
                         i
                     }
                     None => {
-                        let _old_entry = row[lowest_prio_index].unwrap();
+                        replace = true;
                         lowest_prio_index
                     }
                 },
@@ -129,14 +136,16 @@ impl Cache {
             }
         }
 
-        let priority = KNOWN_MIN_VALUES[poset.n() as usize]
-            [poset.i().min(poset.n() - poset.i()) as usize] as i16;
+        let priority = KNOWN_MIN_VALUES[poset.n() as usize - 1]
+            [poset.i().min(poset.n() - poset.i() - 1) as usize] as i16;
 
         row[index] = Some(Entry {
             poset,
             cost,
             priority,
         });
+
+        replace
     }
 
     pub fn len(&self) -> usize {
@@ -146,51 +155,21 @@ impl Cache {
     pub fn iter(&self) -> CacheIterator {
         CacheIterator {
             cache: self,
-            row: 0,
             index: 0,
         }
-    }
-
-    pub fn counts(&self) -> Vec<u64> {
-        let mut counts = vec![0; 50]; // i hope this is enough
-
-        for row in self.arrays.iter() {
-            for entry in row.iter().flatten() {
-                counts[entry.cost.value() as usize] += 1;
-            }
-        }
-
-        while counts.last().copied() == Some(0) {
-            counts.pop();
-        }
-
-        counts
     }
 }
 
 pub struct CacheIterator<'a> {
     cache: &'a Cache,
-    row: usize,
     index: usize,
 }
 
 impl<'a> Iterator for CacheIterator<'a> {
     type Item = Entry;
     fn next(&mut self) -> Option<Self::Item> {
-        let mut next = self.cache.arrays[self.row]
-            .iter()
-            .skip(self.index)
-            .flatten()
-            .next();
-
-        while next.is_none() && self.row < self.cache.arrays.len() {
-            self.row += 1;
-            next = self.cache.arrays[self.row]
-                .iter()
-                .skip(self.index)
-                .flatten()
-                .next();
-        }
+        let next = self.cache.arrays.iter().flatten().flatten().nth(self.index);
+        self.index += 1;
 
         next.copied()
     }
