@@ -14,7 +14,7 @@ pub struct Poset {
     n: u8,
     i: u8,
     /// The comparisons as an adjacency matrix
-    adjacency: [u16; MAX_N],
+    adjacency: [BitSet; MAX_N],
 }
 
 impl Default for Poset {
@@ -30,7 +30,7 @@ impl Poset {
         Poset {
             n,
             i,
-            adjacency: [0; MAX_N],
+            adjacency: [BitSet::empty(); MAX_N],
         }
     }
 
@@ -47,9 +47,7 @@ impl Poset {
         debug_assert!(i < self.n);
         debug_assert!(j < self.n);
 
-        let mask = 1 << j;
-
-        self.adjacency[i as usize] |= mask;
+        self.adjacency[i as usize].insert(j as usize);
     }
 
     /// is i < j?
@@ -58,9 +56,7 @@ impl Poset {
         debug_assert!(i < self.n);
         debug_assert!(j < self.n);
 
-        let mask = 1 << j;
-
-        (self.adjacency[i as usize] & mask) != 0
+        self.adjacency[i as usize].contains(j as usize)
     }
 
     /// returns a bitset of all elements greater than i
@@ -106,7 +102,7 @@ impl Poset {
         for (i, less) in less.iter_mut().enumerate().take(self.n as usize) {
             let i_bitset = BitSet::single(i);
             for j in 0..self.n {
-                *less += (!self.get_all_greater_than(j).intersect(i_bitset).is_empty()) as u8;
+                *less += (!self.get_all_greater_than(j).is_disjoint(i_bitset)) as u8;
             }
         }
 

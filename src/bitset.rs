@@ -1,8 +1,11 @@
 use std::fmt::Debug;
 
+use serde::{Deserialize, Serialize};
+
 use crate::constants::MAX_N;
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+/// A bitset to store up to MAX_N bits
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize)]
 pub struct BitSet {
     bits: u16,
 }
@@ -58,21 +61,21 @@ impl BitSet {
     }
 
     #[inline]
-    pub const fn union(self, other: Self) -> Self {
+    pub const fn union(&self, other: Self) -> Self {
         BitSet {
             bits: self.bits | other.bits,
         }
     }
 
     #[inline]
-    pub const fn intersect(self, other: Self) -> Self {
+    pub const fn intersect(&self, other: Self) -> Self {
         BitSet {
             bits: self.bits & other.bits,
         }
     }
 
     #[inline]
-    pub const fn complement(self) -> Self {
+    pub const fn complement(&self) -> Self {
         const MASK: u16 = ((1u32 << (MAX_N + 1)) - 1) as u16;
         BitSet {
             bits: !self.bits & MASK,
@@ -80,18 +83,13 @@ impl BitSet {
     }
 
     #[inline]
-    pub const fn is_disjoint(&self, other: &Self) -> bool {
+    pub const fn is_disjoint(&self, other: Self) -> bool {
         self.bits & other.bits == 0
     }
 
     #[inline]
     pub const fn len(&self) -> usize {
         self.bits.count_ones() as usize
-    }
-
-    #[inline]
-    pub const fn iter(&self) -> BitSetIter {
-        BitSetIter { bitset: *self }
     }
 }
 
@@ -131,10 +129,15 @@ impl Iterator for BitSetIter {
         }
     }
 
-    fn count(self) -> usize
-    where
-        Self: Sized,
-    {
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.bitset.len(), Some(self.bitset.len()))
+    }
+}
+
+impl ExactSizeIterator for BitSetIter {
+    #[inline]
+    fn len(&self) -> usize {
         self.bitset.len()
     }
 }
