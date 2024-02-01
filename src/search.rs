@@ -14,10 +14,7 @@ pub struct Search<'a> {
     i: u8,
     current_max: u8,
     cache: &'a mut Cache,
-    total_posets: u64,
-    cache_hits: u64,
-    cache_misses: u64,
-    cache_replaced: u64,
+    analytics: Analytics,
     start: Instant,
     progress_bars: MultiProgress,
 }
@@ -28,6 +25,13 @@ pub enum Cost {
     Minimum(u8),
     /// Solved in the number of comparisons
     Solved(u8),
+}
+
+pub struct Analytics {
+    total_posets: u64,
+    cache_hits: u64,
+    cache_misses: u64,
+    cache_replaced: u64,
 }
 
 impl Cost {
@@ -50,10 +54,12 @@ impl<'a> Search<'a> {
             i,
             current_max: 0,
             cache,
-            total_posets: 0,
-            cache_hits: 0,
-            cache_misses: 0,
-            cache_replaced: 0,
+            analytics: Analytics {
+                total_posets: 0,
+                cache_hits: 0,
+                cache_misses: 0,
+                cache_replaced: 0,
+            },
             start: Instant::now(),
             progress_bars: MultiProgress::new(),
         }
@@ -62,9 +68,9 @@ impl<'a> Search<'a> {
     fn search_cache(&mut self, poset: &Poset) -> Option<Cost> {
         let result = self.cache.get_and_do_stuff(poset);
         if result.is_some() {
-            self.cache_hits += 1;
+            self.analytics.cache_hits += 1;
         } else {
-            self.cache_misses += 1;
+            self.analytics.cache_misses += 1;
         }
         result
     }
@@ -84,12 +90,12 @@ impl<'a> Search<'a> {
 
             let replaced = self.cache.insert(poset, res);
             if replaced {
-                self.cache_replaced += 1;
+                self.analytics.cache_replaced += 1;
             }
         } else {
             let replaced = self.cache.insert(poset, new_cost);
             if replaced {
-                self.cache_replaced += 1;
+                self.analytics.cache_replaced += 1;
             }
         }
     }
@@ -114,12 +120,6 @@ impl<'a> Search<'a> {
             };
             break;
         }
-
-        let duration = Instant::now() - self.start;
-        let seconds = duration.as_secs_f32() % 60.0;
-        let minutes = (duration.as_secs() / 60) % 60;
-        let hours = (duration.as_secs() / (60 * 60)) % 24;
-        let days = duration.as_secs() / (60 * 60 * 24);
 
         // Print the found solution
         println!();
@@ -190,7 +190,7 @@ impl<'a> Search<'a> {
             if let Some(progress) = &progress {
                 progress.set_message(format!(
                     "max: {current_max:2}, total: {:10}, cache: {:10}",
-                    self.total_posets,
+                    self.analytics.total_posets,
                     self.cache.len()
                 ));
             }
@@ -227,7 +227,7 @@ impl<'a> Search<'a> {
             }
         }
 
-        self.total_posets += 1;
+        self.analytics.total_posets += 1;
 
         if let Some(progress) = progress {
             progress.finish_and_clear();
@@ -382,10 +382,10 @@ impl<'a> Search<'a> {
     pub fn print_cache(&self) {
         // Print information about the cache
         println!("Cache entries: {}", self.cache.len());
-        println!("Cache hits: {}", self.cache_hits);
-        println!("Cache misses: {}", self.cache_misses);
-        println!("Cache replaced: {}", self.cache_replaced);
+        println!("Cache hits: {}", self.analytics.cache_hits);
+        println!("Cache misses: {}", self.analytics.cache_misses);
+        println!("Cache replaced: {}", self.analytics.cache_replaced);
         println!();
-        println!("Posets searched: {}", self.total_posets);
+        println!("Posets searched: {}", self.analytics.total_posets);
     }
 }
