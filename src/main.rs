@@ -9,7 +9,7 @@ use poset::Poset;
 
 use crate::{
     cache::Cache,
-    constants::{KNOWN_MIN_VALUES, MAX_N},
+    constants::{KNOWN_VALUES, MAX_N},
     search::Search,
 };
 
@@ -76,8 +76,8 @@ fn main() {
             let old_cache_len = cache.len();
             let result = Search::new(n, i, &mut cache).search();
 
-            if n < KNOWN_MIN_VALUES.len() as u8 {
-                assert_eq!(result, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
+            if n < KNOWN_VALUES.len() as u8 {
+                assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);
             }
 
             if !args.no_cache_file && cache.len() != old_cache_len {

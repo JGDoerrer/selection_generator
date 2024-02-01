@@ -2,7 +2,7 @@ use std::{collections::hash_map::DefaultHasher, hash::Hash, hash::Hasher, mem::s
 
 use serde::{Deserialize, Serialize};
 
-use crate::{poset::Poset, search::Cost, KNOWN_MIN_VALUES};
+use crate::{constants::LOWER_BOUNDS, poset::Poset, search::Cost};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Entry {
@@ -62,7 +62,7 @@ impl Cache {
         if let Some(index) = index {
             let entry = row.get_mut(index).unwrap().as_mut().unwrap();
             let cost = entry.cost;
-            let priority = KNOWN_MIN_VALUES[poset.n() as usize - 1]
+            let priority = LOWER_BOUNDS[poset.n() as usize - 1]
                 [poset.i().min(poset.n() - poset.i() - 1) as usize]
                 as i16;
 
@@ -136,7 +136,7 @@ impl Cache {
             }
         }
 
-        let priority = KNOWN_MIN_VALUES[poset.n() as usize - 1]
+        let priority = LOWER_BOUNDS[poset.n() as usize - 1]
             [poset.i().min(poset.n() - poset.i() - 1) as usize] as i16;
 
         row[index] = Some(Entry {

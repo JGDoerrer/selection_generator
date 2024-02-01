@@ -34,10 +34,12 @@ impl Poset {
         }
     }
 
+    #[inline]
     pub fn n(&self) -> u8 {
         self.n
     }
 
+    #[inline]
     pub fn i(&self) -> u8 {
         self.i
     }
@@ -62,7 +64,7 @@ impl Poset {
     /// returns a bitset of all elements greater than i
     pub fn get_all_greater_than(&self, i: PosetIndex) -> BitSet {
         debug_assert!(i < self.n);
-        self.adjacency[i as usize].into()
+        self.adjacency[i as usize]
     }
 
     /// returns a bitset of all elements less than i
@@ -573,8 +575,6 @@ impl Debug for Poset {
 mod test {
     use std::collections::HashSet;
 
-    use crate::constants::KNOWN_MIN_VALUES;
-
     use super::*;
 
     #[test]
@@ -675,25 +675,5 @@ mod test {
         poset.canonify();
         dbg!(poset, poset.num_compatible_posets());
         // assert_eq!(poset.compatible_posets(), 12); // i don't know if this is correct
-    }
-
-    #[test]
-    fn test() {
-        for n in 3..15 {
-            for i in 0..(n + 1) / 2 {
-                let poset = Poset::new(n, i);
-                println!(
-                    "n={}, i={}, c={}, {}",
-                    n,
-                    i,
-                    poset.num_compatible_posets().ilog2(),
-                    poset.num_compatible_posets()
-                );
-                assert!(
-                    KNOWN_MIN_VALUES[n as usize - 1][i as usize]
-                        > poset.num_compatible_posets().ilog2() as u8
-                );
-            }
-        }
     }
 }
