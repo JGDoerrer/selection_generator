@@ -74,10 +74,10 @@ fn main() {
 
         for i in start_i..(n + 1) / 2 {
             let old_cache_len = cache.len();
-            let _result = Search::new(n, i, &mut cache).search();
+            let result = Search::new(n, i, &mut cache).search();
 
             if n < KNOWN_MIN_VALUES.len() as u8 {
-                // assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
+                assert_eq!(result, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
             }
 
             if !args.no_cache_file && cache.len() != old_cache_len {

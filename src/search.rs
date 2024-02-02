@@ -16,7 +16,6 @@ pub struct Search<'a> {
     cache: &'a mut Cache,
     analytics: Analytics,
     start: Instant,
-    progress_bars: MultiProgress,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -32,6 +31,9 @@ pub struct Analytics {
     cache_hits: u64,
     cache_misses: u64,
     cache_replaced: u64,
+    max_progress_depth: u8,
+    multiprogress: MultiProgress,
+    progress_bars: Vec<ProgressBar>,
 }
 
 impl Cost {
@@ -54,23 +56,17 @@ impl<'a> Search<'a> {
             i,
             current_max: 0,
             cache,
-            analytics: Analytics {
-                total_posets: 0,
-                cache_hits: 0,
-                cache_misses: 0,
-                cache_replaced: 0,
-            },
+            analytics: Analytics::new(n.max(3) - 3),
             start: Instant::now(),
-            progress_bars: MultiProgress::new(),
         }
     }
 
     fn search_cache(&mut self, poset: &Poset) -> Option<Cost> {
         let result = self.cache.get_and_do_stuff(poset);
         if result.is_some() {
-            self.analytics.cache_hits += 1;
+            self.analytics.record_hit();
         } else {
-            self.analytics.cache_misses += 1;
+            self.analytics.record_miss();
         }
         result
     }
@@ -90,12 +86,12 @@ impl<'a> Search<'a> {
 
             let replaced = self.cache.insert(poset, res);
             if replaced {
-                self.analytics.cache_replaced += 1;
+                self.analytics.record_replace();
             }
         } else {
             let replaced = self.cache.insert(poset, new_cost);
             if replaced {
-                self.analytics.cache_replaced += 1;
+                self.analytics.record_replace();
             }
         }
     }
@@ -120,6 +116,8 @@ impl<'a> Search<'a> {
             };
             break;
         }
+
+        self.analytics.complete_all();
 
         // Print the found solution
         println!();
@@ -171,68 +169,48 @@ impl<'a> Search<'a> {
         }
 
         let pairs = self.get_comparison_pairs(&poset);
+        let n_pairs = pairs.len() as u64;
 
-        let progress = if depth + 2 < self.n {
-            let progress = ProgressBar::new(pairs.len() as u64)
-                .with_style(ProgressStyle::with_template("[{pos:2}/{len:2}] {msg}").unwrap());
-
-            let progress = self.progress_bars.add(progress);
-            Some(progress)
-        } else {
-            None
-        };
-
-        let mut result = Cost::Minimum(max_comparisons + 1);
+        self.analytics.inc_length(depth, n_pairs);
 
         // search all comparisons
-        let mut current_max = max_comparisons;
+        let mut current_best = max_comparisons + 1;
         for (first, second) in pairs {
-            if let Some(progress) = &progress {
-                progress.set_message(format!(
-                    "max: {current_max:2}, total: {:10}, cache: {:10}",
-                    self.analytics.total_posets,
-                    self.cache.len()
-                ));
-            }
+            self.analytics.update_stats(depth, self.cache.len());
 
             // search the first case of the comparison
-            let first_result = self.search_rec(first, current_max - 1, depth + 1);
+            let first_result = self.search_rec(first, current_best - 2, depth + 1);
 
-            if !first_result.is_solved() || first_result.value() > current_max - 1 {
-                if let Some(progress) = &progress {
-                    progress.inc(1);
-                }
+            if !first_result.is_solved() || first_result.value() > current_best - 2 {
+                self.analytics.inc(depth, 1);
                 continue;
             }
 
             // search the second case of the comparison
-            let second_result = self.search_rec(second, current_max - 1, depth + 1);
+            let second_result = self.search_rec(second, current_best - 2, depth + 1);
 
-            if !second_result.is_solved() || second_result.value() > current_max - 1 {
-                if let Some(progress) = &progress {
-                    progress.inc(1);
-                }
+            if !second_result.is_solved() || second_result.value() > current_best - 2 {
+                self.analytics.inc(depth, 1);
                 continue;
             }
 
             // take the max of the branches of the comparisons
-            let new_result = first_result.value().max(second_result.value()) + 1;
+            // if the current pair maximum was worse, the
+            // continues above never let this be reached
+            current_best = first_result.value().max(second_result.value()) + 1;
 
-            // take the min of all comparisons
-            result = Cost::Solved(new_result.min(result.value()));
-            current_max = result.value() - 1;
-
-            if let Some(progress) = &progress {
-                progress.inc(1);
-            }
+            self.analytics.inc(depth, 1);
         }
 
-        self.analytics.total_posets += 1;
+        let result = if current_best <= max_comparisons {
+            Cost::Solved(current_best)
+        } else {
+            Cost::Minimum(max_comparisons + 1)
+        };
 
-        if let Some(progress) = progress {
-            progress.finish_and_clear();
-            self.progress_bars.remove(&progress);
-        }
+        self.analytics.inc_complete(depth, n_pairs);
+
+        self.analytics.record_poset();
 
         self.insert_cache(poset, result);
 
@@ -387,5 +365,96 @@ impl<'a> Search<'a> {
         println!("Cache replaced: {}", self.analytics.cache_replaced);
         println!();
         println!("Posets searched: {}", self.analytics.total_posets);
+    }
+}
+
+impl Analytics {
+    fn new(max_progress_depth: u8) -> Analytics {
+        let multiprogress = MultiProgress::new();
+
+        let mut progress_bars = Vec::with_capacity(max_progress_depth as usize);
+        for _ in 0..max_progress_depth {
+            let pb = ProgressBar::new(0)
+                .with_style(ProgressStyle::with_template("[{pos:2}/{len:2}] {msg}").unwrap());
+            let pb = multiprogress.add(pb);
+            progress_bars.push(pb);
+        }
+        Analytics {
+            total_posets: 0,
+            cache_hits: 0,
+            cache_misses: 0,
+            cache_replaced: 0,
+            max_progress_depth,
+            multiprogress,
+            progress_bars,
+        }
+    }
+
+    fn inc_length(&self, depth: u8, count: u64) {
+        if depth >= self.max_progress_depth {
+            return;
+        }
+        self.progress_bars[depth as usize].inc_length(count);
+    }
+
+    fn inc(&self, depth: u8, amount: u64) {
+        if depth >= self.max_progress_depth {
+            return;
+        }
+        self.progress_bars[depth as usize].inc(amount);
+    }
+
+    fn inc_complete(&self, depth: u8, count: u64) {
+        if depth >= self.max_progress_depth {
+            return;
+        }
+        let len = self.progress_bars[depth as usize].length().unwrap_or(count);
+        self.progress_bars[depth as usize].set_length(len - count);
+
+        let position = self.progress_bars[depth as usize].position();
+        self.progress_bars[depth as usize].set_position(position - count);
+    }
+
+    fn update_stats(&self, depth: u8, cache_entries: usize) {
+        if depth >= self.max_progress_depth {
+            return;
+        }
+        self.progress_bars[0].set_message(format!(
+            "total: {:10}, cache: {:10}",
+            self.total_posets, cache_entries
+        ))
+    }
+
+    fn complete_all(&self) {
+        for i in 0..self.max_progress_depth as usize  {
+            let pb = &self.progress_bars[i];
+            pb.finish_and_clear();
+            self.multiprogress.remove(pb);
+        }
+    }
+
+    fn record_hit(&mut self) {
+        self.cache_hits += 1;
+    }
+
+    fn record_miss(&mut self) {
+        self.cache_misses += 1;
+    }
+
+    fn record_replace(&mut self) {
+        self.cache_replaced += 1;
+    }
+
+    fn record_poset(&mut self) {
+        self.total_posets += 1;
+    }
+}
+
+impl Drop for Analytics {
+    fn drop(&mut self) {
+        self.progress_bars.iter().for_each(|pb| {
+            pb.finish_and_clear();
+            self.multiprogress.remove(pb);
+        });
     }
 }
