@@ -360,11 +360,11 @@ impl<'a> Search<'a> {
     pub fn print_cache(&self) {
         // Print information about the cache
         println!("Cache entries: {}", self.cache.len());
-        println!("Cache hits: {}", self.analytics.cache_hits);
-        println!("Cache misses: {}", self.analytics.cache_misses);
-        println!("Cache replaced: {}", self.analytics.cache_replaced);
+        println!("Cache hits: {}", self.analytics.cache_hits());
+        println!("Cache misses: {}", self.analytics.cache_misses());
+        println!("Cache replaced: {}", self.analytics.cache_replaced());
         println!();
-        println!("Posets searched: {}", self.analytics.total_posets);
+        println!("Posets searched: {}", self.analytics.total_posets());
     }
 }
 
@@ -454,6 +454,22 @@ impl Analytics {
     #[inline]
     fn record_poset(&mut self) {
         self.total_posets += 1;
+    }
+
+    fn cache_hits(&self) -> u64 {
+        self.cache_hits
+    }
+
+    fn cache_misses(&self) -> u64 {
+        self.cache_misses
+    }
+
+    fn cache_replaced(&self) -> u64 {
+        self.cache_replaced
+    }
+
+    fn total_posets(&self) -> u64 {
+        self.total_posets
     }
 }
 
