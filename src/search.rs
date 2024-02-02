@@ -1,5 +1,6 @@
 use std::time::Instant;
 
+use clap::builder::Str;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
@@ -110,7 +111,18 @@ impl<'a> Search<'a> {
 
             result = match self.search_rec(Poset::new(self.n, self.i), current, 0) {
                 Cost::Solved(solved) => solved,
-                Cost::Minimum(_) => {
+                Cost::Minimum(min) => {
+                    self.analytics
+                        .multiprogress
+                        .println(format!(
+                            "n: {}, i: {} needs at least {} comparisons",
+                            self.n, self.i, min
+                        ))
+                        .unwrap();
+                    self.analytics
+                        .multiprogress
+                        .println(self.format_duration())
+                        .unwrap();
                     continue;
                 }
             };
@@ -129,7 +141,8 @@ impl<'a> Search<'a> {
         println!();
 
         self.print_cache();
-        self.print_duration();
+        println!("{}", self.format_duration());
+        println!();
 
         result as u8
     }
@@ -176,7 +189,8 @@ impl<'a> Search<'a> {
         // search all comparisons
         let mut current_best = max_comparisons + 1;
         for (first, second) in pairs {
-            self.analytics.update_stats(depth, self.current_max, self.cache.len());
+            self.analytics
+                .update_stats(depth, self.current_max, self.cache.len());
 
             // search the first case of the comparison
             let first_result = self.search_rec(first, current_best - 2, depth + 1);
@@ -342,9 +356,8 @@ impl<'a> Search<'a> {
 
     /// Print out a human readable duration in the format:
     /// days, hours, minutes, seconds
-    pub fn print_duration(&self) {
+    pub fn format_duration(&self) -> String {
         // Calculate the values for a human readable duration
-        println!();
 
         let duration = Instant::now() - self.start;
         let seconds = duration.as_secs_f32() % 60.0;
@@ -352,8 +365,7 @@ impl<'a> Search<'a> {
         let hours = (duration.as_secs() / (60 * 60)) % 24;
         let days = duration.as_secs() / (60 * 60 * 24);
 
-        println!("Duration: {}d {}h {}m {}s", days, hours, minutes, seconds);
-        println!();
+        format!("Duration: {}d {}h {}m {}s", days, hours, minutes, seconds)
     }
 
     /// Print information out the cache, e.g. cache entries, hits, misses etc.
@@ -429,7 +441,7 @@ impl Analytics {
     }
 
     fn complete_all(&self) {
-        for i in 0..self.max_progress_depth as usize  {
+        for i in 0..self.max_progress_depth as usize {
             let pb = &self.progress_bars[i];
             pb.finish_and_clear();
             self.multiprogress.remove(pb);
