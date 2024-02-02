@@ -1,5 +1,10 @@
-use std::{fmt::Debug, os::raw::c_int};
+use std::{
+    fmt::Debug,
+    hash::{BuildHasher, Hasher},
+    os::raw::c_int,
+};
 
+use hashbrown::hash_map::DefaultHashBuilder;
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use serde::{Deserialize, Serialize};
 
@@ -111,24 +116,13 @@ impl Poset {
         (less, greater)
     }
 
-    #[inline]
-    fn hash(a: u64, b: u64) -> u64 {
-        let mut hash: u64 = 9118271012717746669;
-
-        hash = hash.wrapping_add(a);
-        hash = hash.wrapping_mul(5878307119);
-        hash ^= hash.wrapping_shl(7);
-        hash = hash.wrapping_add(b);
-        hash = hash.wrapping_mul(7311227577);
-        hash ^= hash.wrapping_shl(9);
-        hash = hash.wrapping_add(2072583677);
-
-        hash
-    }
-
     fn canonify(&mut self) {
         self.reduce_elements();
         self.canonify_mapping();
+    }
+
+    fn hash(a: u64, b: u64) -> u64 {
+        DefaultHashBuilder::default().hash_one(((a as u128) << 64) | b as u128)
     }
 
     /// Canonifies the poset and returns a mapping from old to new indices, since they shift around
