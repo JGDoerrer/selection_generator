@@ -1,3 +1,4 @@
+use chrono::prelude::*;
 use std::process::Command;
 
 /// Print the git sha of the last commit
@@ -21,5 +22,16 @@ pub fn print_lscpu() {
     let lscpu = String::from_utf8(lscpu.stdout).unwrap();
 
     println!("{}", lscpu);
+}
+
+pub fn print_current_time() {
+    // Get the current time in the local time zone
+    let local_time = Local::now();
+
+    // Format the time as a human-readable string
+    let formatted_time = local_time.format("%Y-%m-%d %H:%M:%S").to_string();
+
+    // Print the formatted time
+    println!("Current time: {}", formatted_time);
     println!("===============");
 }

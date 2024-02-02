@@ -1,6 +1,7 @@
 pub const MAX_N: usize = 15;
 
-pub const KNOWN_MIN_VALUES: [&[u8]; 15] = [
+pub const KNOWN_VALUES: [&[usize]; 16] = [
+    &[0],
     &[0],
     &[1],
     &[2, 3],
@@ -14,18 +15,19 @@ pub const KNOWN_MIN_VALUES: [&[u8]; 15] = [
     &[10, 13, 15, 17, 18, 18],
     &[11, 14, 17, 18, 19, 20],
     &[12, 15, 18, 20, 21, 22, 23],
-    &[13, 16, 19, 21, 23, 24, 24],
-    &[14, 17, 20, 23, 25, 25, 23, 24],
+    &[13, 16, 19, 21, 23, 24],
+    &[14, 17, 20, 23],
 ];
 
-pub const LOWER_BOUNDS: [[u32; MAX_N]; MAX_N] = {
-    let mut values = [[0u32; MAX_N]; MAX_N];
+pub const LOWER_BOUNDS: [[usize; MAX_N]; MAX_N + 1] = {
+    let mut values = [[0; MAX_N]; MAX_N + 1];
 
     let mut n = 0;
-    while n < MAX_N as u32 {
+    while n < MAX_N + 1 {
         let mut i = 0;
         while i < n {
-            values[n as usize][i as usize] = lower_bound(n, i);
+            values[n][i] = lower_bound(n, i);
+
             i += 1;
         }
         n += 1;
@@ -34,14 +36,15 @@ pub const LOWER_BOUNDS: [[u32; MAX_N]; MAX_N] = {
     values
 };
 
-pub const UPPER_BOUNDS: [[u32; MAX_N]; MAX_N] = {
-    let mut values = [[0u32; MAX_N]; MAX_N];
+pub const UPPER_BOUNDS: [[usize; MAX_N]; MAX_N + 1] = {
+    let mut values = [[0; MAX_N]; MAX_N + 1];
 
     let mut n = 0;
-    while n < MAX_N as u32 {
+    while n < MAX_N + 1 {
         let mut i = 0;
         while i < n {
-            values[n as usize][i as usize] = upper_bound(n, i);
+            values[n][i] = upper_bound(n, i);
+
             i += 1;
         }
         n += 1;
@@ -50,19 +53,19 @@ pub const UPPER_BOUNDS: [[u32; MAX_N]; MAX_N] = {
     values
 };
 
-pub const fn upper_bound(n: u32, i0: u32) -> u32 {
+pub const fn upper_bound(n: usize, i0: usize) -> usize {
     let i = i0 + 1;
     match i {
         1 => n - 1,
-        2 => n - 2 + n.next_power_of_two().ilog2(),
+        2 => n - 2 + n.next_power_of_two().ilog2() as usize,
         3 => {
             n + 1
-                + ((n + 2) / 4).next_power_of_two().ilog2()
-                + ((n + 3) / 5).next_power_of_two().ilog2()
+                + ((n + 2) / 4).next_power_of_two().ilog2() as usize
+                + ((n + 3) / 5).next_power_of_two().ilog2() as usize
         }
         _ => {
-            let res1 = n - i + (i - 1) * (n + 2 - i).next_power_of_two().ilog2();
-            let res2 = i - 1 + (n - i) * (1 + i).next_power_of_two().ilog2();
+            let res1 = n - i + (i - 1) * (n + 2 - i).next_power_of_two().ilog2() as usize;
+            let res2 = i - 1 + (n - i) * (1 + i).next_power_of_two().ilog2() as usize;
 
             if res1 < res2 {
                 res1
@@ -73,17 +76,17 @@ pub const fn upper_bound(n: u32, i0: u32) -> u32 {
     }
 }
 
-pub const fn lower_bound(n: u32, i0: u32) -> u32 {
+pub const fn lower_bound(n: usize, i0: usize) -> usize {
     let i = i0 + 1;
 
     match i {
         1 => n - 1,
-        2 => n - 2 + n.next_power_of_two().ilog2(),
+        2 => n - 2 + n.next_power_of_two().ilog2() as usize,
         _ => {
             let mut sum = 0;
             let mut j = 0;
             while j <= i - 2 {
-                sum += ((n + j + 1) / (i + j)).next_power_of_two().ilog2();
+                sum += ((n + j + 1) / (i + j)).next_power_of_two().ilog2() as usize;
                 j += 1;
             }
             n + i - 3 + sum
@@ -129,10 +132,10 @@ mod test {
 
     #[test]
     fn test() {
-        for n in 0..=MAX_N as u32 {
+        for n in 0..=MAX_N {
             for i in 0..(n + 1) / 2 {
-                assert_eq!(lower_bound(n, i), lower_bound1(n as i32, i as i32) as u32);
-                assert_eq!(upper_bound(n, i), upper_bound1(n as i32, i as i32) as u32);
+                assert_eq!(lower_bound(n, i), lower_bound1(n as i32, i as i32) as usize);
+                assert_eq!(upper_bound(n, i), upper_bound1(n as i32, i as i32) as usize);
             }
         }
     }

@@ -1,23 +1,22 @@
 use clap::{ArgAction, Parser};
-use search::Cost;
-use std::{
-    fs::OpenOptions,
-    io::{Read, Write},
-};
-
-use poset::Poset;
+use search_forward::Cost;
+use std::io::Write;
 
 use crate::{
     cache::Cache,
-    constants::{KNOWN_MIN_VALUES, MAX_N},
-    search::Search,
+    constants::{KNOWN_VALUES, MAX_N},
+    normal_poset::NormalPoset,
+    poset::Poset,
+    search_forward::Search,
 };
 
 mod bitset;
 mod cache;
+mod canonified_poset;
 mod constants;
+mod normal_poset;
 mod poset;
-mod search;
+mod search_forward;
 mod utils;
 
 #[derive(Parser, Debug)]
@@ -32,12 +31,6 @@ struct Args {
     /// Do only a single calculation
     #[arg(short, long, default_value_t = false, requires("i"))]
     single: bool,
-    /// The name of the cache file to use.
-    #[arg(long, default_value = "cache.dat", value_hint = clap::ValueHint::FilePath)]
-    cache_file: String,
-    /// Do not use a cache file
-    #[arg(long, default_value_t = false)]
-    no_cache_file: bool,
     /// Explore the cache interactively
     #[arg(short, long, default_value_t = false)]
     explore: bool,
@@ -54,11 +47,7 @@ fn main() {
 
     let start_n = args.n.unwrap_or(1);
 
-    let mut cache = if args.no_cache_file {
-        Cache::new(args.max_cache_size)
-    } else {
-        load_cache(&args.cache_file).unwrap_or_else(|| Cache::new(args.max_cache_size))
-    };
+    let mut cache = Cache::new(args.max_cache_size);
 
     println!("Cache entries: {}", cache.len());
     println!("Maximum cache entries: {}", cache.max_entries());
@@ -67,21 +56,17 @@ fn main() {
     if args.verbose != 0 {
         utils::print_git_info();
         utils::print_lscpu();
+        utils::print_current_time();
     }
 
     for n in start_n..=MAX_N as u8 {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
         for i in start_i..(n + 1) / 2 {
-            let old_cache_len = cache.len();
-            let _result = Search::new(n, i, &mut cache).search();
+            let result = Search::new(n, i, &mut cache).search();
 
-            if n < KNOWN_MIN_VALUES.len() as u8 {
-                // assert_eq!(comparisons, KNOWN_MIN_VALUES[n as usize - 1][i as usize]);
-            }
-
-            if !args.no_cache_file && cache.len() != old_cache_len {
-                save_cache(&args.cache_file, &cache);
+            if (n as usize) < KNOWN_VALUES.len() && (i as usize) < KNOWN_VALUES[n as usize].len() {
+                assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);
             }
 
             if args.explore {
@@ -94,7 +79,7 @@ fn main() {
                     mapping
                 };
 
-                explore(Poset::new(n, i), mapping, &cache);
+                explore(NormalPoset::new(n, i), mapping, &cache);
                 return;
             }
 
@@ -105,7 +90,7 @@ fn main() {
     }
 }
 
-fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &Cache) {
+fn explore(poset: NormalPoset, mapping: [u8; MAX_N], cache: &Cache) {
     loop {
         let old_mapping = {
             let mut old = [0; MAX_N];
@@ -227,7 +212,7 @@ fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &Cache) {
                         let next_mapping = {
                             let mut new = [0; MAX_N];
                             for i in 0..poset.n() {
-                                new[i as usize] = mapping[new_mapping[i as usize] as usize];
+                                new[i as usize] = mapping[new_mapping[i as usize]];
                             }
                             new
                         };
@@ -238,40 +223,4 @@ fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &Cache) {
             }
         }
     }
-}
-
-fn save_cache(path: &String, cache: &Cache) {
-    let mut file = OpenOptions::new()
-        .create(true)
-        .write(true)
-        .truncate(true)
-        .open(path)
-        .unwrap();
-
-    let bytes = postcard::to_stdvec(cache).unwrap();
-
-    file.write_all(&bytes).unwrap();
-}
-
-fn load_cache(path: &String) -> Option<Cache> {
-    let mut file = match OpenOptions::new().read(true).open(path) {
-        Ok(file) => file,
-        Err(err) => {
-            dbg!(err);
-            return None;
-        }
-    };
-
-    let mut bytes = vec![];
-    match file.read_to_end(&mut bytes) {
-        Ok(len) => {
-            dbg!(len);
-        }
-        Err(err) => {
-            dbg!(err);
-            return None;
-        }
-    }
-
-    postcard::from_bytes(&bytes).ok()
 }
