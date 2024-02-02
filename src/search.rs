@@ -176,7 +176,7 @@ impl<'a> Search<'a> {
         // search all comparisons
         let mut current_best = max_comparisons + 1;
         for (first, second) in pairs {
-            self.analytics.update_stats(depth, self.cache.len());
+            self.analytics.update_stats(depth, self.current_max, self.cache.len());
 
             // search the first case of the comparison
             let first_result = self.search_rec(first, current_best - 2, depth + 1);
@@ -389,7 +389,7 @@ impl Analytics {
             progress_bars,
         }
     }
-
+    #[inline]
     fn inc_length(&self, depth: u8, count: u64) {
         if depth >= self.max_progress_depth {
             return;
@@ -397,6 +397,7 @@ impl Analytics {
         self.progress_bars[depth as usize].inc_length(count);
     }
 
+    #[inline]
     fn inc(&self, depth: u8, amount: u64) {
         if depth >= self.max_progress_depth {
             return;
@@ -404,6 +405,7 @@ impl Analytics {
         self.progress_bars[depth as usize].inc(amount);
     }
 
+    #[inline]
     fn inc_complete(&self, depth: u8, count: u64) {
         if depth >= self.max_progress_depth {
             return;
@@ -415,13 +417,14 @@ impl Analytics {
         self.progress_bars[depth as usize].set_position(position - count);
     }
 
-    fn update_stats(&self, depth: u8, cache_entries: usize) {
+    #[inline]
+    fn update_stats(&self, depth: u8, current_max: u8, cache_entries: usize) {
         if depth >= self.max_progress_depth {
             return;
         }
         self.progress_bars[0].set_message(format!(
-            "total: {:10}, cache: {:10}",
-            self.total_posets, cache_entries
+            "limit: {:3} total: {:10}, cache: {:10}",
+            current_max, self.total_posets, cache_entries
         ))
     }
 
@@ -433,18 +436,22 @@ impl Analytics {
         }
     }
 
+    #[inline]
     fn record_hit(&mut self) {
         self.cache_hits += 1;
     }
 
+    #[inline]
     fn record_miss(&mut self) {
         self.cache_misses += 1;
     }
 
+    #[inline]
     fn record_replace(&mut self) {
         self.cache_replaced += 1;
     }
 
+    #[inline]
     fn record_poset(&mut self) {
         self.total_posets += 1;
     }
