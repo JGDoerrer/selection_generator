@@ -1,6 +1,8 @@
-use std::time::Instant;
+use std::{
+    sync::atomic::{AtomicU64, Ordering},
+    time::Instant,
+};
 
-use clap::builder::Str;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
@@ -34,7 +36,7 @@ pub struct Analytics {
     cache_replaced: u64,
     max_progress_depth: u8,
     multiprogress: MultiProgress,
-    progress_bars: Vec<ProgressBar>,
+    progress_bars: Vec<(ProgressBar, AtomicU64)>,
 }
 
 impl Cost {
@@ -57,7 +59,7 @@ impl<'a> Search<'a> {
             i,
             current_max: 0,
             cache,
-            analytics: Analytics::new(n.max(3) - 3),
+            analytics: Analytics::new(n.max(4) - 3),
             start: Instant::now(),
         }
     }
@@ -108,7 +110,7 @@ impl<'a> Search<'a> {
         for current in min..max {
             let current = current as u8;
             self.current_max = current;
-
+            self.analytics.set_max_depth(current.max(4) - 3);
             result = match self.search_rec(Poset::new(self.n, self.i), current, 0) {
                 Cost::Solved(solved) => solved,
                 Cost::Minimum(min) => {
@@ -123,6 +125,7 @@ impl<'a> Search<'a> {
                         .multiprogress
                         .println(self.format_duration())
                         .unwrap();
+                    
                     continue;
                 }
             };
@@ -389,7 +392,7 @@ impl Analytics {
             let pb = ProgressBar::new(0)
                 .with_style(ProgressStyle::with_template("[{pos:2}/{len:2}] {msg}").unwrap());
             let pb = multiprogress.add(pb);
-            progress_bars.push(pb);
+            progress_bars.push((pb, AtomicU64::new(0)));
         }
         Analytics {
             total_posets: 0,
@@ -401,12 +404,34 @@ impl Analytics {
             progress_bars,
         }
     }
+
+    fn set_max_depth(&mut self, new_depth: u8) {
+        if new_depth > self.max_progress_depth {
+            for _ in self.max_progress_depth..new_depth {
+                let pb = ProgressBar::new(0)
+                    .with_style(ProgressStyle::with_template("[{pos:2}/{len:2}] {msg}").unwrap());
+                let pb = self.multiprogress.add(pb);
+                self.progress_bars.push((pb, AtomicU64::new(0)));
+            }
+        } else {
+            for _ in new_depth..self.max_progress_depth {
+                let (pb, _) = self.progress_bars.pop().unwrap();
+                pb.finish_and_clear();
+                self.multiprogress.remove(&pb);
+            }
+        }
+        self.max_progress_depth = new_depth;
+    }
+
     #[inline]
     fn inc_length(&self, depth: u8, count: u64) {
         if depth >= self.max_progress_depth {
             return;
         }
-        self.progress_bars[depth as usize].inc_length(count);
+        self.progress_bars[depth as usize].0.inc_length(count);
+        self.progress_bars[depth as usize]
+            .1
+            .fetch_add(count, Ordering::Relaxed);
     }
 
     #[inline]
@@ -414,7 +439,7 @@ impl Analytics {
         if depth >= self.max_progress_depth {
             return;
         }
-        self.progress_bars[depth as usize].inc(amount);
+        self.progress_bars[depth as usize].0.inc(amount);
     }
 
     #[inline]
@@ -422,11 +447,11 @@ impl Analytics {
         if depth >= self.max_progress_depth {
             return;
         }
-        let len = self.progress_bars[depth as usize].length().unwrap_or(count);
-        self.progress_bars[depth as usize].set_length(len - count);
+        let (pb, len) = &self.progress_bars[depth as usize];
 
-        let position = self.progress_bars[depth as usize].position();
-        self.progress_bars[depth as usize].set_position(position - count);
+        pb.inc(count.wrapping_neg());
+        pb.set_length(len.fetch_sub(count, Ordering::Release) - count);
+        
     }
 
     #[inline]
@@ -434,7 +459,7 @@ impl Analytics {
         if depth >= self.max_progress_depth {
             return;
         }
-        self.progress_bars[0].set_message(format!(
+        self.progress_bars[0].0.set_message(format!(
             "limit: {:3} total: {:10}, cache: {:10}",
             current_max, self.total_posets, cache_entries
         ))
@@ -442,7 +467,7 @@ impl Analytics {
 
     fn complete_all(&self) {
         for i in 0..self.max_progress_depth as usize {
-            let pb = &self.progress_bars[i];
+            let (pb, _) = &self.progress_bars[i];
             pb.finish_and_clear();
             self.multiprogress.remove(pb);
         }
@@ -487,9 +512,6 @@ impl Analytics {
 
 impl Drop for Analytics {
     fn drop(&mut self) {
-        self.progress_bars.iter().for_each(|pb| {
-            pb.finish_and_clear();
-            self.multiprogress.remove(pb);
-        });
+        self.complete_all();
     }
 }
