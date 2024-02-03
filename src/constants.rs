@@ -26,11 +26,7 @@ pub const LOWER_BOUNDS: [[usize; MAX_N]; MAX_N + 1] = {
     while n < MAX_N + 1 {
         let mut i = 0;
         while i < n {
-            values[n][i] = if KNOWN_VALUES[n].len() > i {
-                KNOWN_VALUES[n][i]
-            } else {
-                lower_bound(n, i)
-            };
+            values[n][i] = lower_bound(n, i);
 
             i += 1;
         }
@@ -47,11 +43,7 @@ pub const UPPER_BOUNDS: [[usize; MAX_N]; MAX_N] = {
     while n < MAX_N {
         let mut i = 0;
         while i < n {
-            values[n][i] = if KNOWN_VALUES[n].len() > i {
-                KNOWN_VALUES[n][i]
-            } else {
-                upper_bound(n, i)
-            };
+            values[n][i] = upper_bound(n, i);
 
             i += 1;
         }
