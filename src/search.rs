@@ -110,7 +110,7 @@ impl<'a> Search<'a> {
         for current in min..max {
             let current = current as u8;
             self.current_max = current;
-            self.analytics.set_max_depth(current.max(4) - 3);
+            self.analytics.set_max_depth(current / 2);
             result = match self.search_rec(Poset::new(self.n, self.i), current, 0) {
                 Cost::Solved(solved) => solved,
                 Cost::Minimum(min) => {
@@ -125,7 +125,7 @@ impl<'a> Search<'a> {
                         .multiprogress
                         .println(self.format_duration())
                         .unwrap();
-                    
+
                     continue;
                 }
             };
@@ -451,7 +451,6 @@ impl Analytics {
 
         pb.inc(count.wrapping_neg());
         pb.set_length(len.fetch_sub(count, Ordering::Release) - count);
-        
     }
 
     #[inline]
