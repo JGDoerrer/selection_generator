@@ -1,4 +1,6 @@
-use std::{collections::hash_map::DefaultHasher, hash::Hash, hash::Hasher, mem::size_of};
+use std::{
+    collections::hash_map::DefaultHasher, hash::Hash, hash::Hasher, mem::size_of, os::unix::process,
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -8,7 +10,7 @@ use crate::{constants::LOWER_BOUNDS, poset::Poset, search::Cost};
 pub struct Entry {
     pub poset: Poset,
     pub cost: Cost,
-    pub priority: i16,
+    pub priority: u16,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -64,7 +66,7 @@ impl Cache {
             let cost = entry.cost;
             let priority = LOWER_BOUNDS[poset.n() as usize - 1]
                 [poset.i().min(poset.n() - poset.i() - 1) as usize]
-                as i16;
+                as u16;
 
             entry.priority = entry.priority.saturating_add(priority);
 
@@ -82,9 +84,9 @@ impl Cache {
 
         let row = &mut self.arrays[hash as usize % self.arrays.len()];
 
-        let mut lowest_prio = i16::MAX;
+        let mut lowest_prio = u16::MAX;
         let mut lowest_prio_index = 0;
-        let mut lowest_unsolved_prio = i16::MAX;
+        let mut lowest_unsolved_prio = u16::MAX;
         let mut lowest_unsolved_prio_index = None;
         let mut match_index = None;
         let mut free_index = None;
@@ -115,29 +117,21 @@ impl Cache {
                     self.len += 1;
                     i
                 }
-                None => match lowest_unsolved_prio_index {
-                    Some(i) => {
-                        replace = true;
-                        i
-                    }
-                    None => {
-                        replace = true;
-                        lowest_prio_index
-                    }
-                },
+                None => lowest_prio_index,
             },
         };
 
-        for (i, entry) in row.iter_mut().enumerate() {
-            if i != index {
-                if let Some(entry) = entry {
-                    entry.priority = entry.priority.saturating_sub(1);
-                }
+        if let Some(entry) = row[index] {
+            replace = true;
+            let priority = entry.priority;
+
+            for entry in row.iter_mut().flatten() {
+                entry.priority = entry.priority.saturating_sub(priority);
             }
         }
 
         let priority = LOWER_BOUNDS[poset.n() as usize - 1]
-            [poset.i().min(poset.n() - poset.i() - 1) as usize] as i16;
+            [poset.i().min(poset.n() - poset.i() - 1) as usize] as u16;
 
         row[index] = Some(Entry {
             poset,
