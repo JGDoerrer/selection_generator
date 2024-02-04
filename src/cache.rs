@@ -1,6 +1,4 @@
-use std::{
-    collections::hash_map::DefaultHasher, hash::Hash, hash::Hasher, mem::size_of, os::unix::process,
-};
+use std::{collections::hash_map::DefaultHasher, hash::Hash, hash::Hasher, mem::size_of};
 
 use serde::{Deserialize, Serialize};
 
@@ -86,17 +84,11 @@ impl Cache {
 
         let mut lowest_prio = u16::MAX;
         let mut lowest_prio_index = 0;
-        let mut lowest_unsolved_prio = u16::MAX;
-        let mut lowest_unsolved_prio_index = None;
         let mut match_index = None;
         let mut free_index = None;
 
         for (i, entry) in row.iter().enumerate() {
             if let Some(entry) = entry {
-                if !entry.cost.is_solved() && entry.priority < lowest_unsolved_prio {
-                    lowest_unsolved_prio = entry.priority;
-                    lowest_unsolved_prio_index = Some(i);
-                }
                 if entry.priority < lowest_prio {
                     lowest_prio = entry.priority;
                     lowest_prio_index = i;
