@@ -65,7 +65,7 @@ impl<'a> Search<'a> {
     }
 
     fn search_cache(&mut self, poset: &Poset) -> Option<Cost> {
-        let result = self.cache.get_and_do_stuff(poset);
+        let result = self.cache.get_mut(poset);
         if result.is_some() {
             self.analytics.record_hit();
         } else {
@@ -242,6 +242,7 @@ impl<'a> Search<'a> {
                 if poset.has_order(i, j) {
                     continue;
                 }
+                // TODO: Maybe only reduce
                 let less = poset.with_less(i, j);
                 let greater = poset.with_less(j, i);
 
@@ -287,7 +288,7 @@ impl<'a> Search<'a> {
         max_comparisons: u8,
         start_i: u8,
         start_j: u8,
-        _depth: u8,
+        depth: u8,
     ) -> Option<bool> {
         if let Some(cost) = self.search_cache(&poset) {
             match cost {
@@ -324,20 +325,16 @@ impl<'a> Search<'a> {
                     continue;
                 }
 
-                if let Some(false) = self.estimate_solvable(
-                    poset.with_less(i, j),
-                    max_comparisons,
-                    i,
-                    j + 1,
-                    _depth + 1,
-                ) {
+                if let Some(false) =
+                    self.estimate_solvable(poset.with_less(i, j), max_comparisons, i, j + 1, depth)
+                {
                     return Some(false);
                 }
             }
         }
 
         if start_i != 0 && start_j != 0 {
-            let cost = self.search_rec(poset, max_comparisons, _depth);
+            let cost = self.search_rec(poset, max_comparisons, depth + 1);
             match cost {
                 Cost::Solved(solved) => {
                     if solved <= max_comparisons {
