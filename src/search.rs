@@ -111,20 +111,17 @@ impl<'a> Search<'a> {
             let current = current as u8;
             self.current_max = current;
             self.analytics.set_max_depth(current / 2);
-            result = match self.search_rec(Poset::new(self.n, self.i), current, 0) {
+
+            let search_result = self.search_rec(Poset::new(self.n, self.i), current, 0);
+            result = match search_result {
                 Cost::Solved(solved) => solved,
                 Cost::Minimum(min) => {
-                    self.analytics
-                        .multiprogress
-                        .println(format!(
-                            "n: {}, i: {} needs at least {} comparisons",
-                            self.n, self.i, min
-                        ))
-                        .unwrap();
-                    self.analytics
-                        .multiprogress
-                        .println(self.format_duration())
-                        .unwrap();
+                    self.analytics.multiprogress.clear().unwrap();
+                    println!(
+                        "n: {}, i: {} needs at least {} comparisons",
+                        self.n, self.i, min
+                    );
+                    println!("{}", self.format_duration());
 
                     continue;
                 }
@@ -242,7 +239,7 @@ impl<'a> Search<'a> {
                 if poset.has_order(i, j) {
                     continue;
                 }
-                // TODO: Maybe only reduce
+
                 let less = poset.with_less(i, j);
                 let greater = poset.with_less(j, i);
 
