@@ -39,4 +39,6 @@ fn main() {
     SearchMode::Backward => search_backward::main(),
     SearchMode::Bidirectional => search_bidirectional::main(),
   }
+
+  // crate::poset::test_enlarge();
 }

@@ -39,37 +39,31 @@ fn start_search_backward(
       .par_iter()
       .map(|item| {
         let mut destination: HashSet<Poset> = HashSet::new();
-        for i in 0..n {
-          for j in 0..n {
-            if item.is_less(i, j) {
-              for mut predecessor in item.remove_less(i, j, |poset| {
-                poset_cache
-                  .read()
-                  .expect("cache shouldn't be poisoned")
-                  .check(poset, k - 1)
-              }) {
-                if predecessor == Poset::new(n, i0) {
-                  atomic_break.store(true, Ordering::Relaxed);
-                }
-                predecessor.normalize();
-                if poset_cache
-                  .read()
-                  .expect("cache shouldn't be poisoned")
-                  .check(&predecessor, k - 1)
-                {
-                  continue;
-                }
-                poset_cache
-                  .write()
-                  .expect("cache shouldn't be poisoned")
-                  .insert(&predecessor, k);
-                destination.insert(predecessor);
+        for mut predecessor in item.remove_less(|poset| {
+          poset_cache
+            .read()
+            .expect("cache shouldn't be poisoned")
+            .check(poset, k - 1)
+        }) {
+          if predecessor == Poset::new(n, i0) {
+            atomic_break.store(true, Ordering::Relaxed);
+          }
+          predecessor.normalize();
+          if poset_cache
+            .read()
+            .expect("cache shouldn't be poisoned")
+            .check(&predecessor, k - 1)
+          {
+            continue;
+          }
+          poset_cache
+            .write()
+            .expect("cache shouldn't be poisoned")
+            .insert(&predecessor, k);
+          destination.insert(predecessor);
 
-                if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
-                  return destination;
-                }
-              }
-            }
+          if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
+            return destination;
           }
         }
         destination
