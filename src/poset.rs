@@ -1,10 +1,5 @@
-use std::{
-    fmt::Debug,
-    hash::{BuildHasher, Hasher},
-    os::raw::c_int,
-};
+use std::{fmt::Debug, os::raw::c_int};
 
-use hashbrown::hash_map::DefaultHashBuilder;
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use serde::{Deserialize, Serialize};
 
@@ -31,6 +26,7 @@ impl Default for Poset {
 impl Poset {
     pub fn new(n: u8, i: u8) -> Self {
         debug_assert!(n < MAX_N as u8);
+        debug_assert!(i < n);
 
         Poset {
             n,
@@ -121,12 +117,8 @@ impl Poset {
         self.canonify_mapping();
     }
 
-    fn hash(a: u64, b: u64) -> u64 {
-        DefaultHashBuilder::default().hash_one(((a as u128) << 64) | b as u128)
-    }
-
     /// Canonifies the poset and returns a mapping from old to new indices, since they shift around
-    fn canonify_mapping(&mut self) -> [PosetIndex; MAX_N] {
+    pub fn canonify_mapping(&mut self) -> [usize; MAX_N] {
         let n = self.n as usize;
 
         let mut ordered_with_subsets = [BitSet::empty(); MAX_N];
@@ -141,9 +133,11 @@ impl Poset {
             in_out_degree[i] = greater.len() as u64 * MAX_N as u64 + less.len() as u64;
         }
 
+        let in_out_degree = in_out_degree;
+
         let mut hash = in_out_degree;
 
-        for _ in 0..2 {
+        for _ in 0..4 {
             let mut sum_hash = hash;
 
             for i in 0..n {
@@ -155,41 +149,101 @@ impl Poset {
 
             // calc new hash based on neighbours hashes
             for i in 0..self.n as usize {
-                hash[i] = Self::hash(sum_hash[i], in_out_degree[i]);
+                let new_hash = sum_hash[i]
+                    .wrapping_mul(MAX_N.pow(2) as u64)
+                    .wrapping_add(in_out_degree[i]);
+
+                hash[i] = new_hash;
             }
         }
 
-        let mut new_indices = [0; MAX_N];
-        for i in 0..self.n {
-            new_indices[i as usize] = i;
-        }
+        let hash = hash;
 
-        new_indices[0..n].sort_by(|a, b| {
-            in_out_degree[*a as usize]
-                .cmp(&in_out_degree[*b as usize])
-                .then(hash[*a as usize].cmp(&hash[*b as usize]))
-        });
+        let mut new_indices = [0; MAX_N];
+        new_indices
+            .iter_mut()
+            .enumerate()
+            .take(self.n as usize)
+            .for_each(|(i, index)| *index = i);
+
+        let comparator = |a: &usize, b: &usize| {
+            in_out_degree[*a]
+                .cmp(&in_out_degree[*b])
+                .then(hash[*a].cmp(&hash[*b]))
+        };
+
+        new_indices[0..n].sort_by(comparator);
+
+        // let mut is_unique = true;
+        // for i in 1..self.n as usize {
+        //     let i0 = new_indices[i];
+        //     let i1 = new_indices[i - 1];
+
+        //     let degree = in_out_degree[i0];
+        //     if degree == 0 || degree == 1 || degree == MAX_N as u64 {
+        //         continue;
+        //     }
+
+        //     if in_out_degree[i1] == in_out_degree[i0] && hash[i1] == hash[i0] {
+        //         let mut new = *self;
+        //         new.swap(i1 as u8, i0 as u8);
+        //         if new != *self {
+        //             is_unique = false;
+        //             break;
+        //         }
+        //     }
+        // }
+
+        // if !is_unique {
+        //     new_indices = self.canonify_nauty_indicies();
+
+        //     new_indices[0..n].sort_by(comparator);
+        // }
 
         let mut new = Poset::new(self.n, self.i);
 
         // make the new poset
         for i in 0..new.n {
             for j in 0..new.n {
-                if self.is_less(new_indices[i as usize], new_indices[j as usize]) {
+                if self.is_less(new_indices[i as usize] as u8, new_indices[j as usize] as u8) {
                     new.set_bit(i, j)
                 }
             }
         }
 
-        // dbg!(&self, &new);
+        // assert!(self.is_lower_triangle_matrix());
         debug_assert!(new.is_closed(), "{new:?}");
         *self = new;
 
         new_indices
     }
 
+    pub fn set_less(&mut self, i: u8, j: u8, value: bool) {
+        if value {
+            self.adjacency[i as usize].insert(j as usize);
+        } else {
+            self.adjacency[i as usize].remove(j as usize);
+        }
+    }
+
+    fn swap_positions(&mut self, i0: u8, j0: u8, i1: u8, j1: u8) {
+        let temp = self.is_less(i0, j0);
+        self.set_less(i0, j0, self.is_less(i1, j1));
+        self.set_less(i1, j1, temp);
+    }
+
+    fn swap(&mut self, i: u8, j: u8) {
+        for k in 0..self.n {
+            if !(i != k && j != k) {
+                continue;
+            }
+            self.swap_positions(i, k, j, k);
+            self.swap_positions(k, i, k, j);
+        }
+    }
+
     /// Removes elements, that are known to be too large/small
-    fn reduce_elements(&mut self) -> [PosetIndex; MAX_N] {
+    pub fn reduce_elements(&mut self) -> [PosetIndex; MAX_N] {
         // can the element be ignored, because it is too large/small
         let mut dropped = [false; MAX_N];
         let mut n_less_dropped = 0;
@@ -235,7 +289,7 @@ impl Poset {
             }
         }
 
-        if new.i > new.n / 2 {
+        if new.i > (new.n + 1) / 2 {
             new = new.dual();
         }
 
@@ -244,6 +298,54 @@ impl Poset {
         *self = new;
 
         new_indices
+    }
+
+    fn canonify_nauty_indicies(&self) -> [usize; MAX_N] {
+        let mut options = optionblk {
+            getcanon: TRUE,
+            defaultptn: FALSE,
+            digraph: TRUE,
+            ..Default::default()
+        };
+        let mut stats = statsblk::default();
+
+        let mut labels: [c_int; MAX_N] =
+            (0..MAX_N as c_int).collect::<Vec<_>>().try_into().unwrap();
+
+        let mut ptn = [c_int::from(1); MAX_N];
+        ptn[self.n as usize - 1] = 0;
+        let mut zeroes2 = [c_int::from(0); MAX_N];
+
+        let mut dg = [0; MAX_N];
+        for (i, mask) in dg.iter_mut().enumerate().take(self.n as usize) {
+            for j in 0..self.n {
+                if self.is_less(i as u8, j) {
+                    *mask |= nauty_Traces_sys::bit[j as usize];
+                }
+            }
+        }
+
+        let mut canonical = [0; MAX_N];
+
+        unsafe {
+            densenauty(
+                dg.as_mut_ptr(),
+                labels.as_mut_ptr(),
+                ptn.as_mut_ptr(),
+                zeroes2.as_mut_ptr(),
+                &mut options,
+                &mut stats,
+                1 as c_int,
+                self.n as c_int,
+                canonical.as_mut_ptr(),
+            );
+        }
+
+        let mut result = [0; MAX_N];
+        for i in 0..self.n as usize {
+            result[i] = labels[i] as usize;
+        }
+        result
     }
 
     fn canonify_nauty(&mut self) {
@@ -421,7 +523,7 @@ impl Poset {
     }
 
     /// returns a clone of the poset, with i < j added
-    pub fn with_less_mapping(&self, i: PosetIndex, j: PosetIndex) -> (Self, [PosetIndex; MAX_N]) {
+    pub fn with_less_mapping(&self, i: PosetIndex, j: PosetIndex) -> (Self, [usize; MAX_N]) {
         let mut new = *self;
 
         new.add_and_close(i, j);
