@@ -300,7 +300,7 @@ impl<'a> Search<'a> {
             }
         }
 
-        if self.current_max - max_comparisons >= poset.n() && poset.n() + 1 >= self.n {
+        if self.current_max - max_comparisons >= poset.n() {
             let compatible_posets = poset.num_compatible_posets();
             if compatible_posets == 0 || max_comparisons < compatible_posets.ilog2() as u8 {
                 return Some(false);
