@@ -1,8 +1,12 @@
-use std::{collections::hash_map::DefaultHasher, hash::Hash, hash::Hasher, mem::size_of};
+use std::mem::size_of;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{constants::LOWER_BOUNDS, poset::Poset, search::Cost};
+use crate::{
+    constants::{LOWER_BOUNDS, MAX_N},
+    poset::Poset,
+    search::Cost,
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Cache {
@@ -35,20 +39,26 @@ impl Cache {
         self.arrays.len() * Row::ROW_LEN
     }
 
-    pub fn get(&self, poset: &Poset) -> Option<Cost> {
-        let mut hasher = DefaultHasher::new();
-        poset.hash(&mut hasher);
-        let hash = hasher.finish();
+    fn hash(poset: &Poset) -> u64 {
+        let mut hash = poset.n() as u64 + poset.i() as u64 * MAX_N as u64;
 
+        for i in 0..poset.n() {
+            hash = hash.wrapping_mul(hash + 1);
+            hash = hash.wrapping_add(poset.get_all_greater_than(i).bits() as u64);
+        }
+
+        hash
+    }
+
+    pub fn get(&self, poset: &Poset) -> Option<Cost> {
+        let hash = Self::hash(poset);
         let row = &self.arrays[hash as usize % self.arrays.len()];
 
         row.get(poset)
     }
 
     pub fn get_mut(&mut self, poset: &Poset) -> Option<Cost> {
-        let mut hasher = DefaultHasher::new();
-        poset.hash(&mut hasher);
-        let hash = hasher.finish();
+        let hash = Self::hash(poset);
 
         let row = &mut self.arrays[hash as usize % self.arrays.len()];
 
@@ -57,9 +67,7 @@ impl Cache {
 
     /// returns true if an entry has been replaced
     pub fn insert(&mut self, poset: Poset, cost: Cost) -> bool {
-        let mut hasher = DefaultHasher::new();
-        poset.hash(&mut hasher);
-        let hash = hasher.finish();
+        let hash = Self::hash(&poset);
 
         let row = &mut self.arrays[hash as usize % self.arrays.len()];
 
