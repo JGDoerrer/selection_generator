@@ -169,7 +169,8 @@ impl Poset {
         let comparator = |a: &usize, b: &usize| {
             in_out_degree[*a]
                 .cmp(&in_out_degree[*b])
-                .then(hash[*a].cmp(&hash[*b]))
+                .then_with(|| hash[*a].cmp(&hash[*b]))
+                .reverse()
         };
 
         new_indices[0..n].sort_by(comparator);
@@ -211,8 +212,9 @@ impl Poset {
             }
         }
 
-        // assert!(self.is_lower_triangle_matrix());
+        debug_assert!(new.is_lower_triangle_matrix(), "{new:?}");
         debug_assert!(new.is_closed(), "{new:?}");
+
         *self = new;
 
         new_indices
@@ -415,13 +417,15 @@ impl Poset {
 
         let mut new = Poset::new(self.n, self.i);
 
-        while indices_used != BitSet::from_u16(((1u32 << self.n) - 1) as u16) {
-            for i in 0..self.n {
-                if indices_used.contains(i as usize) {
-                    continue;
-                }
+        let mask_n = BitSet::from_u16(((1u32 << self.n) - 1) as u16);
 
-                let less_than_i = self.get_all_less_than(i);
+        while indices_used != mask_n {
+            for i in indices_used.complement().intersect(mask_n) {
+                // if indices_used.contains(i as usize) {
+                //     continue;
+                // }
+
+                let less_than_i = self.get_all_less_than(i as u8);
 
                 if less_than_i.is_empty() || less_than_i.intersect(indices_used) == less_than_i {
                     new_indices[next_free] = i;
@@ -433,8 +437,8 @@ impl Poset {
 
         new_indices = {
             let mut mapping = [0; MAX_N];
-            for i in 0..self.n {
-                mapping[new_indices[i as usize] as usize] = i;
+            for i in 0..self.n as usize {
+                mapping[new_indices[i]] = i;
             }
             mapping
         };
@@ -442,7 +446,7 @@ impl Poset {
         for i in 0..new.n {
             for j in 0..new.n {
                 if self.is_less(i, j) {
-                    new.set_bit(new_indices[i as usize], new_indices[j as usize])
+                    new.set_bit(new_indices[i as usize] as u8, new_indices[j as usize] as u8)
                 }
             }
         }
@@ -547,24 +551,22 @@ impl Poset {
     }
 
     pub fn num_compatible_posets(&self) -> usize {
-        let canonified = self.canonify_lower_matrix();
-
         let mut sum = 0;
-        for i in 0..canonified.n {
+        for i in 0..self.n {
             // assume the ith element is the solution
 
-            let less_than_i = canonified.get_all_less_than(i);
-            let greater_than_i = canonified.get_all_greater_than(i);
+            let less_than_i = self.get_all_less_than(i);
+            let greater_than_i = self.get_all_greater_than(i);
 
             let mut less_subsets = Vec::with_capacity(1000);
             less_subsets.push(BitSet::empty());
 
-            for j in 0..canonified.n {
+            for j in 0..self.n {
                 if j == i || greater_than_i.contains(j as usize) {
                     continue;
                 }
                 // try adding j to all previous subsets
-                let less_than_j = canonified.get_all_less_than(j);
+                let less_than_j = self.get_all_less_than(j);
 
                 // try adding j to all previous subsets
                 if less_than_i.contains(j as usize) {
@@ -589,7 +591,7 @@ impl Poset {
 
             sum += less_subsets
                 .into_iter()
-                .filter(|s| s.len() == canonified.i as usize)
+                .filter(|s| s.len() == self.i as usize)
                 .count();
         }
 
