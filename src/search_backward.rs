@@ -6,6 +6,8 @@ use std::vec;
 
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
+use crate::util::OPTIMISE_BACKWARD_WRONG;
+
 use super::cache_set::CacheSetSolvable;
 use super::cache_tree::{CacheTreeNotSolvable, CacheTreeSolvable};
 use super::poset::Poset;
@@ -120,26 +122,33 @@ fn start_search_backward(
   let mut source = HashSet::new();
   source.insert(start_poset);
   let init = std::time::Instant::now();
-  source = Poset::enlarge(interrupt, &source, n, i0);
-  println!(
-    "# 0: 1 => {} in {:.3?} | total cached: {}",
-    source.len(),
-    init.elapsed(),
-    poset_cache
-      .read()
-      .expect("cache shouldn't be poisoned")
-      .size()
-  );
+  if !OPTIMISE_BACKWARD_WRONG {
+    source = Poset::enlarge(interrupt, &source, n, i0);
+    println!(
+      "# 0: 1 => {} in {:.3?} | total cached: {}",
+      source.len(),
+      init.elapsed(),
+      poset_cache
+        .read()
+        .expect("cache shouldn't be poisoned")
+        .size()
+    );
+  }
 
   // Aussage:
   // item1 subset item2 => A subset B and every Element in a is an Element from B (subset)
 
   for k in 1..max_comparisons {
     let start = std::time::Instant::now();
+    let source_new = if OPTIMISE_BACKWARD_WRONG {
+      Poset::enlarge(interrupt, &source, n, i0).clone()
+    } else {
+      source.clone()
+    };
 
     let atomic_break = Arc::new(AtomicBool::new(false));
     let interrupt_local = interrupt.clone();
-    let results: Vec<HashSet<Poset>> = source
+    let results: Vec<HashSet<Poset>> = source_new
       .par_iter()
       .map(|item| {
         let mut destination: HashSet<Poset> = HashSet::new();
@@ -200,7 +209,11 @@ fn start_search_backward(
             }
           }
 
-          destination.insert(predecessor_wo);
+          if OPTIMISE_BACKWARD_WRONG {
+            destination.insert(predecessor);
+          } else {
+            destination.insert(predecessor_wo);
+          }
         }
         destination
       })
@@ -218,8 +231,9 @@ fn start_search_backward(
     }
 
     print!(
-      "# {k}: {} => {} in {:.3?} | total cached: {}",
+      "# {k}: {} ({}) => {} in {:.3?} | total cached: {}",
       source.len(),
+      source_new.len(),
       destination.len(),
       start.elapsed(),
       poset_cache
@@ -269,10 +283,8 @@ pub fn main() {
     single(&interrupt, 9, 4);
   } else if true {
     for n in 2..MAX_N as u8 {
-      #[allow(clippy::never_loop)]
-      for i in (0..((n + 1) / 2)).rev() {
+      for i in 0..((n + 1) / 2) {
         single(&interrupt, n, i);
-        break;
       }
       println!();
     }
