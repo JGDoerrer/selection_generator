@@ -1,8 +1,12 @@
 use std::{
+    fmt::format,
+    fs::{File, OpenOptions},
+    io::Write,
     sync::atomic::{AtomicU64, Ordering},
-    time::Instant,
+    time::{Duration, Instant},
 };
 
+use hashbrown::HashMap;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use serde::{Deserialize, Serialize};
 
@@ -37,6 +41,8 @@ pub struct Analytics {
     max_progress_depth: u8,
     multiprogress: MultiProgress,
     progress_bars: Vec<(ProgressBar, AtomicU64)>,
+    compatible_posets: Vec<Vec<usize>>,
+    durations: Vec<Vec<Duration>>,
 }
 
 impl Cost {
@@ -111,6 +117,8 @@ impl<'a> Search<'a> {
             let current = current as u8;
             self.current_max = current;
             self.analytics.set_max_depth(current / 2);
+            self.analytics.compatible_posets.resize(max, vec![]);
+            self.analytics.durations.resize(max, vec![]);
 
             let search_result = self.search_rec(Poset::new(self.n, self.i), current, 0);
             result = match search_result {
@@ -130,6 +138,63 @@ impl<'a> Search<'a> {
         }
 
         self.analytics.complete_all();
+
+        let mut posets_file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(format!("comp_posets_{}_{}.dat", self.n, self.i))
+            .unwrap();
+
+        posets_file
+            .write(format!("comparisons comp_posets amount\n").as_bytes())
+            .unwrap();
+
+        let mut durations_file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(format!("durations_{}_{}.dat", self.n, self.i))
+            .unwrap();
+
+        durations_file
+            .write(format!("comparisons duration\n").as_bytes())
+            .unwrap();
+
+        for comparisons in 0..self.analytics.compatible_posets.len() {
+            let mut counts = HashMap::new();
+
+            for comp_posets in &self.analytics.compatible_posets[comparisons] {
+                if let Some(count) = counts.get_mut(comp_posets) {
+                    *count += 1;
+                } else {
+                    counts.insert(comp_posets, 1);
+                }
+            }
+
+            let mut counts: Vec<_> = counts.into_iter().collect();
+            counts.sort_by_key(|(k, _)| *k);
+
+            for (comp_posets, amount) in counts {
+                posets_file
+                    .write(format!("{comparisons} {comp_posets} {amount}\n").as_bytes())
+                    .unwrap();
+            }
+
+            posets_file.flush().unwrap();
+
+            let mut durations: Vec<_> = self.analytics.durations[comparisons]
+                .iter()
+                .map(|d| d.as_secs_f32())
+                .collect();
+            durations.sort_by(f32::total_cmp);
+
+            for duration in durations {
+                durations_file
+                    .write(format!("{comparisons} {}\n", duration).as_bytes())
+                    .unwrap();
+            }
+        }
 
         // Print the found solution
         println!();
@@ -172,6 +237,11 @@ impl<'a> Search<'a> {
                 }
             }
         }
+
+        let start = Instant::now();
+
+        self.analytics.compatible_posets[max_comparisons as usize]
+            .push(poset.num_compatible_posets());
 
         if let Some(false) = self.estimate_solvable(poset, max_comparisons, 0, 0, depth) {
             let result = Cost::Minimum(max_comparisons + 1);
@@ -227,6 +297,9 @@ impl<'a> Search<'a> {
         self.analytics.record_poset();
 
         self.insert_cache(poset, result);
+
+        let duration = Instant::now() - start;
+        self.analytics.durations[max_comparisons as usize].push(duration);
 
         result
     }
@@ -396,6 +469,8 @@ impl Analytics {
             max_progress_depth,
             multiprogress,
             progress_bars,
+            compatible_posets: vec![],
+            durations: vec![],
         }
     }
 
