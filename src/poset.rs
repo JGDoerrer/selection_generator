@@ -5,8 +5,6 @@ use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::{env, fmt};
 
-use super::cache_tree::CacheTreeItem;
-use super::util::ALWAYS_USE_SUBGRAPH_ISOMORPHISM;
 use super::util::{MAX_N, ONLY_NAUTY_CANONIFY};
 
 use const_for::const_for;

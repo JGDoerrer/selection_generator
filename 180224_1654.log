@@ -1,0 +1,330 @@
+# 0: 1 in 19.636µs | total cached: 1
+# 1: 1 in 677.447µs | total cached: 2 (found solution)
+time '772.119µs': n = 2, i = 0, comparisons: 1
+
+# 0: 1 in 9.494µs | total cached: 1
+# 1: 2 in 104.387µs | total cached: 2
+# 2: 2 in 52.557µs | total cached: 3 (found solution)
+time '266.565µs': n = 3, i = 0, comparisons: 2
+# 0: 1 in 35.844µs | total cached: 1
+# 1: 1 in 28.623µs | total cached: 2
+# 2: 2 in 40.086µs | total cached: 3
+# 3: 1 in 26.608µs | total cached: 4 (found solution)
+time '254.631µs': n = 3, i = 1, comparisons: 3
+
+# 0: 1 in 17.822µs | total cached: 1
+# 1: 5 in 91.702µs | total cached: 2
+# 2: 7 in 181.040µs | total cached: 3
+# 3: 3 in 52.255µs | total cached: 4 (found solution)
+time '411.866µs': n = 4, i = 0, comparisons: 3
+# 0: 1 in 56.601µs | total cached: 1
+# 1: 2 in 60.757µs | total cached: 2
+# 2: 4 in 67.355µs | total cached: 5
+# 3: 5 in 68.971µs | total cached: 8
+# 4: 4 in 57.558µs | total cached: 9 (found solution)
+time '454.150µs': n = 4, i = 1, comparisons: 4
+
+# 0: 1 in 54.047µs | total cached: 1
+# 1: 16 in 218.449µs | total cached: 2
+# 2: 27 in 336.534µs | total cached: 3
+# 3: 15 in 132.286µs | total cached: 4
+# 4: 4 in 63.486µs | total cached: 5 (found solution)
+time '906.863µs': n = 5, i = 0, comparisons: 4
+# 0: 1 in 125.982µs | total cached: 1
+# 1: 5 in 146.563µs | total cached: 2
+# 2: 12 in 207.651µs | total cached: 5
+# 3: 18 in 223.199µs | total cached: 10
+# 4: 20 in 174.383µs | total cached: 14
+# 5: 6 in 105.438µs | total cached: 15
+# 6: 1 in 16.850µs | total cached: 16 (found solution)
+time '1.119ms': n = 5, i = 1, comparisons: 6
+# 0: 1 in 107.757µs | total cached: 1
+# 1: 4 in 109.790µs | total cached: 2
+# 2: 8 in 161.329µs | total cached: 5
+# 3: 17 in 243.417µs | total cached: 11
+# 4: 20 in 186.457µs | total cached: 18
+# 5: 10 in 149.931µs | total cached: 21
+# 6: 3 in 42.250µs | total cached: 22 (found solution)
+time '1.139ms': n = 5, i = 2, comparisons: 6
+
+# 0: 1 in 266.470µs | total cached: 1
+# 1: 63 in 800.172µs | total cached: 2
+# 2: 134 in 1.116ms | total cached: 3
+# 3: 88 in 695.873µs | total cached: 4
+# 4: 27 in 261.074µs | total cached: 5
+# 5: 5 in 82.781µs | total cached: 6 (found solution)
+time '3.344ms': n = 6, i = 0, comparisons: 5
+# 0: 1 in 693.485µs | total cached: 1
+# 1: 16 in 214.674µs | total cached: 2
+# 2: 43 in 488.828µs | total cached: 5
+# 3: 84 in 846.287µs | total cached: 11
+# 4: 111 in 904.832µs | total cached: 19
+# 5: 45 in 375.858µs | total cached: 24
+# 6: 13 in 127.787µs | total cached: 26
+# 7: 5 in 103.942µs | total cached: 27 (found solution)
+time '3.923ms': n = 6, i = 1, comparisons: 7
+# 0: 1 in 623.029µs | total cached: 1
+# 1: 10 in 158.563µs | total cached: 2
+# 2: 24 in 330.371µs | total cached: 5
+# 3: 61 in 789.732µs | total cached: 17
+# 4: 101 in 1.012ms | total cached: 38
+# 5: 72 in 621.968µs | total cached: 56
+# 6: 35 in 313.895µs | total cached: 64
+# 7: 11 in 102.369µs | total cached: 67
+# 8: 3 in 51.115µs | total cached: 68 (found solution)
+time '4.258ms': n = 6, i = 2, comparisons: 8
+
+# 0: 1 in 1.539ms | total cached: 1
+# 1: 318 in 4.068ms | total cached: 2
+# 2: 814 in 8.786ms | total cached: 3
+# 3: 642 in 6.804ms | total cached: 4
+# 4: 221 in 2.272ms | total cached: 5
+# 5: 43 in 494.395µs | total cached: 6
+# 6: 6 in 108.087µs | total cached: 7 (found solution)
+time '24.240ms': n = 7, i = 0, comparisons: 6
+# 0: 1 in 6.084ms | total cached: 1
+# 1: 63 in 781.890µs | total cached: 2
+# 2: 197 in 2.235ms | total cached: 5
+# 3: 465 in 5.120ms | total cached: 11
+# 4: 733 in 7.659ms | total cached: 21
+# 5: 388 in 3.969ms | total cached: 32
+# 6: 146 in 1.649ms | total cached: 39
+# 7: 46 in 516.828µs | total cached: 41
+# 8: 6 in 102.172µs | total cached: 42 (found solution)
+time '28.320ms': n = 7, i = 1, comparisons: 8
+# 0: 1 in 3.186ms | total cached: 1
+# 1: 32 in 412.070µs | total cached: 2
+# 2: 86 in 980.234µs | total cached: 5
+# 3: 272 in 3.281ms | total cached: 20
+# 4: 566 in 6.383ms | total cached: 60
+# 5: 548 in 5.931ms | total cached: 117
+# 6: 349 in 3.547ms | total cached: 158
+# 7: 137 in 1.448ms | total cached: 176
+# 8: 45 in 418.634µs | total cached: 181
+# 9: 8 in 115.492µs | total cached: 182
+# 10: 1 in 26.093µs | total cached: 183 (found solution)
+time '25.940ms': n = 7, i = 2, comparisons: 10
+# 0: 1 in 1.774ms | total cached: 1
+# 1: 25 in 302.972µs | total cached: 2
+# 2: 70 in 796.348µs | total cached: 5
+# 3: 223 in 2.660ms | total cached: 18
+# 4: 503 in 5.603ms | total cached: 69
+# 5: 554 in 5.978ms | total cached: 157
+# 6: 403 in 4.124ms | total cached: 227
+# 7: 182 in 1.885ms | total cached: 261
+# 8: 67 in 601.110µs | total cached: 270
+# 9: 14 in 182.965µs | total cached: 273
+# 10: 3 in 37.759µs | total cached: 274 (found solution)
+time '24.118ms': n = 7, i = 3, comparisons: 10
+
+# 0: 1 in 11.329ms | total cached: 1
+# 1: 2045 in 32.132ms | total cached: 2
+# 2: 6258 in 94.618ms | total cached: 3
+# 3: 5828 in 96.621ms | total cached: 4
+# 4: 2319 in 50.091ms | total cached: 5
+# 5: 477 in 9.552ms | total cached: 6
+# 6: 64 in 1.091ms | total cached: 7
+# 7: 7 in 132.691µs | total cached: 8 (found solution)
+time '295.820ms': n = 8, i = 0, comparisons: 7
+# 0: 1 in 63.408ms | total cached: 1
+# 1: 318 in 4.504ms | total cached: 2
+# 2: 1132 in 17.395ms | total cached: 5
+# 3: 3174 in 49.566ms | total cached: 11
+# 4: 5888 in 94.611ms | total cached: 22
+# 5: 4021 in 65.254ms | total cached: 38
+# 6: 1865 in 33.650ms | total cached: 52
+# 7: 524 in 9.204ms | total cached: 60
+# 8: 68 in 1.149ms | total cached: 63
+# 9: 8 in 141.483µs | total cached: 64 (found solution)
+time '339.100ms': n = 8, i = 1, comparisons: 9
+# 0: 1 in 24.764ms | total cached: 1
+# 1: 126 in 1.600ms | total cached: 2
+# 2: 394 in 5.647ms | total cached: 5
+# 3: 1475 in 24.539ms | total cached: 20
+# 4: 3766 in 63.848ms | total cached: 73
+# 5: 4702 in 82.168ms | total cached: 196
+# 6: 3788 in 67.653ms | total cached: 338
+# 7: 1928 in 36.302ms | total cached: 426
+# 8: 679 in 12.629ms | total cached: 455
+# 9: 114 in 1.949ms | total cached: 463
+# 10: 19 in 399.035µs | total cached: 466
+# 11: 7 in 131.100µs | total cached: 467 (found solution)
+time '321.926ms': n = 8, i = 2, comparisons: 11
+# 0: 1 in 21.330ms | total cached: 1
+# 1: 80 in 971.511µs | total cached: 2
+# 2: 247 in 3.465ms | total cached: 5
+# 3: 998 in 16.554ms | total cached: 22
+# 4: 2829 in 49.624ms | total cached: 129
+# 5: 4298 in 78.027ms | total cached: 464
+# 6: 4287 in 76.929ms | total cached: 924
+# 7: 2714 in 48.395ms | total cached: 1246
+# 8: 1188 in 20.874ms | total cached: 1365
+# 9: 271 in 4.505ms | total cached: 1402
+# 10: 68 in 1.046ms | total cached: 1412
+# 11: 15 in 227.409µs | total cached: 1415
+# 12: 3 in 59.514µs | total cached: 1416 (found solution)
+time '322.287ms': n = 8, i = 3, comparisons: 12
+
+# 0: 1 in 118.248ms | total cached: 1
+# 1: 16999 in 428.084ms | total cached: 2
+# 2: 60877 in 1.429s | total cached: 3
+# 3: 66612 in 1.717s | total cached: 4
+# 4: 30698 in 904.558ms | total cached: 5
+# 5: 7015 in 241.534ms | total cached: 6
+# 6: 931 in 32.199ms | total cached: 7
+# 7: 90 in 2.359ms | total cached: 8
+# 8: 8 in 183.167µs | total cached: 9 (found solution)
+time '4.874s': n = 9, i = 0, comparisons: 8
+# 0: 1 in 955.654ms | total cached: 1
+# 1: 2045 in 43.945ms | total cached: 2
+# 2: 8303 in 189.508ms | total cached: 5
+# 3: 26930 in 640.233ms | total cached: 11
+# 4: 58140 in 1.492s | total cached: 22
+# 5: 50523 in 1.411s | total cached: 41
+# 6: 28229 in 932.336ms | total cached: 63
+# 7: 7901 in 276.599ms | total cached: 79
+# 8: 1033 in 34.659ms | total cached: 89
+# 9: 116 in 2.673ms | total cached: 92
+# 10: 9 in 211.872µs | total cached: 93
+# 11: 1 in 20.630µs | total cached: 94 (found solution)
+time '5.980s': n = 9, i = 1, comparisons: 11
+# 0: 1 in 288.557ms | total cached: 1
+# 1: 636 in 13.856ms | total cached: 2
+# 2: 2264 in 57.487ms | total cached: 5
+# 3: 9871 in 234.072ms | total cached: 20
+# 4: 30327 in 810.708ms | total cached: 79
+# 5: 47393 in 1.341s | total cached: 271
+# 6: 47456 in 1.383s | total cached: 619
+# 7: 30551 in 1.034s | total cached: 937
+# 8: 12021 in 442.682ms | total cached: 1100
+# 9: 2208 in 80.321ms | total cached: 1150
+# 10: 399 in 13.242ms | total cached: 1166
+# 11: 95 in 2.622ms | total cached: 1170
+# 12: 9 in 177.230µs | total cached: 1171 (found solution)
+time '5.702s': n = 9, i = 2, comparisons: 12
+# 0: 1 in 135.200ms | total cached: 1
+# 1: 315 in 5.351ms | total cached: 2
+# 2: 1111 in 25.826ms | total cached: 5
+# 3: 5414 in 140.776ms | total cached: 22
+# 4: 18807 in 507.464ms | total cached: 173
+# 5: 37113 in 1.083s | total cached: 943
+# 6: 48413 in 1.489s | total cached: 2762
+# 7: 41371 in 1.322s | total cached: 4815
+# 8: 22250 in 769.502ms | total cached: 5988
+# 9: 6371 in 233.665ms | total cached: 6397
+# 10: 1657 in 58.642ms | total cached: 6509
+# 11: 326 in 9.701ms | total cached: 6541
+# 12: 71 in 1.463ms | total cached: 6547
+# 13: 10 in 166.022µs | total cached: 6548
+# 14: 1 in 19.418µs | total cached: 6549 (found solution)
+time '5.783s': n = 9, i = 3, comparisons: 14
+# 0: 1 in 81.832ms | total cached: 1
+# 1: 256 in 4.024ms | total cached: 2
+# 2: 864 in 18.182ms | total cached: 5
+# 3: 4437 in 108.117ms | total cached: 22
+# 4: 15912 in 432.996ms | total cached: 176
+# 5: 33584 in 991.307ms | total cached: 1156
+# 6: 47280 in 1.458s | total cached: 3923
+# 7: 43814 in 1.389s | total cached: 7450
+# 8: 25829 in 874.642ms | total cached: 9661
+# 9: 8340 in 301.916ms | total cached: 10448
+# 10: 2304 in 74.321ms | total cached: 10659
+# 11: 475 in 14.286ms | total cached: 10718
+# 12: 114 in 2.629ms | total cached: 10729
+# 13: 18 in 321.837µs | total cached: 10732
+# 14: 3 in 77.684µs | total cached: 10733 (found solution)
+time '5.752s': n = 9, i = 4, comparisons: 14
+
+# 0: 1 in 1.583s | total cached: 1
+# 1: 183231 in 7.011s | total cached: 2
+# 2: 755323 in 26.892s | total cached: 3
+# 3: 959941 in 37.770s | total cached: 4
+# 4: 514525 in 23.997s | total cached: 5
+# 5: 133610 in 8.060s | total cached: 6
+# 6: 18836 in 1.400s | total cached: 7
+# 7: 1686 in 119.869ms | total cached: 8
+# 8: 122 in 5.168ms | total cached: 9
+# 9: 9 in 250.785µs | total cached: 10 (found solution)
+time '106.839s': n = 10, i = 0, comparisons: 9
+# 0: 1 in 18.172s | total cached: 1
+# 1: 16999 in 498.269ms | total cached: 2
+# 2: 77876 in 2.542s | total cached: 5
+# 3: 287478 in 10.288s | total cached: 11
+# 4: 713207 in 27.905s | total cached: 22
+# 5: 774723 in 33.558s | total cached: 43
+# 6: 517821 in 27.499s | total cached: 73
+# 7: 154472 in 9.807s | total cached: 100
+# 8: 22099 in 1.592s | total cached: 119
+# 9: 2411 in 145.266ms | total cached: 130
+# 10: 165 in 7.438ms | total cached: 133
+# 11: 23 in 730.089µs | total cached: 135
+# 12: 9 in 248.908µs | total cached: 136 (found solution)
+time '132.018s': n = 10, i = 1, comparisons: 12
+# 0: 1 in 4.369s | total cached: 1
+# 1: 4090 in 113.175ms | total cached: 2
+# 2: 16606 in 498.848ms | total cached: 5
+# 3: 82474 in 2.857s | total cached: 20
+# 4: 299782 in 11.814s | total cached: 81
+# 5: 573668 in 24.939s | total cached: 327
+# 6: 703831 in 32.314s | total cached: 981
+# 7: 561949 in 31.546s | total cached: 1874
+# 8: 255891 in 16.863s | total cached: 2515
+# 9: 56236 in 4.316s | total cached: 2790
+# 10: 10684 in 870.177ms | total cached: 2877
+# 11: 1901 in 141.789ms | total cached: 2900
+# 12: 156 in 6.512ms | total cached: 2907
+# 13: 13 in 377.428µs | total cached: 2909
+# 14: 2 in 63.093µs | total cached: 2910 (found solution)
+time '130.652s': n = 10, i = 2, comparisons: 14
+# 0: 1 in 1.492s | total cached: 1
+# 1: 1590 in 38.147ms | total cached: 2
+# 2: 6296 in 183.728ms | total cached: 5
+# 3: 36146 in 1.248s | total cached: 22
+# 4: 151074 in 6.007s | total cached: 200
+# 5: 373210 in 16.698s | total cached: 1494
+# 6: 618387 in 29.579s | total cached: 6542
+# 7: 686841 in 36.168s | total cached: 15829
+# 8: 461687 in 27.434s | total cached: 24204
+# 9: 170784 in 11.852s | total cached: 28245
+# 10: 48923 in 3.878s | total cached: 29524
+# 11: 10150 in 828.473ms | total cached: 29854
+# 12: 1948 in 132.393ms | total cached: 29917
+# 13: 209 in 10.427ms | total cached: 29931
+# 14: 28 in 1.007ms | total cached: 29936
+# 15: 10 in 277.670µs | total cached: 29937 (found solution)
+time '135.552s': n = 10, i = 3, comparisons: 15
+# 0: 1 in 1.315s | total cached: 1
+# 1: 1008 in 19.954ms | total cached: 2
+# 2: 3845 in 107.537ms | total cached: 5
+# 3: 23966 in 812.075ms | total cached: 22
+# 4: 105561 in 4.221s | total cached: 273
+# 5: 290297 in 13.209s | total cached: 2982
+# 6: 544995 in 26.591s | total cached: 16175
+# 7: 693630 in 36.244s | total cached: 44691
+# 8: 549747 in 32.011s | total cached: 74211
+# 9: 248938 in 16.544s | total cached: 89561
+# 10: 81611 in 5.943s | total cached: 94570
+# 11: 18877 in 1.431s | total cached: 95868
+# 12: 4159 in 266.483ms | total cached: 96100
+# 13: 529 in 29.002ms | total cached: 96153
+# 14: 98 in 4.062ms | total cached: 96165
+# 15: 19 in 514.856µs | total cached: 96168
+# 16: 3 in 787.878µs | total cached: 96169 (found solution)
+time '138.752s': n = 10, i = 4, comparisons: 16
+
+# 0: 1 in 27.011s | total cached: 1
+# 1: 2567284 in 148.601s | total cached: 2
+# 2: 11988791 in 629.653s | total cached: 3
+# 3: 17501138 in 1017.366s | total cached: 4
+# 4: 10872251 in 758.227s | total cached: 5
+# 5: 3259310 in 318.412s | total cached: 6
+# 6: 511239 in 74.078s | total cached: 7
+# 7: 46358 in 8.302s | total cached: 8
+# 8: 2885 in 422.946ms | total cached: 9
+# 9: 160 in 11.037ms | total cached: 10
+# 10: 10 in 313.197µs | total cached: 11 (found solution)
+time '2982.092s': n = 11, i = 0, comparisons: 10
+# 0: 1 in 447.016s | total cached: 1
+# 1: 183231 in 8.058s | total cached: 2
+# 2: 938554 in 46.498s | total cached: 5
+# 3: 3883678 in 208.129s | total cached: 11

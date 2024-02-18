@@ -1,12 +1,7 @@
-pub const DEBUG: bool = true;
-
 pub const ONLY_NAUTY_CANONIFY: bool = true;       // TODO: test because somethimes FALSE
-pub const ALWAYS_USE_SUBGRAPH_ISOMORPHISM: bool = false;
 
-pub const MAX_THREAD_COUNT: usize = 20;
 pub const MAX_COMPARISONS: usize = 25;
 pub const MAX_N: usize = 15;
-pub const MAX_N_BITS: usize = ((MAX_N * MAX_N - 1) / 64) + 1;
 
 pub const KNOWN_MIN_VALUES: [&[u8]; 16] = [
   /* n= 0 */ &[],
@@ -28,8 +23,6 @@ pub const KNOWN_MIN_VALUES: [&[u8]; 16] = [
     14, 17, 20, 23, 25, 25, 23, 24, 24, 23, 25, 25, 25, 23, 20, 17, 14,
   ],
 ];
-
-pub const min_n_comparisons_len: usize = 15;
 
 pub fn upper_bound(n: i32, i0: i32) -> i32 {
   let i = i0 + 1;

@@ -106,6 +106,7 @@ fn search_recursive(
 #[allow(clippy::too_many_lines)]
 fn start_search_backward(
   interrupt: &Arc<AtomicBool>,
+  start_poset: Poset,
   n: u8,
   i0: u8,
   max_comparisons: u8,
@@ -114,20 +115,24 @@ fn start_search_backward(
   poset_cache
     .write()
     .expect("cache shouldn't be poisoned")
-    .insert(&Poset::new(1, 0), 0);
+    .insert(&start_poset, 0);
 
   let mut source = HashSet::new();
-  source.insert(Poset::new(1, 0));
+  source.insert(start_poset);
   let init = std::time::Instant::now();
   source = Poset::enlarge(interrupt, &source, n, i0);
   println!(
-    "# 0: 1 in {:.3?} | total cached: {}",
+    "# 0: 1 => {} in {:.3?} | total cached: {}",
+    source.len(),
     init.elapsed(),
     poset_cache
       .read()
       .expect("cache shouldn't be poisoned")
       .size()
   );
+
+  // Aussage:
+  // item1 subset item2 => A subset B and every Element in a is an Element from B (subset)
 
   for k in 1..max_comparisons {
     let start = std::time::Instant::now();
@@ -146,20 +151,6 @@ fn start_search_backward(
         }) {
           let mut predecessor = predecessor_wo.clone();
           predecessor.normalize();
-          // ang. es ex item1, item2 :
-          // - beide in source_new
-          // - item1 subset of item2
-          // Kann ich Aussage über `predecessor of item1` treffen, wenn
-          //   `predessescor von item2` bekannt?
-
-          // - führe Berechnung nur für item2 aus
-          // (item, predecessor)
-
-          // predecessor sollte in k Schritten lösbar sein
-          // continue, wenn in WENIGER als k Schritten lösbar
-
-          // Aussage:
-          // item1 subset item2 => A subset B and every Element in a is an Element from B (subset)
 
           if poset_cache
             .read()
@@ -180,34 +171,34 @@ fn start_search_backward(
             break;
           }
 
-          // {
-          //   let mut cache_solvable = CacheSolvable::new();
-          //   let mut cache_not_solvable = CacheNotSolvable::new();
-          //   cache_solvable.insert(&Poset::new(1, 0), 0);
+          if false {
+            let mut cache_solvable = CacheSolvable::new();
+            let mut cache_not_solvable = CacheNotSolvable::new();
+            cache_solvable.insert(&Poset::new(1, 0), 0);
 
-          //   if SearchResult::NoSolution
-          //     != search_recursive(
-          //       &predecessor,
-          //       &mut cache_solvable,
-          //       &mut cache_not_solvable,
-          //       k - 1,
-          //     )
-          //   {
-          //     dbg!(predecessor, k - 1);
-          //     panic!();
-          //   }
-          //   if SearchResult::FoundSolution
-          //     != search_recursive(
-          //       &predecessor,
-          //       &mut cache_solvable,
-          //       &mut cache_not_solvable,
-          //       k,
-          //     )
-          //   {
-          //     dbg!(predecessor, k);
-          //     panic!();
-          //   }
-          // }
+            if SearchResult::NoSolution
+              != search_recursive(
+                &predecessor,
+                &mut cache_solvable,
+                &mut cache_not_solvable,
+                k - 1,
+              )
+            {
+              dbg!(predecessor, k - 1);
+              panic!();
+            }
+            if SearchResult::FoundSolution
+              != search_recursive(
+                &predecessor,
+                &mut cache_solvable,
+                &mut cache_not_solvable,
+                k,
+              )
+            {
+              dbg!(predecessor, k);
+              panic!();
+            }
+          }
 
           destination.insert(predecessor_wo);
         }
@@ -227,9 +218,9 @@ fn start_search_backward(
     }
 
     print!(
-      "# {}: {} in {:.3?} | total cached: {}",
-      k,
+      "# {k}: {} => {} in {:.3?} | total cached: {}",
       source.len(),
+      destination.len(),
       start.elapsed(),
       poset_cache
         .read()
@@ -250,7 +241,7 @@ fn start_search_backward(
 
 fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) {
   let start = std::time::Instant::now();
-  let comparisons = start_search_backward(interrupt, n, i, n * n);
+  let comparisons = start_search_backward(interrupt, Poset::new(1, 0), n, i, n * n);
   let end = start.elapsed();
 
   if let Some(comparisons) = comparisons {
@@ -278,8 +269,10 @@ pub fn main() {
     single(&interrupt, 9, 4);
   } else if true {
     for n in 2..MAX_N as u8 {
-      for i in 0..((n + 1) / 2) {
+      #[allow(clippy::never_loop)]
+      for i in (0..((n + 1) / 2)).rev() {
         single(&interrupt, n, i);
+        break;
       }
       println!();
     }
@@ -297,7 +290,7 @@ pub fn main() {
     dbg!(&a, &b);
     assert!(a.subset_of(&b));
 
-    dbg!(a.remove_less(|poset| true));
-    dbg!(b.remove_less(|poset| true));
+    dbg!(a.remove_less(|_| true));
+    dbg!(b.remove_less(|_| true));
   }
 }

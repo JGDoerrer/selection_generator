@@ -13,42 +13,56 @@ use super::cache_tree::{CacheTreeNotSolvable, CacheTreeSolvable};
 use super::poset::Poset;
 use super::util::{lower_bound, upper_bound, KNOWN_MIN_VALUES, MAX_N};
 
+#[allow(clippy::too_many_lines)]
 fn start_search_backward(
   interrupt: &Arc<AtomicBool>,
   dyn_level: &Arc<AtomicU8>,
-  poset_cache: &Arc<RwLock<CacheSetSolvable>>,
+  start_poset: Poset,
   n: u8,
   i0: u8,
   max_comparisons: u8,
-) -> (Option<u8>, Duration, Duration) {
-  let mut duration_build_posets_total = Duration::from_secs(0);
-  let mut duration_test_posets_total = Duration::from_secs(0);
+) -> Option<u8> {
+  let poset_cache = Arc::new(RwLock::new(CacheSetSolvable::new()));
+  poset_cache
+    .write()
+    .expect("cache shouldn't be poisoned")
+    .insert(&start_poset, 0);
+
   let mut source = HashSet::new();
-  source.insert(Poset::new(1, 0));
+  source.insert(start_poset);
+  let init = std::time::Instant::now();
+  source = Poset::enlarge(interrupt, &source, n, i0);
+  println!(
+    "# 0: 1 => {} in {:.3?} | total cached: {}",
+    source.len(),
+    init.elapsed(),
+    poset_cache
+      .read()
+      .expect("cache shouldn't be poisoned")
+      .size()
+  );
+
+  // Aussage:
+  // item1 subset item2 => A subset B and every Element in a is an Element from B (subset)
 
   for k in 1..max_comparisons {
     let start = std::time::Instant::now();
-    let source_new = Poset::enlarge(interrupt, &source, n, i0);
-    let mid = std::time::Instant::now();
-    let duration_build_posets = mid - start;
-    duration_build_posets_total += duration_build_posets;
 
     let atomic_break = Arc::new(AtomicBool::new(false));
     let interrupt_local = interrupt.clone();
-    let results: Vec<HashSet<Poset>> = source_new
+    let results: Vec<HashSet<Poset>> = source
       .par_iter()
       .map(|item| {
         let mut destination: HashSet<Poset> = HashSet::new();
-        for mut predecessor in item.remove_less(|poset| {
+        for predecessor_wo in item.remove_less(|poset| {
           poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
             .check(poset, k - 1)
         }) {
-          if predecessor == Poset::new(n, i0) {
-            atomic_break.store(true, Ordering::Relaxed);
-          }
+          let mut predecessor = predecessor_wo.clone();
           predecessor.normalize();
+
           if poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
@@ -60,22 +74,22 @@ fn start_search_backward(
             .write()
             .expect("cache shouldn't be poisoned")
             .insert(&predecessor, k);
-          destination.insert(predecessor);
 
-          if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
-            return destination;
+          if predecessor == Poset::new(n, i0) {
+            atomic_break.store(true, Ordering::Relaxed);
           }
+          if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
+            break;
+          }
+
+          destination.insert(predecessor_wo);
         }
         destination
       })
       .collect();
 
     if interrupt.load(Ordering::Relaxed) {
-      return (
-        None,
-        duration_build_posets_total,
-        duration_test_posets_total,
-      );
+      return None;
     }
 
     let mut destination: HashSet<Poset> = HashSet::new();
@@ -86,16 +100,12 @@ fn start_search_backward(
     }
     dyn_level.store(k, Ordering::Relaxed);
 
-    let duration_test_posets = mid.elapsed();
-    duration_test_posets_total += duration_test_posets;
-
     print!(
-      "# {}: {} => {} in {:.3?} ~ {:.3?} | total cached: {}",
+      "# {}: {} => {} in {:.3?} | total cached: {}",
       k,
       source.len(),
-      source_new.len(),
-      duration_build_posets,
-      duration_test_posets,
+      destination.len(),
+      start.elapsed(),
       poset_cache
         .read()
         .expect("cache shouldn't be poisoned")
@@ -103,22 +113,14 @@ fn start_search_backward(
     );
     if atomic_break.load(Ordering::Acquire) {
       println!(" (found solution)");
-      return (
-        Some(k),
-        duration_build_posets_total,
-        duration_test_posets_total,
-      );
+      return Some(k);
     }
     println!();
 
     source = destination;
   }
 
-  (
-    None,
-    duration_build_posets_total,
-    duration_test_posets_total,
-  )
+  None
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -162,13 +164,6 @@ fn search_recursive(
     {
       return SearchResult::FoundSolution;
     } else if remaining_comparisons <= dyn_level.load(Ordering::Relaxed) {
-      // if poset_cache
-      //   .read()
-      //   .unwrap()
-      //   .check_subgraph(poset, remaining_comparisons)
-      // {
-      //   return SearchResult::FoundSolution;
-      // }
       return SearchResult::NoSolution;
     }
   }
@@ -404,8 +399,6 @@ pub fn main() {
     for i in 0..((n + 1) / 2) {
       let mut statistics = Statistics::default();
 
-      let poset_cache_global = poset_cache.clone();
-
       let interrupt = Arc::new(AtomicBool::new(false));
       let dyn_level = Arc::new(AtomicU8::new(0));
       let handle = {
@@ -415,7 +408,7 @@ pub fn main() {
           start_search_backward(
             &interrupt_local,
             &dyn_level_local,
-            &poset_cache_global,
+            Poset::new(1, 0),
             n,
             i,
             n * n,
