@@ -1,10 +1,7 @@
-use core::panic;
 use std::collections::HashSet;
 use std::fmt::{self, Display};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
-use std::time::Duration;
-use std::time::Instant;
 use std::vec;
 
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
@@ -12,7 +9,7 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use super::cache_set::CacheSetSolvable;
 use super::cache_tree::{CacheTreeNotSolvable, CacheTreeSolvable};
 use super::poset::Poset;
-use super::util::{lower_bound, upper_bound, KNOWN_MIN_VALUES, MAX_N};
+use super::util::{KNOWN_MIN_VALUES, MAX_N};
 
 type CacheSolvable = CacheTreeSolvable;
 type CacheNotSolvable = CacheTreeNotSolvable;
@@ -112,55 +109,43 @@ fn start_search_backward(
   n: u8,
   i0: u8,
   max_comparisons: u8,
-) -> (Option<u8>, Duration, Duration) {
+) -> Option<u8> {
   let poset_cache = Arc::new(RwLock::new(CacheSetSolvable::new()));
   poset_cache
     .write()
     .expect("cache shouldn't be poisoned")
     .insert(&Poset::new(1, 0), 0);
 
-  let poset_cache2 = Arc::new(RwLock::new(CacheTreeSolvable::new()));
-
-  let mut duration_build_posets_total = Duration::from_secs(0);
-  let mut duration_test_posets_total = Duration::from_secs(0);
   let mut source = HashSet::new();
   source.insert(Poset::new(1, 0));
-
-  let mut test123: [[HashSet<Poset>; 20]; 20] = Default::default();
-  for n0 in 0..=n as usize {
-    for i1 in 0..(n0 + 1) / 2 {
-      test123[n0][i1] = crate::poset::iterate_all_closed_canonified(n0 as u8, i1 as u8);
-    }
-  }
+  let init = std::time::Instant::now();
+  source = Poset::enlarge(interrupt, &source, n, i0);
+  println!(
+    "# 0: 1 in {:.3?} | total cached: {}",
+    init.elapsed(),
+    poset_cache
+      .read()
+      .expect("cache shouldn't be poisoned")
+      .size()
+  );
 
   for k in 1..max_comparisons {
     let start = std::time::Instant::now();
-    let mut source_new = Poset::enlarge_bruteForce(
-      &test123[n as usize][i0 as usize],
-      &interrupt, &source, n, i0,
-    );
-    // es ex. item `in` source_new : item `subset_of` X
-    let mut filtered = HashSet::new();//Poset::filter(interrupt, &source_new.clone());
-    for item in &source_new {
-      filtered.insert(item);
-    }
-    dbg!(filtered.len());
-    let mid = std::time::Instant::now();
-    let duration_build_posets = mid - start;
-    duration_build_posets_total += duration_build_posets;
 
     let atomic_break = Arc::new(AtomicBool::new(false));
     let interrupt_local = interrupt.clone();
-    let results: Vec<HashSet<Poset>> = filtered
-      .iter()
+    let results: Vec<HashSet<Poset>> = source
+      .par_iter()
       .map(|item| {
         let mut destination: HashSet<Poset> = HashSet::new();
-        for predecessor in item.remove_less_bruteForce(&test123[item.n() as usize][item.i() as usize],|poset| {
+        for predecessor_wo in item.remove_less(|poset| {
           poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
             .check(poset, k - 1)
         }) {
+          let mut predecessor = predecessor_wo.clone();
+          predecessor.normalize();
           // ang. es ex item1, item2 :
           // - beide in source_new
           // - item1 subset of item2
@@ -176,13 +161,6 @@ fn start_search_backward(
           // Aussage:
           // item1 subset item2 => A subset B and every Element in a is an Element from B (subset)
 
-          // if poset_cache2
-          //   .read()
-          //   .expect("cache shouldn't be poisoned")
-          //   .check(&predecessor, 0)
-          // {
-          //   continue;
-          // }
           if poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
@@ -202,47 +180,43 @@ fn start_search_backward(
             break;
           }
 
-          {
-            let mut cache_solvable = CacheSolvable::new();
-            let mut cache_not_solvable = CacheNotSolvable::new();
-            cache_solvable.insert(&Poset::new(1, 0), 0);
+          // {
+          //   let mut cache_solvable = CacheSolvable::new();
+          //   let mut cache_not_solvable = CacheNotSolvable::new();
+          //   cache_solvable.insert(&Poset::new(1, 0), 0);
 
-            if SearchResult::NoSolution
-              != search_recursive(
-                &predecessor,
-                &mut cache_solvable,
-                &mut cache_not_solvable,
-                k - 1,
-              )
-            {
-              dbg!(predecessor, k - 1);
-              panic!();
-            }
-            if SearchResult::FoundSolution
-              != search_recursive(
-                &predecessor,
-                &mut cache_solvable,
-                &mut cache_not_solvable,
-                k,
-              )
-            {
-              dbg!(predecessor, k);
-              panic!();
-            }
-          }
+          //   if SearchResult::NoSolution
+          //     != search_recursive(
+          //       &predecessor,
+          //       &mut cache_solvable,
+          //       &mut cache_not_solvable,
+          //       k - 1,
+          //     )
+          //   {
+          //     dbg!(predecessor, k - 1);
+          //     panic!();
+          //   }
+          //   if SearchResult::FoundSolution
+          //     != search_recursive(
+          //       &predecessor,
+          //       &mut cache_solvable,
+          //       &mut cache_not_solvable,
+          //       k,
+          //     )
+          //   {
+          //     dbg!(predecessor, k);
+          //     panic!();
+          //   }
+          // }
 
-          destination.insert(predecessor);
+          destination.insert(predecessor_wo);
         }
         destination
       })
       .collect();
 
     if interrupt.load(Ordering::Relaxed) {
-      return (
-        None,
-        duration_build_posets_total,
-        duration_test_posets_total,
-      );
+      return None;
     }
 
     let mut destination: HashSet<Poset> = HashSet::new();
@@ -252,16 +226,11 @@ fn start_search_backward(
       }
     }
 
-    let duration_test_posets = mid.elapsed();
-    duration_test_posets_total += duration_test_posets;
-
     print!(
-      "# {}: {} => {} in {:.3?} ~ {:.3?} | total cached: {}",
+      "# {}: {} in {:.3?} | total cached: {}",
       k,
       source.len(),
-      source_new.len(),
-      duration_build_posets,
-      duration_test_posets,
+      start.elapsed(),
       poset_cache
         .read()
         .expect("cache shouldn't be poisoned")
@@ -269,43 +238,23 @@ fn start_search_backward(
     );
     if atomic_break.load(Ordering::Acquire) {
       println!(" (found solution)");
-      return (
-        Some(k),
-        duration_build_posets_total,
-        duration_test_posets_total,
-      );
+      return Some(k);
     }
     println!();
-
-    for mut item in source_new {
-      item.normalize();
-      poset_cache2.write().expect("msg").insert(&item, 0);
-    }
 
     source = destination;
   }
 
-  (
-    None,
-    duration_build_posets_total,
-    duration_test_posets_total,
-  )
+  None
 }
 
 fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) {
-  let (comparisons, duration_generate_posets, duration_search) =
-    start_search_backward(interrupt, n, i, n * n);
+  let start = std::time::Instant::now();
+  let comparisons = start_search_backward(interrupt, n, i, n * n);
+  let end = start.elapsed();
 
   if let Some(comparisons) = comparisons {
-    println!(
-      "time '{:.3?} + {:.3?} = {:.3?}': n = {}, i = {}, comparisons: {}",
-      duration_generate_posets,
-      duration_search,
-      (duration_generate_posets + duration_search),
-      n,
-      i,
-      comparisons
-    );
+    println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}");
     if comparisons != KNOWN_MIN_VALUES[n as usize][i as usize] {
       eprintln!(
         "Error: got {}, but expected {}",

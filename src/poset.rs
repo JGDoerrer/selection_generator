@@ -332,6 +332,7 @@ impl Poset {
   // reduce
   // ready
   pub fn calculate_relations(&self) -> ([u8; MAX_N], [u8; MAX_N]) {
+    // TODO: warum so kompliziert in main?
     let mut less = [0u8; MAX_N];
     let mut greater = [0u8; MAX_N];
 
@@ -366,16 +367,6 @@ impl Poset {
 
   // ready
   fn dual(&mut self) {
-    self.i = (self.n - 1) - self.i;
-    for i in 0..self.n {
-      for j in (i + 1)..self.n {
-        self.swap_positions(i, j, j, i);
-      }
-    }
-  }
-
-  fn dual_wrong(&mut self) {
-    // TODO, falsch???
     self.i = (self.n - 1) - self.i;
     for i in 0..self.n {
       for j in (i + 1)..self.n {
@@ -533,7 +524,7 @@ impl Poset {
     debug_assert!((self.n as usize) < MAX_N);
     debug_assert!(self.is_closed());
 
-    let (less, greater) = self.calculate_relations();
+    let (less, greater) = self.calculate_relations(); //TODO: in normal: less and greater swapped
 
     let mut new_indices = [0u8; MAX_N];
     let mut n_less_dropped = 0;
@@ -651,7 +642,7 @@ impl Poset {
         let mut queue = Vec::new();
         queue.push(poset_initial.clone());
 
-        // poset_initial.canonify();
+        poset_initial.canonify();
         result.insert(poset_initial);
 
         while let Some(poset) = queue.pop() {
@@ -679,7 +670,7 @@ impl Poset {
               }
 
               let mut poset_norm = poset_next.clone();
-              // poset_norm.canonify();
+              poset_norm.canonify();
               if result.contains(&poset_norm) {
                 continue;
               }
@@ -697,7 +688,7 @@ impl Poset {
       debug_assert!(item.i < item.n);
       debug_assert!((item.n as usize) < MAX_N);
       debug_assert!(item.is_closed());
-      // debug_assert!(item.is_canonified());
+      debug_assert!(item.is_canonified());
       debug_assert!({
         let mut is_possible = false;
         'all_for: for i in 0..item.n() {
@@ -716,12 +707,7 @@ impl Poset {
       });
     }
 
-    let mut result2 = HashSet::new();
-    for mut item in result {
-      // item.normalize(); // TODO: gleich normalize anstatt canonify???
-      result2.insert(item);
-    }
-    result2
+    result
   }
 
   // enlarge
@@ -789,7 +775,6 @@ impl Poset {
       }
     }
 
-    let mut unfiltered = HashSet::new();
     let mut swap_init = VecDeque::new();
     swap_init.push_back((temp, -1));
     while let Some((poset, number)) = swap_init.pop_back() {
@@ -797,24 +782,13 @@ impl Poset {
         if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
           let new_poset = poset.with_less(k, poset.n - 1);
           swap_init.push_back((new_poset.clone(), k as i32));
-          if new_poset.can_reduce_element_greater(poset.n - 1) {
-            unfiltered.insert(new_poset);
+          if new_poset.can_reduce_element_greater(new_poset.n - 1) {
+            let mut canonifed = new_poset;
+            canonifed.canonify();
+            result.insert(canonifed);
           }
         }
       }
-      if interrupt.load(Ordering::Relaxed) {
-        return;
-      }
-    }
-
-    for item in (&unfiltered) { // Poset::filter
-      let mut it = item.clone();
-      it.canonify();
-      result.insert(it.clone());
-      // let mut it2 = item.clone();
-      // it2.dual_wrong();
-      // it2.canonify();
-      // result.insert(it2);
       if interrupt.load(Ordering::Relaxed) {
         return;
       }
@@ -839,7 +813,6 @@ impl Poset {
       }
     }
 
-    let mut unfiltered = HashSet::new();
     let mut swap_init = VecDeque::new();
     swap_init.push_back((temp, -1));
     while let Some((poset, number)) = swap_init.pop_back() {
@@ -847,8 +820,10 @@ impl Poset {
         if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
           let new_poset = poset.with_less(poset.n - 1, k);
           swap_init.push_back((new_poset.clone(), k as i32));
-          if new_poset.can_reduce_element_less(poset.n - 1) {
-            unfiltered.insert(new_poset);
+          if new_poset.can_reduce_element_less(new_poset.n - 1) {
+            let mut canonifed = new_poset;
+            canonifed.canonify();
+            result.insert(canonifed);
           }
         }
       }
@@ -856,19 +831,18 @@ impl Poset {
         return;
       }
     }
+  }
 
-    for item in Poset::filter(interrupt, &unfiltered) {
-      let mut it = item.clone();
-      it.canonify();
-      result.insert(it.clone());
-      let mut it2 = item.clone();
-      it2.dual_wrong();
-      it2.canonify(); // TODO: mist
-      result.insert(it2);
-
-      if interrupt.load(Ordering::Relaxed) {
-        return;
-      }
+  fn rec_temp(table: &mut [[bool; MAX_N]; MAX_N], n: usize, i: usize) {
+    table[n][i] = true;
+    if 1 <= n && 2 * i < n - 1 {
+      Self::rec_temp(table, n - 1, i);
+    }
+    if 1 <= n && 1 <= i && 2 * (i - 1) < n - 1 {
+      Self::rec_temp(table, n - 1, i - 1);
+    }
+    if 1 <= n && i < n && 2 * (n - i - 1) < n - 1 {
+      Self::rec_temp(table, n - 1, n - i - 1);
     }
   }
 
@@ -886,6 +860,20 @@ impl Poset {
       debug_assert!(item.is_normalized());
     }
 
+    let mut table = [[false; MAX_N]; MAX_N];
+    Self::rec_temp(&mut table, n as usize, i as usize);
+
+    // if i == 2 && n == 7 {
+    //   println!("========= n: {n} i: {i}");
+    //   for y in 0..MAX_N {
+    //     for x in 0..MAX_N {
+    //       if table[y][x] {
+    //         println!("y: {y}, x: {x}");
+    //       }
+    //     }
+    //   }
+    // }
+
     let mut temp_set: [[HashSet<Poset>; MAX_N]; MAX_N] = Default::default();
     for n0 in 0..=n {
       for i0 in 0..=i {
@@ -894,53 +882,63 @@ impl Poset {
     }
 
     for item in set_of_posets {
-      if item.n <= n && item.i <= i {
+      if table[item.n as usize][item.i as usize] {
         debug_assert!(2 * item.i < item.n);
         temp_set[item.n as usize][item.i as usize].insert(item.clone());
       }
     }
 
     for n0 in 1..n {
-      let mut result: HashSet<Poset> = HashSet::new();
-
-      for i0 in 0..i {
-        for item in temp_set[n0 as usize][i0 as usize].clone() {
-          item.enlarge_nk(interrupt, &mut result);
-          if interrupt.load(Ordering::Relaxed) {
-            return HashSet::default();
-          }
-        }
-      }
-
       for i0 in 0..=i {
         for item in temp_set[n0 as usize][i0 as usize].clone() {
-          item.enlarge_n(interrupt, &mut result);
+          let mut item_dual = item.clone();
+          item_dual.dual();
+
+          if table[n0 as usize + 1][i0 as usize] {
+            item.enlarge_n(interrupt, &mut temp_set[n0 as usize + 1][i0 as usize]);
+            // item_dual.enlarge_nk(interrupt, &mut temp_set_dual[n0 as usize + 1][i0 as usize]); // TODO: probably useless???
+          }
+
+          if 2 * (i0 + 1) < n0 + 1 {
+            if table[n0 as usize + 1][i0 as usize + 1] {
+              item.enlarge_nk(interrupt, &mut temp_set[n0 as usize + 1][i0 as usize + 1]);
+              item_dual.enlarge_n(interrupt, &mut temp_set[n0 as usize + 1][i0 as usize + 1]);
+            }
+          } else {
+            #[allow(clippy::collapsible_else_if)]
+            if table[n0 as usize + 1][n0 as usize - i0 as usize - 1] {
+              item.enlarge_nk(
+                interrupt,
+                &mut temp_set[n0 as usize + 1][n0 as usize - i0 as usize - 1],
+              );
+              item_dual.enlarge_n(
+                interrupt,
+                &mut temp_set[n0 as usize + 1][n0 as usize - i0 as usize - 1],
+              );
+            }
+          }
+
           if interrupt.load(Ordering::Relaxed) {
-            return HashSet::default();
+            return HashSet::new();
           }
         }
-      }
-
-      for item in result {
-        temp_set[item.n as usize][item.i as usize].insert(item.clone());
       }
     }
 
     let result = temp_set[n as usize][i as usize].clone();
-    let mut real_result = HashSet::new();
+    // let mut real_result = HashSet::new();
     for item in &result {
-      let mut norm = item.clone();
-      norm.normalize();
+      // TODO: aufpassen mit dual -> evtl. falsch?
       debug_assert!(item.is_canonified());
       debug_assert!(item.is_closed());
-      if !set_of_posets.contains(&norm) {
-        // dbg!(item, norm, set_of_posets);
-        // panic!();
-      } else {
-        real_result.insert(item.clone());
-      }
+
+      // let mut norm = item.clone();
+      // norm.normalize();
+      // if set_of_posets.contains(&norm) {
+      //   real_result.insert(item.clone());
+      // }
     }
-    real_result
+    result
   }
 
   pub fn enlarge_bruteForce(
@@ -1103,23 +1101,19 @@ pub fn test_enlarge() {
   let interrupt = Arc::new(AtomicBool::new(false));
   env::set_var("RUST_BACKTRACE", "1");
 
-  let max_n = 8;
-
   let mut really_all: HashSet<Poset> = HashSet::new();
   really_all.insert(Poset::new(1, 0));
-  for n in 2..max_n as u8 {
+  for n in 2..MAX_N as u8 {
     for i in 0..((n + 1) / 2) {
       let all_posets = iterate_all_closed_normalized(n, i);
-      dbg!(n, i, all_posets.len());
+      let temp = iterate_all_closed_canonified(n, i);
       for item in &all_posets {
         really_all.insert(item.clone());
       }
-    }
-  }
 
-  for n in 2..max_n as u8 {
-    for i in 0..((n + 1) / 2) {
-      let temp = iterate_all_closed_canonified(n, i);
+      let len = all_posets.len();
+      println!("n: {n}, i: {i}, len: {len}");
+
       for new_poset in &really_all {
         let mut set_of_posets = HashSet::new();
         set_of_posets.insert(new_poset.clone());
