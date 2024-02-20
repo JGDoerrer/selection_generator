@@ -5,17 +5,19 @@ use std::{
     io::{Read, Write},
 };
 
-use poset::Poset;
-
 use crate::{
     cache::Cache,
     constants::{KNOWN_VALUES, MAX_N},
+    normal_poset::NormalPoset,
+    poset::Poset,
     search::Search,
 };
 
 mod bitset;
 mod cache;
+mod canonified_poset;
 mod constants;
+mod normal_poset;
 mod poset;
 mod search;
 mod utils;
@@ -94,7 +96,7 @@ fn main() {
                     mapping
                 };
 
-                explore(Poset::new(n, i), mapping, &cache);
+                explore(NormalPoset::new(n, i), mapping, &cache);
                 return;
             }
 
@@ -105,7 +107,7 @@ fn main() {
     }
 }
 
-fn explore(poset: Poset, mapping: [u8; MAX_N], cache: &Cache) {
+fn explore(poset: NormalPoset, mapping: [u8; MAX_N], cache: &Cache) {
     loop {
         let old_mapping = {
             let mut old = [0; MAX_N];

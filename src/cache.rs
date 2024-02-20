@@ -3,6 +3,7 @@ use std::mem::size_of;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    canonified_poset::CanonifiedPoset,
     constants::{LOWER_BOUNDS, MAX_N},
     poset::Poset,
     search::Cost,
@@ -21,7 +22,7 @@ struct Row {
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 struct Entry {
-    pub poset: Poset,
+    pub poset: CanonifiedPoset,
     pub cost: Cost,
     pub priority: u16,
 }
@@ -39,7 +40,7 @@ impl Cache {
         self.arrays.len() * Row::ROW_LEN
     }
 
-    fn hash(poset: &Poset) -> u64 {
+    fn hash(poset: &CanonifiedPoset) -> u64 {
         let mut hash = poset.n() as u64 + poset.i() as u64 * MAX_N as u64;
 
         for i in 0..poset.n() {
@@ -50,14 +51,14 @@ impl Cache {
         hash
     }
 
-    pub fn get(&self, poset: &Poset) -> Option<Cost> {
+    pub fn get(&self, poset: &CanonifiedPoset) -> Option<Cost> {
         let hash = Self::hash(poset);
         let row = &self.arrays[hash as usize % self.arrays.len()];
 
         row.get(poset)
     }
 
-    pub fn get_mut(&mut self, poset: &Poset) -> Option<Cost> {
+    pub fn get_mut(&mut self, poset: &CanonifiedPoset) -> Option<Cost> {
         let hash = Self::hash(poset);
 
         let row = &mut self.arrays[hash as usize % self.arrays.len()];
@@ -66,7 +67,7 @@ impl Cache {
     }
 
     /// returns true if an entry has been replaced
-    pub fn insert(&mut self, poset: Poset, cost: Cost) -> bool {
+    pub fn insert(&mut self, poset: CanonifiedPoset, cost: Cost) -> bool {
         let hash = Self::hash(&poset);
 
         let row = &mut self.arrays[hash as usize % self.arrays.len()];
@@ -94,7 +95,7 @@ impl Row {
         }
     }
 
-    pub fn get(&self, poset: &Poset) -> Option<Cost> {
+    pub fn get(&self, poset: &CanonifiedPoset) -> Option<Cost> {
         for entry in self.entries.iter().map_while(|e| e.as_ref()) {
             if entry.poset == *poset {
                 return Some(entry.cost);
@@ -104,7 +105,7 @@ impl Row {
         None
     }
 
-    pub fn get_mut(&mut self, poset: &Poset) -> Option<Cost> {
+    pub fn get_mut(&mut self, poset: &CanonifiedPoset) -> Option<Cost> {
         let index = self
             .entries
             .iter()
@@ -127,7 +128,7 @@ impl Row {
     }
 
     /// returns true if an entry has been replaced
-    pub fn insert(&mut self, poset: Poset, cost: Cost) -> (bool, bool) {
+    pub fn insert(&mut self, poset: CanonifiedPoset, cost: Cost) -> (bool, bool) {
         let mut matched = false;
         let mut replaced = false;
 

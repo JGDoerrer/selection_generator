@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     cache::Cache,
+    canonified_poset::CanonifiedPoset,
     constants::{LOWER_BOUNDS, MAX_N, UPPER_BOUNDS},
     poset::Poset,
 };
@@ -64,7 +65,7 @@ impl<'a> Search<'a> {
         }
     }
 
-    fn search_cache(&mut self, poset: &Poset) -> Option<Cost> {
+    fn search_cache(&mut self, poset: &CanonifiedPoset) -> Option<Cost> {
         let result = self.cache.get_mut(poset);
         if result.is_some() {
             self.analytics.record_hit();
@@ -74,7 +75,7 @@ impl<'a> Search<'a> {
         result
     }
 
-    fn insert_cache(&mut self, poset: Poset, new_cost: Cost) {
+    fn insert_cache(&mut self, poset: CanonifiedPoset, new_cost: Cost) {
         if let Some(cost) = self.cache.get(&poset) {
             let res = match (cost, new_cost) {
                 (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
@@ -112,7 +113,7 @@ impl<'a> Search<'a> {
             self.current_max = current;
             self.analytics.set_max_depth(current / 2);
 
-            let search_result = self.search_rec(Poset::new(self.n, self.i), current, 0);
+            let search_result = self.search_rec(CanonifiedPoset::new(self.n, self.i), current, 0);
             result = match search_result {
                 Cost::Solved(solved) => solved,
                 Cost::Minimum(min) => {
@@ -147,7 +148,7 @@ impl<'a> Search<'a> {
         result as u8
     }
 
-    fn search_rec(&mut self, poset: Poset, max_comparisons: u8, depth: u8) -> Cost {
+    fn search_rec(&mut self, poset: CanonifiedPoset, max_comparisons: u8, depth: u8) -> Cost {
         if poset.n() == 1 {
             return Cost::Solved(0);
         }
@@ -231,7 +232,10 @@ impl<'a> Search<'a> {
         result
     }
 
-    fn get_comparison_pairs(&self, poset: &Poset) -> Vec<(Poset, Poset)> {
+    fn get_comparison_pairs(
+        &self,
+        poset: &CanonifiedPoset,
+    ) -> Vec<(CanonifiedPoset, CanonifiedPoset)> {
         let mut pairs = Vec::with_capacity(poset.n() as usize * (poset.n() as usize - 1) / 2);
 
         for i in 0..poset.n() {
@@ -263,7 +267,7 @@ impl<'a> Search<'a> {
         pairs.into_iter().map(|(a, b, _)| (a, b)).collect()
     }
 
-    fn estimate_hardness(poset: &Poset) -> u32 {
+    fn estimate_hardness(poset: &CanonifiedPoset) -> u32 {
         let (less, greater) = poset.calculate_relations();
 
         let mut counts = [0; MAX_N];
@@ -281,7 +285,7 @@ impl<'a> Search<'a> {
 
     fn estimate_solvable(
         &mut self,
-        poset: Poset,
+        poset: CanonifiedPoset,
         max_comparisons: u8,
         start_i: u8,
         start_j: u8,
