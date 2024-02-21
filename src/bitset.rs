@@ -122,7 +122,8 @@ impl Iterator for BitSetIter {
         let next = self.bitset.bits.trailing_zeros() as usize;
 
         if next < MAX_N {
-            self.bitset.remove(next);
+            // remove first set bit
+            self.bitset.bits = (self.bitset.bits - 1) & self.bitset.bits;
             Some(next)
         } else {
             None

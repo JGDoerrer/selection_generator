@@ -88,6 +88,12 @@ impl NormalPoset {
         self.adjacency[i as usize].insert(j as usize);
     }
 
+    pub fn set_all_greater_than(&mut self, i: usize, greater: BitSet) {
+        debug_assert!(i < self.n as usize);
+
+        self.adjacency[i] = greater;
+    }
+
     /// adds i < j and makes sure, that i < j && j < k => i < k is true
     #[inline]
     pub fn add_and_close(&mut self, i: u8, j: u8) {
@@ -122,8 +128,9 @@ impl NormalPoset {
         let mut canonified = CanonifiedPoset::new(copy.n, copy.i);
 
         for i in 0..canonified.n() {
+            let mapped_i = mapping[i as usize] as u8;
             for j in (i + 1)..canonified.n() {
-                if copy.is_less(mapping[i as usize] as u8, mapping[j as usize] as u8) {
+                if copy.is_less(mapped_i, mapping[j as usize] as u8) {
                     canonified.set_is_less(i, j)
                 }
             }

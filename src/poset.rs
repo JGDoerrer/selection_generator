@@ -82,6 +82,8 @@ pub trait Poset: Sized + Debug {
             bitsets
         };
 
+        let mut less_subsets = Vec::with_capacity(1000);
+
         let mut sum = 0;
         for i in 0..self.n() as usize {
             // assume the ith element is the solution
@@ -89,14 +91,14 @@ pub trait Poset: Sized + Debug {
             let less_than_i = all_less_than[i];
             let greater_than_i = self.get_all_greater_than(i as u8);
 
-            let mut less_subsets = Vec::with_capacity(1000);
+            less_subsets.clear();
             less_subsets.push(BitSet::empty());
 
             for j in 0..self.n() as usize {
                 if j == i || greater_than_i.contains(j) {
                     continue;
                 }
-                // try adding j to all previous subsets
+
                 let less_than_j = all_less_than[j];
 
                 // try adding j to all previous subsets
@@ -121,7 +123,7 @@ pub trait Poset: Sized + Debug {
             }
 
             sum += less_subsets
-                .into_iter()
+                .iter()
                 .filter(|s| s.len() == self.i() as usize)
                 .count();
         }

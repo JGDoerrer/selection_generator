@@ -45,14 +45,30 @@ impl Poset for CanonifiedPoset {
 
     #[inline]
     fn get_all_greater_than(&self, i: u8) -> BitSet {
+        const MASKS: [BitSet; MAX_N] = {
+            let mut masks = [BitSet::empty(); MAX_N];
+
+            let mut i = 0;
+            while i < MAX_N {
+                masks[i] = if i < (MAX_N + 1) / 2 {
+                    BitSet::from_u16((((1u32 << (MAX_N - i + 1)) - 1) as u16) << (i + 1))
+                } else {
+                    BitSet::from_u16(((1u32 << (MAX_N - i + 1)) - 1) as u16)
+                };
+                i += 1;
+            }
+
+            masks
+        };
+
         let i = i as usize;
+        let mask = MASKS[i];
+
         if i < (MAX_N + 1) / 2 {
             let row = i;
-            let mask = BitSet::from_u16((((1u32 << (MAX_N - i + 1)) - 1) as u16) << (i + 1));
             self.adjacency[row].intersect(mask)
         } else {
             let row = MAX_N - i;
-            let mask = BitSet::from_u16(((1u32 << (MAX_N - i + 1)) - 1) as u16);
             (self.adjacency[row].intersect(mask).bits() << (i + 1)).into()
         }
     }
@@ -112,16 +128,14 @@ impl Poset for CanonifiedPoset {
 
 impl CanonifiedPoset {
     #[inline]
-    fn get_index(i: u8, j: u8) -> (usize, usize) {
-        debug_assert!(i < j, "{i}, {j}");
+    const fn get_index(i: u8, j: u8) -> (usize, usize) {
+        debug_assert!(i < j);
         let i = i as usize;
         let j = j as usize;
 
         let row = if i < (MAX_N + 1) / 2 { i } else { MAX_N - i };
         let column = if i < (MAX_N + 1) / 2 { j } else { j - i - 1 };
 
-        debug_assert!(row < MAX_N, "{i}, {j}; {row}, {column}");
-        debug_assert!(column < MAX_N, "{i}, {j}; {row}, {column}");
         (row, column)
     }
 
@@ -143,9 +157,7 @@ impl From<CanonifiedPoset> for NormalPoset {
     fn from(value: CanonifiedPoset) -> Self {
         let mut new_poset = NormalPoset::new(value.n, value.i);
         for i in 0..value.n {
-            for j in value.get_all_greater_than(i) {
-                new_poset.set_is_less(i, j as u8);
-            }
+            new_poset.set_all_greater_than(i as usize, value.get_all_greater_than(i));
         }
         new_poset
     }
