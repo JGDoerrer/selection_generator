@@ -240,9 +240,6 @@ impl<'a> Search<'a> {
 
         let start = Instant::now();
 
-        self.analytics.compatible_posets[max_comparisons as usize]
-            .push(poset.num_compatible_posets());
-
         if let Some(false) = self.estimate_solvable(poset, max_comparisons, 0, 0, depth) {
             let result = Cost::Minimum(max_comparisons + 1);
 
@@ -250,6 +247,9 @@ impl<'a> Search<'a> {
 
             return result;
         }
+
+        self.analytics.compatible_posets[max_comparisons as usize]
+            .push(poset.num_compatible_posets());
 
         let pairs = self.get_comparison_pairs(&poset);
         let n_pairs = pairs.len() as u64;
@@ -373,7 +373,7 @@ impl<'a> Search<'a> {
             }
         }
 
-        if self.current_max - max_comparisons >= poset.n() {
+        if self.current_max - max_comparisons >= poset.n() || poset.n() <= 11 {
             let compatible_posets = poset.num_compatible_posets();
             if compatible_posets == 0 || max_comparisons < compatible_posets.ilog2() as u8 {
                 return Some(false);
