@@ -8,7 +8,7 @@ build = "build.rs"
 
 [dependencies]
 clap = { version = "4.4.7", features = ["derive"] }
-hashbrown = { version = "0.14.2", features = ["serde"] }
+hashbrown = { version = "0.14.2" }
 indicatif = "0.17.7"
 nauty-Traces-sys = { version = "0.7.0", features = ["native"] }
 
