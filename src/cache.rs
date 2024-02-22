@@ -1,7 +1,5 @@
 use std::mem::size_of;
 
-use serde::{Deserialize, Serialize};
-
 use crate::{
     canonified_poset::CanonifiedPoset,
     constants::{LOWER_BOUNDS, MAX_N},
@@ -9,18 +7,18 @@ use crate::{
     search::Cost,
 };
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct Cache {
     arrays: Box<[Row]>,
     len: usize,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Clone)]
 struct Row {
     entries: [Option<Entry>; Self::ROW_LEN],
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy)]
 struct Entry {
     pub poset: CanonifiedPoset,
     pub cost: Cost,

@@ -1,10 +1,9 @@
 use core::fmt::Debug;
-use serde::{Deserialize, Serialize};
 
 use crate::{bitset::BitSet, constants::MAX_N, normal_poset::NormalPoset, poset::Poset};
 
 /// A partially ordered set with <
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct CanonifiedPoset {
     /// The number of elements
     n: u8,

@@ -34,12 +34,6 @@ struct Args {
     /// Do only a single calculation
     #[arg(short, long, default_value_t = false, requires("i"))]
     single: bool,
-    /// The name of the cache file to use.
-    #[arg(long, default_value = "cache.dat", value_hint = clap::ValueHint::FilePath)]
-    cache_file: String,
-    /// Do not use a cache file
-    #[arg(long, default_value_t = false)]
-    no_cache_file: bool,
     /// Explore the cache interactively
     #[arg(short, long, default_value_t = false)]
     explore: bool,
@@ -56,11 +50,7 @@ fn main() {
 
     let start_n = args.n.unwrap_or(1);
 
-    let mut cache = if args.no_cache_file {
-        Cache::new(args.max_cache_size)
-    } else {
-        load_cache(&args.cache_file).unwrap_or_else(|| Cache::new(args.max_cache_size))
-    };
+    let mut cache = Cache::new(args.max_cache_size);
 
     println!("Cache entries: {}", cache.len());
     println!("Maximum cache entries: {}", cache.max_entries());
@@ -80,10 +70,6 @@ fn main() {
 
             if n < KNOWN_VALUES.len() as u8 {
                 assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);
-            }
-
-            if !args.no_cache_file && cache.len() != old_cache_len {
-                save_cache(&args.cache_file, &cache);
             }
 
             if args.explore {
@@ -240,40 +226,4 @@ fn explore(poset: NormalPoset, mapping: [u8; MAX_N], cache: &Cache) {
             }
         }
     }
-}
-
-fn save_cache(path: &String, cache: &Cache) {
-    let mut file = OpenOptions::new()
-        .create(true)
-        .write(true)
-        .truncate(true)
-        .open(path)
-        .unwrap();
-
-    let bytes = postcard::to_stdvec(cache).unwrap();
-
-    file.write_all(&bytes).unwrap();
-}
-
-fn load_cache(path: &String) -> Option<Cache> {
-    let mut file = match OpenOptions::new().read(true).open(path) {
-        Ok(file) => file,
-        Err(err) => {
-            dbg!(err);
-            return None;
-        }
-    };
-
-    let mut bytes = vec![];
-    match file.read_to_end(&mut bytes) {
-        Ok(len) => {
-            dbg!(len);
-        }
-        Err(err) => {
-            dbg!(err);
-            return None;
-        }
-    }
-
-    postcard::from_bytes(&bytes).ok()
 }

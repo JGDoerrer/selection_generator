@@ -1,11 +1,9 @@
 use std::fmt::Debug;
 
-use serde::{Deserialize, Serialize};
-
 use crate::constants::MAX_N;
 
 /// A bitset to store up to MAX_N bits
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 pub struct BitSet {
     bits: u16,
 }

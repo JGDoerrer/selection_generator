@@ -1,12 +1,11 @@
 use core::fmt::Debug;
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
-use serde::{Deserialize, Serialize};
 use std::os::raw::c_int;
 
 use crate::{bitset::BitSet, canonified_poset::CanonifiedPoset, constants::MAX_N, poset::Poset};
 
 /// A partially ordered set with <
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct NormalPoset {
     /// The number of elements
     n: u8,

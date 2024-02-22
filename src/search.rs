@@ -4,7 +4,6 @@ use std::{
 };
 
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
-use serde::{Deserialize, Serialize};
 
 use crate::{
     cache::Cache,
@@ -22,7 +21,7 @@ pub struct Search<'a> {
     start: Instant,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy)]
 pub enum Cost {
     /// Not solved. Impossible in less than the number of comparisons
     Minimum(u8),
