@@ -30,10 +30,10 @@ pub enum Cost {
 }
 
 pub struct Analytics {
-    total_posets: u64,
-    cache_hits: u64,
-    cache_misses: u64,
-    cache_replaced: u64,
+    total_posets: AtomicU64,
+    cache_hits: AtomicU64,
+    cache_misses: AtomicU64,
+    cache_replaced: AtomicU64,
     max_progress_depth: u8,
     multiprogress: MultiProgress,
     progress_bars: Vec<(ProgressBar, AtomicU64)>,
@@ -384,10 +384,10 @@ impl Analytics {
             progress_bars.push((pb, AtomicU64::new(0)));
         }
         Analytics {
-            total_posets: 0,
-            cache_hits: 0,
-            cache_misses: 0,
-            cache_replaced: 0,
+            total_posets: AtomicU64::new(0),
+            cache_hits: AtomicU64::new(0),
+            cache_misses: AtomicU64::new(0),
+            cache_replaced: AtomicU64::new(0),
             max_progress_depth,
             multiprogress,
             progress_bars,
@@ -449,7 +449,7 @@ impl Analytics {
         }
         self.progress_bars[0].0.set_message(format!(
             "limit: {:3} total: {:10}, cache: {:10}",
-            current_max, self.total_posets, cache_entries
+            current_max, self.total_posets.load(Ordering::Relaxed), cache_entries
         ))
     }
 
@@ -463,38 +463,38 @@ impl Analytics {
 
     #[inline]
     fn record_hit(&mut self) {
-        self.cache_hits += 1;
+        self.cache_hits.fetch_add(1, Ordering::Relaxed);
     }
 
     #[inline]
     fn record_miss(&mut self) {
-        self.cache_misses += 1;
+        self.cache_misses.fetch_add(1, Ordering::Relaxed);
     }
 
     #[inline]
     fn record_replace(&mut self) {
-        self.cache_replaced += 1;
+        self.cache_replaced.fetch_add(1, Ordering::Relaxed);
     }
 
     #[inline]
     fn record_poset(&mut self) {
-        self.total_posets += 1;
+        self.total_posets.fetch_add(1, Ordering::Relaxed);
     }
 
     fn cache_hits(&self) -> u64 {
-        self.cache_hits
+        self.cache_hits.load(Ordering::Relaxed)
     }
 
     fn cache_misses(&self) -> u64 {
-        self.cache_misses
+        self.cache_misses.load(Ordering::Relaxed)
     }
 
     fn cache_replaced(&self) -> u64 {
-        self.cache_replaced
+        self.cache_replaced.load(Ordering::Relaxed)
     }
 
     fn total_posets(&self) -> u64 {
-        self.total_posets
+        self.total_posets.load(Ordering::Relaxed)
     }
 }
 

@@ -1,4 +1,4 @@
-use std::mem::size_of;
+use std::{mem::size_of, sync::{atomic::{AtomicUsize, Ordering}, Mutex}};
 
 use crate::{
     canonified_poset::CanonifiedPoset,
@@ -9,8 +9,9 @@ use crate::{
 
 #[derive(Debug)]
 pub struct Cache {
-    arrays: Box<[Row]>,
+    arrays: Mutex<Box<[Row]>>,
     len: usize,
+    entries: AtomicUsize,
 }
 
 #[derive(Debug, Clone)]
@@ -29,13 +30,14 @@ impl Cache {
     pub fn new(max_bytes: usize) -> Self {
         let len = max_bytes / size_of::<Row>();
         Cache {
-            arrays: vec![Row::new(); len].into_boxed_slice(),
-            len: 0,
+            arrays: Mutex::new(vec![Row::new(); len].into_boxed_slice()),
+            len,
+            entries: AtomicUsize::new(0),
         }
     }
 
     pub fn max_entries(&self) -> usize {
-        self.arrays.len() * Row::ROW_LEN
+        self.arrays.lock().unwrap().len() * Row::ROW_LEN
     }
 
     fn hash(poset: &CanonifiedPoset) -> u64 {
@@ -51,36 +53,35 @@ impl Cache {
 
     pub fn get(&self, poset: &CanonifiedPoset) -> Option<Cost> {
         let hash = Self::hash(poset);
-        let row = &self.arrays[hash as usize % self.arrays.len()];
+        let row = &self.arrays.lock().unwrap()[hash as usize % self.len];
 
         row.get(poset)
     }
 
-    pub fn get_mut(&mut self, poset: &CanonifiedPoset) -> Option<Cost> {
+    pub fn get_mut(&self, poset: &CanonifiedPoset) -> Option<Cost> {
         let hash = Self::hash(poset);
-
-        let row = &mut self.arrays[hash as usize % self.arrays.len()];
+        let row = &mut self.arrays.lock().unwrap()[hash as usize % self.len];
 
         row.get_mut(poset)
     }
 
     /// returns true if an entry has been replaced
-    pub fn insert(&mut self, poset: CanonifiedPoset, cost: Cost) -> bool {
+    pub fn insert(&self, poset: CanonifiedPoset, cost: Cost) -> bool {
         let hash = Self::hash(&poset);
 
-        let row = &mut self.arrays[hash as usize % self.arrays.len()];
+        let row = &mut self.arrays.lock().unwrap()[hash as usize % self.len];
 
         let (matched, replaced) = row.insert(poset, cost);
 
         if !matched && !replaced {
-            self.len += 1;
+            self.entries.fetch_add(1, Ordering::Relaxed);
         }
 
         replaced
     }
 
     pub fn len(&self) -> usize {
-        self.len
+        self.entries.load(Ordering::Relaxed)
     }
 }
 
