@@ -111,7 +111,7 @@ impl NormalPoset {
 
             for k in 0..self.n {
                 if self.is_less(k, i) && !self.is_less(k, j) {
-                    stack.push((k as u8, j));
+                    stack.push((k, j));
                 }
             }
         }

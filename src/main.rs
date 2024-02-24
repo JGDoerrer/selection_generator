@@ -1,9 +1,6 @@
 use clap::{ArgAction, Parser};
 use search::Cost;
-use std::{
-    fs::OpenOptions,
-    io::{Read, Write},
-};
+use std::io::Write;
 
 use crate::{
     cache::Cache,
@@ -65,7 +62,6 @@ fn main() {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
         for i in start_i..(n + 1) / 2 {
-            let old_cache_len = cache.len();
             let result = Search::new(n, i, &mut cache).search();
 
             if n < KNOWN_VALUES.len() as u8 {
@@ -215,7 +211,7 @@ fn explore(poset: NormalPoset, mapping: [u8; MAX_N], cache: &Cache) {
                         let next_mapping = {
                             let mut new = [0; MAX_N];
                             for i in 0..poset.n() {
-                                new[i as usize] = mapping[new_mapping[i as usize] as usize];
+                                new[i as usize] = mapping[new_mapping[i as usize]];
                             }
                             new
                         };

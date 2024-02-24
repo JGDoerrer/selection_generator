@@ -144,7 +144,7 @@ impl<'a> Search<'a> {
         println!("{}", self.format_duration());
         println!();
 
-        result as u8
+        result
     }
 
     fn search_rec(&mut self, poset: CanonifiedPoset, max_comparisons: u8, depth: u8) -> Cost {
@@ -269,17 +269,14 @@ impl<'a> Search<'a> {
     fn estimate_hardness(poset: &CanonifiedPoset) -> u32 {
         let (less, greater) = poset.calculate_relations();
 
-        let mut counts = [0; MAX_N];
+        let mut sum = 0;
 
         for i in 0..poset.n() as usize {
-            counts[(poset.i() - greater[i]) as usize] += 1;
-            counts[(poset.n() - poset.i() - 1 - less[i]) as usize] += 1;
+            sum += (MAX_N as u32 - (poset.i() - greater[i]) as u32).pow(2);
+            sum += (MAX_N as u32 - (poset.n() - poset.i() - 1 - less[i]) as u32).pow(2);
         }
-        counts
-            .into_iter()
-            .enumerate()
-            .map(|(i, c)| ((MAX_N - i) as u32).pow(2) * c)
-            .sum::<u32>()
+
+        sum
     }
 
     fn estimate_solvable(
@@ -290,25 +287,24 @@ impl<'a> Search<'a> {
         start_j: u8,
         depth: u8,
     ) -> Option<bool> {
-        if let Some(cost) = self.search_cache(&poset) {
-            match cost {
-                Cost::Solved(solved) => {
+        if start_i != 0 || start_j != 0 {
+            match self.search_cache(&poset) {
+                Some(Cost::Solved(solved)) => {
                     return Some(solved <= max_comparisons);
                 }
-                Cost::Minimum(min) => {
+                Some(Cost::Minimum(min)) => {
                     if min > max_comparisons {
                         return Some(false);
                     }
                 }
+                _ => (),
             }
         }
 
-        // if self.current_max - max_comparisons >= poset.n() {
         let compatible_posets = poset.num_compatible_posets();
-        if compatible_posets == 0 || max_comparisons < compatible_posets.ilog2() as u8 {
+        if compatible_posets == 0 || (max_comparisons as u32) < compatible_posets.ilog2() {
             return Some(false);
         }
-        // }
 
         let (less, greater) = poset.calculate_relations();
 
@@ -333,15 +329,11 @@ impl<'a> Search<'a> {
             }
         }
 
-        if start_i != 0 && start_j != 0 {
+        if start_i != 0 || start_j != 0 {
             let cost = self.search_rec(poset, max_comparisons, depth + 1);
             match cost {
                 Cost::Solved(solved) => {
-                    if solved <= max_comparisons {
-                        return Some(true);
-                    } else {
-                        return Some(false);
-                    }
+                    return Some(solved <= max_comparisons);
                 }
                 Cost::Minimum(min) => {
                     if min > max_comparisons {

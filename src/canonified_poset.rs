@@ -98,8 +98,8 @@ impl Poset for CanonifiedPoset {
 
         for (i, less) in less.iter_mut().enumerate().take(self.n() as usize) {
             let i_bitset = BitSet::single(i);
-            for j in 0..self.n() as usize {
-                *less += (!all_greater_than[j].is_disjoint(i_bitset)) as u8;
+            for greater_than_j in all_greater_than.into_iter().take(i) {
+                *less += !greater_than_j.is_disjoint(i_bitset) as u8;
             }
         }
 
@@ -113,12 +113,10 @@ impl Poset for CanonifiedPoset {
 
         let mut less_than_i = 0;
 
+        let i_bitset = BitSet::single(i as usize);
+
         for j in 0..i {
-            less_than_i |= self
-                .get_all_greater_than(j)
-                .intersect(BitSet::single(i as usize))
-                .bits()
-                >> (i - j);
+            less_than_i |= self.get_all_greater_than(j).intersect(i_bitset).bits() >> (i - j);
         }
 
         less_than_i.into()
