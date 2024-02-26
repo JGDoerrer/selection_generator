@@ -113,80 +113,67 @@ fn start_search_backward(
   i0: u8,
   max_comparisons: u8,
 ) -> Option<u8> {
-  let poset_cache = Arc::new(RwLock::new(CacheSetSolvable::new()));
+  // let mut ht = Poset::new(2, 1);
+  // ht.add_less(1, 0);
+  // dbg!(&ht);
+  // ht.normalize();
+  // dbg!(&ht);
+
+  let poset_cache: Arc<RwLock<HashSet<Poset>>> = Arc::new(RwLock::new(HashSet::new()));
   poset_cache
     .write()
     .expect("cache shouldn't be poisoned")
-    .insert(&start_poset, 0);
+    .insert(start_poset.clone());
 
   let mut source = HashSet::new();
   source.insert(start_poset);
-  let init = std::time::Instant::now();
 
-  const USE_OLD_SEARCH: bool = true;
-  if USE_OLD_SEARCH {
-    source = Poset::enlarge(interrupt, &source, n, i0);
-    println!(
-      "# 0: 1 => {} in {:.3?} | total cached: {}",
-      source.len(),
-      init.elapsed(),
-      poset_cache
-        .read()
-        .expect("cache shouldn't be poisoned")
-        .size()
-    );
-  }
-
-  // Aussage:
-  // item1 subset item2 => A subset B and every Element in a is an Element from B (subset)
-
-  for k in 1..max_comparisons {
+  dbg!(&source);
+  for k in 1..=8 {
     let start = std::time::Instant::now();
-    let atomic_break = Arc::new(AtomicBool::new(false));
-    let interrupt_local = interrupt.clone();
-    let results: Vec<HashSet<Poset>> = source
+    let mut source_new = HashSet::new();
+    for item in &source {
+      for it in item.blow_up() {
+        source_new.insert(it);
+      }
+    }
+    // dbg!(&source_new);
+
+    // let atomic_break = Arc::new(AtomicBool::new(false));
+    // let interrupt_local = interrupt.clone();
+    let results: Vec<HashSet<Poset>> = source_new
       .iter()
       .map(|item| {
         let mut destination: HashSet<Poset> = HashSet::new();
-        let iter_items: HashSet<Poset> = if USE_OLD_SEARCH {
-          item.remove_less(|poset| {
-            poset_cache
-              .read()
-              .expect("cache shouldn't be poisoned")
-              .check(poset, k - 1)
-          })
-        } else {
-          item.enlarge_and_remove_less(n, i0, |poset| {
-            poset_cache
-              .read()
-              .expect("cache shouldn't be poisoned")
-              .check(poset, k - 1)
-          })
-        };
-        for predecessor_wo in iter_items {
+        for predecessor_wo in item.remove_less(|poset| {
+          poset_cache
+            .read()
+            .expect("cache shouldn't be poisoned")
+            .contains(poset)
+        }) {
           let mut predecessor = predecessor_wo.clone();
           predecessor.normalize();
+          // dbg!(&predecessor_wo, &predecessor);
 
           if poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
-            .check(&predecessor, k - 1)
+            .contains(&predecessor)
           {
+            // dbg!(poset_cache.write().expect("msg").size());
+            // dbg!("skipped");
             continue;
           }
-          poset_cache
-            .write()
-            .expect("cache shouldn't be poisoned")
-            .insert(&predecessor, k);
+          // dbg!(&predecessor);
 
-          if predecessor == Poset::new(n, i0) {
-            atomic_break.store(true, Ordering::Relaxed);
-          }
-          if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
-            break;
-          }
+          // if predecessor == Poset::new(n, i0) {
+          //   atomic_break.store(true, Ordering::Relaxed);
+          // }
+          // if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
+          //   break;
+          // }
 
-          if false {
+          if true {
             let mut cache_solvable = CacheSolvable::new();
             let mut cache_not_solvable = CacheNotSolvable::new();
             cache_solvable.insert(&Poset::new(1, 0), 0);
@@ -199,7 +186,7 @@ fn start_search_backward(
                 k - 1,
               )
             {
-              dbg!(predecessor, k - 1);
+              dbg!(predecessor_wo, predecessor, k - 1);
               panic!();
             }
             if SearchResult::FoundSolution
@@ -210,47 +197,92 @@ fn start_search_backward(
                 k,
               )
             {
-              dbg!(predecessor, k);
+              dbg!(predecessor_wo, predecessor, k);
               panic!();
             }
           }
 
-          if USE_OLD_SEARCH {
-            destination.insert(predecessor_wo);
-          } else {
-            destination.insert(predecessor);
-          }
+          // destination.insert(predecessor);
+          destination.insert(predecessor);
         }
         destination
       })
       .collect();
 
-    if interrupt.load(Ordering::Relaxed) {
-      return None;
-    }
+    // old: 1, 2; neu: 3
+    // -
+    // 1 - 3
+    // 1 - 3, 2 - 3
+
+    // if interrupt.load(Ordering::Relaxed) {
+    //   return None;
+    // }
 
     let mut destination: HashSet<Poset> = HashSet::new();
     for item in results {
       for poset in item {
+        poset_cache
+          .write()
+          .expect("cache shouldn't be poisoned")
+          .insert(poset.clone());
         destination.insert(poset);
       }
     }
 
     print!(
-      "# {k}: {} -> ? => ? -> {} in {:.3?} | total cached: {}",
+      "# {k}: {} ({}) => {} in {:.3?} | total cached: {}",
       source.len(),
+      source_new.len(),
       destination.len(),
       start.elapsed(),
       poset_cache
         .read()
         .expect("cache shouldn't be poisoned")
-        .size()
+        .len()
     );
-    if atomic_break.load(Ordering::Acquire) {
-      println!(" (found solution)");
-      return Some(k);
-    }
+    // if atomic_break.load(Ordering::Acquire) {
+    //   println!(" (found solution)");
+    //   return Some(k);
+    // }
     println!();
+
+    // dbg!(&destination);
+
+    for n1 in 2..MAX_N as u8 {
+      for i1 in 0..((n1 + 1) / 2) {
+        let poset = Poset::new(n1, i1);
+        let found = destination.contains(&poset);
+        match k.cmp(&KNOWN_MIN_VALUES[n1 as usize][i1 as usize]) {
+          std::cmp::Ordering::Less => {
+            if found {
+              dbg!(n1, i1, k);
+              panic!();
+            }
+          }
+          std::cmp::Ordering::Equal => {
+            if !found {
+              dbg!(n1, i1, k);
+              panic!();
+            }
+            println!("Found Solution for n = {n1}, i = {i1}: comparisons = {k}");
+          }
+          std::cmp::Ordering::Greater => {
+            if found {
+              dbg!(n1, i1, k);
+              panic!();
+            }
+            if !poset_cache
+              .read()
+              .expect("cache shouldn't be poisoned")
+              .contains(&poset)
+            {
+              dbg!(n1, i1, k);
+              panic!();
+            }
+          }
+        }
+      }
+    }
 
     source = destination;
   }
@@ -284,9 +316,9 @@ fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) {
 pub fn main() {
   let interrupt = Arc::new(AtomicBool::new(false));
 
-  if false {
+  if true {
     single(&interrupt, 9, 4);
-  } else if true {
+  } else if false {
     for n in 2..MAX_N as u8 {
       for i in 0..((n + 1) / 2) {
         single(&interrupt, n, i);

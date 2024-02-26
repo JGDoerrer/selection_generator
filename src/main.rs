@@ -1,7 +1,7 @@
 use std::env;
 
 mod search_backward;
-mod search_bidirectional;
+// mod search_bidirectional;
 mod search_forward;
 
 mod cache_set;
@@ -12,7 +12,7 @@ mod util;
 enum SearchMode {
   Forward,
   Backward,
-  Bidirectional,
+  // Bidirectional,
 }
 
 fn main() {
@@ -30,7 +30,7 @@ fn main() {
     } else if "backward" == args[1] || "1" == args[1] {
       mode = SearchMode::Backward;
     } else if "bidirectional" == args[1] || "2" == args[1] {
-      mode = SearchMode::Bidirectional;
+      // mode = SearchMode::Bidirectional;
     }
   }
 
@@ -39,6 +39,6 @@ fn main() {
   match mode {
     SearchMode::Forward => search_forward::main(),
     SearchMode::Backward => search_backward::main(),
-    SearchMode::Bidirectional => search_bidirectional::main(),
+    // SearchMode::Bidirectional => search_bidirectional::main(),
   }
 }
