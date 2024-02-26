@@ -1,6 +1,6 @@
 use clap::{ArgAction, Parser};
 use search::Cost;
-use std::io::Write;
+use std::{io::Write, sync::Arc};
 
 use crate::{
     cache::Cache,
@@ -47,7 +47,7 @@ fn main() {
 
     let start_n = args.n.unwrap_or(1);
 
-    let mut cache = Cache::new(args.max_cache_size);
+    let cache = Arc::new(Cache::new(args.max_cache_size));
 
     println!("Cache entries: {}", cache.len());
     println!("Maximum cache entries: {}", cache.max_entries());
@@ -62,7 +62,7 @@ fn main() {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
         for i in start_i..(n + 1) / 2 {
-            let result = Search::new(n, i, &mut cache).search();
+            let result = Search::new(n, i, cache.clone()).search();
 
             if n < KNOWN_VALUES.len() as u8 {
                 assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);

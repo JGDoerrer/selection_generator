@@ -1,5 +1,5 @@
 use std::{
-    sync::atomic::{AtomicU64, Ordering},
+    sync::{atomic::{AtomicU64, Ordering}, Arc},
     time::Instant,
 };
 
@@ -12,12 +12,12 @@ use crate::{
     poset::Poset,
 };
 
-pub struct Search<'a> {
+pub struct Search {
     n: u8,
     i: u8,
     current_max: u8,
-    cache: &'a mut Cache,
-    analytics: Analytics,
+    cache: Arc<Cache>,
+    analytics: Arc<Analytics>,
     start: Instant,
 }
 
@@ -52,19 +52,19 @@ impl Cost {
     }
 }
 
-impl<'a> Search<'a> {
-    pub fn new(n: u8, i: u8, cache: &'a mut Cache) -> Self {
+impl Search {
+    pub fn new(n: u8, i: u8, cache: Arc<Cache>) -> Self {
         Search {
             n,
             i,
             current_max: 0,
             cache,
-            analytics: Analytics::new(n.max(4) - 3),
+            analytics: Arc::new(Analytics::new(n.max(4) - 3)),
             start: Instant::now(),
         }
     }
 
-    fn search_cache(&mut self, poset: &CanonifiedPoset) -> Option<Cost> {
+    fn search_cache(&self, poset: &CanonifiedPoset) -> Option<Cost> {
         let result = self.cache.get_mut(poset);
         if result.is_some() {
             self.analytics.record_hit();
@@ -74,7 +74,7 @@ impl<'a> Search<'a> {
         result
     }
 
-    fn insert_cache(&mut self, poset: CanonifiedPoset, new_cost: Cost) {
+    fn insert_cache(&self, poset: CanonifiedPoset, new_cost: Cost) {
         if let Some(cost) = self.cache.get(&poset) {
             let res = match (cost, new_cost) {
                 (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
@@ -110,7 +110,7 @@ impl<'a> Search<'a> {
         for current in min..max {
             let current = current as u8;
             self.current_max = current;
-            self.analytics.set_max_depth(current / 2);
+            self.analytics = Arc::new(self.analytics.with_max_depth(current / 2));
 
             let search_result = self.search_rec(CanonifiedPoset::new(self.n, self.i), current, 0);
             result = match search_result {
@@ -147,7 +147,7 @@ impl<'a> Search<'a> {
         result
     }
 
-    fn search_rec(&mut self, poset: CanonifiedPoset, max_comparisons: u8, depth: u8) -> Cost {
+    fn search_rec(&self, poset: CanonifiedPoset, max_comparisons: u8, depth: u8) -> Cost {
         if poset.n() == 1 {
             return Cost::Solved(0);
         }
@@ -280,7 +280,7 @@ impl<'a> Search<'a> {
     }
 
     fn estimate_solvable(
-        &mut self,
+        &self,
         poset: CanonifiedPoset,
         max_comparisons: u8,
         start_i: u8,
@@ -394,22 +394,12 @@ impl Analytics {
         }
     }
 
-    fn set_max_depth(&mut self, new_depth: u8) {
-        if new_depth > self.max_progress_depth {
-            for _ in self.max_progress_depth..new_depth {
-                let pb = ProgressBar::new(0)
-                    .with_style(ProgressStyle::with_template("[{pos:2}/{len:2}] {msg}").unwrap());
-                let pb = self.multiprogress.add(pb);
-                self.progress_bars.push((pb, AtomicU64::new(0)));
-            }
-        } else {
-            for _ in new_depth..self.max_progress_depth {
-                let (pb, _) = self.progress_bars.pop().unwrap();
-                pb.finish_and_clear();
-                self.multiprogress.remove(&pb);
-            }
-        }
-        self.max_progress_depth = new_depth;
+    fn with_max_depth(&self, new_depth: u8) -> Self {
+        let new = Self::new(new_depth);
+        new.total_posets.store(self.total_posets(), Ordering::Relaxed);
+        new.cache_hits.store(self.cache_hits(), Ordering::Relaxed);
+        new.cache_misses.store(self.cache_misses(), Ordering::Relaxed);
+        new
     }
 
     #[inline]
@@ -462,22 +452,22 @@ impl Analytics {
     }
 
     #[inline]
-    fn record_hit(&mut self) {
+    fn record_hit(&self) {
         self.cache_hits.fetch_add(1, Ordering::Relaxed);
     }
 
     #[inline]
-    fn record_miss(&mut self) {
+    fn record_miss(&self) {
         self.cache_misses.fetch_add(1, Ordering::Relaxed);
     }
 
     #[inline]
-    fn record_replace(&mut self) {
+    fn record_replace(&self) {
         self.cache_replaced.fetch_add(1, Ordering::Relaxed);
     }
 
     #[inline]
-    fn record_poset(&mut self) {
+    fn record_poset(&self) {
         self.total_posets.fetch_add(1, Ordering::Relaxed);
     }
 
