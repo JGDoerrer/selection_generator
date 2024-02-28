@@ -203,7 +203,7 @@ impl Search {
         self.task_queue.lock().unwrap().push(root.clone());
 
         // start single-threaded to build a starting tree
-        for _ in 0..7.min(max_comparisons / 2) {
+        for _ in 0..7.max((3*max_comparisons) / 4) {
             let task_reference = self.task_queue.lock().unwrap().pop().unwrap();
             let r = self.expand_task(&task_reference);
             if let Some(cost) = r {
@@ -221,7 +221,7 @@ impl Search {
             let worker = self.clone();
             threads.push(spawn(move || {
                 loop {
-                    let task = worker.task_queue.try_lock().unwrap().pop();
+                    let task = worker.task_queue.lock().unwrap().pop();
                     if let Some(task) = task {
                         if task.lock().unwrap().max_comparisons() < 11 {
                             let t = task.lock().unwrap();
@@ -238,7 +238,6 @@ impl Search {
                         break;
                     }
                 }
-                println!("Worker quit.")
             }))
         }
 
