@@ -30,17 +30,6 @@ fn start_search_backward(
 
   let mut source = HashSet::new();
   source.insert(start_poset);
-  let init = std::time::Instant::now();
-  source = Poset::enlarge(interrupt, &source, n, i0);
-  println!(
-    "# 0: 1 => {} in {:.3?} | total cached: {}",
-    source.len(),
-    init.elapsed(),
-    poset_cache
-      .read()
-      .expect("cache shouldn't be poisoned")
-      .size()
-  );
 
   // Aussage:
   // item1 subset item2 => A subset B and every Element in a is an Element from B (subset)
@@ -54,15 +43,12 @@ fn start_search_backward(
       .par_iter()
       .map(|item| {
         let mut destination: HashSet<Poset> = HashSet::new();
-        for predecessor_wo in item.remove_less(|poset| {
+        for predecessor in item.enlarge_and_remove_less(interrupt, n, i0, |poset| {
           poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
             .check(poset, k - 1)
         }) {
-          let mut predecessor = predecessor_wo.clone();
-          predecessor.normalize();
-
           if poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
@@ -82,7 +68,7 @@ fn start_search_backward(
             break;
           }
 
-          destination.insert(predecessor_wo);
+          destination.insert(predecessor);
         }
         destination
       })
@@ -101,8 +87,7 @@ fn start_search_backward(
     dyn_level.store(k, Ordering::Relaxed);
 
     print!(
-      "# {}: {} => {} in {:.3?} | total cached: {}",
-      k,
+      "# {k}: {} -> ? => ? -> {} in {:.3?} | total cached: {}",
       source.len(),
       destination.len(),
       start.elapsed(),

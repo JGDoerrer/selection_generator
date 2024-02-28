@@ -113,9 +113,9 @@ fn start_search_backward(
   n: u8,
   i0: u8,
   max_comparisons: u8,
-) -> (Option<u8>, Duration) {
-  let mut cache_solvable = Arc::new(RwLock::new(CacheSolvable::new()));
-  let mut cache_not_solvable = Arc::new(RwLock::new(CacheNotSolvable::new()));
+) -> Option<u8> {
+  let cache_solvable = Arc::new(RwLock::new(CacheSolvable::new()));
+  let cache_not_solvable = Arc::new(RwLock::new(CacheNotSolvable::new()));
   cache_solvable
     .write()
     .expect("")
@@ -129,26 +129,10 @@ fn start_search_backward(
 
   let mut source = HashSet::new();
   source.insert(start_poset);
-  let init = std::time::Instant::now();
-
-  const USE_OLD_SEARCH: bool = false;
-  if USE_OLD_SEARCH {
-    source = Poset::enlarge(interrupt, &source, n, i0);
-    println!(
-      "# 0: 1 => {} in {:.3?} | total cached: {}",
-      source.len(),
-      init.elapsed(),
-      poset_cache
-        .read()
-        .expect("cache shouldn't be poisoned")
-        .size()
-    );
-  }
 
   // Aussage:
   // item1 subset item2 => A subset B and every Element in a is an Element from B (subset)
 
-  let mut total_time = Duration::from_millis(0);
   for k in 1..max_comparisons {
     let start = std::time::Instant::now();
     let atomic_break = Arc::new(AtomicBool::new(false));
@@ -157,27 +141,13 @@ fn start_search_backward(
       .par_iter()
       .map(|item| {
         let mut destination: HashSet<Poset> = HashSet::new();
-        let iter_items: HashSet<Poset> = if USE_OLD_SEARCH {
-          item.remove_less(|poset| {
-            poset_cache
-              .read()
-              .expect("cache shouldn't be poisoned")
-              .check(poset, k - 1)
-          })
-        } else {
-          item.enlarge_and_remove_less(interrupt, n, i0, |poset| {
-            poset_cache
-              .read()
-              .expect("cache shouldn't be poisoned")
-              .check(poset, k - 1)
-          })
-        };
-        for predecessor_wo in iter_items {
-          let mut predecessor = predecessor_wo.clone();
-          if USE_OLD_SEARCH {
-            predecessor.normalize();
-          }
-
+        let iter_items: HashSet<Poset> = item.enlarge_and_remove_less(interrupt, n, i0, |poset| {
+          poset_cache
+            .read()
+            .expect("cache shouldn't be poisoned")
+            .check(poset, k - 1)
+        });
+        for predecessor in iter_items {
           if poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
@@ -197,7 +167,7 @@ fn start_search_backward(
             break;
           }
 
-          if true {
+          if false {
             if SearchResult::NoSolution
               != search_recursive(
                 &predecessor,
@@ -222,18 +192,14 @@ fn start_search_backward(
             }
           }
 
-          if USE_OLD_SEARCH {
-            destination.insert(predecessor_wo);
-          } else {
-            destination.insert(predecessor);
-          }
+          destination.insert(predecessor);
         }
         destination
       })
       .collect();
 
     if interrupt.load(Ordering::Relaxed) {
-      return (None, total_time);
+      return None;
     }
 
     let mut destination: HashSet<Poset> = HashSet::new();
@@ -243,63 +209,33 @@ fn start_search_backward(
       }
     }
 
-    let start2 = std::time::Instant::now();
-    if USE_OLD_SEARCH {
-      let end = start.elapsed();
-      let mut source_normed = HashSet::new();
-      for item in &source {
-        let mut cloned = item.clone();
-        cloned.normalize();
-        source_normed.insert(cloned);
-      }
-      let mut destination_normed = HashSet::new();
-      for item in &destination {
-        let mut cloned = item.clone();
-        cloned.normalize();
-        destination_normed.insert(cloned);
-      }
-      print!(
-        "# {k}: {} -> {} => {} -> {} in {:.3?} | total cached: {}",
-        source_normed.len(),
-        source.len(),
-        destination.len(),
-        destination_normed.len(),
-        end,
-        poset_cache
-          .read()
-          .expect("cache shouldn't be poisoned")
-          .size()
-      );
-    } else {
-      print!(
-        "# {k}: {} -> ? => ? -> {} in {:.3?} | total cached: {}",
-        source.len(),
-        destination.len(),
-        start.elapsed(),
-        poset_cache
-          .read()
-          .expect("cache shouldn't be poisoned")
-          .size()
-      );
-    }
-    total_time += start2.elapsed();
+    print!(
+      "# {k}: {} -> ? => ? -> {} in {:.3?} | total cached: {}",
+      source.len(),
+      destination.len(),
+      start.elapsed(),
+      poset_cache
+        .read()
+        .expect("cache shouldn't be poisoned")
+        .size()
+    );
 
     if atomic_break.load(Ordering::Acquire) {
       println!(" (found solution)");
-      return (Some(k), total_time);
+      return Some(k);
     }
     println!();
 
     source = destination;
   }
 
-  (None, total_time)
+  None
 }
 
 fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) {
   let start = std::time::Instant::now();
-  let (comparisons, total_time) = start_search_backward(interrupt, Poset::new(1, 0), n, i, n * n);
-  let end = start.elapsed() - total_time;
+  let comparisons = start_search_backward(interrupt, Poset::new(1, 0), n, i, n * n);
+  let end = start.elapsed();
 
   if let Some(comparisons) = comparisons {
     println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}");
