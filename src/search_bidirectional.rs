@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use std::fmt::{self, Display};
-use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicI8, Ordering};
 use std::sync::{Arc, RwLock};
 use std::time::Duration;
 use std::time::Instant;
@@ -16,17 +16,19 @@ use super::util::{lower_bound, upper_bound, KNOWN_MIN_VALUES, MAX_N};
 #[allow(clippy::too_many_lines)]
 fn start_search_backward(
   interrupt: &Arc<AtomicBool>,
-  dyn_level: &Arc<AtomicU8>,
+  dyn_level: &Arc<AtomicI8>,
+  poset_cache: &Arc<RwLock<CacheSetSolvable>>,
   start_poset: Poset,
   n: u8,
   i0: u8,
   max_comparisons: u8,
 ) -> Option<u8> {
-  let poset_cache = Arc::new(RwLock::new(CacheSetSolvable::new()));
   poset_cache
     .write()
     .expect("cache shouldn't be poisoned")
     .insert(&start_poset, 0);
+
+  dyn_level.store(0, Ordering::Relaxed);
 
   let mut source = HashSet::new();
   source.insert(start_poset);
@@ -37,18 +39,24 @@ fn start_search_backward(
   for k in 1..max_comparisons {
     let start = std::time::Instant::now();
 
+    let mut table = [[false; MAX_N]; MAX_N];
+    Poset::rec_temp(&mut table, n as usize, i0 as usize);
+
     let atomic_break = Arc::new(AtomicBool::new(false));
-    let interrupt_local = interrupt.clone();
     let results: Vec<HashSet<Poset>> = source
       .par_iter()
       .map(|item| {
         let mut destination: HashSet<Poset> = HashSet::new();
-        for predecessor in item.enlarge_and_remove_less(interrupt, n, i0, |poset| {
+        for predecessor in item.enlarge_and_remove_less(&atomic_break, &table, n, i0, |poset| {
           poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
             .check(poset, k - 1)
         }) {
+          if atomic_break.load(Ordering::Relaxed) || interrupt.load(Ordering::Relaxed) {
+            return HashSet::new();
+          }
+
           if poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
@@ -63,9 +71,8 @@ fn start_search_backward(
 
           if predecessor == Poset::new(n, i0) {
             atomic_break.store(true, Ordering::Relaxed);
-          }
-          if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
-            break;
+            destination.insert(predecessor);
+            return destination;
           }
 
           destination.insert(predecessor);
@@ -73,6 +80,8 @@ fn start_search_backward(
         destination
       })
       .collect();
+
+    dyn_level.store(k as i8, Ordering::Relaxed);
 
     if interrupt.load(Ordering::Relaxed) {
       return None;
@@ -84,7 +93,6 @@ fn start_search_backward(
         destination.insert(poset);
       }
     }
-    dyn_level.store(k, Ordering::Relaxed);
 
     print!(
       "# {k}: {} -> ? => ? -> {} in {:.3?} | total cached: {}",
@@ -134,33 +142,47 @@ impl Display for Statistics {
 
 fn search_recursive(
   poset_cache: &Arc<RwLock<CacheSetSolvable>>,
-  dyn_level: &Arc<AtomicU8>,
+  dyn_level: &Arc<AtomicI8>,
   poset: &Poset,
   cache_solvable: &mut CacheTreeSolvable,
   cache_not_solvable: &mut CacheTreeNotSolvable,
   remaining_comparisons: u8,
   statistics: &mut Statistics,
 ) -> SearchResult {
-  if remaining_comparisons <= dyn_level.load(Ordering::Relaxed) + 1 {
+  // let mut backward_result = None;
+
+  let backward_search_level = dyn_level.load(Ordering::Relaxed);
+  if remaining_comparisons as i8 <= backward_search_level + 1 {
     if poset_cache
       .read()
       .unwrap()
       .check(poset, remaining_comparisons)
     {
+      // backward_result = Some(SearchResult::FoundSolution);
       return SearchResult::FoundSolution;
-    } else if remaining_comparisons <= dyn_level.load(Ordering::Relaxed) {
+    } else if remaining_comparisons as i8 <= backward_search_level {
+      // backward_result = Some(SearchResult::NoSolution);
       return SearchResult::NoSolution;
     }
   }
 
   if cache_not_solvable.check(poset, remaining_comparisons) {
     statistics.hash_match_lower_bound += 1;
+    // if let Some(backward_result_value) = backward_result {
+    //   assert_eq!(backward_result_value, SearchResult::NoSolution);
+    // }
     return SearchResult::NoSolution;
   } else if cache_solvable.check(poset, remaining_comparisons) {
     statistics.hash_match_upper_bound += 1;
+    // if let Some(backward_result_value) = backward_result {
+    //   assert_eq!(backward_result_value, SearchResult::FoundSolution);
+    // }
     return SearchResult::FoundSolution;
   } else if 0 == remaining_comparisons {
     statistics.no_solution += 1;
+    // if let Some(backward_result_value) = backward_result {
+    //   assert_eq!(backward_result_value, SearchResult::NoSolution);
+    // }
     return SearchResult::NoSolution;
   }
 
@@ -219,12 +241,15 @@ fn search_recursive(
     cache_solvable.insert(poset, remaining_comparisons);
   }
 
+  // if let Some(backward_result_value) = backward_result {
+  //   assert_eq!(backward_result_value, result);
+  // }
   result
 }
 
 fn start_search_now(
   poset_cache: &Arc<RwLock<CacheSetSolvable>>,
-  dyn_level: &Arc<AtomicU8>,
+  dyn_level: &Arc<AtomicI8>,
   n: u8,
   i: u8,
   cache_solvable: &mut CacheTreeSolvable,
@@ -276,7 +301,7 @@ fn start_search_now(
 
 fn start_search(
   poset_cache: &Arc<RwLock<CacheSetSolvable>>,
-  dyn_level: &Arc<AtomicU8>,
+  dyn_level: &Arc<AtomicI8>,
   n: u8,
   i: u8,
   cache_solvable: &mut CacheTreeSolvable,
@@ -370,12 +395,6 @@ fn start_search(
 }
 
 pub fn main() {
-  let poset_cache = Arc::new(RwLock::new(CacheSetSolvable::new()));
-  poset_cache
-    .write()
-    .expect("cache shouldn't be poisoned")
-    .insert(&Poset::new(1, 0), 0);
-
   let mut cache_solvable = CacheTreeSolvable::new();
   let mut cache_not_solvable = CacheTreeNotSolvable::new();
   cache_solvable.insert(&Poset::new(1, 0), 0);
@@ -384,15 +403,18 @@ pub fn main() {
     for i in 0..((n + 1) / 2) {
       let mut statistics = Statistics::default();
 
+      let backward_search_cache = Arc::new(RwLock::new(CacheSetSolvable::new()));
       let interrupt = Arc::new(AtomicBool::new(false));
-      let dyn_level = Arc::new(AtomicU8::new(0));
+      let dyn_level = Arc::new(AtomicI8::new(-1));
       let handle = {
+        let backward_search_cache_local = backward_search_cache.clone();
         let interrupt_local = interrupt.clone();
         let dyn_level_local = dyn_level.clone();
         thread::spawn(move || {
           start_search_backward(
             &interrupt_local,
             &dyn_level_local,
+            &backward_search_cache_local,
             Poset::new(1, 0),
             n,
             i,
@@ -402,8 +424,8 @@ pub fn main() {
       };
 
       let (comparisons, duration_search, duration_validate) = start_search(
-        &poset_cache.clone(),
-        &dyn_level.clone(),
+        &backward_search_cache,
+        &dyn_level,
         n,
         i,
         &mut cache_solvable,

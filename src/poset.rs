@@ -631,6 +631,7 @@ impl Poset {
   pub fn enlarge_and_remove_less<F>(
     &self,
     interrupt: &Arc<AtomicBool>,
+    table: &[[bool; 15]; 15],
     n: u8,
     i: u8,
     test: F,
@@ -638,18 +639,14 @@ impl Poset {
   where
     F: Fn(&Poset) -> bool,
   {
+    debug_assert!(2 * self.i < self.n);
     if self.n == n && self.i == i {
-      let mut destination = HashSet::new();
-      for mut item in self.remove_less(&test) {
-        item.normalize();
-        destination.insert(item);
-      }
-      return destination;
+      return self.remove_less(&test);
     }
 
-    let mut destination = HashSet::new();
-    let mut table = [[false; MAX_N]; MAX_N];
-    Self::rec_temp(&mut table, n as usize, i as usize);
+    if !table[self.n as usize][self.i as usize] {
+      return HashSet::new();
+    }
 
     let mut temp_set: [[(HashSet<Poset>, HashSet<Poset>); MAX_N]; MAX_N] = Default::default();
     for n0 in 0..=n {
@@ -658,17 +655,11 @@ impl Poset {
       }
     }
 
-    if table[self.n as usize][self.i as usize] {
-      debug_assert!(2 * self.i < self.n);
-      temp_set[self.n as usize][self.i as usize]
-        .0
-        .insert(self.clone());
+    temp_set[self.n as usize][self.i as usize]
+      .0
+      .insert(self.clone());
 
-      for mut item in self.remove_less(&test) {
-        item.normalize();
-        destination.insert(item);
-      }
-    }
+    let mut destination = self.remove_less(&test);
 
     for n0 in 1..n {
       for i0 in 0..=i {
@@ -680,7 +671,7 @@ impl Poset {
           }
 
           if interrupt.load(Ordering::Relaxed) {
-            return destination;
+            return HashSet::new();
           }
 
           if 2 * (i0 + 1) < n0 + 1 {
@@ -695,7 +686,7 @@ impl Poset {
           }
 
           if interrupt.load(Ordering::Relaxed) {
-            return destination;
+            return HashSet::new();
           }
 
           for it in result1 {
@@ -711,19 +702,11 @@ impl Poset {
               norm == *self
             });
 
-            // TODO: probiere noch einmal remove_less letztes Element!
-
-            // assert!(
-            //   it.can_reduce_element_less(it.n - 1) || it.can_reduce_element_greater(it.n - 1)
-            // );
-
             let mut found = false;
-            for mut item in it.remove_less(&test) {
-              item.normalize();
+            for item in it.remove_less(&test) {
               found |= !destination.contains(&item);
               temp_dest.insert(item);
             }
-            // Keine Ahnung, ob das stimmt ...
             if found {
               temp_set[it.n as usize][it.i as usize].0.insert(it);
             } else {
@@ -731,7 +714,7 @@ impl Poset {
             }
 
             if interrupt.load(Ordering::Relaxed) {
-              return destination;
+              return HashSet::new();
             }
           }
         }
@@ -769,16 +752,14 @@ impl Poset {
           let mut poset_initial = self_r.clone();
           poset_initial.set_less(i, j, false);
 
-          let poset_check = poset_initial.with_less_normalized(j, i);
-          if !test(&poset_check) {
+          if !test(&poset_initial.with_less_normalized(j, i)) {
             continue;
           }
 
-          let mut queue = Vec::new();
-          queue.push(poset_initial.clone());
+          result.insert(poset_initial.clone());
 
-          poset_initial.canonify_wo();
-          result.insert(poset_initial);
+          let mut queue = Vec::new();
+          queue.push(poset_initial);
 
           while let Some(poset) = queue.pop() {
             for i1 in 0..self_r.n {
@@ -794,23 +775,14 @@ impl Poset {
                 let mut poset_next = poset.clone();
                 poset_next.set_less(i1, j1, false);
 
-                let poset_next_normal = poset_next.with_less(i, j);
-                if self_r != poset_next_normal {
+                if result.contains(&poset_next)
+                  || self_r != poset_next.with_less(i, j)
+                  || !test(&poset_next.with_less_normalized(j, i))
+                {
                   continue;
                 }
 
-                let poset_check = poset_next.with_less_normalized(j, i);
-                if !test(&poset_check) {
-                  continue;
-                }
-
-                let mut poset_norm = poset_next.clone();
-                poset_norm.canonify_wo();
-                if result.contains(&poset_norm) {
-                  continue;
-                }
-                result.insert(poset_norm);
-
+                result.insert(poset_next.clone());
                 queue.push(poset_next);
               }
             }
@@ -843,7 +815,16 @@ impl Poset {
     //   });
     // }
 
-    result
+    let mut cleaned_result = HashSet::new();
+    for mut item in result {
+      let size = item.n();
+      item.reduce_elements();
+      if size == item.n() {
+        item.canonify();
+        cleaned_result.insert(item);
+      }
+    }
+    cleaned_result
   }
 
   // enlarge
@@ -1003,7 +984,7 @@ impl Poset {
     }
   }
 
-  fn rec_temp(table: &mut [[bool; MAX_N]; MAX_N], n: usize, i: usize) {
+  pub fn rec_temp(table: &mut [[bool; MAX_N]; MAX_N], n: usize, i: usize) {
     table[n][i] = true;
     if 1 <= n && 2 * i < n - 1 {
       Self::rec_temp(table, n - 1, i);

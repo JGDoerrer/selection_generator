@@ -106,6 +106,8 @@ fn search_recursive(
   result
 }
 
+const USE_CHECKS: bool = true;
+
 #[allow(clippy::too_many_lines)]
 fn start_search_backward(
   interrupt: &Arc<AtomicBool>,
@@ -113,7 +115,7 @@ fn start_search_backward(
   n: u8,
   i0: u8,
   max_comparisons: u8,
-) -> Option<u8> {
+) -> (Option<u8>, Duration) {
   let cache_solvable = Arc::new(RwLock::new(CacheSolvable::new()));
   let cache_not_solvable = Arc::new(RwLock::new(CacheNotSolvable::new()));
   cache_solvable
@@ -133,21 +135,28 @@ fn start_search_backward(
   // Aussage:
   // item1 subset item2 => A subset B and every Element in a is an Element from B (subset)
 
+  let mut check_time = Duration::from_millis(0);
   for k in 1..max_comparisons {
     let start = std::time::Instant::now();
+
+    let mut table = [[false; MAX_N]; MAX_N];
+    Poset::rec_temp(&mut table, n as usize, i0 as usize);
+
     let atomic_break = Arc::new(AtomicBool::new(false));
-    let interrupt_local = interrupt.clone();
     let results: Vec<HashSet<Poset>> = source
       .par_iter()
       .map(|item| {
         let mut destination: HashSet<Poset> = HashSet::new();
-        let iter_items: HashSet<Poset> = item.enlarge_and_remove_less(interrupt, n, i0, |poset| {
+        for predecessor in item.enlarge_and_remove_less(&atomic_break, &table, n, i0, |poset| {
           poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
             .check(poset, k - 1)
-        });
-        for predecessor in iter_items {
+        }) {
+          if atomic_break.load(Ordering::Relaxed) || interrupt.load(Ordering::Relaxed) {
+            return HashSet::new();
+          }
+
           if poset_cache
             .read()
             .expect("cache shouldn't be poisoned")
@@ -162,34 +171,8 @@ fn start_search_backward(
 
           if predecessor == Poset::new(n, i0) {
             atomic_break.store(true, Ordering::Relaxed);
-          }
-          if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
-            break;
-          }
-
-          if false {
-            if SearchResult::NoSolution
-              != search_recursive(
-                &predecessor,
-                &mut cache_solvable.write().expect(""),
-                &mut cache_not_solvable.write().expect(""),
-                k - 1,
-              )
-            {
-              dbg!(predecessor, k - 1);
-              panic!();
-            }
-            if SearchResult::FoundSolution
-              != search_recursive(
-                &predecessor,
-                &mut cache_solvable.write().expect(""),
-                &mut cache_not_solvable.write().expect(""),
-                k,
-              )
-            {
-              dbg!(predecessor, k);
-              panic!();
-            }
+            destination.insert(predecessor);
+            return destination;
           }
 
           destination.insert(predecessor);
@@ -199,7 +182,7 @@ fn start_search_backward(
       .collect();
 
     if interrupt.load(Ordering::Relaxed) {
-      return None;
+      return (None, check_time);
     }
 
     let mut destination: HashSet<Poset> = HashSet::new();
@@ -208,6 +191,39 @@ fn start_search_backward(
         destination.insert(poset);
       }
     }
+
+    if USE_CHECKS {
+      let start_check = std::time::Instant::now();
+      let _: Vec<()> = destination
+        .par_iter()
+        .map(|predecessor| {
+          if SearchResult::NoSolution
+            != search_recursive(
+              predecessor,
+              &mut cache_solvable.write().expect(""),
+              &mut cache_not_solvable.write().expect(""),
+              k - 1,
+            )
+          {
+            dbg!(predecessor, k - 1);
+            panic!();
+          }
+          if SearchResult::FoundSolution
+            != search_recursive(
+              predecessor,
+              &mut cache_solvable.write().expect(""),
+              &mut cache_not_solvable.write().expect(""),
+              k,
+            )
+          {
+            dbg!(predecessor, k);
+            panic!();
+          }
+        })
+        .collect();
+      check_time += start_check.elapsed();
+    }
+    // dbg!(&source, &destination);
 
     print!(
       "# {k}: {} -> ? => ? -> {} in {:.3?} | total cached: {}",
@@ -222,23 +238,27 @@ fn start_search_backward(
 
     if atomic_break.load(Ordering::Acquire) {
       println!(" (found solution)");
-      return Some(k);
+      return (Some(k), check_time);
     }
     println!();
 
     source = destination;
   }
 
-  None
+  (None, check_time)
 }
 
 fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) {
   let start = std::time::Instant::now();
-  let comparisons = start_search_backward(interrupt, Poset::new(1, 0), n, i, n * n);
-  let end = start.elapsed();
+  let (comparisons, check_time) = start_search_backward(interrupt, Poset::new(1, 0), n, i, n * n);
+  let end = start.elapsed() - check_time;
 
   if let Some(comparisons) = comparisons {
-    println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}");
+    if USE_CHECKS {
+      println!("time '{end:.3?}' (check-time: {check_time:.3?}): n = {n}, i = {i}, comparisons: {comparisons}");
+    } else {
+      println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}");
+    }
     if comparisons != KNOWN_MIN_VALUES[n as usize][i as usize] {
       eprintln!(
         "Error: got {}, but expected {}",
@@ -259,7 +279,7 @@ pub fn main() {
   let interrupt = Arc::new(AtomicBool::new(false));
 
   if false {
-    single(&interrupt, 11, 5);
+    single(&interrupt, 10, 4);
   } else if true {
     for n in 2..MAX_N as u8 {
       for i in 0..((n + 1) / 2) {
