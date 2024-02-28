@@ -153,84 +153,76 @@ fn start_search_backward(
     let start = std::time::Instant::now();
     let atomic_break = Arc::new(AtomicBool::new(false));
     let interrupt_local = interrupt.clone();
-    let results: Vec<HashSet<Poset>> = source
-      .par_iter()
-      .map(|item| {
-        let mut destination: HashSet<Poset> = HashSet::new();
-        let iter_items: HashSet<Poset> = if USE_OLD_SEARCH {
-          item.remove_less(|poset| {
-            poset_cache
-              .read()
-              .expect("cache shouldn't be poisoned")
-              .check(poset, k - 1)
-          })
-        } else {
-          item.enlarge_and_remove_less(interrupt, n, i0, |poset| {
-            poset_cache
-              .read()
-              .expect("cache shouldn't be poisoned")
-              .check(poset, k - 1)
-          })
-        };
-        for predecessor_wo in iter_items {
-          let mut predecessor = predecessor_wo.clone();
-          if USE_OLD_SEARCH {
-            predecessor.normalize();
-          }
+    let results: Vec<HashSet<Poset>> = Poset::enlarge_and_remove_less(&source, n, i0, |poset| {
+      poset_cache
+        .read()
+        .expect("cache shouldn't be poisoned")
+        .check(poset, k - 1)
+    })
+    .iter()
+    .map(|item| {
+      let mut destination: HashSet<Poset> = HashSet::new();
+      let mut iter_items = HashSet::new();
+      iter_items.insert(item.clone());
+      for predecessor_wo in iter_items {
+        let mut predecessor = predecessor_wo.clone();
+        if USE_OLD_SEARCH {
+          predecessor.normalize();
+        }
 
-          if poset_cache
-            .read()
-            .expect("cache shouldn't be poisoned")
-            .check(&predecessor, k - 1)
+        if poset_cache
+          .read()
+          .expect("cache shouldn't be poisoned")
+          .check(&predecessor, k - 1)
+        {
+          continue;
+        }
+        poset_cache
+          .write()
+          .expect("cache shouldn't be poisoned")
+          .insert(&predecessor, k);
+
+        if predecessor == Poset::new(n, i0) {
+          atomic_break.store(true, Ordering::Relaxed);
+        }
+        if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
+          break;
+        }
+
+        if true {
+          if SearchResult::NoSolution
+            != search_recursive(
+              &predecessor,
+              &mut cache_solvable.write().expect(""),
+              &mut cache_not_solvable.write().expect(""),
+              k - 1,
+            )
           {
-            continue;
+            dbg!(predecessor, k - 1);
+            panic!();
           }
-          poset_cache
-            .write()
-            .expect("cache shouldn't be poisoned")
-            .insert(&predecessor, k);
-
-          if predecessor == Poset::new(n, i0) {
-            atomic_break.store(true, Ordering::Relaxed);
-          }
-          if atomic_break.load(Ordering::Relaxed) || interrupt_local.load(Ordering::Relaxed) {
-            break;
-          }
-
-          if true {
-            if SearchResult::NoSolution
-              != search_recursive(
-                &predecessor,
-                &mut cache_solvable.write().expect(""),
-                &mut cache_not_solvable.write().expect(""),
-                k - 1,
-              )
-            {
-              dbg!(predecessor, k - 1);
-              panic!();
-            }
-            if SearchResult::FoundSolution
-              != search_recursive(
-                &predecessor,
-                &mut cache_solvable.write().expect(""),
-                &mut cache_not_solvable.write().expect(""),
-                k,
-              )
-            {
-              dbg!(predecessor, k);
-              panic!();
-            }
-          }
-
-          if USE_OLD_SEARCH {
-            destination.insert(predecessor_wo);
-          } else {
-            destination.insert(predecessor);
+          if SearchResult::FoundSolution
+            != search_recursive(
+              &predecessor,
+              &mut cache_solvable.write().expect(""),
+              &mut cache_not_solvable.write().expect(""),
+              k,
+            )
+          {
+            dbg!(predecessor, k);
+            panic!();
           }
         }
-        destination
-      })
-      .collect();
+
+        if USE_OLD_SEARCH {
+          destination.insert(predecessor_wo);
+        } else {
+          destination.insert(predecessor);
+        }
+      }
+      destination
+    })
+    .collect();
 
     if interrupt.load(Ordering::Relaxed) {
       return (None, total_time);
@@ -323,7 +315,7 @@ pub fn main() {
   let interrupt = Arc::new(AtomicBool::new(false));
 
   if false {
-    single(&interrupt, 11, 5);
+    single(&interrupt, 7, 3);
   } else if true {
     for n in 2..MAX_N as u8 {
       for i in 0..((n + 1) / 2) {
