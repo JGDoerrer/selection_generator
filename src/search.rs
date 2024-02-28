@@ -217,7 +217,7 @@ impl Search {
             16
         };
 
-        for _ in 0..1 {
+        for _ in 0..thread_count {
             let worker = self.clone();
             threads.push(spawn(move || {
                 loop {
@@ -263,6 +263,7 @@ impl Search {
 
                 if parent.open_children == 0 {
                     let result = parent.current_best;
+                    self.analytics.inc(parent.depth, 1);
                     drop(parent);
                     self.apply_result(&p, result);
                 }
