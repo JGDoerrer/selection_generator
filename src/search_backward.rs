@@ -135,13 +135,12 @@ fn start_search_backward(
   // Aussage:
   // item1 subset item2 => A subset B and every Element in a is an Element from B (subset)
 
+  let mut table = [[false; MAX_N]; MAX_N];
+  Poset::rec_temp(&mut table, n as usize, i0 as usize);
+
   let mut check_time = Duration::from_millis(0);
   for k in 1..max_comparisons {
     let start = std::time::Instant::now();
-
-    let mut table = [[false; MAX_N]; MAX_N];
-    Poset::rec_temp(&mut table, n as usize, i0 as usize);
-
     let atomic_break = Arc::new(AtomicBool::new(false));
     let results: Vec<HashSet<Poset>> = source
       .par_iter()
@@ -191,6 +190,7 @@ fn start_search_backward(
         destination.insert(poset);
       }
     }
+    let search_duration = start.elapsed();
 
     if USE_CHECKS {
       let start_check = std::time::Instant::now();
@@ -225,11 +225,11 @@ fn start_search_backward(
     }
     // dbg!(&source, &destination);
 
-    print!(
-      "# {k}: {} -> ? => ? -> {} in {:.3?} | total cached: {}",
+    println!(
+      "# {k}: {} => {} in {:.3?} | total cached: {}",
       source.len(),
       destination.len(),
-      start.elapsed(),
+      search_duration,
       poset_cache
         .read()
         .expect("cache shouldn't be poisoned")
@@ -237,10 +237,8 @@ fn start_search_backward(
     );
 
     if atomic_break.load(Ordering::Acquire) {
-      println!(" (found solution)");
       return (Some(k), check_time);
     }
-    println!();
 
     source = destination;
   }
