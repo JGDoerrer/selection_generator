@@ -3,7 +3,7 @@ use std::{
         atomic::{AtomicU64, Ordering},
         Arc, Mutex,
     },
-    thread::{self, spawn},
+    thread::{self, panicking, spawn},
     time::Instant,
 };
 
@@ -48,7 +48,7 @@ pub struct Search {
     start: Instant,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Cost {
     /// Not solved. Impossible in less than the number of comparisons
     Minimum(u8),
@@ -195,7 +195,7 @@ impl Search {
             poset,
             parent: Parent::Root(max_comparisons),
             other: OtherState::Solved(0),
-            open_children: 0,
+            open_children: u64::MAX,
             depth: 0,
             current_best: Cost::Minimum(max_comparisons + 1),
         }));
@@ -216,7 +216,7 @@ impl Search {
         let thread_count = if let Ok(count) = thread::available_parallelism() {
             count.get()
         } else {
-            16
+            return self.search_rec(poset, max_comparisons, 0);
         };
 
         for _ in 0..thread_count {
@@ -224,9 +224,10 @@ impl Search {
             threads.push(spawn(move || loop {
                 let task = worker.task_queue.lock().unwrap().pop();
                 if let Some(task) = task {
-                    if task.lock().unwrap().max_comparisons() < THRESHOLD {
-                        let t = task.lock().unwrap();
+                    if task.lock().unwrap().max_comparisons() < 11 {
+                        let mut t = task.lock().unwrap();
                         let cost = worker.search_rec(t.poset, t.max_comparisons(), t.depth);
+                        t.open_children = 0;
                         drop(t);
                         worker.apply_result(&task, cost);
                     } else {
@@ -235,15 +236,29 @@ impl Search {
                             worker.apply_result(&task, cost);
                         }
                     };
+                    assert_ne!(task.lock().unwrap().open_children, u64::MAX);
                 } else {
                     break;
                 }
             }))
         }
 
+        let mut panicking = false;
+
         for handle in threads {
-            handle.join().expect("Threads shouldn't panic");
+            match handle.join() {
+                Ok(()) => {},
+                Err(_) => {
+                    panicking = true;
+                },
+            }
         }
+
+        if panicking {
+            panic!("Worker panicked")
+        }
+
+        assert_eq!(root.lock().unwrap().open_children, 0);
 
         let cost = root.lock().unwrap().current_best;
         cost
@@ -257,14 +272,13 @@ impl Search {
                     parent.current_best =
                         Cost::Solved(parent.current_best.value().min(cost.value()));
                 }
-
                 parent.open_children -= 1;
 
                 if parent.open_children == 0 {
                     let result = parent.current_best;
                     self.analytics.inc(parent.depth, 1);
                     drop(parent);
-                    self.apply_result(&p, result);
+                    self.apply_result(p, result);
                 }
             }
             Parent::Root(_) => (),
@@ -273,6 +287,7 @@ impl Search {
 
     fn apply_result(&self, task: &Arc<Mutex<Task>>, cost: Cost) {
         let mut t = task.lock().unwrap();
+        assert_eq!(self.search_rec(t.poset, t.max_comparisons(), t.depth), cost);
         self.insert_cache(t.poset, cost);
         match cost {
             Cost::Solved(solved) => match t.other {
@@ -282,6 +297,7 @@ impl Search {
                 OtherState::Open(other) => {
                     t.poset = other;
                     t.other = OtherState::Solved(solved);
+                    t.current_best = Cost::Minimum(t.max_comparisons() + 1);
                     self.task_queue.lock().unwrap().push(task.clone());
                 }
             },
@@ -291,13 +307,14 @@ impl Search {
 
     fn expand_task(&self, task_reference: &Arc<Mutex<Task>>) -> Option<Cost> {
         let mut task = task_reference.lock().unwrap();
+        task.open_children = 0;
         if task.poset.n() == 1 {
             return Some(Cost::Solved(0));
         }
 
         let max_comparisons = task.max_comparisons();
         if max_comparisons == 0 {
-            return Some(Cost::Solved(0));
+            return Some(Cost::Minimum(1));
         }
 
         if let Some(cost) = self.search_cache(&task.poset) {
@@ -337,9 +354,9 @@ impl Search {
                 poset: first,
                 parent: Parent::Parent(task_reference.clone()),
                 other: OtherState::Open(second),
-                open_children: 0,
+                open_children: u64::MAX,
                 depth: task.depth + 1,
-                current_best: Cost::Minimum(task.max_comparisons()),
+                current_best: Cost::Minimum(task.current_best.value() - 1),
             }));
             self.task_queue.lock().unwrap().push(current);
         }
