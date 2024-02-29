@@ -185,7 +185,9 @@ impl Search {
     }
 
     fn search_tree(&self, poset: CanonifiedPoset, max_comparisons: u8) -> Cost {
-        if max_comparisons < 11 {
+        const THRESHOLD: u8 = 11;
+
+        if max_comparisons < THRESHOLD {
             return self.search_rec(poset, max_comparisons, 0);
         }
 
@@ -203,7 +205,7 @@ impl Search {
         self.task_queue.lock().unwrap().push(root.clone());
 
         // start single-threaded to build a starting tree
-        for _ in 0..7.max((3*max_comparisons) / 4) {
+        for _ in 0..7.max((3 * max_comparisons) / 4) {
             let task_reference = self.task_queue.lock().unwrap().pop().unwrap();
             let r = self.expand_task(&task_reference);
             if let Some(cost) = r {
@@ -219,24 +221,22 @@ impl Search {
 
         for _ in 0..thread_count {
             let worker = self.clone();
-            threads.push(spawn(move || {
-                loop {
-                    let task = worker.task_queue.lock().unwrap().pop();
-                    if let Some(task) = task {
-                        if task.lock().unwrap().max_comparisons() < 11 {
-                            let t = task.lock().unwrap();
-                            let cost = worker.search_rec(t.poset, t.max_comparisons(), t.depth);
-                            drop(t);
-                            worker.apply_result(&task, cost);
-                        } else {
-                            let r = worker.expand_task(&task);
-                            if let Some(cost) = r {
-                                worker.apply_result(&task, cost);
-                            }
-                        };
+            threads.push(spawn(move || loop {
+                let task = worker.task_queue.lock().unwrap().pop();
+                if let Some(task) = task {
+                    if task.lock().unwrap().max_comparisons() < THRESHOLD {
+                        let t = task.lock().unwrap();
+                        let cost = worker.search_rec(t.poset, t.max_comparisons(), t.depth);
+                        drop(t);
+                        worker.apply_result(&task, cost);
                     } else {
-                        break;
-                    }
+                        let r = worker.expand_task(&task);
+                        if let Some(cost) = r {
+                            worker.apply_result(&task, cost);
+                        }
+                    };
+                } else {
+                    break;
                 }
             }))
         }
