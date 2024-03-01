@@ -1,10 +1,10 @@
 use std::collections::{HashSet, VecDeque};
+use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::mem::swap;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use std::fmt;
 
 use crate::util::OPTIMISE_BACKWARD_WRONG;
 use crate::util::{MAX_N, ONLY_NAUTY_CANONIFY};
@@ -626,22 +626,18 @@ impl Poset {
     result
   }
 
-  #[allow(clippy::too_many_lines)]
-  pub fn enlarge_and_remove_less<F>(
+  pub fn enlarge_and_remove_less(
     &self,
     interrupt: &Arc<AtomicBool>,
+    poset_cache: &HashSet<Poset>,
     table: &[[bool; 15]; 15],
     n: u8,
     i: u8,
-    test: F,
-  ) -> HashSet<Poset>
-  where
-    F: Fn(&Poset) -> bool,
-  {
+  ) -> HashSet<Poset> {
     debug_assert!(2 * self.i < self.n);
     debug_assert!(table[self.n as usize][self.i as usize]);
 
-    let mut destination = self.remove_less(&test);
+    let mut destination = self.remove_less(poset_cache);
 
     if self.n == n && self.i == i {
       return destination;
@@ -695,7 +691,7 @@ impl Poset {
             }
 
             let mut found = false;
-            for item in it.remove_less(&test) {
+            for item in it.remove_less(poset_cache) {
               found |= !destination.contains(&item);
               temp_dest.insert(item);
             }
@@ -725,64 +721,53 @@ impl Poset {
     destination
   }
 
-  #[allow(clippy::too_many_lines)]
-  pub fn remove_less<F>(&self, test: F) -> HashSet<Poset>
-  where
-    F: Fn(&Poset) -> bool,
-  {
+  pub fn remove_less(&self, poset_cache: &HashSet<Poset>) -> HashSet<Poset> {
     // // precondition
     // debug_assert!(self.i < self.n);
     // debug_assert!((self.n as usize) < MAX_N);
     // debug_assert!(self.is_closed());
     // debug_assert!(self.is_canonified());
 
-    let mut real_result = HashSet::new();
-    real_result.insert(self.clone());
-
     let mut result = HashSet::new();
-    for self_r in real_result {
-      for i in 0..self_r.n {
-        for j in 0..self_r.n {
-          if !self_r.is_less(i, j) || self_r.is_redundant(i, j) {
-            continue;
-          }
+    for i in 0..self.n {
+      for j in 0..self.n {
+        if !self.is_less(i, j) || self.is_redundant(i, j) {
+          continue;
+        }
 
-          let mut poset_initial = self_r.clone();
-          poset_initial.set_less(i, j, false);
+        let mut poset_initial = self.clone();
+        poset_initial.set_less(i, j, false);
 
-          if !test(&poset_initial.with_less_normalized(j, i)) {
-            continue;
-          }
+        if !poset_cache.contains(&poset_initial.with_less_normalized(j, i)) {
+          continue;
+        }
 
-          result.insert(poset_initial.clone());
+        result.insert(poset_initial.clone());
 
-          let mut queue = Vec::new();
-          queue.push(poset_initial);
+        let mut queue = Vec::new();
+        queue.push(poset_initial);
 
-          while let Some(poset) = queue.pop() {
-            for i1 in 0..self_r.n {
-              for j1 in 0..self_r.n {
-                if i1 == j1
-                  // || (j as i32 - i as i32).abs() >= (j1 as i32 - i1 as i32).abs()
-                  || !poset.is_less(i1, j1)
-                  || poset.is_redundant(i1, j1)
-                {
-                  continue;
-                }
-
-                let mut poset_next = poset.clone();
-                poset_next.set_less(i1, j1, false);
-
-                if result.contains(&poset_next)
-                  || self_r != poset_next.with_less(i, j)
-                  || !test(&poset_next.with_less_normalized(j, i))
-                {
-                  continue;
-                }
-
-                result.insert(poset_next.clone());
-                queue.push(poset_next);
+        while let Some(poset) = queue.pop() {
+          for i1 in 0..self.n {
+            for j1 in 0..self.n {
+              if !poset.is_less(i1, j1) || poset.is_redundant(i1, j1)
+              // || (j as i32 - i as i32).abs() >= (j1 as i32 - i1 as i32).abs()
+              {
+                continue;
               }
+
+              let mut poset_next = poset.clone();
+              poset_next.set_less(i1, j1, false);
+
+              if result.contains(&poset_next)
+                || *self != poset_next.with_less(i, j)
+                || !poset_cache.contains(&poset_next.with_less_normalized(j, i))
+              {
+                continue;
+              }
+
+              result.insert(poset_next.clone());
+              queue.push(poset_next);
             }
           }
         }
@@ -817,10 +802,14 @@ impl Poset {
     for mut item in result {
       let size = item.n();
       item.reduce_elements();
-      if size == item.n() {
-        item.canonify();
-        cleaned_result.insert(item);
+      if size != item.n() {
+        continue;
       }
+      item.canonify();
+      if poset_cache.contains(&item) {
+        continue;
+      }
+      cleaned_result.insert(item);
     }
     cleaned_result
   }

@@ -7,9 +7,6 @@ use std::vec;
 
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
-use crate::util::OPTIMISE_BACKWARD_WRONG;
-
-use super::cache_set::CacheSetSolvable;
 use super::cache_tree::{CacheTreeNotSolvable, CacheTreeSolvable};
 use super::poset::Poset;
 use super::util::{KNOWN_MIN_VALUES, MAX_N};
@@ -108,7 +105,6 @@ fn search_recursive(
 
 const USE_CHECKS: bool = true;
 
-#[allow(clippy::too_many_lines)]
 fn start_search_backward(
   interrupt: &Arc<AtomicBool>,
   start_poset: Poset,
@@ -123,17 +119,11 @@ fn start_search_backward(
     .expect("")
     .insert(&Poset::new(1, 0), 0);
 
-  let poset_cache = Arc::new(RwLock::new(CacheSetSolvable::new()));
-  poset_cache
-    .write()
-    .expect("cache shouldn't be poisoned")
-    .insert(&start_poset, 0);
+  let mut poset_cache = HashSet::new();
+  poset_cache.insert(start_poset.clone());
 
   let mut source = HashSet::new();
   source.insert(start_poset);
-
-  // Aussage:
-  // item1 subset item2 => A subset B and every Element in a is an Element from B (subset)
 
   let mut table = [[false; MAX_N]; MAX_N];
   Poset::rec_temp(&mut table, n as usize, i0 as usize);
@@ -141,54 +131,19 @@ fn start_search_backward(
   let mut check_time = Duration::from_millis(0);
   for k in 1..max_comparisons {
     let start = std::time::Instant::now();
-    let atomic_break = Arc::new(AtomicBool::new(false));
-    let results: Vec<HashSet<Poset>> = source
+    let results: Vec<_> = source
       .par_iter()
-      .map(|item| {
-        let mut destination: HashSet<Poset> = HashSet::new();
-        for predecessor in item.enlarge_and_remove_less(&atomic_break, &table, n, i0, |poset| {
-          poset_cache
-            .read()
-            .expect("cache shouldn't be poisoned")
-            .check(poset, k - 1)
-        }) {
-          if atomic_break.load(Ordering::Relaxed) || interrupt.load(Ordering::Relaxed) {
-            return HashSet::new();
-          }
-
-          if poset_cache
-            .read()
-            .expect("cache shouldn't be poisoned")
-            .check(&predecessor, k - 1)
-          {
-            continue;
-          }
-          poset_cache
-            .write()
-            .expect("cache shouldn't be poisoned")
-            .insert(&predecessor, k);
-
-          if predecessor == Poset::new(n, i0) {
-            atomic_break.store(true, Ordering::Relaxed);
-            destination.insert(predecessor);
-            return destination;
-          }
-
-          destination.insert(predecessor);
-        }
-        destination
-      })
+      .map(|item| item.enlarge_and_remove_less(interrupt, &poset_cache, &table, n, i0))
       .collect();
-
-    if interrupt.load(Ordering::Relaxed) {
-      return (None, check_time);
-    }
 
     let mut destination: HashSet<Poset> = HashSet::new();
     for item in results {
       for poset in item {
         destination.insert(poset);
       }
+    }
+    for predecessor in &destination {
+      poset_cache.insert(predecessor.clone());
     }
     let search_duration = start.elapsed();
 
@@ -230,17 +185,18 @@ fn start_search_backward(
       source.len(),
       destination.len(),
       search_duration,
-      poset_cache
-        .read()
-        .expect("cache shouldn't be poisoned")
-        .size()
+      poset_cache.len()
     );
 
-    if atomic_break.load(Ordering::Acquire) {
+    if destination.contains(&Poset::new(n, i0)) {
       return (Some(k), check_time);
     }
 
     source = destination;
+
+    if interrupt.load(Ordering::Relaxed) {
+      return (None, check_time);
+    }
   }
 
   (None, check_time)
@@ -299,7 +255,7 @@ pub fn main() {
     dbg!(&a, &b);
     assert!(a.subset_of(&b));
 
-    dbg!(a.remove_less(|_| true));
-    dbg!(b.remove_less(|_| true));
+    // dbg!(a.remove_less(|_| true, false));
+    // dbg!(b.remove_less(|_| true, false));
   }
 }

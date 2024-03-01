@@ -2,7 +2,6 @@ use std::collections::HashSet;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
 
-// #[allow(clippy::wildcard_imports)]
 use super::poset::Poset;
 use super::util::{MAX_COMPARISONS, MAX_N};
 
