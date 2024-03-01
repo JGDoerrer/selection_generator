@@ -1,7 +1,7 @@
 use std::{
     sync::{
         atomic::{AtomicU64, Ordering},
-        Arc, Mutex,
+        Arc, Mutex, RwLock,
     },
     thread::{self, spawn},
     time::Instant,
@@ -16,25 +16,26 @@ use crate::{
     poset::Poset,
 };
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 enum OtherState {
     Solved(u8),
     Open(CanonifiedPoset),
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 enum Parent {
     Parent(Arc<Task>),
     Root(u8),
 }
 
+#[derive(Debug)]
 struct Task {
     poset: CanonifiedPoset,
     parent: Parent,
     other: OtherState,
     open_children: AtomicU64,
     depth: u8,
-    current_best: Mutex<Cost>,
+    current_best: RwLock<Cost>,
 }
 
 #[derive(Clone)]
@@ -44,7 +45,6 @@ pub struct Search {
     current_max: u8,
     cache: Arc<Cache>,
     task_queue: Arc<Mutex<Vec<Arc<Task>>>>,
-    poset_order: Arc<Mutex<Vec<(CanonifiedPoset, Cost)>>>,
     analytics: Arc<Analytics>,
     start: Instant,
 }
@@ -83,13 +83,13 @@ impl Cost {
 impl Task {
     fn max_comparisons(&self) -> u8 {
         match &self.parent {
-            Parent::Parent(parent) => parent.current_best().value().saturating_sub(2),
+            Parent::Parent(parent) => parent.current_best().value().saturating_sub(2).min(parent.max_comparisons() - 1),
             Parent::Root(max_comparisons) => *max_comparisons,
         }
     }
 
     fn current_best(&self) -> Cost{
-        self.current_best.lock().unwrap().clone()
+        self.current_best.read().unwrap().clone()
     }
 
     fn append_child(&self, first: CanonifiedPoset, second: CanonifiedPoset, self_reference: &Arc<Task>) -> Task {
@@ -99,7 +99,7 @@ impl Task {
             other: OtherState::Open(second),
             open_children: AtomicU64::new(u64::MAX),
             depth: self.depth + 1,
-            current_best: Mutex::new(Cost::Minimum(self.current_best().value() - 1)),
+            current_best: Cost::Minimum(self.current_best().value() - 1).into(),
         }
     }
 }
@@ -112,7 +112,6 @@ impl Search {
             current_max: 0,
             cache,
             task_queue: Arc::new(Mutex::new(Vec::new())),
-            poset_order: Mutex::new(Vec::new()).into(),
             analytics: Arc::new(Analytics::new(0)),
             start: Instant::now(),
         }
@@ -129,7 +128,6 @@ impl Search {
     }
 
     fn insert_cache(&self, poset: CanonifiedPoset, new_cost: Cost) {
-        self.poset_order.lock().unwrap().push((poset, new_cost));
         if let Some(cost) = self.cache.get(&poset) {
             let res = match (cost, new_cost) {
                 (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
@@ -203,7 +201,7 @@ impl Search {
     }
 
     fn search_tree(&self, poset: CanonifiedPoset, max_comparisons: u8) -> Cost {
-        const THRESHOLD: u8 = 3;
+        const THRESHOLD: u8 = 11;
 
         if max_comparisons < THRESHOLD {
             return self.search_rec(poset, max_comparisons, 0);
@@ -215,7 +213,7 @@ impl Search {
             other: OtherState::Solved(0),
             open_children: AtomicU64::new(u64::MAX),
             depth: 0,
-            current_best: Mutex::new(Cost::Minimum(max_comparisons + 1)),
+            current_best: Cost::Minimum(max_comparisons + 1).into(),
         });
 
         let mut threads = Vec::new();
@@ -237,11 +235,12 @@ impl Search {
             return self.search_rec(poset, max_comparisons, 0);
         };
 
-        for _ in 0..1 {
+        for _ in 0..thread_count {
             let worker = self.clone();
             threads.push(spawn(move || loop {
                 let task = worker.task_queue.lock().unwrap().pop();
                 if let Some(task) = task {
+                    *task.current_best.write().unwrap() = Cost::Minimum(task.max_comparisons() + 1);
                     if task.max_comparisons() < THRESHOLD {
                         let cost = worker.search_rec(task.poset, task.max_comparisons(), task.depth);
                         task.open_children.store(0, Ordering::Relaxed);
@@ -276,21 +275,6 @@ impl Search {
 
         assert_eq!(root.open_children.load(Ordering::Relaxed), 0);
 
-        let check = Search::new(1, 0, Cache::new(1 << 10).into());
-        check.search_rec(poset, max_comparisons, 0);
-        let own_order = self.poset_order.lock().unwrap();
-        let check_order = check.poset_order.lock().unwrap();
-
-        let len = own_order.len().min(check_order.len());
-
-        println!("own={}, check={}", own_order.len(), check_order.len());
-
-        for i in 0..len {
-            assert_eq!(own_order[i], check_order[i], "{i}");
-        }
-
-        assert!(false);
-
         root.current_best()
     }
 
@@ -298,7 +282,7 @@ impl Search {
         match parent {
             Parent::Parent(parent) => {
                 if cost.is_solved() {
-                    let mut current_best = parent.current_best.lock().unwrap();
+                    let mut current_best = parent.current_best.write().unwrap();
                     *current_best = Cost::Solved(current_best.value().min(cost.value()));
                 }
                 let open = parent.open_children.fetch_sub(1, Ordering::Relaxed) - 1;
@@ -306,6 +290,7 @@ impl Search {
                 if open == 0 {
                     let result = parent.current_best();
                     self.analytics.inc(parent.depth, 1);
+                    self.insert_cache(parent.poset, result);
                     self.apply_result(parent, result);
                 }
             }
@@ -315,8 +300,7 @@ impl Search {
 
     fn apply_result(&self, task: &Arc<Task>, cost: Cost) {
         assert!(cost.is_solved() || cost.value() > task.max_comparisons());
-        // assert_eq!(self.search_rec(task.poset, task.max_comparisons(), task.depth), cost);
-        self.insert_cache(task.poset, cost);
+        
         match cost {
             Cost::Solved(solved) => match task.other {
                 OtherState::Solved(other) => {
@@ -329,7 +313,7 @@ impl Search {
                         other: OtherState::Solved(solved),
                         open_children: AtomicU64::new(u64::MAX),
                         depth: task.depth,
-                        current_best: Mutex::new(Cost::Minimum(task.max_comparisons() + 1)),
+                        current_best: Cost::Minimum(task.max_comparisons() + 1).into(),
                     }));
                 }
             },
@@ -823,4 +807,17 @@ fn test_expand() {
         depth: todo!(),
         current_best: todo!(),
     }));
+}
+#[test]
+fn test_poset() {
+    let search = Search::new(1, 0, Cache::new(1 << 10).into());
+    let mut poset = CanonifiedPoset::new(7, 3);
+    poset.set_is_less(0, 2);
+    poset.set_is_less(0, 3);
+    poset.set_is_less(0, 5);
+    poset.set_is_less(1, 2);
+    poset.set_is_less(1, 3);
+    poset.set_is_less(1, 4);
+    poset.set_is_less(2, 3);
+    assert_eq!(search.search_rec(poset, 5, 0), Cost::Solved(5));
 }
