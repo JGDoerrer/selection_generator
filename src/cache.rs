@@ -7,14 +7,17 @@ use crate::{
     search::Cost,
 };
 
-#[derive(Debug)]
 pub struct Cache {
-    arrays: Mutex<Box<[Row]>>,
+    arrays: Box<[Bucket]>,
     len: usize,
     entries: AtomicUsize,
 }
 
-#[derive(Debug, Clone)]
+struct Bucket {
+    inner: Mutex<[Row; 256]>,
+}
+
+#[derive(Debug, Clone, Copy)]
 struct Row {
     entries: [Option<Entry>; Self::ROW_LEN],
 }
@@ -28,16 +31,20 @@ struct Entry {
 
 impl Cache {
     pub fn new(max_bytes: usize) -> Self {
-        let len = max_bytes / size_of::<Row>();
+        let len = max_bytes / size_of::<Bucket>();
+        let mut arrays = Vec::with_capacity(len);
+        for _ in 0..len {
+            arrays.push(Bucket::new());
+        }
         Cache {
-            arrays: Mutex::new(vec![Row::new(); len].into_boxed_slice()),
+            arrays: arrays.into_boxed_slice(),
             len,
             entries: AtomicUsize::new(0),
         }
     }
 
     pub fn max_entries(&self) -> usize {
-        self.arrays.lock().unwrap().len() * Row::ROW_LEN
+        self.arrays.len() * Bucket::BUCKET_SIZE * Row::ROW_LEN
     }
 
     fn hash(poset: &CanonifiedPoset) -> u64 {
@@ -52,24 +59,26 @@ impl Cache {
     }
 
     pub fn get(&self, poset: &CanonifiedPoset) -> Option<Cost> {
-        let hash = Self::hash(poset);
-        let row = &self.arrays.lock().unwrap()[hash as usize % self.len];
+        let hash = Self::hash(poset) as usize;
+        let bucket = &self.arrays[(hash / Bucket::BUCKET_SIZE)  % self.len];
+        let row = bucket.inner.lock().unwrap()[hash % Bucket::BUCKET_SIZE];
 
         row.get(poset)
     }
 
     pub fn get_mut(&self, poset: &CanonifiedPoset) -> Option<Cost> {
-        let hash = Self::hash(poset);
-        let row = &mut self.arrays.lock().unwrap()[hash as usize % self.len];
+        let hash = Self::hash(poset) as usize;
+        let bucket = &self.arrays[(hash / Bucket::BUCKET_SIZE)  % self.len];
+        let row = &mut bucket.inner.lock().unwrap()[hash % Bucket::BUCKET_SIZE];
 
         row.get_mut(poset)
     }
 
     /// returns true if an entry has been replaced
     pub fn insert(&self, poset: CanonifiedPoset, cost: Cost) -> bool {
-        let hash = Self::hash(&poset);
-
-        let row = &mut self.arrays.lock().unwrap()[hash as usize % self.len];
+        let hash = Self::hash(&poset) as usize;
+        let bucket = &self.arrays[(hash / Bucket::BUCKET_SIZE)  % self.len];
+        let row = &mut bucket.inner.lock().unwrap()[hash % Bucket::BUCKET_SIZE];
 
         let (matched, replaced) = row.insert(poset, cost);
 
@@ -82,6 +91,15 @@ impl Cache {
 
     pub fn len(&self) -> usize {
         self.entries.load(Ordering::Relaxed)
+    }
+}
+
+impl Bucket {
+    const BUCKET_SIZE: usize = 256;
+    fn new() -> Bucket {
+        Bucket {
+            inner: [Row::new(); Self::BUCKET_SIZE].into(),
+        }
     }
 }
 
