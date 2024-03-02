@@ -47,7 +47,7 @@ impl Cache {
         self.arrays.len() * Bucket::BUCKET_SIZE * Row::ROW_LEN
     }
 
-    fn hash(poset: &CanonifiedPoset) -> u64 {
+    pub fn hash(poset: &CanonifiedPoset) -> u64 {
         let mut hash = poset.n() as u64 + poset.i() as u64 * MAX_N as u64;
 
         for i in 0..poset.n() {

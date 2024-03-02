@@ -1,12 +1,14 @@
 use std::{
+    collections::BinaryHeap,
     sync::{
-        atomic::{AtomicU64, Ordering},
+        atomic::{AtomicU64, AtomicUsize, Ordering},
         Arc, Mutex, RwLock,
     },
     thread::{self, spawn},
-    time::Instant,
+    time::{Duration, Instant},
 };
 
+use hashbrown::HashSet;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 
 use crate::{
@@ -24,7 +26,7 @@ enum OtherState {
 
 #[derive(Clone, Debug)]
 enum Parent {
-    Parent(Arc<Task>),
+    Parent(Arc<SearchState>),
     Root(u8),
 }
 
@@ -33,6 +35,16 @@ struct Task {
     poset: CanonifiedPoset,
     parent: Parent,
     other: OtherState,
+    depth: u8,
+    rejection_penalty: u64,
+}
+
+#[derive(Debug)]
+struct SearchState {
+    poset: CanonifiedPoset,
+    parent: Parent,
+    other: OtherState,
+    total_children: u64,
     open_children: AtomicU64,
     depth: u8,
     current_best: RwLock<Cost>,
@@ -44,9 +56,11 @@ pub struct Search {
     i: u8,
     current_max: u8,
     cache: Arc<Cache>,
-    task_queue: Arc<Mutex<Vec<Arc<Task>>>>,
+    task_queue: Arc<Mutex<BinaryHeap<Task>>>,
     analytics: Arc<Analytics>,
     start: Instant,
+    active_posets: Arc<RwLock<HashSet<CanonifiedPoset>>>,
+    threads: Arc<AtomicUsize>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -62,6 +76,7 @@ pub struct Analytics {
     cache_hits: AtomicU64,
     cache_misses: AtomicU64,
     cache_replaced: AtomicU64,
+    cache_duplicates: AtomicU64,
     max_progress_depth: u8,
     multiprogress: MultiProgress,
     progress_bars: Vec<(ProgressBar, AtomicU64)>,
@@ -80,27 +95,64 @@ impl Cost {
     }
 }
 
-impl Task {
+impl SearchState {
     fn max_comparisons(&self) -> u8 {
         match &self.parent {
-            Parent::Parent(parent) => parent.current_best().value().saturating_sub(2).min(parent.max_comparisons() - 1),
+            Parent::Parent(parent) => parent
+                .current_best()
+                .value()
+                .saturating_sub(2)
+                .min(parent.max_comparisons() - 1),
             Parent::Root(max_comparisons) => *max_comparisons,
         }
     }
 
-    fn current_best(&self) -> Cost{
+    fn current_best(&self) -> Cost {
         self.current_best.read().unwrap().clone()
     }
+}
 
-    fn append_child(&self, first: CanonifiedPoset, second: CanonifiedPoset, self_reference: &Arc<Task>) -> Task {
-        Task {
-            poset: first,
-            parent: Parent::Parent(self_reference.clone()),
-            other: OtherState::Open(second),
-            open_children: AtomicU64::new(u64::MAX),
-            depth: self.depth + 1,
-            current_best: Cost::Minimum(self.current_best().value() - 1).into(),
+impl Task {
+    fn max_comparisons(&self) -> u8 {
+        match &self.parent {
+            Parent::Parent(parent) => parent
+                .current_best()
+                .value()
+                .saturating_sub(2)
+                .min(parent.max_comparisons() - 1),
+            Parent::Root(max_comparisons) => *max_comparisons,
         }
+    }
+}
+
+impl PartialEq for Task {
+    fn eq(&self, other: &Self) -> bool {
+        self.poset == other.poset
+            && self.depth == other.depth
+            && self.rejection_penalty == other.rejection_penalty
+    }
+}
+
+impl Eq for Task {}
+
+impl PartialOrd for Task {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Task {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match self.rejection_penalty.cmp(&other.rejection_penalty) {
+            core::cmp::Ordering::Equal => {}
+            ord => return ord.reverse(),
+        }
+
+        match self.depth.cmp(&other.depth) {
+            core::cmp::Ordering::Equal => {}
+            ord => return ord,
+        }
+        Cache::hash(&self.poset).cmp(&Cache::hash(&self.poset))
     }
 }
 
@@ -111,9 +163,11 @@ impl Search {
             i,
             current_max: 0,
             cache,
-            task_queue: Arc::new(Mutex::new(Vec::new())),
+            task_queue: Arc::new(Mutex::new(BinaryHeap::new())),
+            active_posets: Arc::new(RwLock::new(HashSet::new())),
             analytics: Arc::new(Analytics::new(0)),
             start: Instant::now(),
+            threads: AtomicUsize::new(1).into(),
         }
     }
 
@@ -134,9 +188,13 @@ impl Search {
                     Cost::Minimum(new_min.max(old_min))
                 }
                 (Cost::Solved(old_solved), Cost::Solved(new_solved)) => {
+                    self.analytics.record_duplicate();
                     Cost::Solved(new_solved.min(old_solved))
                 }
-                (Cost::Solved(_), Cost::Minimum(_)) => cost,
+                (Cost::Solved(_), Cost::Minimum(_)) => {
+                    self.analytics.record_duplicate();
+                    cost
+                }
                 (Cost::Minimum(_), Cost::Solved(_)) => new_cost,
             };
 
@@ -207,25 +265,28 @@ impl Search {
             return self.search_rec(poset, max_comparisons, 0);
         }
 
-        let root = Arc::new(Task {
+        let root = Task {
             poset,
             parent: Parent::Root(max_comparisons),
             other: OtherState::Solved(0),
-            open_children: AtomicU64::new(u64::MAX),
             depth: 0,
-            current_best: Cost::Minimum(max_comparisons + 1).into(),
-        });
+            rejection_penalty: 0,
+        };
 
         let mut threads = Vec::new();
 
-        self.task_queue.lock().unwrap().push(root.clone());
+        let root = self.expand_task(root);
 
         // start single-threaded to build a starting tree
-        for _ in 0..7.max((3 * max_comparisons) / 4) {
-            let task_reference = self.task_queue.lock().unwrap().pop().unwrap();
-            let r = self.expand_task(&task_reference);
+        for _ in 0..max_comparisons / 2 {
+            let task = self.fetch_task().unwrap();
+            self.active_posets.write().unwrap().insert(task.poset);
+
+            let r = self.check_task(&task);
             if let Some(cost) = r {
-                self.apply_result(&task_reference, cost);
+                self.apply_heuristic_result(&task, cost);
+            } else {
+                self.expand_task(task);
             }
         }
 
@@ -235,26 +296,34 @@ impl Search {
             return self.search_rec(poset, max_comparisons, 0);
         };
 
+        self.threads.store(thread_count, Ordering::Relaxed);
+
         for _ in 0..thread_count {
             let worker = self.clone();
-            threads.push(spawn(move || loop {
-                let task = worker.task_queue.lock().unwrap().pop();
-                if let Some(task) = task {
-                    *task.current_best.write().unwrap() = Cost::Minimum(task.max_comparisons() + 1);
-                    if task.max_comparisons() < THRESHOLD {
-                        let cost = worker.search_rec(task.poset, task.max_comparisons(), task.depth);
-                        task.open_children.store(0, Ordering::Relaxed);
-                        worker.apply_result(&task, cost);
+            threads.push(spawn(move || {
+                loop {
+                    if let Some(task) = worker.fetch_task() {
+                        worker.active_posets.write().unwrap().insert(task.poset);
+
+                        if task.max_comparisons() < THRESHOLD {
+                            let cost =
+                                worker.search_rec(task.poset, task.max_comparisons(), task.depth);
+                            worker.apply_heuristic_result(&task, cost);
+                        } else {
+                            let r = worker.check_task(&task);
+                            if let Some(cost) = r {
+                                worker.apply_heuristic_result(&task, cost);
+                            } else {
+                                worker.expand_task(task);
+                            }
+                        };
+                    } else if !worker.task_queue.lock().unwrap().is_empty() {
+                        thread::sleep(Duration::from_nanos(500));
                     } else {
-                        let r = worker.expand_task(&task);
-                        if let Some(cost) = r {
-                            worker.apply_result(&task, cost);
-                        }
-                    };
-                    assert_ne!(task.open_children.load(Ordering::Relaxed), u64::MAX);
-                } else {
-                    break;
+                        break;
+                    }
                 }
+                worker.threads.fetch_sub(1, Ordering::Relaxed);
             }))
         }
 
@@ -262,10 +331,10 @@ impl Search {
 
         for handle in threads {
             match handle.join() {
-                Ok(()) => {},
+                Ok(()) => {}
                 Err(_) => {
                     panicking = true;
-                },
+                }
             }
         }
 
@@ -273,9 +342,29 @@ impl Search {
             panic!("Worker panicked")
         }
 
-        assert_eq!(root.open_children.load(Ordering::Relaxed), 0);
-
         root.current_best()
+    }
+
+    fn fetch_task(&self) -> Option<Task> {
+        let mut task_queue = self.task_queue.lock().unwrap();
+        let mut i = task_queue.len() + 1;
+        loop {
+            i -= 1;
+            if i == 0 {
+                return None;
+            }
+            let task = task_queue.pop();
+            if let Some(mut task) = task {
+                if self.active_posets.read().unwrap().contains(&task.poset) {
+                    task.rejection_penalty += 1;
+                    task_queue.push(task);
+                } else {
+                    break Some(task);
+                }
+            } else {
+                break None;
+            }
+        }
     }
 
     fn propagate_done(&self, parent: &Parent, cost: Cost) {
@@ -289,8 +378,16 @@ impl Search {
 
                 if open == 0 {
                     let result = parent.current_best();
-                    self.analytics.inc(parent.depth, 1);
                     self.insert_cache(parent.poset, result);
+                    self.analytics
+                        .inc_complete(parent.depth, parent.total_children);
+                    self.analytics.update_stats(
+                        parent.depth,
+                        self.current_max,
+                        self.cache.len(),
+                        self.active_posets.read().unwrap().len(),
+                        self.threads.load(Ordering::Relaxed),
+                    );
                     self.apply_result(parent, result);
                 }
             }
@@ -298,31 +395,53 @@ impl Search {
         }
     }
 
-    fn apply_result(&self, task: &Arc<Task>, cost: Cost) {
+    fn apply_result(&self, state: &Arc<SearchState>, cost: Cost) {
+        assert!(cost.is_solved() || cost.value() > state.max_comparisons());
+        self.analytics.inc(state.depth - 1, 1);
+        self.active_posets.write().unwrap().remove(&state.poset);
+        match cost {
+            Cost::Solved(solved) => match state.other {
+                OtherState::Solved(other) => {
+                    self.propagate_done(&state.parent, Cost::Solved(solved.max(other) + 1));
+                }
+                OtherState::Open(poset) => {
+                    self.task_queue.lock().unwrap().push(Task {
+                        poset,
+                        parent: state.parent.clone(),
+                        other: OtherState::Solved(solved),
+                        depth: state.depth,
+                        rejection_penalty: 0,
+                    });
+                }
+            },
+            Cost::Minimum(min) => self.propagate_done(&state.parent, Cost::Minimum(min + 1)),
+        }
+    }
+
+    fn apply_heuristic_result(&self, task: &Task, cost: Cost) {
         assert!(cost.is_solved() || cost.value() > task.max_comparisons());
-        
+        self.analytics.inc(task.depth - 1, 1);
+        self.active_posets.write().unwrap().remove(&task.poset);
         match cost {
             Cost::Solved(solved) => match task.other {
                 OtherState::Solved(other) => {
                     self.propagate_done(&task.parent, Cost::Solved(solved.max(other) + 1));
                 }
                 OtherState::Open(poset) => {
-                    self.task_queue.lock().unwrap().push(Arc::new(Task {
+                    self.task_queue.lock().unwrap().push(Task {
                         poset,
                         parent: task.parent.clone(),
                         other: OtherState::Solved(solved),
-                        open_children: AtomicU64::new(u64::MAX),
                         depth: task.depth,
-                        current_best: Cost::Minimum(task.max_comparisons() + 1).into(),
-                    }));
+                        rejection_penalty: 0,
+                    });
                 }
             },
             Cost::Minimum(min) => self.propagate_done(&task.parent, Cost::Minimum(min + 1)),
         }
     }
 
-    fn expand_task(&self, task: &Arc<Task>) -> Option<Cost> {
-        task.open_children.store(0, Ordering::Relaxed);
+    fn check_task(&self, task: &Task) -> Option<Cost> {
         if task.poset.n() == 1 {
             return Some(Cost::Solved(0));
         }
@@ -356,20 +475,37 @@ impl Search {
 
             return Some(result);
         }
+        None
+    }
 
+    fn expand_task(&self, task: Task) -> Arc<SearchState> {
         let pairs = self.get_comparison_pairs(&task.poset);
         let n_pairs = pairs.len() as u64;
 
-        task.open_children.store(n_pairs, Ordering::Relaxed);
+        let state = Arc::new(SearchState {
+            current_best: Cost::Minimum(task.max_comparisons() + 1).into(),
+            poset: task.poset,
+            parent: task.parent,
+            other: task.other,
+            total_children: n_pairs,
+            open_children: 0.into(),
+            depth: task.depth,
+        });
 
         self.analytics.inc_length(task.depth, n_pairs);
 
         for (first, second) in pairs.into_iter().rev() {
-            let current = Arc::new(task.append_child(first, second, task));
+            let current = Task {
+                poset: first,
+                parent: Parent::Parent(state.clone()),
+                other: OtherState::Open(second),
+                depth: state.depth + 1,
+                rejection_penalty: 0,
+            };
             self.task_queue.lock().unwrap().push(current);
         }
 
-        None
+        state
     }
 
     fn search_rec(&self, poset: CanonifiedPoset, max_comparisons: u8, depth: u8) -> Cost {
@@ -414,8 +550,13 @@ impl Search {
         // search all comparisons
         let mut current_best = max_comparisons + 1;
         for (first, second) in pairs {
-            self.analytics
-                .update_stats(depth, self.current_max, self.cache.len());
+            self.analytics.update_stats(
+                depth,
+                self.current_max,
+                self.cache.len(),
+                self.active_posets.read().unwrap().len(),
+                self.threads.load(Ordering::Relaxed),
+            );
 
             // search the first case of the comparison
             let first_result = self.search_rec(first, current_best - 2, depth + 1);
@@ -592,6 +733,7 @@ impl Search {
         println!("Cache hits: {}", self.analytics.cache_hits());
         println!("Cache misses: {}", self.analytics.cache_misses());
         println!("Cache replaced: {}", self.analytics.cache_replaced());
+        println!("Duplicate work: {}", self.analytics.cache_duplicates());
         println!();
         println!("Posets searched: {}", self.analytics.total_posets());
     }
@@ -604,7 +746,7 @@ impl Analytics {
         let mut progress_bars = Vec::with_capacity(max_progress_depth as usize);
         for _ in 0..max_progress_depth {
             let pb = ProgressBar::new(0)
-                .with_style(ProgressStyle::with_template("[{pos:2}/{len:2}] {msg}").unwrap());
+                .with_style(ProgressStyle::with_template("[{pos:4}/{len:4}] {msg}").unwrap());
             let pb = multiprogress.add(pb);
             progress_bars.push((pb, AtomicU64::new(0)));
         }
@@ -616,6 +758,7 @@ impl Analytics {
             max_progress_depth,
             multiprogress,
             progress_bars,
+            cache_duplicates: 0.into(),
         }
     }
 
@@ -626,6 +769,8 @@ impl Analytics {
         new.cache_hits.store(self.cache_hits(), Ordering::Relaxed);
         new.cache_misses
             .store(self.cache_misses(), Ordering::Relaxed);
+        new.cache_duplicates
+            .store(self.cache_duplicates(), Ordering::Relaxed);
         new
     }
 
@@ -660,7 +805,14 @@ impl Analytics {
     }
 
     #[inline]
-    fn update_stats(&self, depth: u8, current_max: u8, cache_entries: usize) {
+    fn update_stats(
+        &self,
+        depth: u8,
+        current_max: u8,
+        cache_entries: usize,
+        nodes: usize,
+        threads: usize,
+    ) {
         if depth >= self.max_progress_depth {
             return;
         }
@@ -668,8 +820,14 @@ impl Analytics {
             "limit: {:3} total: {:10}, cache: {:10}",
             current_max,
             self.total_posets.load(Ordering::Relaxed),
-            cache_entries
-        ))
+            cache_entries,
+        ));
+        self.progress_bars[1].0.set_message(format!(
+            "duplicates: {:10}, active nodes: {:10}, threads: {:3}",
+            self.cache_duplicates(),
+            nodes,
+            threads,
+        ));
     }
 
     fn complete_all(&self) {
@@ -700,6 +858,11 @@ impl Analytics {
         self.total_posets.fetch_add(1, Ordering::Relaxed);
     }
 
+    #[inline]
+    fn record_duplicate(&self) {
+        self.cache_duplicates.fetch_add(1, Ordering::Relaxed);
+    }
+
     fn cache_hits(&self) -> u64 {
         self.cache_hits.load(Ordering::Relaxed)
     }
@@ -715,109 +878,14 @@ impl Analytics {
     fn total_posets(&self) -> u64 {
         self.total_posets.load(Ordering::Relaxed)
     }
+
+    fn cache_duplicates(&self) -> u64 {
+        self.cache_duplicates.load(Ordering::Relaxed)
+    }
 }
 
 impl Drop for Analytics {
     fn drop(&mut self) {
         self.complete_all();
     }
-}
-
-#[test]
-fn max_comparisons() {
-    let root = Arc::new(Task {
-        poset: CanonifiedPoset::new(3, 0),
-        parent: Parent::Root(2),
-        other: OtherState::Solved(0),
-        open_children: 0.into(),
-        depth: 0,
-        current_best: Cost::Minimum(3).into(),
-    });
-
-    let child0 = Task {
-        poset: CanonifiedPoset::new(2, 0),
-        parent: Parent::Parent(root.clone()),
-        other: OtherState::Solved(1),
-        open_children: 0.into(),
-        depth: 1,
-        current_best: Cost::Solved(1).into(),
-    };
-    assert_eq!(child0.max_comparisons(), 1);
-
-    let child1 = Arc::new(Task {
-        poset: CanonifiedPoset::new(2, 0),
-        parent: Parent::Parent(root.clone()),
-        other: OtherState::Solved(2),
-        open_children: 0.into(),
-        depth: 1,
-        current_best: Cost::Solved(2).into(),
-    });
-
-    let child2 = Task {
-        poset: CanonifiedPoset::new(1, 0),
-        parent: Parent::Parent(child1.clone()),
-        other: OtherState::Solved(2),
-        open_children: 0.into(),
-        depth: 1,
-        current_best: Cost::Solved(2).into(),
-    };
-
-    assert_eq!(child2.max_comparisons(), 0);
-}
-
-#[test]
-fn apply_result() {
-    let root = Arc::new(Task {
-        poset: CanonifiedPoset::new(6, 0),
-        parent: Parent::Root(2),
-        other: OtherState::Solved(0),
-        open_children: 2.into(),
-        depth: 0,
-        current_best: Cost::Minimum(6).into(),
-    });
-
-    let child0 = Arc::new(root.append_child(CanonifiedPoset::new(5, 0), CanonifiedPoset::new(2, 1), &root));
-    assert_eq!(child0.current_best(), Cost::Minimum(5));
-
-    let search = Search::new(5, 0, Cache::new(1 << 10).into());
-    search.apply_result(&child0, Cost::Solved(4));
-    assert_eq!(child0.current_best(), Cost::Minimum(5));
-    assert_eq!(search.task_queue.lock().unwrap().len(), 1);
-
-    let other = search.task_queue.lock().unwrap().pop().unwrap();
-    assert_eq!(other.current_best(), Cost::Minimum(5));
-    search.apply_result(&other, Cost::Solved(1));
-
-    assert_eq!(root.open_children.load(Ordering::Relaxed), 1);
-    assert_eq!(root.current_best(), Cost::Solved(5));
-
-    let child1 = Arc::new(root.append_child(CanonifiedPoset::new(4, 1), CanonifiedPoset::new(5, 3), &root));
-    assert_eq!(child1.current_best(), Cost::Minimum(4));
-    assert_eq!(child1.max_comparisons(), 3);
-}
-
-#[test]
-fn test_expand() {
-    let mut search = Search::new(2, 0, Arc::new(Cache::new(1 << 10)));
-    let task = Arc::new(Mutex::new(Task {
-        poset: CanonifiedPoset::new(2, 0),
-        parent: Parent::Root(1),
-        other: todo!(),
-        open_children: todo!(),
-        depth: todo!(),
-        current_best: todo!(),
-    }));
-}
-#[test]
-fn test_poset() {
-    let search = Search::new(1, 0, Cache::new(1 << 10).into());
-    let mut poset = CanonifiedPoset::new(7, 3);
-    poset.set_is_less(0, 2);
-    poset.set_is_less(0, 3);
-    poset.set_is_less(0, 5);
-    poset.set_is_less(1, 2);
-    poset.set_is_less(1, 3);
-    poset.set_is_less(1, 4);
-    poset.set_is_less(2, 3);
-    assert_eq!(search.search_rec(poset, 5, 0), Cost::Solved(5));
 }
