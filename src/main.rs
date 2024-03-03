@@ -18,6 +18,7 @@ mod normal_poset;
 mod poset;
 mod search;
 mod utils;
+mod tree;
 
 #[derive(Parser, Debug)]
 #[command(author, version)]

@@ -1,54 +1,27 @@
 use std::{
-    collections::BinaryHeap,
     sync::{
         atomic::{AtomicU64, AtomicUsize, Ordering},
         Arc, Mutex, RwLock,
     },
     thread::{self, spawn},
-    time::{Duration, Instant},
+    time::Instant,
 };
 
-use hashbrown::HashSet;
+use hashbrown::HashMap;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 
 use crate::{
     cache::Cache,
     canonified_poset::CanonifiedPoset,
     constants::{LOWER_BOUNDS, MAX_N, UPPER_BOUNDS},
-    poset::Poset,
+    poset::Poset, tree::{OtherState, Parent, SearchState, Task},
 };
 
-#[derive(Clone, Debug)]
-enum OtherState {
-    Solved(u8),
-    Open(CanonifiedPoset),
-}
+type MutArc<T> = Arc<Mutex<T>>;
+type RwArc<T> = Arc<RwLock<T>>;
 
-#[derive(Clone, Debug)]
-enum Parent {
-    Parent(Arc<SearchState>),
-    Root(u8),
-}
-
-#[derive(Debug)]
-struct Task {
-    poset: CanonifiedPoset,
-    parent: Parent,
-    other: OtherState,
-    depth: u8,
-    rejection_penalty: u64,
-}
-
-#[derive(Debug)]
-struct SearchState {
-    poset: CanonifiedPoset,
-    parent: Parent,
-    other: OtherState,
-    total_children: u64,
-    open_children: AtomicU64,
-    depth: u8,
-    current_best: RwLock<Cost>,
-}
+type TaskQueue = Vec<Task>;
+type CallbackStash = HashMap<CanonifiedPoset, Vec<Task>>;
 
 #[derive(Clone)]
 pub struct Search {
@@ -56,10 +29,10 @@ pub struct Search {
     i: u8,
     current_max: u8,
     cache: Arc<Cache>,
-    task_queue: Arc<Mutex<BinaryHeap<Task>>>,
+    task_queue: MutArc<TaskQueue>,
     analytics: Arc<Analytics>,
     start: Instant,
-    active_posets: Arc<RwLock<HashSet<CanonifiedPoset>>>,
+    active_posets: RwArc<CallbackStash>,
     threads: Arc<AtomicUsize>,
 }
 
@@ -77,6 +50,7 @@ pub struct Analytics {
     cache_misses: AtomicU64,
     cache_replaced: AtomicU64,
     cache_duplicates: AtomicU64,
+    stashed: AtomicU64,
     max_progress_depth: u8,
     multiprogress: MultiProgress,
     progress_bars: Vec<(ProgressBar, AtomicU64)>,
@@ -95,67 +69,6 @@ impl Cost {
     }
 }
 
-impl SearchState {
-    fn max_comparisons(&self) -> u8 {
-        match &self.parent {
-            Parent::Parent(parent) => parent
-                .current_best()
-                .value()
-                .saturating_sub(2)
-                .min(parent.max_comparisons() - 1),
-            Parent::Root(max_comparisons) => *max_comparisons,
-        }
-    }
-
-    fn current_best(&self) -> Cost {
-        self.current_best.read().unwrap().clone()
-    }
-}
-
-impl Task {
-    fn max_comparisons(&self) -> u8 {
-        match &self.parent {
-            Parent::Parent(parent) => parent
-                .current_best()
-                .value()
-                .saturating_sub(2)
-                .min(parent.max_comparisons() - 1),
-            Parent::Root(max_comparisons) => *max_comparisons,
-        }
-    }
-}
-
-impl PartialEq for Task {
-    fn eq(&self, other: &Self) -> bool {
-        self.poset == other.poset
-            && self.depth == other.depth
-            && self.rejection_penalty == other.rejection_penalty
-    }
-}
-
-impl Eq for Task {}
-
-impl PartialOrd for Task {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for Task {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        match self.rejection_penalty.cmp(&other.rejection_penalty) {
-            core::cmp::Ordering::Equal => {}
-            ord => return ord.reverse(),
-        }
-
-        match self.depth.cmp(&other.depth) {
-            core::cmp::Ordering::Equal => {}
-            ord => return ord,
-        }
-        Cache::hash(&self.poset).cmp(&Cache::hash(&self.poset))
-    }
-}
-
 impl Search {
     pub fn new(n: u8, i: u8, cache: Arc<Cache>) -> Self {
         Search {
@@ -163,12 +76,22 @@ impl Search {
             i,
             current_max: 0,
             cache,
-            task_queue: Arc::new(Mutex::new(BinaryHeap::new())),
-            active_posets: Arc::new(RwLock::new(HashSet::new())),
+            task_queue: Arc::new(Mutex::new(Vec::new())),
+            active_posets: Arc::new(RwLock::new(HashMap::new())),
             analytics: Arc::new(Analytics::new(0)),
             start: Instant::now(),
             threads: AtomicUsize::new(1).into(),
         }
+    }
+
+    fn update_stats(&self, depth: u8) {
+        self.analytics.update_stats(
+            depth,
+            self.current_max,
+            self.cache.len(),
+            self.active_posets.read().unwrap().len(),
+            self.threads.load(Ordering::Relaxed),
+        );
     }
 
     fn search_cache(&self, poset: &CanonifiedPoset) -> Option<Cost> {
@@ -259,29 +182,24 @@ impl Search {
     }
 
     fn search_tree(&self, poset: CanonifiedPoset, max_comparisons: u8) -> Cost {
-        const THRESHOLD: u8 = 11;
+        const THRESHOLD: u8 = 3;
 
         if max_comparisons < THRESHOLD {
             return self.search_rec(poset, max_comparisons, 0);
         }
 
-        let root = Task {
+        let mut threads = Vec::new();
+
+        let root = self.expand_task(Task {
             poset,
             parent: Parent::Root(max_comparisons),
             other: OtherState::Solved(0),
             depth: 0,
-            rejection_penalty: 0,
-        };
-
-        let mut threads = Vec::new();
-
-        let root = self.expand_task(root);
+        });
 
         // start single-threaded to build a starting tree
         for _ in 0..max_comparisons / 2 {
             let task = self.fetch_task().unwrap();
-            self.active_posets.write().unwrap().insert(task.poset);
-
             let r = self.check_task(&task);
             if let Some(cost) = r {
                 self.apply_heuristic_result(&task, cost);
@@ -301,27 +219,20 @@ impl Search {
         for _ in 0..thread_count {
             let worker = self.clone();
             threads.push(spawn(move || {
-                loop {
-                    if let Some(task) = worker.fetch_task() {
-                        worker.active_posets.write().unwrap().insert(task.poset);
+                while let Some(task) = worker.fetch_task() {
 
-                        if task.max_comparisons() < THRESHOLD {
-                            let cost =
-                                worker.search_rec(task.poset, task.max_comparisons(), task.depth);
+                    if task.max_comparisons() < THRESHOLD {
+                        let cost =
+                            worker.search_rec(task.poset, task.max_comparisons(), task.depth);
+                        worker.apply_heuristic_result(&task, cost);
+                    } else {
+                        let r = worker.check_task(&task);
+                        if let Some(cost) = r {
                             worker.apply_heuristic_result(&task, cost);
                         } else {
-                            let r = worker.check_task(&task);
-                            if let Some(cost) = r {
-                                worker.apply_heuristic_result(&task, cost);
-                            } else {
-                                worker.expand_task(task);
-                            }
-                        };
-                    } else if !worker.task_queue.lock().unwrap().is_empty() {
-                        thread::sleep(Duration::from_nanos(500));
-                    } else {
-                        break;
-                    }
+                            worker.expand_task(task);
+                        }
+                    };
                 }
                 worker.threads.fetch_sub(1, Ordering::Relaxed);
             }))
@@ -338,6 +249,8 @@ impl Search {
             }
         }
 
+        assert_eq!(self.active_posets.read().unwrap().len(), 0);
+
         if panicking {
             panic!("Worker panicked")
         }
@@ -346,25 +259,24 @@ impl Search {
     }
 
     fn fetch_task(&self) -> Option<Task> {
+        let mut active_posets = self.active_posets.write().unwrap();
         let mut task_queue = self.task_queue.lock().unwrap();
-        let mut i = task_queue.len() + 1;
-        loop {
-            i -= 1;
-            if i == 0 {
-                return None;
-            }
-            let task = task_queue.pop();
-            if let Some(mut task) = task {
-                if self.active_posets.read().unwrap().contains(&task.poset) {
-                    task.rejection_penalty += 1;
-                    task_queue.push(task);
-                } else {
-                    break Some(task);
+
+        while let Some(task) = task_queue.pop() {
+            let entry = active_posets.get_mut(&task.poset);
+
+            match entry {
+                Some(waiting) => {
+                    self.analytics.stashed.fetch_add(1, Ordering::Relaxed);
+                    waiting.push(task);
                 }
-            } else {
-                break None;
+                None => {
+                    active_posets.insert(task.poset, Vec::new());
+                    return Some(task);
+                }
             }
         }
+        None
     }
 
     fn propagate_done(&self, parent: &Parent, cost: Cost) {
@@ -381,13 +293,7 @@ impl Search {
                     self.insert_cache(parent.poset, result);
                     self.analytics
                         .inc_complete(parent.depth, parent.total_children);
-                    self.analytics.update_stats(
-                        parent.depth,
-                        self.current_max,
-                        self.cache.len(),
-                        self.active_posets.read().unwrap().len(),
-                        self.threads.load(Ordering::Relaxed),
-                    );
+                    self.update_stats(parent.depth);
                     self.apply_result(parent, result);
                 }
             }
@@ -397,47 +303,59 @@ impl Search {
 
     fn apply_result(&self, state: &Arc<SearchState>, cost: Cost) {
         assert!(cost.is_solved() || cost.value() > state.max_comparisons());
-        self.analytics.inc(state.depth - 1, 1);
-        self.active_posets.write().unwrap().remove(&state.poset);
-        match cost {
-            Cost::Solved(solved) => match state.other {
-                OtherState::Solved(other) => {
-                    self.propagate_done(&state.parent, Cost::Solved(solved.max(other) + 1));
-                }
-                OtherState::Open(poset) => {
-                    self.task_queue.lock().unwrap().push(Task {
-                        poset,
-                        parent: state.parent.clone(),
-                        other: OtherState::Solved(solved),
-                        depth: state.depth,
-                        rejection_penalty: 0,
-                    });
-                }
-            },
-            Cost::Minimum(min) => self.propagate_done(&state.parent, Cost::Minimum(min + 1)),
-        }
+        self.apply_inner(&state.poset, &state.other, &state.parent, state.max_comparisons(), state.depth, cost)
     }
 
     fn apply_heuristic_result(&self, task: &Task, cost: Cost) {
         assert!(cost.is_solved() || cost.value() > task.max_comparisons());
-        self.analytics.inc(task.depth - 1, 1);
-        self.active_posets.write().unwrap().remove(&task.poset);
+        self.apply_inner(&task.poset, &task.other, &task.parent, task.max_comparisons(), task.depth, cost)
+    }
+
+    fn apply_inner(
+        &self,
+        poset: &CanonifiedPoset,
+        other: &OtherState,
+        parent: &Parent,
+        max_comparisons: u8,
+        depth: u8,
+        cost: Cost,
+    ) {
+        self.analytics.inc(depth - 1, 1);
         match cost {
-            Cost::Solved(solved) => match task.other {
+            Cost::Solved(solved) => match other {
                 OtherState::Solved(other) => {
-                    self.propagate_done(&task.parent, Cost::Solved(solved.max(other) + 1));
+                    self.propagate_done(parent, Cost::Solved(solved.max(*other) + 1));
                 }
                 OtherState::Open(poset) => {
-                    self.task_queue.lock().unwrap().push(Task {
-                        poset,
-                        parent: task.parent.clone(),
-                        other: OtherState::Solved(solved),
-                        depth: task.depth,
-                        rejection_penalty: 0,
-                    });
+                    if solved <= max_comparisons {
+                        self.task_queue.lock().unwrap().push(Task {
+                            poset: *poset,
+                            parent: parent.clone(),
+                            other: OtherState::Solved(solved),
+                            depth,
+                        });
+                    } else {
+                        self.propagate_done(parent, Cost::Minimum(solved));
+                    }
                 }
             },
-            Cost::Minimum(min) => self.propagate_done(&task.parent, Cost::Minimum(min + 1)),
+            Cost::Minimum(min) => self.propagate_done(parent, Cost::Minimum(min + 1)),
+        }
+        let waiters = self.active_posets.write().unwrap().remove(poset);
+        if let Some(waiters) = waiters {
+            self.analytics.stashed.fetch_sub(waiters.len() as u64, Ordering::Relaxed);
+            for task in waiters {
+                match cost {
+                    Cost::Minimum(min) => {
+                        if min > task.max_comparisons() {
+                            self.apply_heuristic_result(&task, cost);
+                        } else {
+                            self.task_queue.lock().unwrap().push(task);
+                        }
+                    }
+                    Cost::Solved(_) => self.apply_heuristic_result(&task, cost),
+                }
+            }
         }
     }
 
@@ -488,7 +406,7 @@ impl Search {
             parent: task.parent,
             other: task.other,
             total_children: n_pairs,
-            open_children: 0.into(),
+            open_children: n_pairs.into(),
             depth: task.depth,
         });
 
@@ -500,7 +418,6 @@ impl Search {
                 parent: Parent::Parent(state.clone()),
                 other: OtherState::Open(second),
                 depth: state.depth + 1,
-                rejection_penalty: 0,
             };
             self.task_queue.lock().unwrap().push(current);
         }
@@ -550,13 +467,7 @@ impl Search {
         // search all comparisons
         let mut current_best = max_comparisons + 1;
         for (first, second) in pairs {
-            self.analytics.update_stats(
-                depth,
-                self.current_max,
-                self.cache.len(),
-                self.active_posets.read().unwrap().len(),
-                self.threads.load(Ordering::Relaxed),
-            );
+            self.update_stats(depth);
 
             // search the first case of the comparison
             let first_result = self.search_rec(first, current_best - 2, depth + 1);
@@ -755,6 +666,7 @@ impl Analytics {
             cache_hits: AtomicU64::new(0),
             cache_misses: AtomicU64::new(0),
             cache_replaced: AtomicU64::new(0),
+            stashed: AtomicU64::new(0),
             max_progress_depth,
             multiprogress,
             progress_bars,
@@ -823,9 +735,10 @@ impl Analytics {
             cache_entries,
         ));
         self.progress_bars[1].0.set_message(format!(
-            "duplicates: {:10}, active nodes: {:10}, threads: {:3}",
+            "duplicates: {:10}, active nodes: {:10}, stashed: {:7} threads: {:3}",
             self.cache_duplicates(),
             nodes,
+            self.stashed.load(Ordering::Relaxed),
             threads,
         ));
     }
