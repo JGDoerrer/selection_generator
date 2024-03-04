@@ -326,7 +326,7 @@ impl NormalPoset {
             }
         }
 
-        if new.i > (new.n + 1) / 2 {
+        if new.i > (new.n - 1) / 2 {
             new = new.dual();
         }
 
