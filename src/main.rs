@@ -1,10 +1,9 @@
 use canonified_poset::CanonifiedPoset;
-use clap::{ArgAction, Parser};
+use clap::{error::{Error, ErrorKind}, ArgAction, Parser};
+use search_backward::single;
 use search_forward::Cost;
 use std::{
-    collections::HashMap,
-    fs::{DirBuilder, OpenOptions},
-    io::{BufWriter, Write},
+    collections::HashMap, fs::{DirBuilder, OpenOptions}, io::{BufWriter, Write}, str::FromStr, sync::{atomic::AtomicBool, Arc}
 };
 
 
@@ -25,10 +24,36 @@ mod poset;
 mod search_forward;
 mod utils;
 mod algorithm_test;
+mod cache_tree;
+mod search_backward;
+mod backwards_poset;
+mod search_bidirectional;
+
+#[derive(Debug, Clone)]
+pub enum SearchMode {
+    Forward,
+    Backward,
+    Bidirectional,
+}
+
+impl FromStr for SearchMode {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "forward" => Ok(SearchMode::Forward),
+            "backward" => Ok(SearchMode::Backward),
+            "bidirectional" => Ok(SearchMode::Bidirectional),
+            _ => Err(Error::new(ErrorKind::InvalidValue))
+        }
+    }
+}
 
 #[derive(Parser, Debug)]
 #[command(author, version)]
 struct Args {
+    #[arg(long)]
+    search_mode: SearchMode,
     /// The n to start at
     #[arg(short)]
     n: Option<u8>,
@@ -54,7 +79,14 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
+    match args.search_mode {
+        SearchMode::Forward => run_forward(args),
+        SearchMode::Backward => run_backward(),
+        SearchMode::Bidirectional => search_bidirectional::main(),
+    }
+}
 
+fn run_forward(args: Args) {
     let start_n = args.n.unwrap_or(1);
 
     let mut cache = Cache::new(args.max_cache_size);
@@ -126,6 +158,21 @@ fn main() {
             if args.single {
                 return;
             }
+        }
+    }
+}
+
+fn run_backward() {
+    let interrupt = Arc::new(AtomicBool::new(false));
+
+    if false {
+        single(&interrupt, 9, 4);
+    } else {
+        for n in 2..MAX_N as u8 {
+            for i in 0..((n + 1) / 2) {
+                single(&interrupt, n, i);
+            }
+            println!();
         }
     }
 }

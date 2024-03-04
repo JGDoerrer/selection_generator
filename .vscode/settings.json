@@ -42,5 +42,8 @@
     "Vidia",
     "simpledrmdrmfb",
     "wlan"
+  ],
+  "rust-analyzer.linkedProjects": [
+    "./Cargo.toml"
   ]
 }
