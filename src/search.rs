@@ -1,6 +1,7 @@
 use std::{
+    ops::Deref,
     sync::{
-        atomic::{AtomicU64, AtomicUsize, Ordering},
+        atomic::{AtomicU64, AtomicU8, AtomicUsize, Ordering},
         Arc, Mutex, RwLock,
     },
     thread::{self, spawn},
@@ -9,31 +10,40 @@ use std::{
 
 use hashbrown::HashMap;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
+use priority_queue::PriorityQueue;
 
 use crate::{
     cache::Cache,
     canonified_poset::CanonifiedPoset,
     constants::{LOWER_BOUNDS, MAX_N, UPPER_BOUNDS},
-    poset::Poset, tree::{OtherState, Parent, SearchState, Task},
+    poset::Poset,
+    tree::{OtherState, Parent, SearchState, Task},
 };
-
-type MutArc<T> = Arc<Mutex<T>>;
-type RwArc<T> = Arc<RwLock<T>>;
 
 type TaskQueue = Vec<Task>;
 type CallbackStash = HashMap<CanonifiedPoset, Vec<Task>>;
 
-#[derive(Clone)]
 pub struct Search {
     n: u8,
     i: u8,
-    current_max: u8,
+    current_max: AtomicU8,
     cache: Arc<Cache>,
-    task_queue: MutArc<TaskQueue>,
-    analytics: Arc<Analytics>,
-    start: Instant,
-    active_posets: RwArc<CallbackStash>,
-    threads: Arc<AtomicUsize>,
+    task_queue: Mutex<TaskQueue>,
+    analytics: Analytics,
+    active_posets: RwLock<CallbackStash>,
+    threads: AtomicUsize,
+}
+
+struct Worker {
+    search: Arc<Search>,
+    private_queue: Vec<(Task, bool)>,
+}
+
+impl Deref for Worker {
+    type Target = Search;
+    fn deref(&self) -> &Self::Target {
+        self.search.as_ref()
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -71,27 +81,210 @@ impl Cost {
 
 impl Search {
     pub fn new(n: u8, i: u8, cache: Arc<Cache>) -> Self {
+        let min = LOWER_BOUNDS[n as usize][i as usize];
+        let max = UPPER_BOUNDS[n as usize][i as usize];
         Search {
             n,
             i,
-            current_max: 0,
+            current_max: 0.into(),
             cache,
-            task_queue: Arc::new(Mutex::new(Vec::new())),
-            active_posets: Arc::new(RwLock::new(HashMap::new())),
-            analytics: Arc::new(Analytics::new(0)),
-            start: Instant::now(),
-            threads: AtomicUsize::new(1).into(),
+            task_queue: Vec::new().into(),
+            active_posets: HashMap::new().into(),
+            analytics: Analytics::new((max + min) as u8 / 4),
+            threads: AtomicUsize::new(1),
         }
+    }
+
+    pub fn search(self: Arc<Search>) -> u8 {
+        let start = Instant::now();
+
+        let min = LOWER_BOUNDS[self.n as usize][self.i as usize];
+        let max = UPPER_BOUNDS[self.n as usize][self.i as usize];
+
+        let mut result = max as u8;
+
+        for current in min..max {
+            let current = current as u8;
+            self.current_max.load(Ordering::Relaxed);
+
+            let search_result = self.search_threaded(CanonifiedPoset::new(self.n, self.i), current);
+            result = match search_result {
+                Cost::Solved(solved) => solved,
+                Cost::Minimum(min) => {
+                    self.analytics.multiprogress.clear().unwrap();
+                    println!(
+                        "n: {}, i: {} needs at least {} comparisons",
+                        self.n, self.i, min
+                    );
+                    println!("{}", self.format_duration(start));
+
+                    continue;
+                }
+            };
+            break;
+        }
+
+        self.analytics.complete_all();
+
+        // Print the found solution
+        println!();
+        println!(
+            "Congratulations. A solution was found!\n\nn: {}, i: {}",
+            self.n, self.i
+        );
+        println!("Comparisons: {}", result);
+        println!();
+
+        self.print_cache();
+        println!("{}", self.format_duration(start));
+        println!();
+
+        result
+    }
+
+    fn search_threaded(self: &Arc<Search>, poset: CanonifiedPoset, max_comparisons: u8) -> Cost {
+        let mut worker = Worker::new(self.clone());
+        if max_comparisons < 10 {
+            return worker.search_rec(poset, max_comparisons, 0);
+        }
+
+        let thread_count = if let Ok(count) = thread::available_parallelism() {
+            count.get()
+        } else {
+            return worker.search_rec(poset, max_comparisons, 0);
+        };
+
+        let mut threads = Vec::new();
+
+        let root = worker.expand_task(Task {
+            poset,
+            parent: Parent::Root(max_comparisons),
+            other: OtherState::Solved(0),
+            depth: 0,
+        });
+
+        // start single-threaded to build a starting tree
+        for _ in 0..max_comparisons / 2 {
+            let task = worker
+                .fetch_task()
+                .unwrap_or_else(|| worker.fetch_task().unwrap());
+
+            let r = worker.check_task(&task);
+            if let Some(cost) = r {
+                worker.apply_heuristic_result(&task, cost);
+            } else {
+                worker.expand_task(task);
+            }
+        }
+
+        // self.task_queue
+        //     .lock()
+        //     .unwrap()
+        //     .extend(worker.private_queue.into_iter().map(|e| e.0));
+
+        self.threads.store(thread_count, Ordering::Relaxed);
+
+        for _ in 0..thread_count {
+            let mut worker = Worker::new(self.clone());
+            threads.push(spawn(move || {
+                // let mut i: u64 = 0;
+                while let Some(task) = worker.fetch_task() {
+                    // i = i.wrapping_add(1);
+                    // if i % 100 == 0 {
+                    //     for (task, priority) in worker.task_queue.lock().unwrap().iter_mut() {
+                    //         *priority = task.priority();
+                    //     }
+                    // }
+                    worker.search_tree(task);
+                }
+                worker.threads.fetch_sub(1, Ordering::Relaxed);
+            }))
+        }
+
+        let mut panicking = false;
+
+        for handle in threads {
+            match handle.join() {
+                Ok(()) => {}
+                Err(_) => {
+                    panicking = true;
+                }
+            }
+        }
+
+        assert_eq!(self.active_posets.read().unwrap().len(), 0);
+
+        if panicking {
+            panic!("Worker panicked")
+        }
+
+        root.current_best()
     }
 
     fn update_stats(&self, depth: u8) {
         self.analytics.update_stats(
             depth,
-            self.current_max,
+            self.current_max.load(Ordering::Relaxed),
             self.cache.len(),
+            self.cache.max_entries(),
             self.active_posets.read().unwrap().len(),
             self.threads.load(Ordering::Relaxed),
         );
+    }
+
+    /// Print out a human readable duration in the format:
+    /// days, hours, minutes, seconds
+    pub fn format_duration(&self, start: Instant) -> String {
+        // Calculate the values for a human readable duration
+
+        let duration = Instant::now() - start;
+        let seconds = duration.as_secs_f32() % 60.0;
+        let minutes = (duration.as_secs() / 60) % 60;
+        let hours = (duration.as_secs() / (60 * 60)) % 24;
+        let days = duration.as_secs() / (60 * 60 * 24);
+
+        format!("Duration: {}d {}h {}m {}s", days, hours, minutes, seconds)
+    }
+
+    /// Print information out the cache, e.g. cache entries, hits, misses etc.
+    pub fn print_cache(&self) {
+        // Print information about the cache
+        println!("Cache entries: {}", self.cache.len());
+        println!("Cache hits: {}", self.analytics.cache_hits());
+        println!("Cache misses: {}", self.analytics.cache_misses());
+        println!("Cache replaced: {}", self.analytics.cache_replaced());
+        println!("Duplicate work: {}", self.analytics.cache_duplicates());
+        println!();
+        println!("Posets searched: {}", self.analytics.total_posets());
+    }
+}
+
+impl Worker {
+    fn new(search: Arc<Search>) -> Self {
+        Worker {
+            search,
+            private_queue: Vec::new(),
+        }
+    }
+
+    fn search_tree(&mut self, task: Task) {
+        // self.private_queue.push((start, false));
+
+        // while let Some(task) = self.fetch_private_task() {
+            if task.max_comparisons() < 10 {
+                let cost = self.search_rec(task.poset, task.max_comparisons(), task.depth);
+                self.apply_heuristic_result(&task, cost);
+            } else {
+                let r = self.check_task(&task);
+                if let Some(cost) = r {
+                    self.apply_heuristic_result(&task, cost);
+                } else {
+                    self.expand_task(task);
+                }
+            };
+        // }
+
+        // assert!(self.private_queue.is_empty());
     }
 
     fn search_cache(&self, poset: &CanonifiedPoset) -> Option<Cost> {
@@ -133,137 +326,13 @@ impl Search {
         }
     }
 
-    pub fn search(&mut self) -> u8 {
-        self.start = Instant::now();
-
-        let min = LOWER_BOUNDS[self.n as usize][self.i as usize];
-        let max = UPPER_BOUNDS[self.n as usize][self.i as usize];
-
-        let mut result = max as u8;
-
-        for current in min..max {
-            let current = current as u8;
-            self.current_max = current;
-            self.analytics = Arc::new(self.analytics.with_max_depth(current / 2));
-
-            let search_result = self.search_tree(CanonifiedPoset::new(self.n, self.i), current);
-            result = match search_result {
-                Cost::Solved(solved) => solved,
-                Cost::Minimum(min) => {
-                    self.analytics.multiprogress.clear().unwrap();
-                    println!(
-                        "n: {}, i: {} needs at least {} comparisons",
-                        self.n, self.i, min
-                    );
-                    println!("{}", self.format_duration());
-
-                    continue;
-                }
-            };
-            break;
-        }
-
-        self.analytics.complete_all();
-
-        // Print the found solution
-        println!();
-        println!(
-            "Congratulations. A solution was found!\n\nn: {}, i: {}",
-            self.n, self.i
-        );
-        println!("Comparisons: {}", result);
-        println!();
-
-        self.print_cache();
-        println!("{}", self.format_duration());
-        println!();
-
-        result
-    }
-
-    fn search_tree(&self, poset: CanonifiedPoset, max_comparisons: u8) -> Cost {
-        const THRESHOLD: u8 = 3;
-
-        if max_comparisons < THRESHOLD {
-            return self.search_rec(poset, max_comparisons, 0);
-        }
-
-        let mut threads = Vec::new();
-
-        let root = self.expand_task(Task {
-            poset,
-            parent: Parent::Root(max_comparisons),
-            other: OtherState::Solved(0),
-            depth: 0,
-        });
-
-        // start single-threaded to build a starting tree
-        for _ in 0..max_comparisons / 2 {
-            let task = self.fetch_task().unwrap();
-            let r = self.check_task(&task);
-            if let Some(cost) = r {
-                self.apply_heuristic_result(&task, cost);
-            } else {
-                self.expand_task(task);
-            }
-        }
-
-        let thread_count = if let Ok(count) = thread::available_parallelism() {
-            count.get()
-        } else {
-            return self.search_rec(poset, max_comparisons, 0);
-        };
-
-        self.threads.store(thread_count, Ordering::Relaxed);
-
-        for _ in 0..thread_count {
-            let worker = self.clone();
-            threads.push(spawn(move || {
-                while let Some(task) = worker.fetch_task() {
-
-                    if task.max_comparisons() < THRESHOLD {
-                        let cost =
-                            worker.search_rec(task.poset, task.max_comparisons(), task.depth);
-                        worker.apply_heuristic_result(&task, cost);
-                    } else {
-                        let r = worker.check_task(&task);
-                        if let Some(cost) = r {
-                            worker.apply_heuristic_result(&task, cost);
-                        } else {
-                            worker.expand_task(task);
-                        }
-                    };
-                }
-                worker.threads.fetch_sub(1, Ordering::Relaxed);
-            }))
-        }
-
-        let mut panicking = false;
-
-        for handle in threads {
-            match handle.join() {
-                Ok(()) => {}
-                Err(_) => {
-                    panicking = true;
-                }
-            }
-        }
-
-        assert_eq!(self.active_posets.read().unwrap().len(), 0);
-
-        if panicking {
-            panic!("Worker panicked")
-        }
-
-        root.current_best()
-    }
-
     fn fetch_task(&self) -> Option<Task> {
-        let mut active_posets = self.active_posets.write().unwrap();
+        let mut active_posets = self.search.active_posets.write().unwrap();
         let mut task_queue = self.task_queue.lock().unwrap();
 
         while let Some(task) = task_queue.pop() {
             let entry = active_posets.get_mut(&task.poset);
+            // println!("fetch");
 
             match entry {
                 Some(waiting) => {
@@ -279,13 +348,39 @@ impl Search {
         None
     }
 
-    fn propagate_done(&self, parent: &Parent, cost: Cost) {
+    fn fetch_private_task(&mut self) -> Option<Task> {
+        let mut active_posets = self.search.active_posets.write().unwrap();
+
+        while let Some(task) = self.private_queue.pop() {
+            let entry = active_posets.get_mut(&task.0.poset);
+            // println!("fetch");
+
+            match entry {
+                Some(waiting) => {
+                    self.analytics.stashed.fetch_add(1, Ordering::Relaxed);
+                    waiting.push(task.0);
+                }
+                None => {
+                    if task.1 && likely_unsolvable(&task.0) {
+                        self.queue_global(task.0);
+                    } else {
+                        active_posets.insert(task.0.poset, Vec::new());
+                        return Some(task.0);
+                    }
+                }
+            }
+        }
+        None
+    }
+
+    fn queue_global(&self, task: Task) {
+        // let priority = task.priority();
+        self.task_queue.lock().unwrap().push(task);
+    }
+
+    fn propagate_done(&mut self, parent: &Parent) {
         match parent {
             Parent::Parent(parent) => {
-                if cost.is_solved() {
-                    let mut current_best = parent.current_best.write().unwrap();
-                    *current_best = Cost::Solved(current_best.value().min(cost.value()));
-                }
                 let open = parent.open_children.fetch_sub(1, Ordering::Relaxed) - 1;
 
                 if open == 0 {
@@ -301,18 +396,67 @@ impl Search {
         }
     }
 
-    fn apply_result(&self, state: &Arc<SearchState>, cost: Cost) {
-        assert!(cost.is_solved() || cost.value() > state.max_comparisons());
-        self.apply_inner(&state.poset, &state.other, &state.parent, state.max_comparisons(), state.depth, cost)
+    fn propagate_current_best(&self, parent: &Parent, cost: Cost) {
+        let mut solved_in = if let Cost::Solved(s) = cost {
+            s
+        } else {
+            return;
+        };
+        let mut parent = parent;
+        loop {
+            solved_in += 1;
+            match parent {
+                Parent::Parent(p) => {
+                    let mut current_best = p.current_best.write().unwrap();
+                    if current_best.value() > solved_in {
+                        *current_best = Cost::Solved(solved_in)
+                    } else {
+                        break;
+                    }
+                    if let OtherState::Solved(other) = p.other{
+                        solved_in = solved_in.max(other);
+                        parent = &p.parent
+                    } else {
+                        break;
+                    }
+                    
+                }
+                Parent::Root(_) => break,
+            }
+        }
     }
 
-    fn apply_heuristic_result(&self, task: &Task, cost: Cost) {
+    fn apply_result(&mut self, state: &Arc<SearchState>, cost: Cost) {
+        assert!(cost.is_solved() || cost.value() > state.max_comparisons());
+        self.apply_inner(
+            &state.poset,
+            &state.other,
+            &state.parent,
+            state.max_comparisons(),
+            state.depth,
+            cost,
+        )
+    }
+
+    fn apply_heuristic_result(&mut self, task: &Task, cost: Cost) {
         assert!(cost.is_solved() || cost.value() > task.max_comparisons());
-        self.apply_inner(&task.poset, &task.other, &task.parent, task.max_comparisons(), task.depth, cost)
+        if let Cost::Solved(solved) = cost {
+            if let OtherState::Solved(other) = task.other {
+                self.propagate_current_best(&task.parent, Cost::Solved(solved.max(other)))
+            }
+        }
+        self.apply_inner(
+            &task.poset,
+            &task.other,
+            &task.parent,
+            task.max_comparisons(),
+            task.depth,
+            cost,
+        )
     }
 
     fn apply_inner(
-        &self,
+        &mut self,
         poset: &CanonifiedPoset,
         other: &OtherState,
         parent: &Parent,
@@ -323,34 +467,35 @@ impl Search {
         self.analytics.inc(depth - 1, 1);
         match cost {
             Cost::Solved(solved) => match other {
-                OtherState::Solved(other) => {
-                    self.propagate_done(parent, Cost::Solved(solved.max(*other) + 1));
-                }
+                OtherState::Solved(_) => self.propagate_done(parent),
                 OtherState::Open(poset) => {
                     if solved <= max_comparisons {
-                        self.task_queue.lock().unwrap().push(Task {
+                        let task = Task {
                             poset: *poset,
                             parent: parent.clone(),
                             other: OtherState::Solved(solved),
                             depth,
-                        });
+                        };
+                        self.queue_global(task);
                     } else {
-                        self.propagate_done(parent, Cost::Minimum(solved));
+                        self.propagate_done(parent);
                     }
                 }
             },
-            Cost::Minimum(min) => self.propagate_done(parent, Cost::Minimum(min + 1)),
+            Cost::Minimum(_) => self.propagate_done(parent),
         }
         let waiters = self.active_posets.write().unwrap().remove(poset);
         if let Some(waiters) = waiters {
-            self.analytics.stashed.fetch_sub(waiters.len() as u64, Ordering::Relaxed);
+            self.analytics
+                .stashed
+                .fetch_sub(waiters.len() as u64, Ordering::Relaxed);
             for task in waiters {
                 match cost {
                     Cost::Minimum(min) => {
                         if min > task.max_comparisons() {
                             self.apply_heuristic_result(&task, cost);
                         } else {
-                            self.task_queue.lock().unwrap().push(task);
+                            self.queue_global(task);
                         }
                     }
                     Cost::Solved(_) => self.apply_heuristic_result(&task, cost),
@@ -396,7 +541,7 @@ impl Search {
         None
     }
 
-    fn expand_task(&self, task: Task) -> Arc<SearchState> {
+    fn expand_task(&mut self, task: Task) -> Arc<SearchState> {
         let pairs = self.get_comparison_pairs(&task.poset);
         let n_pairs = pairs.len() as u64;
 
@@ -419,7 +564,12 @@ impl Search {
                 other: OtherState::Open(second),
                 depth: state.depth + 1,
             };
-            self.task_queue.lock().unwrap().push(current);
+
+            // if self.search.task_queue.lock().unwrap().len() < self.threads.load(Ordering::Relaxed) * 2 {
+                self.queue_global(current);
+            // } else {
+            //     self.private_queue.push((current, true));
+            // }
         }
 
         state
@@ -622,31 +772,14 @@ impl Search {
 
         None
     }
+}
 
-    /// Print out a human readable duration in the format:
-    /// days, hours, minutes, seconds
-    pub fn format_duration(&self) -> String {
-        // Calculate the values for a human readable duration
-
-        let duration = Instant::now() - self.start;
-        let seconds = duration.as_secs_f32() % 60.0;
-        let minutes = (duration.as_secs() / 60) % 60;
-        let hours = (duration.as_secs() / (60 * 60)) % 24;
-        let days = duration.as_secs() / (60 * 60 * 24);
-
-        format!("Duration: {}d {}h {}m {}s", days, hours, minutes, seconds)
-    }
-
-    /// Print information out the cache, e.g. cache entries, hits, misses etc.
-    pub fn print_cache(&self) {
-        // Print information about the cache
-        println!("Cache entries: {}", self.cache.len());
-        println!("Cache hits: {}", self.analytics.cache_hits());
-        println!("Cache misses: {}", self.analytics.cache_misses());
-        println!("Cache replaced: {}", self.analytics.cache_replaced());
-        println!("Duplicate work: {}", self.analytics.cache_duplicates());
-        println!();
-        println!("Posets searched: {}", self.analytics.total_posets());
+fn likely_unsolvable(task: &Task) -> bool {
+    if let Parent::Parent(parent) = &task.parent {
+        parent.total_children - parent.open_children.load(Ordering::Relaxed) > 3
+            && !parent.current_best().is_solved()
+    } else {
+        false
     }
 }
 
@@ -722,6 +855,7 @@ impl Analytics {
         depth: u8,
         current_max: u8,
         cache_entries: usize,
+        cache_max: usize,
         nodes: usize,
         threads: usize,
     ) {
@@ -729,10 +863,11 @@ impl Analytics {
             return;
         }
         self.progress_bars[0].0.set_message(format!(
-            "limit: {:3} total: {:10}, cache: {:10}",
+            "limit: {:3} total: {:10}, cache: {:10} ({:.3}%)",
             current_max,
             self.total_posets.load(Ordering::Relaxed),
             cache_entries,
+            cache_entries as f32 / cache_max as f32 * 100.0,
         ));
         self.progress_bars[1].0.set_message(format!(
             "duplicates: {:10}, active nodes: {:10}, stashed: {:7} threads: {:3}",

@@ -1,9 +1,9 @@
-use std::sync::{atomic::AtomicU64, Arc, RwLock};
+use std::{hash::Hash, sync::{atomic::{AtomicU64, Ordering}, Arc, RwLock}};
 
 use crate::{cache::Cache, canonified_poset::CanonifiedPoset, search::Cost};
 
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, PartialEq)]
 pub enum OtherState {
     Solved(u8),
     Open(CanonifiedPoset),
@@ -15,7 +15,19 @@ pub enum Parent {
     Root(u8),
 }
 
-#[derive(Debug)]
+impl Hash for Parent {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        core::mem::discriminant(self).hash(state);
+        match self {
+            Parent::Parent(parent) => {
+                parent.poset.hash(state);
+            },
+            Parent::Root(max_comparisons) => max_comparisons.hash(state),
+        }
+    }
+}
+
+#[derive(Debug, Hash)]
 pub struct Task {
     pub poset: CanonifiedPoset,
     pub parent: Parent,
@@ -63,12 +75,36 @@ impl Task {
             Parent::Root(max_comparisons) => *max_comparisons,
         }
     }
+
+    fn sibling_completion(&self) -> u64 {
+        match &self.parent {
+            Parent::Parent(parent) => ((parent.total_children - parent.open_children.load(Ordering::Relaxed)) * 100) / parent.total_children,
+            Parent::Root(_) => 1,
+        }
+    }
+
+    pub fn priority(&self) -> u64 {
+        if self.depth < 5 {
+            return self.depth as u64;
+        }
+        self.sibling_completion().saturating_sub(self.depth as u64 * 10) + 6
+    }
+}
+
+impl PartialEq for Parent {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Parent(l0), Self::Parent(r0)) => Arc::ptr_eq(l0, r0),
+            (Self::Root(l0), Self::Root(r0)) => l0 == r0,
+            _ => false,
+        }
+    }
 }
 
 impl PartialEq for Task {
     fn eq(&self, other: &Self) -> bool {
         self.poset == other.poset
-            && self.depth == other.depth
+            && self.depth == other.depth && self.parent == other.parent && self.other == other.other
     }
 }
 

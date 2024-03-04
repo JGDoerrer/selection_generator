@@ -12,6 +12,7 @@ hashbrown = { version = "0.14.2" }
 indicatif = "0.17.7"
 nauty-Traces-sys = { version = "0.7.0", features = ["native"] }
 crossbeam = "0.8.4"
+priority-queue = "2.0.2"
 
 [profile.release]
 debug = true

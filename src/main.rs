@@ -63,7 +63,7 @@ fn main() {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
         for i in start_i..(n + 1) / 2 {
-            let result = Search::new(n, i, cache.clone()).search();
+            let result = Arc::new(Search::new(n, i, cache.clone())).search();
 
             if n < KNOWN_VALUES.len() as u8 {
                 assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);
