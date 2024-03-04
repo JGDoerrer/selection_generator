@@ -2,6 +2,20 @@
 mod test {
 
     use rayon::iter::{IntoParallelIterator, ParallelIterator};
+
+    /// n = 1
+    fn select_1([a]: [usize; 1]) -> usize {
+        a
+    }
+    /// n = 2, i = 0
+    fn select_0([a, b]: [usize; 2]) -> usize {
+        if b > a {
+            select_1([a])
+        } else {
+            select_1([b])
+        }
+    }
+
     fn advance(indices: &mut [usize], cycles: &mut [usize]) -> bool {
         let n = indices.len();
         let k = cycles.len();
@@ -31,15 +45,19 @@ mod test {
 
     #[test]
     fn test() {
-        const N: usize = 13;
-        const I: usize = 4;
+        const N: usize = 2;
+        const I: usize = 0;
         const SPLITS: usize = 2;
 
         let mut numbers = [0; N];
-        for i in 0..N { numbers[i] = i; }
+        for i in 0..N {
+            numbers[i] = i;
+        }
 
         let mut split_cycles = [0; SPLITS];
-        for i in 0..SPLITS { split_cycles[i] = N - i - 1 }
+        for i in 0..SPLITS {
+            split_cycles[i] = N - i - 1
+        }
 
         let mut starters = Vec::with_capacity(fac(N, N - SPLITS));
 
@@ -52,20 +70,14 @@ mod test {
         assert_eq!(starters.len(), fac(N, N - SPLITS));
 
         starters.into_par_iter().for_each(|mut permutation| {
-            assert_eq!(
-                cmp_0(permutation.clone()),
-                I,
-                "{permutation:?}"
-            );
+            assert_eq!(search_0(permutation.clone()), I, "{permutation:?}");
 
             let mut cycles = [0; N - SPLITS];
-            for i in 0..N - SPLITS { cycles[i] = N - SPLITS - i - 1 }
+            for i in 0..N - SPLITS {
+                cycles[i] = N - SPLITS - i - 1
+            }
             while advance(&mut permutation[SPLITS..], &mut cycles) {
-                assert_eq!(
-                    cmp_0(permutation.clone()),
-                    I,
-                    "{permutation:?}"
-                );
+                assert_eq!(search_0(permutation.clone()), I, "{permutation:?}");
             }
         });
     }
