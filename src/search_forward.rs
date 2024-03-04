@@ -1,6 +1,5 @@
 use std::{
-    sync::atomic::{AtomicU64, Ordering},
-    time::Instant,
+    collections::HashMap, sync::atomic::{AtomicU64, Ordering}, time::Instant
 };
 
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
@@ -19,6 +18,7 @@ pub struct Search<'a> {
     cache: &'a mut Cache,
     analytics: Analytics,
     start: Instant,
+    comparisons: &'a mut HashMap<CanonifiedPoset, (u8, u8)>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -53,7 +53,12 @@ impl Cost {
 }
 
 impl<'a> Search<'a> {
-    pub fn new(n: u8, i: u8, cache: &'a mut Cache) -> Self {
+    pub fn new(
+        n: u8,
+        i: u8,
+        cache: &'a mut Cache,
+        comparisons: &'a mut HashMap<CanonifiedPoset, (u8, u8)>,
+    ) -> Self {
         Search {
             n,
             i,
@@ -61,6 +66,7 @@ impl<'a> Search<'a> {
             cache,
             analytics: Analytics::new(n.max(4) - 3),
             start: Instant::now(),
+            comparisons,
         }
     }
 
@@ -187,8 +193,9 @@ impl<'a> Search<'a> {
         self.analytics.inc_length(depth, n_pairs);
 
         // search all comparisons
+        let mut best_comparison = (0, 0);
         let mut current_best = max_comparisons + 1;
-        for (first, second) in pairs {
+        for (first, second, i, j) in pairs {
             self.analytics.update_stats(
                 depth,
                 self.current_max,
@@ -215,12 +222,15 @@ impl<'a> Search<'a> {
             // take the max of the branches of the comparisons
             // if the current pair maximum was worse, the
             // continues above never let this be reached
+            best_comparison = (i, j);
+            
             current_best = first_result.value().max(second_result.value()) + 1;
 
             self.analytics.inc(depth, 1);
         }
 
         let result = if current_best <= max_comparisons {
+            self.comparisons.insert(poset, best_comparison);
             Cost::Solved(current_best)
         } else {
             Cost::Minimum(max_comparisons + 1)
@@ -238,7 +248,7 @@ impl<'a> Search<'a> {
     fn get_comparison_pairs(
         &self,
         poset: &CanonifiedPoset,
-    ) -> Vec<(CanonifiedPoset, CanonifiedPoset)> {
+    ) -> Vec<(CanonifiedPoset, CanonifiedPoset, u8, u8)> {
         let mut pairs = Vec::with_capacity(poset.n() as usize * (poset.n() as usize - 1) / 2);
 
         for i in 0..poset.n() {
@@ -254,20 +264,23 @@ impl<'a> Search<'a> {
                 let hardness_greater = Self::estimate_hardness(&greater);
 
                 let pair = if hardness_less < hardness_greater {
-                    (less, greater, hardness_greater)
+                    (less, greater, i, j, hardness_greater)
                 } else {
-                    (greater, less, hardness_less)
+                    (greater, less, j, i, hardness_less)
                 };
 
-                if !pairs.contains(&pair) {
+                if pairs.iter().find(|e: &&(CanonifiedPoset, CanonifiedPoset, u8, u8, u32)| e.0 == pair.0 && e.1 == pair.1).is_none() {
                     pairs.push(pair);
                 }
             }
         }
 
-        pairs.sort_by_key(|pair| pair.2);
+        pairs.sort_by_key(|pair| pair.4);
 
-        pairs.into_iter().map(|(a, b, _)| (a, b)).collect()
+        pairs
+            .into_iter()
+            .map(|(a, b, c, d, _)| (a, b, c, d))
+            .collect()
     }
 
     fn estimate_hardness(poset: &CanonifiedPoset) -> u32 {
