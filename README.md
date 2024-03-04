@@ -56,21 +56,13 @@ I've given the tightest known lower bound and the best known algorithm.
 
 ## Requirements
 
-A Linux based operating system is needed to compile and run the program. In addition you need to install `Rust`[5], `nauty`[6] and `clang`[7]. The more hardware resources e.g. CPU and RAM you have the better.
+Since the project depends on the rust crate nauty, a C compiler able to compile it is required in addition to Rust. 
 
-Since the operating system of choice is `Archlinux` you can install the packages with:
-
-```shell
-# pacman -S clang nauty
-```
-
-to install `Rust` please follow the guide on the **website**[5].
+To install `Rust` please follow the guide on the **website**[5].
 
 The package version used to create the data is
 
 ```shell
-$ uname -a
-Linux froschteich 6.6.1-arch1-1 #1 SMP PREEMPT_DYNAMIC Wed, 08 Nov 2023 16:05:38 +0000 x86_64 GNU/Linux
 $ rustc -V
 rustc 1.77.0-nightly (6ae4cfbbb 2024-01-17)
 $ pacman -Q nauty
@@ -78,8 +70,6 @@ nauty 1:2.8.8-2
 $ pacman -Q clang
 clang 16.0.6-1
 ```
-
-For other operating systems please follow the appropriate instructions to get the required packages.
 
 ## Quick start
 
