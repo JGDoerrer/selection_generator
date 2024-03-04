@@ -150,7 +150,7 @@ fn start_search_backward(
     if USE_CHECKS {
       let start_check = std::time::Instant::now();
       let _: Vec<()> = destination
-        .par_iter()
+        .iter()
         .map(|predecessor| {
           if SearchResult::NoSolution
             != search_recursive(
@@ -233,7 +233,7 @@ pub fn main() {
   let interrupt = Arc::new(AtomicBool::new(false));
 
   if false {
-    single(&interrupt, 10, 4);
+    single(&interrupt, 9, 4);
   } else if true {
     for n in 2..MAX_N as u8 {
       for i in 0..((n + 1) / 2) {
