@@ -1,3 +1,28 @@
 /target
 cache*.dat
 /algorithms
+*.out
+*.o
+/sol
+.vscode
+target
+nauty2_8_8
+todo.md
+build
+
+
+# TeX
+## article
+*.log
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.pdf
+*.gz
+
+## presentation
+*.nav
+*.snm
+*.toc
