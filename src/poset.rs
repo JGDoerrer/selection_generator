@@ -679,10 +679,21 @@ impl Poset {
       }
     }
 
-    let mut temp_destination = self.remove_less(poset_cache);
+    let mut temp_set_level: [[(HashSet<(Poset, (u8, u8))>, HashSet<(Poset, (u8, u8))>); MAX_N];
+      MAX_N] = Default::default();
+    for n0 in 0..MAX_N {
+      for i0 in 0..MAX_N {
+        temp_set_level[n0][i0] = (HashSet::new(), HashSet::new());
+      }
+    }
+
+    let mut removed = self.remove_less(poset_cache);
     for it in enlarged {
-      for zu in it.remove_less(poset_cache) {
-        temp_destination.insert(zu);
+      for (qt, old_indices) in it.remove_less(poset_cache) {
+        removed.insert((qt.clone(), old_indices));
+        temp_set_level[qt.n as usize][qt.i as usize]
+          .0
+          .insert((qt.clone(), old_indices));
       }
 
       if interrupt.load(Ordering::Relaxed) {
@@ -690,73 +701,64 @@ impl Poset {
       }
     }
 
-    let mut temp_destination_normed = HashSet::new();
-    let mut to_test: HashSet<(Poset, (u8, u8))> = HashSet::new();
-    for (qt, old_indices) in &temp_destination {
-      let mut temp_set_level: [HashSet<(Poset, (u8, u8))>; MAX_N] = Default::default();
-      let mut temp_set_next: [HashSet<(Poset, (u8, u8))>; MAX_N] = Default::default();
-      for i0 in 0..MAX_N {
-        temp_set_level[i0] = HashSet::new();
-        temp_set_next[i0] = HashSet::new();
-      }
+    for n0 in 1..n {
+      for i0 in 0..=i {
+        for (item, indices) in &temp_set_level[n0 as usize][i0 as usize].0.clone() {
+          let mut super_enlarged: HashSet<(Poset, (u8, u8))> = HashSet::new();
+          if table[n0 as usize + 1][i0 as usize] {
+            item.super_enlarge_n(*indices, &mut super_enlarged);
+          }
 
-      temp_set_level[qt.i as usize].insert((qt.clone(), *old_indices));
+          let condition = 2 * (i0 + 1) < n0 + 1;
+          if (condition && table[n0 as usize + 1][i0 as usize + 1])
+            || (!condition && i0 < n0 && table[n0 as usize + 1][n0 as usize - i0 as usize - 1])
+          {
+            item.super_enlarge_nk(*indices, &mut super_enlarged);
+          }
 
-      for n0 in (qt.n)..n {
-        for i0 in 0..=i {
-          for (item, indices) in &temp_set_level[i0 as usize] {
-            let mut result1: HashSet<(Poset, (u8, u8))> = HashSet::new();
-            if table[n0 as usize + 1][i0 as usize] {
-              item.super_enlarge_n(*indices, &mut result1);
-            }
+          for (itq, new_indices) in super_enlarged {
+            debug_assert_eq!(
+              itq.with_less_normalized(new_indices.0, new_indices.1),
+              *self
+            );
 
-            let condition = 2 * (i0 + 1) < n0 + 1;
-            if (condition && table[n0 as usize + 1][i0 as usize + 1])
-              || (!condition && i0 < n0 && table[n0 as usize + 1][n0 as usize - i0 as usize - 1])
+            if temp_set_level[itq.n as usize][itq.i as usize]
+              .0
+              .contains(&(itq.clone(), new_indices))
+              || temp_set_level[itq.n as usize][itq.i as usize]
+                .1
+                .contains(&(itq.clone(), new_indices))
             {
-              item.super_enlarge_nk(*indices, &mut result1);
+              continue;
             }
 
-            for (itq, new_indices) in result1 {
-              debug_assert_eq!(
-                itq.with_less_normalized(new_indices.0, new_indices.1),
-                *self
-              );
-
-              to_test.insert((itq.clone(), new_indices));
-              temp_set_next[itq.i as usize].insert((itq, new_indices));
+            if poset_cache.contains(&itq.with_less_normalized(new_indices.1, new_indices.0)) {
+              removed.insert((itq.clone(), new_indices));
+              temp_set_level[itq.n as usize][itq.i as usize]
+                .0
+                .insert((itq, new_indices));
+            } else {
+              temp_set_level[itq.n as usize][itq.i as usize]
+                .1
+                .insert((itq, new_indices));
             }
           }
         }
+      }
 
-        if interrupt.load(Ordering::Relaxed) {
-          return HashSet::new();
-        }
-
-        for i0 in 0..MAX_N {
-          swap(&mut temp_set_level[i0], &mut temp_set_next[i0]);
-          temp_set_next[i0].clear();
-        }
+      if interrupt.load(Ordering::Relaxed) {
+        return HashSet::new();
       }
     }
 
-    for (itq, new_indices) in temp_destination {
-      if !poset_cache.contains(&itq)
-        && poset_cache.contains(&itq.with_less_normalized(new_indices.1, new_indices.0))
-      {
-        temp_destination_normed.insert(itq);
+    let mut result = HashSet::new();
+    for (item, _) in removed {
+      if !poset_cache.contains(&item) {
+        result.insert(item);
       }
     }
 
-    for (itq, new_indices) in to_test {
-      if !poset_cache.contains(&itq)
-        && poset_cache.contains(&itq.with_less_normalized(new_indices.1, new_indices.0))
-      {
-        temp_destination_normed.insert(itq);
-      }
-    }
-
-    temp_destination_normed
+    result
   }
 
   pub fn remove_less(&self, poset_cache: &HashSet<Poset>) -> HashSet<(Poset, (u8, u8))> {

@@ -103,7 +103,7 @@ fn search_recursive(
   result
 }
 
-const USE_CHECKS: bool = true;
+const USE_CHECKS: bool = false;
 
 fn start_search_backward(
   interrupt: &Arc<AtomicBool>,
