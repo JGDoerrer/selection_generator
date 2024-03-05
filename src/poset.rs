@@ -1,7 +1,6 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt;
 use std::hash::{Hash, Hasher};
-use std::mem::swap;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
@@ -639,6 +638,28 @@ impl Poset {
     result
   }
 
+  #[inline(always)]
+  fn fun_name(
+    temp_set_level: &mut (HashSet<(Poset, (u8, u8))>, HashSet<(Poset, (u8, u8))>),
+    itq: Poset,
+    old_indices: (u8, u8),
+    poset_cache: &HashSet<Poset>,
+    removed: &mut HashSet<(Poset, (u8, u8))>,
+  ) {
+    if temp_set_level.0.contains(&(itq.clone(), old_indices))
+      || temp_set_level.1.contains(&(itq.clone(), old_indices))
+    {
+      return;
+    }
+
+    if poset_cache.contains(&itq.with_less_normalized(old_indices.1, old_indices.0)) {
+      removed.insert((itq.clone(), old_indices));
+      temp_set_level.0.insert((itq, old_indices));
+    } else {
+      temp_set_level.1.insert((itq, old_indices));
+    }
+  }
+
   #[allow(clippy::too_many_lines)]
   pub fn enlarge_and_remove_less(
     &self,
@@ -653,7 +674,7 @@ impl Poset {
 
     if self.n == n && self.i == i {
       let mut result = HashSet::new();
-      for (item, (i, j)) in self.remove_less() {
+      for (item, (i, j)) in self.remove_less(None) {
         if !poset_cache.contains(&item) && poset_cache.contains(&item.with_less_normalized(j, i)) {
           result.insert(item);
         }
@@ -663,7 +684,7 @@ impl Poset {
 
     let mut enlarged = HashSet::new();
     if table[self.n as usize + 1][self.i as usize] {
-      self.enlarge_n(interrupt, &mut enlarged, false);
+      self.enlarge_n(interrupt, &mut enlarged);
       if interrupt.load(Ordering::Relaxed) {
         return HashSet::new();
       }
@@ -673,7 +694,7 @@ impl Poset {
     if (condition && table[self.n as usize + 1][self.i as usize + 1])
       || (!condition && table[self.n as usize + 1][self.n as usize - self.i as usize - 1])
     {
-      self.enlarge_nk(interrupt, &mut enlarged, false);
+      self.enlarge_nk(interrupt, &mut enlarged);
       if interrupt.load(Ordering::Relaxed) {
         return HashSet::new();
       }
@@ -687,30 +708,31 @@ impl Poset {
       }
     }
 
-    let mut removed = HashSet::new();
-    enlarged.insert(self.clone());
-    for it in enlarged {
-      for (itq, old_indices) in it.remove_less() {
-        if temp_set_level[itq.n as usize][itq.i as usize]
-          .0
-          .contains(&(itq.clone(), old_indices))
-          || temp_set_level[itq.n as usize][itq.i as usize]
-            .1
-            .contains(&(itq.clone(), old_indices))
-        {
-          continue;
-        }
+    let mut enlarged_canonifed: HashMap<Poset, u8> = HashMap::new();
+    for mut item in enlarged {
+      let new_ind = item.canonify_transform((item.n() - 1, item.n() - 1)).0;
+      enlarged_canonifed.insert(item, new_ind);
+    }
 
-        if poset_cache.contains(&itq.with_less_normalized(old_indices.1, old_indices.0)) {
-          removed.insert((itq.clone(), old_indices));
-          temp_set_level[itq.n as usize][itq.i as usize]
-            .0
-            .insert((itq, old_indices));
-        } else {
-          temp_set_level[itq.n as usize][itq.i as usize]
-            .1
-            .insert((itq, old_indices));
-        }
+    let mut removed = HashSet::new();
+    for (itq, old_indices) in self.remove_less(None) {
+      Self::fun_name(
+        &mut temp_set_level[itq.n as usize][itq.i as usize],
+        itq,
+        old_indices,
+        poset_cache,
+        &mut removed,
+      );
+    }
+    for (it, num) in enlarged_canonifed {
+      for (itq, old_indices) in it.remove_less(Some(num)) {
+        Self::fun_name(
+          &mut temp_set_level[itq.n as usize][itq.i as usize],
+          itq,
+          old_indices,
+          poset_cache,
+          &mut removed,
+        );
       }
 
       if interrupt.load(Ordering::Relaxed) {
@@ -739,26 +761,13 @@ impl Poset {
               *self
             );
 
-            if temp_set_level[itq.n as usize][itq.i as usize]
-              .0
-              .contains(&(itq.clone(), new_indices))
-              || temp_set_level[itq.n as usize][itq.i as usize]
-                .1
-                .contains(&(itq.clone(), new_indices))
-            {
-              continue;
-            }
-
-            if poset_cache.contains(&itq.with_less_normalized(new_indices.1, new_indices.0)) {
-              removed.insert((itq.clone(), new_indices));
-              temp_set_level[itq.n as usize][itq.i as usize]
-                .0
-                .insert((itq, new_indices));
-            } else {
-              temp_set_level[itq.n as usize][itq.i as usize]
-                .1
-                .insert((itq, new_indices));
-            }
+            Self::fun_name(
+              &mut temp_set_level[itq.n as usize][itq.i as usize],
+              itq,
+              new_indices,
+              poset_cache,
+              &mut removed,
+            );
           }
         }
       }
@@ -778,7 +787,7 @@ impl Poset {
     result
   }
 
-  pub fn remove_less(&self) -> HashSet<(Poset, (u8, u8))> {
+  pub fn remove_less(&self, only_last: Option<u8>) -> HashSet<(Poset, (u8, u8))> {
     // // precondition
     // debug_assert!(self.i < self.n);
     // debug_assert!((self.n as usize) < MAX_N);
@@ -788,6 +797,12 @@ impl Poset {
     let mut result = HashSet::new();
     for i in 0..self.n {
       for j in 0..self.n {
+        if let Some(value) = only_last {
+          if i != value && j != value {
+            continue;
+          }
+        }
+
         if !self.is_less(i, j) || self.is_redundant(i, j) {
           continue;
         }
@@ -970,12 +985,7 @@ impl Poset {
     }
   }
 
-  fn enlarge_n(
-    &self,
-    interrupt: &Arc<AtomicBool>,
-    result: &mut HashSet<Poset>,
-    should_not_canonify: bool,
-  ) {
+  fn enlarge_n(&self, interrupt: &Arc<AtomicBool>, result: &mut HashSet<Poset>) {
     let mut temp = Poset::new(self.n + 1, self.i);
     for i in 0..self.n {
       for j in 0..self.n {
@@ -983,7 +993,6 @@ impl Poset {
       }
     }
 
-    let mut unfiltered = HashSet::new();
     let mut swap_init = VecDeque::new();
     swap_init.push_back((temp, -1));
     while let Some((poset, number)) = swap_init.pop_back() {
@@ -992,20 +1001,13 @@ impl Poset {
           let new_poset = poset.with_less(k, poset.n - 1);
           swap_init.push_back((new_poset.clone(), k as i32));
           if new_poset.can_reduce_element_greater(new_poset.n - 1) {
-            unfiltered.insert(new_poset);
+            result.insert(new_poset);
           }
         }
       }
       if interrupt.load(Ordering::Relaxed) {
         return;
       }
-    }
-
-    for mut item in unfiltered {
-      if !should_not_canonify {
-        item.canonify();
-      }
-      result.insert(item);
     }
   }
 
@@ -1066,12 +1068,7 @@ impl Poset {
     }
   }
 
-  fn enlarge_nk(
-    &self,
-    interrupt: &Arc<AtomicBool>,
-    result: &mut HashSet<Poset>,
-    should_not_canonify: bool,
-  ) {
+  fn enlarge_nk(&self, interrupt: &Arc<AtomicBool>, result: &mut HashSet<Poset>) {
     let mut temp = Poset::new(self.n + 1, self.i + 1);
     for i in 0..self.n {
       for j in 0..self.n {
@@ -1079,7 +1076,6 @@ impl Poset {
       }
     }
 
-    let mut unfiltered = HashSet::new();
     let mut swap_init = VecDeque::new();
     swap_init.push_back((temp, -1));
     while let Some((poset, number)) = swap_init.pop_back() {
@@ -1088,20 +1084,13 @@ impl Poset {
           let new_poset = poset.with_less(poset.n - 1, k);
           swap_init.push_back((new_poset.clone(), k as i32));
           if new_poset.can_reduce_element_less(new_poset.n - 1) {
-            unfiltered.insert(new_poset);
+            result.insert(new_poset);
           }
         }
       }
       if interrupt.load(Ordering::Relaxed) {
         return;
       }
-    }
-
-    for mut item in unfiltered {
-      if !should_not_canonify {
-        item.canonify();
-      }
-      result.insert(item);
     }
   }
 
