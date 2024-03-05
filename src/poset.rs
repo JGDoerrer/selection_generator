@@ -653,8 +653,8 @@ impl Poset {
 
     if self.n == n && self.i == i {
       let mut result = HashSet::new();
-      for (item, _) in self.remove_less(poset_cache) {
-        if !poset_cache.contains(&item) {
+      for (item, (i, j)) in self.remove_less() {
+        if !poset_cache.contains(&item) && poset_cache.contains(&item.with_less_normalized(j, i)) {
           result.insert(item);
         }
       }
@@ -687,13 +687,30 @@ impl Poset {
       }
     }
 
-    let mut removed = self.remove_less(poset_cache);
+    let mut removed = HashSet::new();
+    enlarged.insert(self.clone());
     for it in enlarged {
-      for (qt, old_indices) in it.remove_less(poset_cache) {
-        removed.insert((qt.clone(), old_indices));
-        temp_set_level[qt.n as usize][qt.i as usize]
+      for (itq, old_indices) in it.remove_less() {
+        if temp_set_level[itq.n as usize][itq.i as usize]
           .0
-          .insert((qt.clone(), old_indices));
+          .contains(&(itq.clone(), old_indices))
+          || temp_set_level[itq.n as usize][itq.i as usize]
+            .1
+            .contains(&(itq.clone(), old_indices))
+        {
+          continue;
+        }
+
+        if poset_cache.contains(&itq.with_less_normalized(old_indices.1, old_indices.0)) {
+          removed.insert((itq.clone(), old_indices));
+          temp_set_level[itq.n as usize][itq.i as usize]
+            .0
+            .insert((itq, old_indices));
+        } else {
+          temp_set_level[itq.n as usize][itq.i as usize]
+            .1
+            .insert((itq, old_indices));
+        }
       }
 
       if interrupt.load(Ordering::Relaxed) {
@@ -761,7 +778,7 @@ impl Poset {
     result
   }
 
-  pub fn remove_less(&self, poset_cache: &HashSet<Poset>) -> HashSet<(Poset, (u8, u8))> {
+  pub fn remove_less(&self) -> HashSet<(Poset, (u8, u8))> {
     // // precondition
     // debug_assert!(self.i < self.n);
     // debug_assert!((self.n as usize) < MAX_N);
@@ -777,10 +794,6 @@ impl Poset {
 
         let mut poset_initial = self.clone();
         poset_initial.set_less(i, j, false);
-
-        if !poset_cache.contains(&poset_initial.with_less_normalized(j, i)) {
-          continue;
-        }
 
         result.insert((poset_initial.clone(), i, j));
 
@@ -799,9 +812,7 @@ impl Poset {
               let mut poset_next = poset.clone();
               poset_next.set_less(i1, j1, false);
 
-              if result.contains(&(poset_next.clone(), i, j))
-                || *self != poset_next.with_less(i, j)
-                || !poset_cache.contains(&poset_next.with_less_normalized(j, i))
+              if result.contains(&(poset_next.clone(), i, j)) || *self != poset_next.with_less(i, j)
               {
                 continue;
               }
