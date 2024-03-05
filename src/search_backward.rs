@@ -5,6 +5,7 @@ use std::sync::{Arc, RwLock};
 use std::time::Duration;
 use std::vec;
 
+use global_counter::primitive::exact::CounterUsize;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use super::cache_tree::{CacheTreeNotSolvable, CacheTreeSolvable};
@@ -104,6 +105,9 @@ fn search_recursive(
 }
 
 const USE_CHECKS: bool = true;
+
+pub static COUTNER_USE_NOT_NAUTY: CounterUsize = CounterUsize::new(0);
+pub static COUTNER_USE_NAUTY: CounterUsize = CounterUsize::new(0);
 
 fn start_search_backward(
   interrupt: &Arc<AtomicBool>,
@@ -205,9 +209,14 @@ fn start_search_backward(
 }
 
 fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) {
+  COUTNER_USE_NOT_NAUTY.set(0);
+  COUTNER_USE_NAUTY.set(0);
   let start = std::time::Instant::now();
   let (comparisons, check_time) = start_search_backward(interrupt, Poset::new(1, 0), n, i, n * n);
   let end = start.elapsed() - check_time;
+  let ratio = 100.0 * COUTNER_USE_NAUTY.get() as f64
+    / (COUTNER_USE_NAUTY.get() as f64 + COUTNER_USE_NOT_NAUTY.get() as f64);
+  println!("nauty ratio: {ratio:.3?}%");
 
   if let Some(comparisons) = comparisons {
     if USE_CHECKS {

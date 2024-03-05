@@ -1,11 +1,11 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt;
 use std::hash::{Hash, Hasher};
-use std::sync::atomic::AtomicBool;
-use std::sync::atomic::Ordering;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
-use crate::util::{MAX_N, ONLY_NAUTY_CANONIFY};
+use crate::search_backward;
+use crate::util::MAX_N;
 
 use const_for::const_for;
 use std::os::raw::c_int;
@@ -358,6 +358,15 @@ impl Poset {
     }
   }
 
+  fn can_be_swapped(&self, i: u8, j: u8) -> bool {
+    for k in 0..self.n {
+      if self.is_less(i, k) != self.is_less(j, k) || self.is_less(k, i) != self.is_less(k, j) {
+        return false;
+      }
+    }
+    true
+  }
+
   fn dual(&mut self, indicies: (u8, u8)) -> (u8, u8) {
     self.i = (self.n - 1) - self.i;
     for i in 0..self.n {
@@ -454,70 +463,61 @@ impl Poset {
     debug_assert!((self.n as usize) < MAX_N);
     // debug_assert!(self.is_closed());
 
-    let old_poset = self.clone();
-    let mut new_indices: Vec<u8>;
+    let (less, greater) = self.calculate_relations();
 
-    if ONLY_NAUTY_CANONIFY {
-      new_indices = self.canonify_nauty_indicies();
-    } else {
-      // TODO: sometimes FALSE
-      let (less, greater) = self.calculate_relations();
+    let mut in_out_degree = [0u64; MAX_N];
+    for i in 0..self.n as usize {
+      in_out_degree[i] = (MAX_N as u64) * (greater[i] as u64) + (less[i] as u64);
+    }
 
-      let mut in_out_degree = [0u64; MAX_N];
+    let mut hash = in_out_degree;
+    for _ in 0..2 {
+      let mut sum_hash = [0; MAX_N];
+
+      for i in 0..self.n {
+        let mut sum = hash[i as usize];
+
+        for j in 0..self.n {
+          if i != j && (self.is_less(i, j) || self.is_less(j, i)) {
+            sum += hash[j as usize];
+          }
+        }
+
+        sum_hash[i as usize] = sum;
+      }
+
       for i in 0..self.n as usize {
-        in_out_degree[i] = (MAX_N as u64) * (greater[i] as u64) + (less[i] as u64);
-      }
-
-      let mut hash = in_out_degree.clone();
-      for _ in 0..2 {
-        let mut sum_hash = [0; MAX_N];
-
-        for i in 0..self.n {
-          let mut sum = hash[i as usize];
-
-          for j in 0..self.n {
-            if i != j && (self.is_less(i, j) || self.is_less(j, i)) {
-              sum ^= hash[j as usize]; // TODO: `sum += hash[j as usize]` is faster ...
-            }
-          }
-
-          sum_hash[i as usize] = sum;
-        }
-
-        for i in 0..self.n as usize {
-          hash[i] = sum_hash[i] * (MAX_N as u64 * MAX_N as u64) + in_out_degree[i];
-        }
-      }
-
-      let cmpr = |&a: &u8, &b: &u8| {
-        in_out_degree[a as usize]
-          .cmp(&in_out_degree[b as usize])
-          .then_with(|| hash[a as usize].cmp(&hash[b as usize]))
-      };
-
-      new_indices = (0..self.n).collect();
-      new_indices.sort_by(cmpr);
-
-      let mut is_unique = true;
-      for i in 1..self.n {
-        if in_out_degree[new_indices[(i - 1) as usize] as usize]
-          == in_out_degree[new_indices[i as usize] as usize]
-          && hash[new_indices[(i - 1) as usize] as usize] == hash[new_indices[i as usize] as usize]
-        {
-          self.swap(new_indices[(i - 1) as usize], new_indices[i as usize]);
-          if *self != old_poset {
-            is_unique = false;
-            break;
-          }
-        }
-      }
-
-      if !is_unique {
-        new_indices = self.canonify_nauty_indicies();
-        new_indices.sort_by(cmpr);
+        hash[i] = sum_hash[i] * (MAX_N as u64 * MAX_N as u64) + in_out_degree[i];
       }
     }
 
+    let cmpr = |&a: &u8, &b: &u8| {
+      in_out_degree[a as usize]
+        .cmp(&in_out_degree[b as usize])
+        .then_with(|| hash[a as usize].cmp(&hash[b as usize]))
+    };
+
+    let mut new_indices: Vec<u8> = (0..self.n).collect();
+    new_indices.sort_by(cmpr);
+
+    let mut is_unique = true;
+    for i in 1..self.n {
+      if std::cmp::Ordering::is_eq(cmpr(&new_indices[i as usize - 1], &new_indices[i as usize]))
+        && !self.can_be_swapped(new_indices[i as usize - 1], new_indices[i as usize])
+      {
+        is_unique = false;
+        break;
+      }
+    }
+
+    if is_unique {
+      search_backward::COUTNER_USE_NOT_NAUTY.inc();
+    } else {
+      new_indices = self.canonify_nauty_indicies();
+      search_backward::COUTNER_USE_NAUTY.inc();
+    }
+
+    let old_poset = self.clone();
     for i in 0..self.n {
       for j in 0..self.n {
         self.set_less(
@@ -528,11 +528,16 @@ impl Poset {
       }
     }
 
-    let mut label = vec![0u8; self.n as usize];
+    // TODO: gib immer kleinsten zurück
+    let mut transformed: (u8, u8) = (0, 0);
     for i in 0..self.n as usize {
-      label[new_indices[i] as usize] = i as u8;
+      if new_indices[i] == indicies.0 {
+        transformed.0 = i as u8;
+      }
+      if new_indices[i] == indicies.1 {
+        transformed.1 = i as u8;
+      }
     }
-    let transformed = (label[indicies.0 as usize], label[indicies.1 as usize]);
 
     // postcondition
     // debug_assert!(2 * self.i < self.n);
