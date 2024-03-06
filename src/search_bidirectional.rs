@@ -39,32 +39,32 @@ fn start_search_backward(
     let results: Vec<_> = source
       .par_iter()
       .map(|item| {
-        item.enlarge_and_remove_less(
-          interrupt,
-          &backward_search_state
-            .read()
-            .expect("cache shouldn't be poisoned")
-            .0,
-          &table,
-          n,
-          i0,
-        )
+        if interrupt.load(Ordering::Relaxed) {
+          HashSet::new()
+        } else {
+          item.enlarge_and_remove_less(
+            interrupt,
+            &backward_search_state
+              .read()
+              .expect("cache shouldn't be poisoned")
+              .0,
+            &table,
+            n,
+            i0,
+          )
+        }
       })
       .collect();
 
     let mut destination: HashSet<Poset> = HashSet::new();
     for item in results {
-      for poset in item {
-        destination.insert(poset);
-      }
+      destination.extend(item);
     }
     {
       let mut write_lock = backward_search_state
         .write()
         .expect("cache shouldn't be poisoned");
-      for predecessor in &destination {
-        write_lock.0.insert(predecessor.clone());
-      }
+      write_lock.0.extend(destination.clone());
       write_lock.1 = k as i8;
     }
 
