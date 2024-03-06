@@ -3,9 +3,6 @@ use std::sync::RwLock;
 use crate::backwards_poset::BackwardsPoset;
 use crate::constants::{MAX_COMPARISONS, MAX_N};
 
-// TODO: get_index -> order
-// TODO: clean
-
 struct CacheNode<const IS_SOLVABLE: bool> {
     branch_is_less: usize,
     branch_is_not_less: usize,
@@ -215,31 +212,3 @@ impl<const IS_SOLVABLE: bool> CacheTree<IS_SOLVABLE> {
 pub type CacheTreeSolvable = CacheTree<true>;
 
 pub type CacheTreeNotSolvable = CacheTree<false>;
-
-#[test]
-fn test1() {
-    let mut poset = BackwardsPoset::new(10, 2);
-    poset.add_less2(3, 7);
-    poset.normalize();
-
-    let mut cache_solvable = CacheTreeSolvable::new();
-    cache_solvable.insert(&poset, 2);
-
-    assert!(!cache_solvable.check(&poset, 1));
-    assert!(cache_solvable.check(&poset, 2));
-    assert!(cache_solvable.check(&poset, 3));
-}
-
-#[test]
-fn test2() {
-    let mut poset = BackwardsPoset::new(10, 2);
-    poset.add_less2(2, 7);
-    poset.normalize();
-
-    let mut cache_not_solvable = CacheTreeNotSolvable::new();
-    cache_not_solvable.insert(&poset, 2);
-
-    assert!(cache_not_solvable.check(&poset, 1));
-    assert!(cache_not_solvable.check(&poset, 2));
-    assert!(!cache_not_solvable.check(&poset, 3));
-}

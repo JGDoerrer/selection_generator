@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use std::fmt::{self, Display};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicI8, Ordering};
 use std::sync::{Arc, RwLock};
 use std::time::Duration;
 use std::time::Instant;
@@ -39,32 +39,32 @@ fn start_search_backward(
         let results: Vec<_> = source
             .par_iter()
             .map(|item| {
-                item.enlarge_and_remove_less(
-                    interrupt,
-                    &backward_search_state
-                        .read()
-                        .expect("cache shouldn't be poisoned")
-                        .0,
-                    &table,
-                    n,
-                    i0,
-                )
+                if interrupt.load(Ordering::Relaxed) {
+                    HashSet::new()
+                } else {
+                    item.enlarge_and_remove_less(
+                        interrupt,
+                        &backward_search_state
+                            .read()
+                            .expect("cache shouldn't be poisoned")
+                            .0,
+                        &table,
+                        n,
+                        i0,
+                    )
+                }
             })
             .collect();
 
         let mut destination: HashSet<BackwardsPoset> = HashSet::new();
         for item in results {
-            for poset in item {
-                destination.insert(poset);
-            }
+            destination.extend(item);
         }
         {
             let mut write_lock = backward_search_state
                 .write()
                 .expect("cache shouldn't be poisoned");
-            for predecessor in &destination {
-                write_lock.0.insert(predecessor.clone());
-            }
+            write_lock.0.extend(destination.clone());
             write_lock.1 = k as i8;
         }
 
@@ -156,7 +156,7 @@ fn search_recursive(
     let mut result = SearchResult::NoSolution;
     statistics.brute_force += 1;
 
-    let (less, greater) = poset.calculate_relations2();
+    let (less, greater) = poset.calculate_relations();
 
     let cmp = |a: &(u8, u8), b: &(u8, u8)| {
         (greater[b.0 as usize] + less[b.1 as usize])
@@ -229,12 +229,12 @@ fn start_search_now(
         print!("# search with Pair-Optimisation & maxComparisons = {max_comparisons}");
         for k in (0..n - 1).step_by(2) {
             comparisons_done += 1;
-            poset.add_less2(k, k + 1);
+            poset.add_less(k, k + 1);
         }
     } else {
         print!("# search with maxComparisons = {max_comparisons}");
         comparisons_done += 1;
-        poset.add_less2(0, 1);
+        poset.add_less(0, 1);
     }
     poset.normalize();
 
@@ -361,9 +361,11 @@ pub fn main() {
 
             let backward_search_state = Arc::new(RwLock::new((HashSet::new(), -1)));
             let interrupt = Arc::new(AtomicBool::new(false));
+            let dyn_level = Arc::new(AtomicI8::new(-1));
             let handle = {
                 let backward_search_state_local = backward_search_state.clone();
                 let interrupt_local = interrupt.clone();
+                let dyn_level_local = dyn_level.clone();
                 thread::spawn(move || {
                     start_search_backward(
                         &interrupt_local,

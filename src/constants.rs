@@ -1,6 +1,3 @@
-pub const ONLY_NAUTY_CANONIFY: bool = true;
-pub const OPTIMISE_BACKWARD_WRONG: bool = false;
-
 pub const MAX_COMPARISONS: usize = 25;
 pub const MAX_N: usize = 15;
 

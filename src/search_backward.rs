@@ -27,18 +27,20 @@ fn start_search_backward(
         let start = std::time::Instant::now();
         let results: Vec<_> = source
             .par_iter()
-            .map(|item| item.enlarge_and_remove_less(interrupt, &poset_cache, &table, n, i0))
+            .map(|item| {
+                if interrupt.load(Ordering::Relaxed) {
+                    HashSet::new()
+                } else {
+                    item.enlarge_and_remove_less(interrupt, &poset_cache, &table, n, i0)
+                }
+            })
             .collect();
 
         let mut destination: HashSet<BackwardsPoset> = HashSet::new();
         for item in results {
-            for poset in item {
-                destination.insert(poset);
-            }
+            destination.extend(item);
         }
-        for predecessor in &destination {
-            poset_cache.insert(predecessor.clone());
-        }
+        poset_cache.extend(destination.clone());
 
         println!(
             "# {k}: {} => {} in {:.3?} | total cached: {}",
