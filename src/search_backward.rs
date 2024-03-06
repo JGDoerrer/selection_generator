@@ -109,25 +109,20 @@ const USE_CHECKS: bool = true;
 pub static COUTNER_USE_NOT_NAUTY: CounterUsize = CounterUsize::new(0);
 pub static COUTNER_USE_NAUTY: CounterUsize = CounterUsize::new(0);
 
+#[allow(clippy::too_many_lines)]
 fn start_search_backward(
   interrupt: &Arc<AtomicBool>,
+  cache_solvable: &Arc<RwLock<CacheSolvable>>,
+  cache_not_solvable: &Arc<RwLock<CacheNotSolvable>>,
   start_poset: Poset,
   n: u8,
   i0: u8,
   max_comparisons: u8,
 ) -> (Option<u8>, Duration) {
-  let cache_solvable = Arc::new(RwLock::new(CacheSolvable::new()));
-  let cache_not_solvable = Arc::new(RwLock::new(CacheNotSolvable::new()));
-  cache_solvable
-    .write()
-    .expect("")
-    .insert(&Poset::new(1, 0), 0);
-
-  let mut poset_cache = HashSet::new();
-  poset_cache.insert(start_poset.clone());
-
   let mut source = HashSet::new();
   source.insert(start_poset);
+
+  let mut poset_cache = source.clone();
 
   let mut table = [[false; MAX_N]; MAX_N];
   Poset::rec_temp(&mut table, n as usize, i0 as usize);
@@ -158,33 +153,36 @@ fn start_search_backward(
       let _: Vec<()> = destination
         .iter()
         .map(|predecessor| {
-          if SearchResult::NoSolution
-            != search_recursive(
+          assert_eq!(
+            SearchResult::NoSolution,
+            search_recursive(
               predecessor,
               &mut cache_solvable.write().expect(""),
               &mut cache_not_solvable.write().expect(""),
               k - 1,
-            )
-          {
-            dbg!(predecessor, k - 1);
-            panic!();
-          }
-          if SearchResult::FoundSolution
-            != search_recursive(
+            ),
+            "{predecessor} {}",
+            k - 1
+          );
+        })
+        .collect();
+      let _: Vec<()> = destination
+        .iter()
+        .map(|predecessor| {
+          assert_eq!(
+            SearchResult::FoundSolution,
+            search_recursive(
               predecessor,
               &mut cache_solvable.write().expect(""),
               &mut cache_not_solvable.write().expect(""),
               k,
-            )
-          {
-            dbg!(predecessor, k);
-            panic!();
-          }
+            ),
+            "{predecessor} {k}"
+          );
         })
         .collect();
       check_time += start_check.elapsed();
     }
-    // dbg!(&source, &destination);
 
     println!(
       "# {k}: {} => {} in {:.3?} | total cached: {}",
@@ -195,6 +193,36 @@ fn start_search_backward(
     );
 
     if destination.contains(&Poset::new(n, i0)) {
+      let mut count = [0; MAX_N];
+      for item in &poset_cache {
+        let mut pairs = 0;
+        for i in 0..item.n() {
+          for j in 0..item.n() {
+            if item.is_less(i, j) {
+              let mut is_pair = true;
+              for k in 0..item.n() {
+                if (k != j && item.is_less(i, k)) || (k != i && item.is_less(k, j)) {
+                  is_pair = false;
+                }
+              }
+              if is_pair {
+                pairs += 1;
+              }
+            }
+          }
+        }
+        count[pairs] += 1;
+      }
+      let mut total = 0;
+      for i in 0..MAX_N {
+        if 0 == count[i] {
+          println!("remaining pairs: {}", poset_cache.len() - total);
+          break;
+        }
+        println!("{i} pairs: {}", count[i]);
+        total += count[i];
+      }
+
       return (Some(k), check_time);
     }
 
@@ -208,65 +236,66 @@ fn start_search_backward(
   (None, check_time)
 }
 
-fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) {
+fn single(
+  interrupt: &Arc<AtomicBool>,
+  cache_solvable: &Arc<RwLock<CacheSolvable>>,
+  cache_not_solvable: &Arc<RwLock<CacheNotSolvable>>,
+  n: u8,
+  i: u8,
+) {
   COUTNER_USE_NOT_NAUTY.set(0);
   COUTNER_USE_NAUTY.set(0);
   let start = std::time::Instant::now();
-  let (comparisons, check_time) = start_search_backward(interrupt, Poset::new(1, 0), n, i, n * n);
+  let (comparisons2, check_time) = start_search_backward(
+    interrupt,
+    cache_solvable,
+    cache_not_solvable,
+    Poset::new(1, 0),
+    n,
+    i,
+    n * n,
+  );
   let end = start.elapsed() - check_time;
   let ratio = 100.0 * COUTNER_USE_NAUTY.get() as f64
     / (COUTNER_USE_NAUTY.get() as f64 + COUTNER_USE_NOT_NAUTY.get() as f64);
   println!("nauty ratio: {ratio:.3?}%");
 
-  if let Some(comparisons) = comparisons {
+  if let Some(comparisons) = comparisons2 {
     if USE_CHECKS {
       println!("time '{end:.3?}' (check-time: {check_time:.3?}): n = {n}, i = {i}, comparisons: {comparisons}");
     } else {
       println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}");
     }
-    if comparisons != KNOWN_MIN_VALUES[n as usize][i as usize] {
-      eprintln!(
-        "Error: got {}, but expected {}",
-        comparisons, KNOWN_MIN_VALUES[n as usize][i as usize]
-      );
-      std::process::exit(0);
-    }
+    assert_eq!(
+      comparisons, KNOWN_MIN_VALUES[n as usize][i as usize],
+      "Error: got {comparisons}, but expected {}",
+      KNOWN_MIN_VALUES[n as usize][i as usize]
+    );
   } else {
-    eprintln!(
+    panic!(
       "Error: got 'nothing' but expected {}",
       KNOWN_MIN_VALUES[n as usize][i as usize]
     );
-    std::process::exit(0);
   }
 }
 
 pub fn main() {
   let interrupt = Arc::new(AtomicBool::new(false));
+  let cache_solvable = Arc::new(RwLock::new(CacheSolvable::new()));
+  let cache_not_solvable = Arc::new(RwLock::new(CacheNotSolvable::new()));
+  cache_solvable
+    .write()
+    .expect("")
+    .insert(&Poset::new(1, 0), 0);
 
   if false {
-    single(&interrupt, 9, 4);
+    single(&interrupt, &cache_solvable, &cache_not_solvable, 9, 4);
   } else if true {
     for n in 2..MAX_N as u8 {
       for i in 0..((n + 1) / 2) {
-        single(&interrupt, n, i);
+        single(&interrupt, &cache_solvable, &cache_not_solvable, n, i);
       }
       println!();
     }
-  } else {
-    let mut a = Poset::new(6, 2);
-    a.add_less(3, 0);
-    a.add_less(4, 1);
-    a.add_less(5, 0);
-    a.add_less(5, 1);
-    a.add_less(5, 2);
-
-    let mut b = a.clone();
-    b.add_less(4, 2);
-
-    dbg!(&a, &b);
-    assert!(a.subset_of(&b));
-
-    // dbg!(a.remove_less(|_| true, false));
-    // dbg!(b.remove_less(|_| true, false));
   }
 }

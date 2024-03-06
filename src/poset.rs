@@ -68,6 +68,25 @@ impl fmt::Debug for Poset {
   }
 }
 
+impl fmt::Display for Poset {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "n = {}, i = {}", self.n, self.i)?;
+
+    for i in 0..self.n {
+      writeln!(f)?;
+      for j in 0..self.n {
+        if self.is_less(i, j) {
+          write!(f, "1 ")?;
+        } else {
+          write!(f, "0 ")?;
+        }
+      }
+    }
+
+    Ok(())
+  }
+}
+
 impl Poset {
   // constructor
   pub fn new(n: u8, i: u8) -> Self {
@@ -530,7 +549,7 @@ impl Poset {
 
     // TODO: gib immer kleinsten zurück
     let mut transformed: (u8, u8) = (0, 0);
-    for i in 0..self.n as usize {
+    for i in 1..self.n as usize {
       if new_indices[i] == indicies.0 {
         transformed.0 = i as u8;
       }
