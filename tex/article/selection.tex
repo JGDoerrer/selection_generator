@@ -172,13 +172,13 @@
 
 % *** MATH PACKAGES ***
 %
-%\usepackage{amsmath}
+\usepackage{amsmath}
 % A popular package from the American Mathematical Society that provides
 % many useful and powerful commands for dealing with mathematics.
 %
 % Note that the amsmath package sets \interdisplaylinepenalty to 10000
 % thus preventing page breaks from occurring within multiline equations. Use:
-%\interdisplaylinepenalty=2500
+\interdisplaylinepenalty=2500
 % after loading amsmath to restore such page breaks as IEEEtran.cls normally
 % does. amsmath.sty is already installed on most LaTeX systems. The latest
 % version and documentation can be obtained at:
@@ -362,6 +362,9 @@
 % (Unless specifically asked to do so by the journal or conference you plan
 % to submit to, of course. )
 
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
 
 % correct bad hyphenation here
 \hyphenation{op-tical net-works semi-conduc-tor}
@@ -669,7 +672,41 @@ Gasarch's.
 \subsection{Bidirectional Search}
 
 \subsection{$\alpha$-$\beta$-pruning}
-\subsection{compatible Posets}
+
+\subsection{Compatible Posets}
+
+Let $P_{n,i}$ be a poset.
+\begin{definition}
+  A poset $R_{n,i}$ is compatible with $P_{n,i}$, if $R_{n,i}$ is solved and $P_{n,i} \subseteq R_{n,i}$.
+  Let $$\mathcal{C}(P_{n,i}) = \{ R_{n,i} \text{ canonical poset } \mid R_{n,i} \text{ compatible with } P_{n,i} \}$$ be the set of all compatible posets of $P$.
+\end{definition}
+
+\begin{lemma}
+  A poset $P_{n,i}$ is solved iff $|\mathcal{C}(P_{n,i})| = 1$.
+
+  $\implies$: trivial
+
+  $\impliedby$: trivial
+\end{lemma}
+
+\begin{lemma}
+  Adding a comparison reduces the number of compatible posets by a factor $\leq 2$.
+
+  Let $R_{n,i} = P_{n,i} + uv$.
+
+  \begin{align*}
+    \mathcal{C}(R_{n,i}) & = \mathcal{C}(P_{n,i}) \cap \{ \text{Posets with } uv \}   \\
+    \mathcal{C}(P_{n,i}) & = \mathcal{C}(P_{n,i} + uv) \cup \mathcal{C}(P_{n,i} + vu) \\
+  \end{align*}
+
+  $$2 \cdot |\mathcal{C}(R_{n,i})| \leq |\mathcal{C}(P_{n,i})|$$
+\end{lemma}
+
+\begin{theorem}
+  A poset $P_{n,i}$ is not solvable in less than $\log_2(|\mathcal{C}(P_{n,i})|)$ comparisons.
+
+
+\end{theorem}
 
 \section{Results}
 \subsection{Search evaluation}
