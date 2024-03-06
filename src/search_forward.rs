@@ -1,5 +1,7 @@
 use std::{
-    collections::HashMap, sync::atomic::{AtomicU64, Ordering}, time::Instant
+    collections::HashMap,
+    sync::atomic::{AtomicU64, Ordering},
+    time::Instant,
 };
 
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
@@ -223,7 +225,7 @@ impl<'a> Search<'a> {
             // if the current pair maximum was worse, the
             // continues above never let this be reached
             best_comparison = (i, j);
-            
+
             current_best = first_result.value().max(second_result.value()) + 1;
 
             self.analytics.inc(depth, 1);
@@ -269,7 +271,13 @@ impl<'a> Search<'a> {
                     (greater, less, j, i, hardness_less)
                 };
 
-                if pairs.iter().find(|e: &&(CanonifiedPoset, CanonifiedPoset, u8, u8, u32)| e.0 == pair.0 && e.1 == pair.1).is_none() {
+                if pairs
+                    .iter()
+                    .find(|e: &&(CanonifiedPoset, CanonifiedPoset, u8, u8, u32)| {
+                        e.0 == pair.0 && e.1 == pair.1
+                    })
+                    .is_none()
+                {
                     pairs.push(pair);
                 }
             }

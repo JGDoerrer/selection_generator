@@ -8,9 +8,9 @@ use std::{thread, vec};
 
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
+use crate::backwards_poset::BackwardsPoset;
 use crate::cache_tree::{CacheTreeNotSolvable, CacheTreeSolvable};
 use crate::constants::{lower_bound, upper_bound, KNOWN_VALUES, MAX_N};
-use crate::backwards_poset::BackwardsPoset;
 
 fn start_search_backward(
     interrupt: &Arc<AtomicBool>,

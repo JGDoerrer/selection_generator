@@ -1040,8 +1040,10 @@ impl BackwardsPoset {
             return destination;
         }
 
-        let mut temp_set_level: [(HashSet<BackwardsPoset>, HashSet<BackwardsPoset>); MAX_N] = Default::default();
-        let mut temp_set_next: [(HashSet<BackwardsPoset>, HashSet<BackwardsPoset>); MAX_N] = Default::default();
+        let mut temp_set_level: [(HashSet<BackwardsPoset>, HashSet<BackwardsPoset>); MAX_N] =
+            Default::default();
+        let mut temp_set_next: [(HashSet<BackwardsPoset>, HashSet<BackwardsPoset>); MAX_N] =
+            Default::default();
         for i0 in 0..MAX_N {
             temp_set_level[i0] = (HashSet::new(), HashSet::new());
             temp_set_next[i0] = (HashSet::new(), HashSet::new());

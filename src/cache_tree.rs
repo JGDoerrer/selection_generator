@@ -1,7 +1,7 @@
 use std::sync::RwLock;
 
-use crate::constants::{MAX_COMPARISONS, MAX_N};
 use crate::backwards_poset::BackwardsPoset;
+use crate::constants::{MAX_COMPARISONS, MAX_N};
 
 // TODO: get_index -> order
 // TODO: clean
@@ -63,7 +63,12 @@ impl<const IS_SOLVABLE: bool> CacheNode<IS_SOLVABLE> {
         }
     }
 
-    fn contains(&self, arena: &Vec<CacheNode<IS_SOLVABLE>>, poset: &BackwardsPoset, index: usize) -> bool {
+    fn contains(
+        &self,
+        arena: &Vec<CacheNode<IS_SOLVABLE>>,
+        poset: &BackwardsPoset,
+        index: usize,
+    ) -> bool {
         self.contains_multi_path(arena, poset, index, true)
     }
 }

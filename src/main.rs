@@ -1,11 +1,17 @@
 use canonified_poset::CanonifiedPoset;
-use clap::{error::{Error, ErrorKind}, ArgAction, Parser};
+use clap::{
+    error::{Error, ErrorKind},
+    ArgAction, Parser,
+};
 use search_backward::single;
 use search_forward::Cost;
 use std::{
-    collections::HashMap, fs::{DirBuilder, OpenOptions}, io::{BufWriter, Write}, str::FromStr, sync::{atomic::AtomicBool, Arc}
+    collections::HashMap,
+    fs::{DirBuilder, OpenOptions},
+    io::{BufWriter, Write},
+    str::FromStr,
+    sync::{atomic::AtomicBool, Arc},
 };
-
 
 use crate::{
     cache::Cache,
@@ -15,19 +21,19 @@ use crate::{
     search_forward::Search,
 };
 
+mod algorithm_test;
+mod backwards_poset;
 mod bitset;
 mod cache;
+mod cache_tree;
 mod canonified_poset;
 mod constants;
 mod normal_poset;
 mod poset;
+mod search_backward;
+mod search_bidirectional;
 mod search_forward;
 mod utils;
-mod algorithm_test;
-mod cache_tree;
-mod search_backward;
-mod backwards_poset;
-mod search_bidirectional;
 
 #[derive(Debug, Clone)]
 pub enum SearchMode {
@@ -44,7 +50,7 @@ impl FromStr for SearchMode {
             "forward" => Ok(SearchMode::Forward),
             "backward" => Ok(SearchMode::Backward),
             "bidirectional" => Ok(SearchMode::Bidirectional),
-            _ => Err(Error::new(ErrorKind::InvalidValue))
+            _ => Err(Error::new(ErrorKind::InvalidValue)),
         }
     }
 }
