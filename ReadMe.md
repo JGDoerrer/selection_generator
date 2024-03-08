@@ -1,99 +1,29 @@
 # Lower Bounds for Selection 13, 14, 15 Elements
-<!-- ## short overview
-| n  | k | bidirection search | forward search (Top to Bottom) | forward search (Bottom to Top) | backward search (multi-threaded) | backward search |
-| -  | - | -       | -       | -       | -       | -        |
-| 10 | 0 | 0.000s  | 0.000s  | 0.000s  | 0.008s  | 0.009s   |
-| 10 | 1 | 0.000s  | 0.000s  | 0.000s  | 0.139s  | 0.372s   |
-| 10 | 2 | 0.000s  | 0.000s  | 0.000s  | 0.760s  | 3.249s   |
-| 10 | 3 | 0.211s  | 0.365s  | 0.445s  | 2.136s  | 11.245s  |
-| 10 | 4 | 0.746s  | 2.449s  | 3.128s  | 3.599s  | 19.716s  |
-| -  | - | -       | -       | -       | -       | -        |
-| 11 | 0 | 0.000s  | 0.000s  | 0.000s  | 0.027s  | 0.033s   |
-| 11 | 1 | 0.000s  | 0.000s  | 0.000s  | 0.841s  | 2.894s   |
-| 11 | 2 | 0.000s  | 0.000s  | 0.000s  | 7.158s  | 40.128s  |
-| 11 | 3 | 2.241s  | 5.490s  | 5.949s  | 31.136s | 177.189s |
-| 11 | 4 | 11.611s | 33.909s | 39.323s | 68.978s | 392.825s |
-| 11 | 5 | 10.978s | 43.906s | 57.046s | 75.315s | 422.529s | -->
-
-## interne Links
-- [Github Repo](https://github.com/JGDoerrer/selection_generator/)
-- [Theoretische Schranken](./doc/theoreticalBounds.md)
-- [Program Output (forward search from Bottom to Top)](./doc/outputForwardSearchBottomTop.md)
-- [Program Output (forward search from Top to Bottom)](./doc/outputForwardSearchTopBottom.md)
-- [Program Output (backward search)](./doc/outputBackwardSearch.md)
-
-## Installation
-- run `sh setup.sh` in the project folder once
-- `make -B forwardSearch`
-- `make -B forwardSearch opt=debug`
-- `make -B backwardSearch`
-- `make -B backwardSearch opt=debug`
+## short overview (Stand: 8.3.24)
+| n  | k | forward search | backward search | bidirection search |
+| -  | - | -         | -         | -         |
+| 10 | 0 | 0s        | 910.834µs | 0s        |
+| 10 | 1 | 0s        | 18.267ms  | 0s        |
+| 10 | 2 | 0s        | 149.528ms | 0s        |
+| 10 | 3 | 244.385ms | 949.857ms | 136.426ms |
+| 10 | 4 | 1.759s    | 3.071s    | 909.580ms |
+| -  | - | -         | -         | -         |
+| 11 | 0 | 0s        | 1.875ms   | 0s        |
+| 11 | 1 | 0s        | 70.571ms  | 0s        |
+| 11 | 2 | 0s        | 1.135s    | 0s        |
+| 11 | 3 | 3.368s    | 11.039s   | 1.716s    |
+| 11 | 4 | 19.037s   | 41.733s   | 8.386s    |
+| 11 | 5 | 15.507s   | 57.641s   | 7.585s    |
+| -  | - | -         | -         | -         |
+| 12 | 0 | 0s        | 3.960ms   | 0s        |
+| 12 | 1 | 0s        | 324.382ms | 0s        |
+| 12 | 2 | 2.453s    | 10.417s   | 2.066s    |
+| 12 | 3 | 11.058s   | 168.505s  | 5.464s    |
+| 12 | 4 | 258.417s  | ?         | 81.013s   |
+| 12 | 5 | 473.053s  | ?         | 189.009s  |
 
 ## Nekton-Server
 im Uni VPN: `ssh [username]@nekton.informatik.uni-stuttgart.de`
-
-## Annahmen
-- keine Duplikate in der Eingabe
-
-## Algorithmus
-Zur Übersichtlichkeit ohne Caching und Multithreading:
-```cpp
-template <size_t maxN>
-SearchResult search(const Poset<maxN> &poset, const uint8_t remainingComparisons) {
-  SearchResult result = NoSolution;
-  if (poset.canDetermineNSmallest()) {
-    result = FoundSolution;
-  } else if (0 != remainingComparisons) {
-    for (int i = 0; i < poset.size() && result != FoundSolution; ++i) {
-      for (int j = i + 1; j < poset.size() && result != FoundSolution; ++j) {
-        if (!poset.is(i, j) && !poset.is(j, i)) {
-          result = search(createPosetWithComparison(poset, i, j), remainingComparisons - 1);
-          if (result == FoundSolution) {
-            result = search(createPosetWithComparison(poset, j, i), remainingComparisons - 1);
-          }
-        }
-      }
-    }
-  }
-  return result;
-}
-
-template <size_t maxN>
-std::optional<int> startSearch(const int n, const int nthSmallest) {
-  // Der Fall `0 == nthSmallest` ist bereits bekannt
-  if (0 == nthSmallest || n <= 2) {
-    return n - 1;
-  }
-
-  // `maxDepth` gibt die maximale Suchtiefe an. Diese wird, solange kein Ergebnis gefunden wurde, iterativ erhöht
-  for (int maxDepth = n - 1; maxDepth < n * n; ++maxDepth) {
-    int comparisonsDone = 0;
-    Poset<maxN> poset{n, nthSmallest};  // erstelle ein leeres Poset
-    for (int k = 0; k < n - 1 && comparisonsDone < maxDepth; k += 2) {
-      poset.addComparison(k, k + 1);  // bilde inital Paar und vergleiche diese
-      ++comparisonsDone;  // reduziere unsere maximale Suchtiefe, da bereits ein Vergleich durchgeführt wurde
-    }
-    // Suche, ob durch hinzufügen von maximal `maxDepth` Vergleichen, das Poset gelöst werden kann
-    if (FoundSolution == search(poset, maxDepth - comparisonsDone)) {
-      // Bis jetzt ist bekannt, dass mit dem "Paare-Trick" das i-kleinste Element in dem Poset in `maxDepth`-Schritten
-      // eindeutig gelöst werden kann. Da der Trick mit den Paaren nicht bewiesen ist, führe anschließend noch eine
-      // normale Suche mit Tiefe `maxDepth - 1` durch. Wenn diese in `NoSolution` resultiert, ist die Lösung gefunden
-      // (anderenfalls hätten wir den "Paare-Trick" widerlegt)
-      Poset<maxN> poset{n, nthSmallest};
-      // da irgendwelche 2 Elemente am Anfang verglichen werden, wähle o.B.d.A `0` und `1`
-      int comparisonsDone = 1;
-      poset.addComparison(0, 1);
-
-      if (NoSolution == search(poset, maxDepth - comparisonsDone - 1)) {
-        return maxDepth;
-      }
-
-      std::cout << "Error: \"Paare-Trick\" widerlegt" << std::endl;
-      return {};
-    }
-  }
-}
-```
 
 ## Tricks
 ### Implementierte Tricks nach Nützlichkeit absteigen sortiert

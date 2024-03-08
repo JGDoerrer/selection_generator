@@ -161,7 +161,7 @@ fn start_search_backward(
               &mut cache_not_solvable.write().expect(""),
               k - 1,
             ),
-            "{predecessor} {}",
+            "predecessor: {predecessor}, k - 1: {}",
             k - 1
           );
         })
@@ -177,7 +177,7 @@ fn start_search_backward(
               &mut cache_not_solvable.write().expect(""),
               k,
             ),
-            "{predecessor} {k}"
+            "predecessor: {predecessor}, k: {k}",
           );
         })
         .collect();
@@ -191,37 +191,40 @@ fn start_search_backward(
       search_duration,
       poset_cache.len()
     );
+    // let ratio = 100.0 * COUTNER_USE_NAUTY.get() as f64
+    //   / (COUTNER_USE_NAUTY.get() as f64 + COUTNER_USE_NOT_NAUTY.get() as f64);
+    // println!("nauty ratio: {ratio:.3?}%");
 
     if destination.contains(&Poset::new(n, i0)) {
-      let mut count = [0; MAX_N];
-      for item in &poset_cache {
-        let mut pairs = 0;
-        for i in 0..item.n() {
-          for j in 0..item.n() {
-            if item.is_less(i, j) {
-              let mut is_pair = true;
-              for k in 0..item.n() {
-                if (k != j && item.is_less(i, k)) || (k != i && item.is_less(k, j)) {
-                  is_pair = false;
-                }
-              }
-              if is_pair {
-                pairs += 1;
-              }
-            }
-          }
-        }
-        count[pairs] += 1;
-      }
-      let mut total = 0;
-      for i in 0..MAX_N {
-        if 0 == count[i] {
-          println!("remaining pairs: {}", poset_cache.len() - total);
-          break;
-        }
-        println!("{i} pairs: {}", count[i]);
-        total += count[i];
-      }
+      // let mut count = [0; MAX_N];
+      // for item in &poset_cache {
+      //   let mut pairs = 0;
+      //   for i in 0..item.n() {
+      //     for j in 0..item.n() {
+      //       if item.is_less(i, j) {
+      //         let mut is_pair = true;
+      //         for k in 0..item.n() {
+      //           if (k != j && item.is_less(i, k)) || (k != i && item.is_less(k, j)) {
+      //             is_pair = false;
+      //           }
+      //         }
+      //         if is_pair {
+      //           pairs += 1;
+      //         }
+      //       }
+      //     }
+      //   }
+      //   count[pairs] += 1;
+      // }
+      // let mut total = 0;
+      // for i in 0..MAX_N {
+      //   if 0 == count[i] {
+      //     println!("remaining pairs: {}", poset_cache.len() - total);
+      //     break;
+      //   }
+      //   println!("{i} pairs: {}", count[i]);
+      //   total += count[i];
+      // }
 
       return (Some(k), check_time);
     }
@@ -289,7 +292,7 @@ pub fn main() {
     .insert(&Poset::new(1, 0), 0);
 
   if false {
-    single(&interrupt, &cache_solvable, &cache_not_solvable, 9, 4);
+    single(&interrupt, &cache_solvable, &cache_not_solvable, 14, 6);
   } else if true {
     for n in 2..MAX_N as u8 {
       for i in 0..((n + 1) / 2) {

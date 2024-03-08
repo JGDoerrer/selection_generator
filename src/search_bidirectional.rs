@@ -367,6 +367,8 @@ fn start_search(
 }
 
 pub fn main() {
+  rayon::ThreadPoolBuilder::new().num_threads(8).build_global().unwrap();
+
   let mut cache_solvable = CacheTreeSolvable::new();
   let mut cache_not_solvable = CacheTreeNotSolvable::new();
   cache_solvable.insert(&Poset::new(1, 0), 0);

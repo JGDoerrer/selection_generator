@@ -6,8 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bit-set = "0.5.3"
-const_for = "0.1.4"
 global_counter = "0.2.2"
 nauty-Traces-sys = { version = "0.7.0", features = ["native"] }
 rayon = "1.8"
