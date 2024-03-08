@@ -148,6 +148,48 @@ impl CanonifiedPoset {
         new.add_and_close(i, j);
         new.canonified()
     }
+
+    pub fn get_comparison_pairs(&self) -> Vec<(CanonifiedPoset, CanonifiedPoset, u32)> {
+        let mut pairs = Vec::with_capacity(self.n() as usize * (self.n() as usize - 1) / 2);
+
+        for i in 0..self.n() {
+            for j in (i + 1)..self.n() {
+                if self.has_order(i, j) {
+                    continue;
+                }
+
+                let less = self.with_less(i, j);
+                let greater = self.with_less(j, i);
+
+                let hardness_less = Self::estimate_hardness(&less);
+                let hardness_greater = Self::estimate_hardness(&greater);
+
+                let pair = if hardness_less < hardness_greater {
+                    (less, greater, hardness_greater)
+                } else {
+                    (greater, less, hardness_less)
+                };
+
+                if !pairs.contains(&pair) {
+                    pairs.push(pair);
+                }
+            }
+        }
+        pairs
+    }
+
+    pub fn estimate_hardness(&self) -> u32 {
+        let (less, greater) = self.calculate_relations();
+
+        let mut sum = 0;
+
+        for i in 0..self.n() as usize {
+            sum += (MAX_N as u32 - (self.i() - greater[i]) as u32).pow(2);
+            sum += (MAX_N as u32 - (self.n() - self.i() - 1 - less[i]) as u32).pow(2);
+        }
+
+        sum
+    }
 }
 
 impl From<CanonifiedPoset> for NormalPoset {
