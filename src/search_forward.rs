@@ -166,12 +166,8 @@ impl<'a> Search<'a> {
 
         if let Some(cost) = self.search_cache(&poset) {
             match cost {
-                Cost::Solved(solved) => {
-                    return if solved > max_comparisons {
-                        Cost::Minimum(solved)
-                    } else {
-                        cost
-                    }
+                Cost::Solved(_) => {
+                    return cost;
                 }
                 Cost::Minimum(min) => {
                     if min > max_comparisons {
@@ -326,10 +322,27 @@ impl<'a> Search<'a> {
             }
         }
 
-        let compatible_posets = poset.num_compatible_posets();
-        if compatible_posets == 0 || (max_comparisons as u32) < compatible_posets.ilog2() {
+        let mut comparisons = 0;
+        for i in 0..poset.n() {
+            'j_loop: for j in poset.get_all_greater_than(i) {
+                let j = j as u8;
+                for k in (i + 1)..j {
+                    if poset.is_less(i, k) && poset.is_less(k, j) {
+                        continue 'j_loop;
+                    }
+                }
+
+                comparisons += 1;
+            }
+        }
+        if comparisons + max_comparisons < poset.n() {
             return Some(false);
         }
+
+        // let compatible_posets = poset.num_compatible_posets();
+        // if compatible_posets == 0 || (max_comparisons as u32) < compatible_posets.ilog2() {
+        //     return Some(false);
+        // }
 
         let (less, greater) = poset.calculate_relations();
 
@@ -346,22 +359,12 @@ impl<'a> Search<'a> {
                     continue;
                 }
 
-                if let Some(false) =
-                    self.estimate_solvable(poset.with_less(i, j), max_comparisons, i, j + 1, depth)
-                {
-                    return Some(false);
-                }
-            }
-        }
-
-        if start_i != 0 || start_j != 0 {
-            let cost = self.search_rec(poset, max_comparisons, depth + 1);
-            match cost {
-                Cost::Solved(solved) => {
-                    return Some(solved <= max_comparisons);
-                }
-                Cost::Minimum(min) => {
-                    if min > max_comparisons {
+                let cost = self.search_rec(poset.with_less(i, j), max_comparisons, depth + 1);
+                match cost {
+                    Cost::Solved(solved) => {
+                        return Some(solved <= max_comparisons);
+                    }
+                    Cost::Minimum(_) => {
                         return Some(false);
                     }
                 }
