@@ -177,7 +177,7 @@ impl<'a> Search<'a> {
             }
         }
 
-        if let Some(false) = self.estimate_solvable(poset, max_comparisons, 0, 0, depth) {
+        if let Some(false) = self.estimate_solvable(poset, max_comparisons, depth) {
             let result = Cost::Minimum(max_comparisons + 1);
 
             self.insert_cache(poset, result);
@@ -304,24 +304,8 @@ impl<'a> Search<'a> {
         &mut self,
         poset: CanonifiedPoset,
         max_comparisons: u8,
-        start_i: u8,
-        start_j: u8,
         depth: u8,
     ) -> Option<bool> {
-        if start_i != 0 || start_j != 0 {
-            match self.search_cache(&poset) {
-                Some(Cost::Solved(solved)) => {
-                    return Some(solved <= max_comparisons);
-                }
-                Some(Cost::Minimum(min)) => {
-                    if min > max_comparisons {
-                        return Some(false);
-                    }
-                }
-                _ => (),
-            }
-        }
-
         let mut comparisons = 0;
         for i in 0..poset.n() {
             'j_loop: for j in poset.get_all_greater_than(i) {
@@ -346,16 +330,13 @@ impl<'a> Search<'a> {
 
         let (less, greater) = poset.calculate_relations();
 
-        for i in start_i..poset.n() {
+        for i in 0..poset.n() {
             if !(less[i as usize] == 0 && greater[i as usize] >= 2) {
                 continue;
             }
 
-            for j in (if i == start_i { start_j } else { 0 })..poset.n() {
-                if i == j
-                    || !(greater[j as usize] == 0 && less[j as usize] >= 2)
-                    || poset.has_order(i, j)
-                {
+            for j in i..poset.n() {
+                if !(greater[j as usize] == 0 && less[j as usize] >= 2) || poset.has_order(i, j) {
                     continue;
                 }
 
