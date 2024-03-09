@@ -115,7 +115,7 @@ impl<'a> Search<'a> {
 
         let mut result = max as u8;
 
-        for current in min..max {
+        for current in min.. {
             let current = current as u8;
             self.current_max = current;
             self.analytics.set_max_depth(current / 2);

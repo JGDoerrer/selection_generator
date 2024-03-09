@@ -242,19 +242,16 @@ where
     // calculate comparisons
     let mut comparisons = vec![];
     for i in 0..poset.n() {
-        'j_loop: for j in i + 1..poset.n() {
+        'j_loop: for j in poset.get_all_greater_than(i) {
+            let j = j as u8;
             if !poset.has_order(i, j) {
                 continue;
             }
 
             let is_less = poset.is_less(i, j);
 
-            for k in 0..poset.n() {
-                if k != i
-                    && k != j
-                    && poset.is_less(i, k) == is_less
-                    && poset.is_less(k, j) == is_less
-                {
+            for k in (i + 1)..j {
+                if poset.is_less(i, k) == is_less && poset.is_less(k, j) == is_less {
                     continue 'j_loop;
                 }
             }
