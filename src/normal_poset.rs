@@ -280,7 +280,7 @@ impl NormalPoset {
 
     /// Removes elements, that are known to be too large/small
     #[inline]
-    pub fn reduce_elements(&mut self) -> [u8; MAX_N] {
+    pub fn reduce_elements(&mut self) -> [usize; MAX_N] {
         // can the element be ignored, because it is too large/small
         let mut dropped = [false; MAX_N];
         let mut n_less_dropped = 0;
@@ -290,24 +290,21 @@ impl NormalPoset {
         for i in 0..self.n as usize {
             if greater[i] > self.i {
                 dropped[i] = true;
-            } else if less[i] >= self.n - self.i {
-                dropped[i] = true;
+            } else if less[i] > self.n - self.i - 1 {
                 n_less_dropped += 1;
+                dropped[i] = true;
             }
         }
 
         // maps the old indices to the new ones
         let mut new_indices = [0; MAX_N];
         let mut new_n = 0;
-        let mut b = self.n as usize - 1;
+        // let mut b = self.n as usize - 1;
 
         for i in 0..self.n {
             if !dropped[i as usize] {
-                new_indices[new_n] = i;
+                new_indices[new_n] = i as usize;
                 new_n += 1;
-            } else {
-                new_indices[b] = i;
-                b -= 1;
             }
         }
 
@@ -320,7 +317,7 @@ impl NormalPoset {
         // make the new poset
         for i in 0..new.n {
             for j in 0..new.n {
-                if self.is_less(new_indices[i as usize], new_indices[j as usize]) {
+                if self.is_less(new_indices[i as usize] as u8, new_indices[j as usize] as u8) {
                     new.set_is_less(i, j)
                 }
             }
@@ -328,6 +325,10 @@ impl NormalPoset {
 
         if new.i > (new.n - 1) / 2 {
             new = new.dual();
+            let indices = new_indices;
+            for i in 0..new_n {
+                new_indices[i] = indices[new_n - i - 1];
+            }
         }
 
         // dbg!(&self, &new);
@@ -467,11 +468,16 @@ impl NormalPoset {
         let mut new = *self;
 
         new.add_and_close(i, j);
-        let mapping = new.canonify_mapping();
+        let mapping_reduce = new.reduce_elements();
+        let mapping_canonify = new.canonify_mapping();
+
+        let mut mapping = [0; MAX_N];
+        for i in 0..MAX_N {
+            mapping[i] = mapping_reduce[mapping_canonify[i]];
+        }
 
         (new, mapping)
     }
-
     /// Assumes self is normalized
     pub fn dual(&self) -> Self {
         let mut dual = NormalPoset::new(self.n, self.n - self.i - 1);

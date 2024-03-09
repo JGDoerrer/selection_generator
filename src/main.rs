@@ -186,7 +186,7 @@ fn run_backward() {
 fn print_algorithm<W>(
     poset: CanonifiedPoset,
     writer: &mut BufWriter<W>,
-    algorithm: &HashMap<CanonifiedPoset, (u8, u8)>,
+    comparisons: &HashMap<CanonifiedPoset, (u8, u8)>,
     done: &mut HashMap<CanonifiedPoset, usize>,
 ) -> usize
 where
@@ -212,13 +212,19 @@ where
         return index;
     }
 
-    let (i, j) = *algorithm.get(&poset).unwrap();
+    let comparison = comparisons.get(&poset);
+    let (i, j) = if let Some((i, j)) = comparison {
+        (*i, *j)
+    } else {
+        dbg!(poset);
+        unreachable!()
+    };
 
     let (less, less_mapping) = poset.to_normal().with_less_mapping(i, j);
     let (greater, greater_mapping) = poset.to_normal().with_less_mapping(j, i);
 
-    let less_index = print_algorithm(less.canonified(), writer, algorithm, done);
-    let greater_index = print_algorithm(greater.canonified(), writer, algorithm, done);
+    let less_index = print_algorithm(less.canonified(), writer, comparisons, done);
+    let greater_index = print_algorithm(greater.canonified(), writer, comparisons, done);
 
     let vars = (0..poset.n() as usize)
         .map(|i| VARIABLES[i].to_string())
@@ -242,16 +248,19 @@ where
     // calculate comparisons
     let mut comparisons = vec![];
     for i in 0..poset.n() {
-        'j_loop: for j in poset.get_all_greater_than(i) {
-            let j = j as u8;
+        'j_loop: for j in i + 1..poset.n() {
             if !poset.has_order(i, j) {
                 continue;
             }
 
             let is_less = poset.is_less(i, j);
 
-            for k in (i + 1)..j {
-                if poset.is_less(i, k) == is_less && poset.is_less(k, j) == is_less {
+            for k in 0..poset.n() {
+                if k != i
+                    && k != j
+                    && poset.is_less(i, k) == is_less
+                    && poset.is_less(k, j) == is_less
+                {
                     continue 'j_loop;
                 }
             }
