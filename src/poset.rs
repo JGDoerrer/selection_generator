@@ -155,6 +155,7 @@ impl Poset {
   }
 
   // add
+  #[inline(always)]
   fn add_and_close_recursive(&mut self, i: u8, j: u8) {
     self.set_less(i, j, true);
 
@@ -454,7 +455,7 @@ impl Poset {
       }
       let (from, to) = (begin, index - 1);
       if from != to {
-        assert!(from < to);
+        debug_assert!(from < to);
         let mut last = from;
         let mut delete = true;
 
@@ -481,7 +482,7 @@ impl Poset {
       let &(i0, i1) = &equal_items[0];
       let &(j0, j1) = &equal_items[1];
 
-      assert!(comparator(&new_indices[i0], &new_indices[j0]).is_ne());
+      debug_assert!(comparator(&new_indices[i0], &new_indices[j0]).is_ne());
 
       if i0 + 1 == i1 && j0 + 1 == j1 {
         let mut cloned = self.clone();
@@ -518,7 +519,6 @@ impl Poset {
       }
     }
 
-    // TODO: gib immer kleinsten zurück
     let mut transformed: (u8, u8) = (0, 0);
     for i in 1..self.n {
       if new_indices[i as usize] == indicies.0 {
@@ -618,7 +618,7 @@ impl Poset {
     false
   }
 
-  // #[inline(always)]
+  #[inline(always)]
   fn fun_name(
     temp_set_level: &mut (HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>),
     itq: Self,
