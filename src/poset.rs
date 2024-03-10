@@ -82,6 +82,27 @@ pub trait Poset: Sized + Debug {
         sum
     }
 
+    fn find_useful_comparison(&self) -> Option<(u8, u8)> {
+        let (less, greater) = self.calculate_relations();
+
+        for i in 0..self.n() {
+            if !(less[i as usize] == 0 && greater[i as usize] >= 2) {
+                continue;
+            }
+
+            for j in i..self.n() {
+                if !(greater[j as usize] == 0 && less[j as usize] >= 2)
+                    || self.has_order(i, j)
+                {
+                    continue;
+                }
+
+                return Some((i, j));
+            }
+        }
+        None
+    }
+
     fn num_compatible_posets(&self) -> usize {
         debug_assert!(self.is_lower_triangle_matrix());
 

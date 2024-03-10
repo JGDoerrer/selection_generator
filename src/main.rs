@@ -10,7 +10,7 @@ use std::{
     fs::{DirBuilder, OpenOptions},
     io::{BufWriter, Write},
     str::FromStr,
-    sync::{atomic::AtomicBool, Arc},
+    sync::{atomic::AtomicBool, Arc, Mutex},
 };
 
 use crate::{
@@ -34,6 +34,7 @@ mod search_backward;
 mod search_bidirectional;
 mod search_forward;
 mod utils;
+mod tree;
 
 #[derive(Debug, Clone)]
 pub enum SearchMode {
@@ -95,8 +96,8 @@ fn main() {
 fn run_forward(args: Args) {
     let start_n = args.n.unwrap_or(1);
 
-    let mut cache = Cache::new(args.max_cache_size);
-    let mut algorithm = HashMap::new();
+    let cache = Arc::new(Cache::new(args.max_cache_size));
+    let algorithm = Arc::new(Mutex::new(HashMap::new()));
 
     println!("Cache entries: {}", cache.len());
     println!("Maximum cache entries: {}", cache.max_entries());
@@ -112,7 +113,7 @@ fn run_forward(args: Args) {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
         for i in start_i..(n + 1) / 2 {
-            let result = Search::new(n, i, &mut cache, &mut algorithm).search();
+            let result = Arc::new(Search::new(n, i, cache.clone(), algorithm.clone())).search();
 
             if (n as usize) < KNOWN_VALUES.len() && (i as usize) < KNOWN_VALUES[n as usize].len() {
                 assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);
@@ -142,7 +143,7 @@ fn run_forward(args: Args) {
                 print_algorithm(
                     CanonifiedPoset::new(n, i),
                     &mut writer,
-                    &algorithm,
+                    &algorithm.lock().unwrap(),
                     &mut HashMap::new(),
                 );
             }

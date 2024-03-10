@@ -153,7 +153,7 @@ impl CanonifiedPoset {
         self.into()
     }
 
-    pub fn get_comparison_pairs(&self) -> Vec<(CanonifiedPoset, CanonifiedPoset, u8, u8)> {
+    pub fn get_comparison_pairs(&self) -> Vec<(CanonifiedPoset, CanonifiedPoset, u8, u8, u32)> {
         let mut pairs = Vec::with_capacity(self.n() as usize * (self.n() as usize - 1) / 2);
 
         for i in 0..self.n() {
@@ -186,12 +186,7 @@ impl CanonifiedPoset {
             }
         }
 
-        pairs.sort_by_key(|pair| pair.4);
-
         pairs
-            .into_iter()
-            .map(|(a, b, c, d, _)| (a, b, c, d))
-            .collect()
     }
 }
 
