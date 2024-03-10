@@ -249,27 +249,17 @@ where
     let mut comparisons = vec![];
     for i in 0..poset.n() {
         'j_loop: for j in i + 1..poset.n() {
-            if !poset.has_order(i, j) {
+            if !poset.is_less(i, j) {
                 continue;
             }
 
-            let is_less = poset.is_less(i, j);
-
-            for k in 0..poset.n() {
-                if k != i
-                    && k != j
-                    && poset.is_less(i, k) == is_less
-                    && poset.is_less(k, j) == is_less
-                {
+            for k in (i + 1)..=j {
+                if poset.is_less(i, k) && poset.is_less(k, j) {
                     continue 'j_loop;
                 }
             }
 
-            if is_less {
-                comparisons.push((i, j));
-            } else {
-                comparisons.push((j, i));
-            }
+            comparisons.push((i, j));
         }
     }
 
@@ -293,7 +283,6 @@ where
         poset.n()
     )
     .unwrap();
-    // i don't know why this is reversed
     writeln!(
         writer,
         "    if {} > {} {{",

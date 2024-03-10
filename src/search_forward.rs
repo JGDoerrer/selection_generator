@@ -264,7 +264,7 @@ impl<'a> Search<'a> {
                 let pair = if hardness_less < hardness_greater {
                     (less, greater, i, j, hardness_greater)
                 } else {
-                    (greater, less, j, i, hardness_less)
+                    (greater, less, i, j, hardness_less)
                 };
 
                 if pairs

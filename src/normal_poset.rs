@@ -323,13 +323,13 @@ impl NormalPoset {
             }
         }
 
-        if new.i > (new.n - 1) / 2 {
-            new = new.dual();
-            let indices = new_indices;
-            for i in 0..new_n {
-                new_indices[i] = indices[new_n - i - 1];
-            }
-        }
+        // if new.i > (new.n + 1) / 2 {
+        //     new = new.dual();
+        //     let indices = new_indices;
+        //     for i in 0..new_n {
+        //         new_indices[i] = indices[new_n - i - 1];
+        //     }
+        // }
 
         // dbg!(&self, &new);
         debug_assert!(new.is_closed(), "{new:?}");
