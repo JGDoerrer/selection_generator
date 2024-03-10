@@ -596,6 +596,9 @@ impl Poset {
         if !delete {
           is_unique = false;
           equal_items.push((from, to));
+          if 2 < equal_items.len() {
+            break;
+          }
         }
       }
       index += 1;
@@ -605,16 +608,23 @@ impl Poset {
       let &(i0, i1) = &equal_items[0];
       let &(j0, j1) = &equal_items[1];
 
-      if i0 + 1 == i1 && j0 + 1 == j1 && comparator(&new_indices[i0], &new_indices[j0]).is_ne() {
+      assert!(comparator(&new_indices[i0], &new_indices[j0]).is_ne());
+
+      if i0 + 1 == i1 && j0 + 1 == j1 {
         let mut cloned = self.clone();
         cloned.swap(new_indices[i0] as u8, new_indices[i1] as u8);
-        let bool_value = cloned.is_less(new_indices[j1] as u8, new_indices[i1] as u8);
+        assert!(
+          cloned.is_less(new_indices[j1] as u8, new_indices[i1] as u8)
+            == self.is_less(new_indices[j1] as u8, new_indices[i0] as u8)
+        );
         cloned.swap(new_indices[j0] as u8, new_indices[j1] as u8);
 
         if *self == cloned {
           is_unique = true;
 
-          if self.is_less(new_indices[j1] as u8, new_indices[i1] as u8) && !bool_value {
+          if self.is_less(new_indices[j1] as u8, new_indices[i1] as u8)
+            && !self.is_less(new_indices[j1] as u8, new_indices[i0] as u8)
+          {
             new_indices.swap(i0, i1);
           }
         }
