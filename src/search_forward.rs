@@ -185,7 +185,7 @@ impl<'a> Search<'a> {
             return result;
         }
 
-        let pairs = self.get_comparison_pairs(&poset);
+        let pairs = poset.get_comparison_pairs();
         let n_pairs = pairs.len() as u64;
 
         self.analytics.inc_length(depth, n_pairs);
@@ -241,50 +241,6 @@ impl<'a> Search<'a> {
         self.insert_cache(poset, result);
 
         result
-    }
-
-    fn get_comparison_pairs(
-        &self,
-        poset: &CanonifiedPoset,
-    ) -> Vec<(CanonifiedPoset, CanonifiedPoset, u8, u8)> {
-        let mut pairs = Vec::with_capacity(poset.n() as usize * (poset.n() as usize - 1) / 2);
-
-        for i in 0..poset.n() {
-            for j in (i + 1)..poset.n() {
-                if poset.has_order(i, j) {
-                    continue;
-                }
-
-                let less = poset.with_less(i, j);
-                let greater = poset.with_less(j, i);
-
-                let hardness_less = less.estimate_hardness();
-                let hardness_greater = greater.estimate_hardness();
-
-                let pair = if hardness_less < hardness_greater {
-                    (less, greater, i, j, hardness_greater)
-                } else {
-                    (greater, less, i, j, hardness_less)
-                };
-
-                if pairs
-                    .iter()
-                    .find(|e: &&(CanonifiedPoset, CanonifiedPoset, u8, u8, u32)| {
-                        e.0 == pair.0 && e.1 == pair.1
-                    })
-                    .is_none()
-                {
-                    pairs.push(pair);
-                }
-            }
-        }
-
-        pairs.sort_by_key(|pair| pair.4);
-
-        pairs
-            .into_iter()
-            .map(|(a, b, c, d, _)| (a, b, c, d))
-            .collect()
     }
 
     fn estimate_solvable(
