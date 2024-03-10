@@ -24,6 +24,7 @@ impl BitSet {
         self.bits
     }
 
+    #[allow(unused)]
     #[inline]
     pub const fn is_empty(&self) -> bool {
         self.bits == 0

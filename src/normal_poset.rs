@@ -137,7 +137,7 @@ impl NormalPoset {
 
         canonified
     }
-
+    
     #[inline]
     pub fn canonify(&mut self) {
         self.reduce_elements();
@@ -254,6 +254,7 @@ impl NormalPoset {
         new_indices
     }
 
+    #[allow(unused)]
     pub fn set_less(&mut self, i: u8, j: u8, value: bool) {
         if value {
             self.adjacency[i as usize].insert(j as usize);
@@ -262,12 +263,14 @@ impl NormalPoset {
         }
     }
 
+    #[allow(unused)]
     fn swap_positions(&mut self, i0: u8, j0: u8, i1: u8, j1: u8) {
         let temp = self.is_less(i0, j0);
         self.set_less(i0, j0, self.is_less(i1, j1));
         self.set_less(i1, j1, temp);
     }
 
+    #[allow(unused)]
     fn swap(&mut self, i: u8, j: u8) {
         for k in 0..self.n {
             if !(i != k && j != k) {
@@ -338,6 +341,7 @@ impl NormalPoset {
         new_indices
     }
 
+    #[allow(unused)]
     fn canonify_nauty_indicies(&self) -> [usize; MAX_N] {
         let mut options = optionblk {
             getcanon: TRUE,
@@ -386,6 +390,7 @@ impl NormalPoset {
         result
     }
 
+    #[allow(unused)]
     fn canonify_nauty(&mut self) {
         let n = self.n as usize;
 
@@ -447,6 +452,7 @@ impl NormalPoset {
     }
 
     /// adds i < j to the poset and normalize
+    #[allow(unused)]
     #[inline]
     pub fn add_less(&mut self, i: u8, j: u8) {
         debug_assert!(!self.is_less(i, j));
@@ -479,6 +485,7 @@ impl NormalPoset {
         (new, mapping)
     }
     /// Assumes self is normalized
+    #[allow(unused)]
     pub fn dual(&self) -> Self {
         let mut dual = NormalPoset::new(self.n, self.n - self.i - 1);
         for i in 0..self.n {
@@ -492,6 +499,7 @@ impl NormalPoset {
         dual
     }
 
+    #[allow(unused)]
     pub fn num_compatible_posets_upper_bound(&self) -> usize {
         let mut sum = 0;
         for i in 0..self.n {

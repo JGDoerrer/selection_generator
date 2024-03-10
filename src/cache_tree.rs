@@ -77,6 +77,7 @@ pub struct CacheTreeItem<const IS_SOLVABLE: bool> {
 }
 
 impl<const IS_SOLVABLE: bool> CacheTreeItem<IS_SOLVABLE> {
+    #[allow(unused)]
     pub fn new(n: u8, i: u8) -> Self {
         Self {
             arena: vec![CacheNode::new()],

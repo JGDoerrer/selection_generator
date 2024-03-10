@@ -1,16 +1,12 @@
 use core::fmt;
 use std::collections::{HashMap, HashSet, VecDeque};
-use std::hash::{Hash, Hasher};
 use std::os::raw::c_int;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 
-use crate::bitset::BitSet;
 use crate::constants::MAX_N;
-
-pub type PosetIndex = u8;
 
 const fn init_table() -> [([(u8, u8); MAX_N * MAX_N], usize); MAX_N] {
     let mut table1 = [([(0u8, 0u8); MAX_N * MAX_N], 0); MAX_N];

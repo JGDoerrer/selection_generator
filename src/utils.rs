@@ -35,3 +35,47 @@ pub fn print_current_time() {
     println!("Current time: {}", formatted_time);
     println!("===============");
 }
+
+#[allow(unused)]
+pub fn advance_permutations(indices: &mut [usize], cycles: &mut [usize]) -> bool {
+    let n = indices.len();
+    let k = cycles.len();
+    for i in (0..k).rev() {
+        if cycles[i] == 0 {
+            cycles[i] = n - i - 1;
+            indices[i..].rotate_left(1);
+        } else {
+            let si = n - cycles[i];
+            indices.swap(i, si);
+            cycles[i] -= 1;
+            return false;
+        }
+    }
+    true
+}
+
+#[allow(unused)]
+pub fn advance_combinations(indices: &mut [usize], n: usize) -> bool {
+    let k = indices.len();
+    for i in (0..k).rev() {
+        if indices[i] < n - k + i + 1 {
+            indices[i] += 1;
+            for j in i + 1..k {
+                indices[j] = indices[j - 1] + 1;
+            }
+            return false;
+        }
+    }
+    true
+}
+
+#[allow(unused)]
+pub const fn fac(n: usize, k: usize) -> usize {
+    let mut r = 1;
+    let mut i = k + 1;
+    while i <= n {
+        r *= i;
+        i += 1;
+    }
+    r
+}

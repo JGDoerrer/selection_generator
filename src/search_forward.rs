@@ -9,7 +9,7 @@ use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use crate::{
     cache::Cache,
     canonified_poset::CanonifiedPoset,
-    constants::{LOWER_BOUNDS, MAX_N, UPPER_BOUNDS},
+    constants::{LOWER_BOUNDS, UPPER_BOUNDS},
     poset::Poset,
 };
 
@@ -258,8 +258,8 @@ impl<'a> Search<'a> {
                 let less = poset.with_less(i, j);
                 let greater = poset.with_less(j, i);
 
-                let hardness_less = Self::estimate_hardness(&less);
-                let hardness_greater = Self::estimate_hardness(&greater);
+                let hardness_less = less.estimate_hardness();
+                let hardness_greater = greater.estimate_hardness();
 
                 let pair = if hardness_less < hardness_greater {
                     (less, greater, i, j, hardness_greater)
@@ -285,19 +285,6 @@ impl<'a> Search<'a> {
             .into_iter()
             .map(|(a, b, c, d, _)| (a, b, c, d))
             .collect()
-    }
-
-    fn estimate_hardness(poset: &CanonifiedPoset) -> u32 {
-        let (less, greater) = poset.calculate_relations();
-
-        let mut sum = 0;
-
-        for i in 0..poset.n() as usize {
-            sum += (MAX_N as u32 - (poset.i() - greater[i]) as u32).pow(2);
-            sum += (MAX_N as u32 - (poset.n() - poset.i() - 1 - less[i]) as u32).pow(2);
-        }
-
-        sum
     }
 
     fn estimate_solvable(

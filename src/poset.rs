@@ -69,6 +69,19 @@ pub trait Poset: Sized + Debug {
         true
     }
 
+    fn estimate_hardness(&self) -> u32 {
+        let (less, greater) = self.calculate_relations();
+
+        let mut sum = 0;
+
+        for i in 0..self.n() as usize {
+            sum += (MAX_N as u32 - (self.i() - greater[i]) as u32).pow(2);
+            sum += (MAX_N as u32 - (self.n() - self.i() - 1 - less[i]) as u32).pow(2);
+        }
+
+        sum
+    }
+
     fn num_compatible_posets(&self) -> usize {
         debug_assert!(self.is_lower_triangle_matrix());
 

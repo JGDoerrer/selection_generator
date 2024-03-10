@@ -365,6 +365,7 @@ pub fn main() {
             let handle = {
                 let backward_search_state_local = backward_search_state.clone();
                 let interrupt_local = interrupt.clone();
+                #[allow(unused)]
                 let dyn_level_local = dyn_level.clone();
                 thread::spawn(move || {
                     start_search_backward(
