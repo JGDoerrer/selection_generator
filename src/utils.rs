@@ -1,5 +1,5 @@
 use chrono::prelude::*;
-use std::process::Command;
+use std::{process::Command, time::Instant};
 
 /// Print the git sha of the last commit
 /// the sha is equal to: git rev-parse --short --head
@@ -78,4 +78,18 @@ pub const fn fac(n: usize, k: usize) -> usize {
         i += 1;
     }
     r
+}
+
+/// Print out a human readable duration in the format:
+/// days, hours, minutes, seconds
+pub fn format_duration(start: Instant) -> String {
+    // Calculate the values for a human readable duration
+
+    let duration = Instant::now() - start;
+    let seconds = duration.as_secs_f32() % 60.0;
+    let minutes = (duration.as_secs() / 60) % 60;
+    let hours = (duration.as_secs() / (60 * 60)) % 24;
+    let days = duration.as_secs() / (60 * 60 * 24);
+
+    format!("Duration: {}d {}h {}m {}s", days, hours, minutes, seconds)
 }

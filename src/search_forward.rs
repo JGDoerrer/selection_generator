@@ -10,7 +10,7 @@ use crate::{
     cache::Cache,
     canonified_poset::CanonifiedPoset,
     constants::{LOWER_BOUNDS, UPPER_BOUNDS},
-    poset::Poset,
+    poset::Poset, utils::format_duration,
 };
 
 pub struct Search<'a> {
@@ -19,7 +19,6 @@ pub struct Search<'a> {
     current_max: u8,
     cache: &'a mut Cache,
     analytics: Analytics,
-    start: Instant,
     comparisons: &'a mut HashMap<CanonifiedPoset, (u8, u8)>,
 }
 
@@ -67,7 +66,6 @@ impl<'a> Search<'a> {
             current_max: 0,
             cache,
             analytics: Analytics::new(n.max(4) - 3),
-            start: Instant::now(),
             comparisons,
         }
     }
@@ -108,7 +106,7 @@ impl<'a> Search<'a> {
     }
 
     pub fn search(&mut self) -> u8 {
-        self.start = Instant::now();
+        let start = Instant::now();
 
         let min = LOWER_BOUNDS[self.n as usize][self.i as usize];
         let max = UPPER_BOUNDS[self.n as usize][self.i as usize];
@@ -129,7 +127,7 @@ impl<'a> Search<'a> {
                         "n: {}, i: {} needs at least {} comparisons",
                         self.n, self.i, min
                     );
-                    println!("{}", self.format_duration());
+                    println!("{}", format_duration(start));
 
                     continue;
                 }
@@ -149,7 +147,7 @@ impl<'a> Search<'a> {
         println!();
 
         self.print_cache();
-        println!("{}", self.format_duration());
+        println!("{}", format_duration(start));
         println!();
 
         result
@@ -296,20 +294,6 @@ impl<'a> Search<'a> {
         }
 
         None
-    }
-
-    /// Print out a human readable duration in the format:
-    /// days, hours, minutes, seconds
-    pub fn format_duration(&self) -> String {
-        // Calculate the values for a human readable duration
-
-        let duration = Instant::now() - self.start;
-        let seconds = duration.as_secs_f32() % 60.0;
-        let minutes = (duration.as_secs() / 60) % 60;
-        let hours = (duration.as_secs() / (60 * 60)) % 24;
-        let days = duration.as_secs() / (60 * 60 * 24);
-
-        format!("Duration: {}d {}h {}m {}s", days, hours, minutes, seconds)
     }
 
     /// Print information out the cache, e.g. cache entries, hits, misses etc.
