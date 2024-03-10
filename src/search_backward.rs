@@ -292,7 +292,7 @@ pub fn main() {
     .insert(&Poset::new(1, 0), 0);
 
   if false {
-    single(&interrupt, &cache_solvable, &cache_not_solvable, 14, 6);
+    single(&interrupt, &cache_solvable, &cache_not_solvable, 10, 4);
   } else if true {
     for n in 2..MAX_N as u8 {
       for i in 0..((n + 1) / 2) {

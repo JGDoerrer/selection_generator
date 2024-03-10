@@ -139,129 +139,6 @@ impl Poset {
     }
   }
 
-  fn subset_of_brute_force_rec(
-    &self,
-    poset: &Poset,
-    new_indices: &mut Vec<u8>,
-    is_possible: [[bool; MAX_N]; MAX_N],
-    k: u8,
-  ) -> bool {
-    for i in k..self.n {
-      if is_possible[k as usize][new_indices[i as usize] as usize] {
-        new_indices.swap(i as usize, k as usize);
-
-        let mut maybe = true;
-        for q in 0..self.n {
-          if self.is_less(k, q) && !poset.is_less(new_indices[k as usize], new_indices[q as usize])
-          {
-            maybe = false;
-            break;
-          }
-        }
-
-        if maybe
-          && (k + 1 == self.n
-            || self.subset_of_brute_force_rec(poset, new_indices, is_possible, k + 1))
-        {
-          return true;
-        }
-
-        new_indices.swap(i as usize, k as usize);
-      }
-    }
-    false
-  }
-
-  // new: 96.148s': n = 8, i = 3, (cache_l: 5535, cache_u: 2387, noSol: 0, bruteForce: 416), cache = 683
-  // old: 0.089s': n = 8, i = 3, (cache_l: 11590, cache_u: 3508, noSol: 0, bruteForce: 778), cache = 1081
-  pub fn subset_of_brute_force(&self, poset: &Poset) -> bool {
-    // TODO: eigentlich nicht nötig
-    if self.n != poset.n || self.i != poset.i {
-      return false;
-    }
-
-    let mut rows_poset = [0; MAX_N];
-    let mut cols_poset = [0; MAX_N];
-    let mut rows_self = [0; MAX_N];
-    let mut cols_self = [0; MAX_N];
-    for i in 0..self.n {
-      for j in 0..self.n {
-        if poset.is_less(i, j) {
-          rows_poset[i as usize] += 1;
-          cols_poset[j as usize] += 1;
-        }
-        if self.is_less(i, j) {
-          rows_self[i as usize] += 1;
-          cols_self[j as usize] += 1;
-        }
-      }
-    }
-
-    let mut is_possible = [[true; MAX_N]; MAX_N];
-    for i in 0..self.n {
-      for j in 0..self.n {
-        if rows_self[i as usize] > rows_poset[j as usize]
-          || cols_self[i as usize] > cols_poset[j as usize]
-        {
-          is_possible[i as usize][j as usize] = false;
-        }
-      }
-    }
-
-    let mut changed = true;
-    while changed {
-      changed = false;
-      for i in 0..self.n {
-        let mut count_row = 0;
-        let mut count_col = 0;
-        let mut num_row = 0;
-        let mut num_col = 0;
-        for j in 0..self.n {
-          if is_possible[i as usize][j as usize] {
-            count_row += 1;
-            num_row = j;
-          }
-          if is_possible[j as usize][i as usize] {
-            count_col += 1;
-            num_col = j;
-          }
-        }
-        if 1 == count_row {
-          for j in 0..self.n {
-            if i != j && is_possible[j as usize][num_row as usize] {
-              // changed = true;
-              is_possible[j as usize][num_row as usize] = false;
-            }
-          }
-        }
-        if 1 == count_col {
-          for j in 0..self.n {
-            if i != j && is_possible[num_col as usize][j as usize] {
-              // changed = true;
-              is_possible[num_col as usize][j as usize] = false;
-            }
-          }
-        }
-      }
-    }
-
-    let mut new_indices: Vec<u8> = (0..poset.n).collect::<Vec<_>>();
-    self.subset_of_brute_force_rec(poset, &mut new_indices, is_possible, 0)
-  }
-
-  pub fn subset_of(&self, other: &Poset) -> bool {
-    if !(self.n == other.n && self.i == other.i) {
-      return false;
-    }
-    // TODO: instead of `0..self.n`: faster due to loop unrolling?
-    for k in 0..self.n as usize {
-      if 0 != self.adjacency[k] & !other.adjacency[k] {
-        return false;
-      }
-    }
-    true
-  }
-
   // TODO: implement Iterator instead of `adjacency_size` and `is_index`
   pub fn adjacency_size(&self) -> usize {
     TABLE_ORDER[self.n as usize].1
@@ -315,7 +192,7 @@ impl Poset {
     // debug_assert!(self.is_closed());
   }
 
-  pub fn with_less(&self, i: u8, j: u8) -> Poset {
+  pub fn with_less(&self, i: u8, j: u8) -> Self {
     // precondition
     debug_assert!(self.i < self.n);
     debug_assert!((self.n as usize) < MAX_N);
@@ -339,7 +216,7 @@ impl Poset {
     poset
   }
 
-  pub fn with_less_normalized(&self, i: u8, j: u8) -> Poset {
+  pub fn with_less_normalized(&self, i: u8, j: u8) -> Self {
     // precondition
     debug_assert!(self.i < self.n);
     debug_assert!((self.n as usize) < MAX_N);
@@ -415,7 +292,7 @@ impl Poset {
   }
 
   // canonify
-  fn canonify_nauty_indicies(&self) -> [usize; MAX_N] {
+  fn canonify_nauty_indicies(&self) -> [u8; MAX_N] {
     let mut options = optionblk {
       getcanon: TRUE,
       defaultptn: FALSE,
@@ -455,9 +332,9 @@ impl Poset {
       );
     }
 
-    let mut result = [0; MAX_N];
+    let mut result = [0u8; MAX_N];
     for i in 0..self.n as usize {
-      result[i] = labels[i] as usize;
+      result[i] = labels[i] as u8;
     }
     result
   }
@@ -551,19 +428,18 @@ impl Poset {
 
     let hash = hash;
 
-    let comparator = |a: &usize, b: &usize| {
-      in_out_degree[*a]
-        .cmp(&in_out_degree[*b])
-        .then_with(|| hash[*a].cmp(&hash[*b]))
-      // .reverse()
+    let comparator = |&a: &u8, &b: &u8| {
+      in_out_degree[a as usize]
+        .cmp(&in_out_degree[b as usize])
+        .then_with(|| hash[a as usize].cmp(&hash[b as usize]))
     };
 
-    let mut new_indices = [0; MAX_N];
+    let mut new_indices = [0u8; MAX_N];
     new_indices
       .iter_mut()
       .enumerate()
       .take(self.n as usize)
-      .for_each(|(i, index)| *index = i);
+      .for_each(|(i, index)| *index = i as u8);
     new_indices[0..self.n as usize].sort_unstable_by(comparator);
 
     let mut is_unique = true;
@@ -583,10 +459,7 @@ impl Poset {
         let mut delete = true;
 
         for new_one in (from + 1)..=to {
-          if !self.can_be_swapped(
-            new_indices[last as usize] as u8,
-            new_indices[new_one as usize] as u8,
-          ) {
+          if !self.can_be_swapped(new_indices[last], new_indices[new_one]) {
             delete = false;
             break;
           }
@@ -612,18 +485,14 @@ impl Poset {
 
       if i0 + 1 == i1 && j0 + 1 == j1 {
         let mut cloned = self.clone();
-        cloned.swap(new_indices[i0] as u8, new_indices[i1] as u8);
-        assert!(
-          cloned.is_less(new_indices[j1] as u8, new_indices[i1] as u8)
-            == self.is_less(new_indices[j1] as u8, new_indices[i0] as u8)
-        );
-        cloned.swap(new_indices[j0] as u8, new_indices[j1] as u8);
+        cloned.swap(new_indices[i0], new_indices[i1]);
+        cloned.swap(new_indices[j0], new_indices[j1]);
 
         if *self == cloned {
           is_unique = true;
 
-          if self.is_less(new_indices[j1] as u8, new_indices[i1] as u8)
-            && !self.is_less(new_indices[j1] as u8, new_indices[i0] as u8)
+          if self.is_less(new_indices[j1], new_indices[i1])
+            && !self.is_less(new_indices[j1], new_indices[i0])
           {
             new_indices.swap(i0, i1);
           }
@@ -644,19 +513,19 @@ impl Poset {
         self.set_less(
           i,
           j,
-          old_poset.is_less(new_indices[i as usize] as u8, new_indices[j as usize] as u8),
+          old_poset.is_less(new_indices[i as usize], new_indices[j as usize]),
         );
       }
     }
 
     // TODO: gib immer kleinsten zurück
     let mut transformed: (u8, u8) = (0, 0);
-    for i in 1..self.n as usize {
-      if new_indices[i] == indicies.0 as usize {
-        transformed.0 = i as u8;
+    for i in 1..self.n {
+      if new_indices[i as usize] == indicies.0 {
+        transformed.0 = i;
       }
-      if new_indices[i] == indicies.1 as usize {
-        transformed.1 = i as u8;
+      if new_indices[i as usize] == indicies.1 {
+        transformed.1 = i;
       }
     }
 
@@ -699,7 +568,7 @@ impl Poset {
     }
 
     if new_n != self.n {
-      let mut new_poset = Poset::new(new_n, self.i - n_less_dropped);
+      let mut new_poset = Self::new(new_n, self.i - n_less_dropped);
       for i in 0..new_poset.n {
         for j in 0..new_poset.n {
           new_poset.set_less(
@@ -715,6 +584,22 @@ impl Poset {
     debug_assert!(self.i < self.n);
     debug_assert!((self.n as usize) < MAX_N);
     debug_assert!(self.is_closed());
+  }
+
+  pub fn can_reduce_any_element(&self) -> bool {
+    debug_assert!(self.i < self.n);
+    debug_assert!((self.n as usize) < MAX_N);
+    debug_assert!(self.is_closed());
+
+    let (less, greater) = self.calculate_relations();
+
+    for i in 0..self.n {
+      if self.i < less[i as usize] || (self.n - 1) - self.i < greater[i as usize] {
+        return true;
+      }
+    }
+
+    false
   }
 
   // normalize
@@ -733,44 +618,13 @@ impl Poset {
     false
   }
 
-  pub fn remove_less_bruteForce<F>(&self, hash_set: &HashSet<Poset>, test1: F) -> HashSet<Poset>
-  where
-    F: Fn(&Poset) -> bool,
-  {
-    let mut result = HashSet::new();
-    for poset_next in hash_set {
-      'all_for: for i in 0..poset_next.n() {
-        for j in 0..poset_next.n() {
-          if i != j && !poset_next.is_less(i, j) && !poset_next.is_less(j, i) {
-            let mut poset_next_normal = poset_next.with_less(i, j);
-            poset_next_normal.canonify();
-            if self != &poset_next_normal {
-              continue;
-            }
-
-            let poset_check = poset_next.with_less_normalized(j, i);
-            if !test1(&poset_check) {
-              continue;
-            }
-
-            let mut poset_norm = poset_next.clone();
-            poset_norm.normalize();
-            result.insert(poset_norm);
-            break 'all_for;
-          }
-        }
-      }
-    }
-    result
-  }
-
-  #[inline(always)]
+  // #[inline(always)]
   fn fun_name(
-    temp_set_level: &mut (HashSet<(Poset, (u8, u8))>, HashSet<(Poset, (u8, u8))>),
-    itq: Poset,
+    temp_set_level: &mut (HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>),
+    itq: Self,
     old_indices: (u8, u8),
-    poset_cache: &HashSet<Poset>,
-    removed: &mut HashSet<(Poset, (u8, u8))>,
+    poset_cache: &HashSet<Self>,
+    removed: &mut HashSet<(Self, (u8, u8))>,
   ) {
     if temp_set_level.0.contains(&(itq.clone(), old_indices))
       || temp_set_level.1.contains(&(itq.clone(), old_indices))
@@ -790,11 +644,11 @@ impl Poset {
   pub fn enlarge_and_remove_less(
     &self,
     interrupt: &Arc<AtomicBool>,
-    poset_cache: &HashSet<Poset>,
+    poset_cache: &HashSet<Self>,
     table: &[[bool; 15]; 15],
     n: u8,
     i: u8,
-  ) -> HashSet<Poset> {
+  ) -> HashSet<Self> {
     debug_assert!(2 * self.i < self.n);
     debug_assert!(table[self.n as usize][self.i as usize]);
 
@@ -826,7 +680,7 @@ impl Poset {
       }
     }
 
-    let mut temp_set_level: [[(HashSet<(Poset, (u8, u8))>, HashSet<(Poset, (u8, u8))>); MAX_N];
+    let mut temp_set_level: [[(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N];
       MAX_N] = Default::default();
     for n0 in 0..MAX_N {
       for i0 in 0..MAX_N {
@@ -834,7 +688,7 @@ impl Poset {
       }
     }
 
-    let mut enlarged_canonifed: HashMap<Poset, u8> = HashMap::new();
+    let mut enlarged_canonifed: HashMap<Self, u8> = HashMap::new();
     for mut item in enlarged {
       let new_ind = item.canonify_transform((item.n() - 1, item.n() - 1)).0;
       enlarged_canonifed.insert(item, new_ind);
@@ -869,7 +723,7 @@ impl Poset {
     for n0 in 1..n {
       for i0 in 0..=i {
         for (item, indices) in &temp_set_level[n0 as usize][i0 as usize].0.clone() {
-          let mut super_enlarged: HashSet<(Poset, (u8, u8))> = HashSet::new();
+          let mut super_enlarged: HashSet<(Self, (u8, u8))> = HashSet::new();
           if table[n0 as usize + 1][i0 as usize] {
             item.super_enlarge_n(*indices, &mut super_enlarged);
           }
@@ -913,7 +767,7 @@ impl Poset {
     result
   }
 
-  pub fn remove_less(&self, only_last: Option<u8>) -> HashSet<(Poset, (u8, u8))> {
+  pub fn remove_less(&self, only_last: Option<u8>) -> HashSet<(Self, (u8, u8))> {
     // // precondition
     // debug_assert!(self.i < self.n);
     // debug_assert!((self.n as usize) < MAX_N);
@@ -992,66 +846,13 @@ impl Poset {
 
     let mut cleaned_result = HashSet::new();
     for (mut item, i, j) in result {
-      let size = item.n();
-      item.reduce_elements();
-      if size != item.n() {
+      if item.can_reduce_any_element() {
         continue;
       }
       let indices = item.canonify_transform((i, j));
       cleaned_result.insert((item, indices));
     }
     cleaned_result
-  }
-
-  // enlarge
-  pub fn filter(interrupt: &Arc<AtomicBool>, unfiltered: &HashSet<Poset>) -> HashSet<Poset> {
-    // TODO: in theory faster, practical not, Rroblem: cache only normalized items
-    // let mut tree: CacheTreeItem<true> = CacheTreeItem::new(n, i);
-    // for item in unfiltered {
-    //   tree.insert(item);
-    // }
-    // tree.entries()
-
-    let mut filtered: Vec<Poset> = vec![];
-
-    for item in unfiltered {
-      if !filtered.iter().any(|poset| poset.subset_of(item)) {
-        filtered.retain(|poset| !item.subset_of(poset));
-        filtered.push(item.clone());
-      }
-      if interrupt.load(Ordering::Relaxed) {
-        break;
-      }
-    }
-
-    let mut set1 = HashSet::new();
-    for item in filtered {
-      set1.insert(item);
-    }
-    set1
-  }
-
-  fn filter_subgraph(interrupt: &Arc<AtomicBool>, unfiltered: &HashSet<Poset>) -> HashSet<Poset> {
-    let mut filtered: Vec<Poset> = vec![];
-
-    for item in unfiltered {
-      if !filtered
-        .iter()
-        .any(|poset| poset.subset_of_brute_force(item))
-      {
-        filtered.retain(|poset| !item.subset_of_brute_force(poset));
-        filtered.push(item.clone());
-      }
-      if interrupt.load(Ordering::Relaxed) {
-        break;
-      }
-    }
-
-    let mut result: HashSet<Poset> = HashSet::new();
-    for item in filtered {
-      result.insert(item);
-    }
-    result
   }
 
   fn can_reduce_element_greater(&self, element: u8) -> bool {
@@ -1064,10 +865,10 @@ impl Poset {
     self.i < greater
   }
 
-  pub fn super_enlarge_n(&self, (k, j): (u8, u8), result: &mut HashSet<(Poset, (u8, u8))>) {
+  pub fn super_enlarge_n(&self, (k, j): (u8, u8), result: &mut HashSet<(Self, (u8, u8))>) {
     debug_assert!(!self.is_less(k, j) && !self.is_less(j, k));
 
-    let mut init_poset = Poset::new(self.n + 1, self.i);
+    let mut init_poset = Self::new(self.n + 1, self.i);
     for i in 0..self.n {
       for j in 0..self.n {
         init_poset.set_less(i, j, self.is_less(i, j));
@@ -1076,19 +877,20 @@ impl Poset {
 
     let mut unfiltered = HashSet::new();
     let mut swap_init = VecDeque::new();
-    swap_init.push_back((init_poset, -1));
+    swap_init.push_back((init_poset, 0));
     while let Some((poset, number)) = swap_init.pop_back() {
-      for index in ((number + 1) as u8)..(poset.n - 1) {
+      for index in number..(poset.n - 1) {
         if poset.is_less(index, poset.n - 1) || poset.is_less(poset.n - 1, index) {
           continue;
         }
 
         let new_poset = poset.with_less(index, poset.n - 1);
-        if new_poset.is_less(j, k) || new_poset.is_less(k, j) {
+        if new_poset.is_less(j, k) || new_poset.is_less(k, j) || new_poset.can_reduce_any_element()
+        {
           continue;
         }
 
-        swap_init.push_back((new_poset.clone(), index as i32));
+        swap_init.push_back((new_poset.clone(), index + 1));
 
         if new_poset
           .with_less(k, j)
@@ -1100,19 +902,13 @@ impl Poset {
     }
 
     for mut item in unfiltered {
-      let size = item.n();
-      item.reduce_elements();
-      if size != item.n() {
-        continue;
-      }
-
       let indices = item.canonify_transform((k, j));
       result.insert((item, indices));
     }
   }
 
-  fn enlarge_n(&self, interrupt: &Arc<AtomicBool>, result: &mut HashSet<Poset>) {
-    let mut temp = Poset::new(self.n + 1, self.i);
+  fn enlarge_n(&self, interrupt: &Arc<AtomicBool>, result: &mut HashSet<Self>) {
+    let mut temp = Self::new(self.n + 1, self.i);
     for i in 0..self.n {
       for j in 0..self.n {
         temp.set_less(i, j, self.is_less(i, j));
@@ -1120,12 +916,12 @@ impl Poset {
     }
 
     let mut swap_init = VecDeque::new();
-    swap_init.push_back((temp, -1));
+    swap_init.push_back((temp, 0));
     while let Some((poset, number)) = swap_init.pop_back() {
-      for k in ((number + 1) as u8)..(poset.n - 1) {
+      for k in number..(poset.n - 1) {
         if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
           let new_poset = poset.with_less(k, poset.n - 1);
-          swap_init.push_back((new_poset.clone(), k as i32));
+          swap_init.push_back((new_poset.clone(), k + 1));
           if new_poset.can_reduce_element_greater(new_poset.n - 1) {
             result.insert(new_poset);
           }
@@ -1147,10 +943,10 @@ impl Poset {
     (self.n - 1) - self.i < less
   }
 
-  pub fn super_enlarge_nk(&self, (k, j): (u8, u8), result: &mut HashSet<(Poset, (u8, u8))>) {
+  pub fn super_enlarge_nk(&self, (k, j): (u8, u8), result: &mut HashSet<(Self, (u8, u8))>) {
     debug_assert!(!self.is_less(k, j) && !self.is_less(j, k));
 
-    let mut init_poset = Poset::new(self.n + 1, self.i + 1);
+    let mut init_poset = Self::new(self.n + 1, self.i + 1);
     for i in 0..self.n {
       for j in 0..self.n {
         init_poset.set_less(i, j, self.is_less(i, j));
@@ -1159,19 +955,20 @@ impl Poset {
 
     let mut unfiltered = HashSet::new();
     let mut swap_init = VecDeque::new();
-    swap_init.push_back((init_poset, -1));
+    swap_init.push_back((init_poset, 0));
     while let Some((poset, number)) = swap_init.pop_back() {
-      for index in ((number + 1) as u8)..(poset.n - 1) {
+      for index in number..(poset.n - 1) {
         if poset.is_less(index, poset.n - 1) || poset.is_less(poset.n - 1, index) {
           continue;
         }
 
         let new_poset = poset.with_less(poset.n - 1, index);
-        if new_poset.is_less(j, k) || new_poset.is_less(k, j) {
+        if new_poset.is_less(j, k) || new_poset.is_less(k, j) || new_poset.can_reduce_any_element()
+        {
           continue;
         }
 
-        swap_init.push_back((new_poset.clone(), index as i32));
+        swap_init.push_back((new_poset.clone(), index + 1));
 
         if new_poset
           .with_less(k, j)
@@ -1183,19 +980,13 @@ impl Poset {
     }
 
     for mut item in unfiltered {
-      let size = item.n();
-      item.reduce_elements();
-      if size != item.n() {
-        continue;
-      }
-
       let indices = item.canonify_transform((k, j));
       result.insert((item, indices));
     }
   }
 
-  fn enlarge_nk(&self, interrupt: &Arc<AtomicBool>, result: &mut HashSet<Poset>) {
-    let mut temp = Poset::new(self.n + 1, self.i + 1);
+  fn enlarge_nk(&self, interrupt: &Arc<AtomicBool>, result: &mut HashSet<Self>) {
+    let mut temp = Self::new(self.n + 1, self.i + 1);
     for i in 0..self.n {
       for j in 0..self.n {
         temp.set_less(i, j, self.is_less(i, j));
@@ -1203,12 +994,12 @@ impl Poset {
     }
 
     let mut swap_init = VecDeque::new();
-    swap_init.push_back((temp, -1));
+    swap_init.push_back((temp, 0));
     while let Some((poset, number)) = swap_init.pop_back() {
-      for k in ((number + 1) as u8)..(poset.n - 1) {
+      for k in number..(poset.n - 1) {
         if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
           let new_poset = poset.with_less(poset.n - 1, k);
-          swap_init.push_back((new_poset.clone(), k as i32));
+          swap_init.push_back((new_poset.clone(), k + 1));
           if new_poset.can_reduce_element_less(new_poset.n - 1) {
             result.insert(new_poset);
           }
@@ -1231,28 +1022,6 @@ impl Poset {
     if 1 <= n && i < n && 2 * (n - i - 1) < n - 1 {
       Self::rec_temp(table, n - 1, n - i - 1);
     }
-  }
-
-  pub fn enlarge_brute_force(
-    really_all: &HashSet<Poset>,
-    interrupt: &Arc<AtomicBool>,
-    set_of_posets: &HashSet<Poset>,
-    n: u8,
-    i: u8,
-  ) -> HashSet<Poset> {
-    // sei set_of_posets = {p}
-    // suche alle Posets, die durch Aufruf von `normalize` zu p werden
-    let mut result = HashSet::new();
-    for poset in really_all {
-      let mut norm = poset.clone();
-      norm.normalize();
-      if set_of_posets.contains(&norm) {
-        debug_assert!(poset.is_canonified());
-        result.insert(poset.clone());
-      }
-    }
-
-    result
   }
 
   fn is_closed(&self) -> bool {
@@ -1303,130 +1072,4 @@ impl Poset {
     }
     *self == canon
   }
-}
-
-pub fn iterate_all_closed_canonified_rec(
-  result: &mut HashSet<Poset>,
-  poset: &mut Poset,
-  index: usize,
-) {
-  if 0 == index {
-    let mut success = true;
-    'break_all: for i in 0..poset.n() {
-      for j in 0..poset.n() {
-        if i == j {
-          if poset.is_less(i, j) {
-            success = false;
-            break 'break_all;
-          }
-        } else {
-          if poset.is_less(i, j) && poset.is_less(j, i) {
-            success = false;
-            break 'break_all;
-          }
-          for k in 0..poset.n() {
-            if poset.is_less(i, j) && poset.is_less(j, k) && !poset.is_less(i, k) {
-              success = false;
-              break 'break_all;
-            }
-          }
-        }
-      }
-    }
-
-    if success {
-      let mut new_poset = poset.clone();
-      new_poset.canonify();
-      result.insert(new_poset);
-    }
-  } else {
-    poset.set_index(index - 1, false);
-    iterate_all_closed_canonified_rec(result, poset, index - 1);
-    poset.set_index(index - 1, true);
-    iterate_all_closed_canonified_rec(result, poset, index - 1);
-  }
-}
-
-pub fn iterate_all_closed_canonified(n: u8, i: u8) -> HashSet<Poset> {
-  let mut poset = Poset::new(n, i);
-  let mut result = HashSet::new();
-  iterate_all_closed_canonified_rec(&mut result, &mut poset, TABLE_ORDER[n as usize].1);
-  result
-}
-
-pub fn iterate_all_closed_normalized(n: u8, i: u8) -> HashSet<Poset> {
-  let mut result = HashSet::new();
-  for mut item in iterate_all_closed_canonified(n, i) {
-    item.normalize();
-    result.insert(item);
-  }
-  result
-}
-
-// #[test]
-// pub fn test_remove_less() {
-//   env::set_var("RUST_BACKTRACE", "1");
-
-//   let max_n = 7;
-
-//   for n in 2..max_n as u8 {
-//     for i in 0..((n + 1) / 2) {
-//       let all_posets = iterate_all_closed_canonified(n, i);
-//       dbg!(n, i, all_posets.len());
-
-//       for poset in &all_posets {
-//         let result1 = poset.remove_less(|_| true);
-//         let result2 = poset.remove_less_bruteForce(&all_posets, |_| true); // TODO: anstatt `all_posets` auch Posets mit Größe n + 1?
-//         if result1 != result2 {
-//           dbg!(&result1, &result2);
-//           dbg!(result1.len(), result2.len());
-//           dbg!(poset);
-//           panic!();
-//         }
-//       }
-//     }
-//   }
-// }
-
-// #[test]
-// pub fn test_enlarge() {
-//   let interrupt = Arc::new(AtomicBool::new(false));
-//   env::set_var("RUST_BACKTRACE", "1");
-
-//   let mut really_all: HashSet<Poset> = HashSet::new();
-//   really_all.insert(Poset::new(1, 0));
-//   for n in 2..MAX_N as u8 {
-//     for i in 0..((n + 1) / 2) {
-//       let all_posets = iterate_all_closed_normalized(n, i);
-//       let temp = iterate_all_closed_canonified(n, i);
-//       for item in &all_posets {
-//         really_all.insert(item.clone());
-//       }
-
-//       let len = all_posets.len();
-//       println!("n: {n}, i: {i}, len: {len}");
-
-//       for new_poset in &really_all {
-//         let mut set_of_posets = HashSet::new();
-//         set_of_posets.insert(new_poset.clone());
-//         let result1 = Poset::enlarge(&interrupt, &set_of_posets, n, i);
-//         let result2 = Poset::enlarge_brute_force(&temp, &interrupt, &set_of_posets, n, i);
-//         if result1 != result2 {
-//           dbg!(&result1, &result2);
-//           dbg!(result1.len(), result2.len());
-//           dbg!(new_poset);
-//           dbg!(n, i);
-//           panic!();
-//         }
-//       }
-//     }
-//   }
-//   panic!("SUCESS ==============================");
-// }
-
-#[test]
-pub fn test1() {
-  let mut poset = Poset::new(4, 1);
-  poset.add_less(2, 3);
-  dbg!(&poset);
 }
