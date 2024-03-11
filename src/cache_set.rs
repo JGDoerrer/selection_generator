@@ -1,5 +1,6 @@
-use std::collections::HashMap;
 use std::sync::RwLock;
+
+use hashbrown::HashMap;
 
 use super::poset::Poset;
 use super::util::MAX_N;

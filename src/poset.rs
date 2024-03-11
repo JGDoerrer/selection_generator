@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::VecDeque;
 use std::fmt::{Debug, Display, Formatter, Result};
 use std::hash::{Hash, Hasher};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -9,6 +9,7 @@ use crate::util::MAX_N;
 
 use std::os::raw::c_int;
 
+use hashbrown::{HashMap, HashSet};
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 
 const fn init_table() -> [([(u8, u8); MAX_N * MAX_N], usize); MAX_N] {

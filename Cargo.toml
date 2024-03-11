@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 global_counter = "0.2.2"
+hashbrown = "0.14.3"
 nauty-Traces-sys = { version = "0.7.0", features = ["native"] }
 rayon = "1.8"

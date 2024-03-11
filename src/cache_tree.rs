@@ -1,5 +1,6 @@
-use std::collections::HashSet;
 use std::sync::RwLock;
+
+use hashbrown::HashSet;
 
 use super::poset::Poset;
 use super::util::{MAX_COMPARISONS, MAX_N};

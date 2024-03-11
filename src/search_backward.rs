@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use std::fmt::{self, Display};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
@@ -6,7 +5,8 @@ use std::time::Duration;
 use std::vec;
 
 use global_counter::primitive::exact::CounterUsize;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use hashbrown::HashSet;
+use rayon::iter::{ParallelBridge, ParallelIterator};
 
 use super::cache_tree::{CacheTreeNotSolvable, CacheTreeSolvable};
 use super::poset::Poset;
@@ -131,7 +131,9 @@ fn start_search_backward(
   for k in 1..max_comparisons {
     let start = std::time::Instant::now();
     let results: Vec<_> = source
-      .par_iter()
+      .clone()
+      .into_iter()
+      .par_bridge()
       .map(|item| {
         if interrupt.load(Ordering::Relaxed) {
           HashSet::new()
