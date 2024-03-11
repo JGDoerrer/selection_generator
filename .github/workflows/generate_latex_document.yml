@@ -1,0 +1,27 @@
+name: Generate LaTeX Document
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup LaTeX
+        uses: docker://blang/latex:ubuntu
+
+      - name: Compile LaTeX Document
+        run: |
+          pdflatex -interaction=nonstopmode tex/article/selection.tex
+
+      - name: Upload PDF Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: selection
+          path: tex/article/selection.pdf
