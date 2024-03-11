@@ -57,8 +57,13 @@
 % \documentclass[10pt,journal,compsoc]{../sty/IEEEtran}
 
 
+\usepackage[all,pdf]{xy}
+\usepackage{lmodern,amssymb}
 
-
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 
 % Some very useful LaTeX packages include:
 % (uncomment the ones you want to load)
@@ -661,8 +666,53 @@ Gasarch's.
 
 
 \section{Fundamentals}
-\subsection{Partial Order}
 \subsection{Algorithms for Finding the 'i-th' of 'n'}
+\subsubsection{Example}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\columnwidth]{figures/Median_of_5.svg.png}
+  \caption{Finding the median of five values using six comparisons.
+    Each step shows the comparisons to be performed next as yellow line segments,
+    and a Hasse diagram of the order relations found so far (with smaller=lower and larger=higher)
+    as blue line segments. The red elements have already been found to be greater than three others
+    and so cannot be the median. The larger of the two elements in the final comparison is the
+    median. \cite{Eppstein_Median}}
+  \label{fig:median_of_5}
+\end{figure}
+
+\subsection{Partial Order}
+A partial order, often simply called a reflexive, weak, or non-strict partial order, is a
+homogeneous relation $\leq$ on a set $P$ that satisfies reflexivity, anti symmetry, and
+transitivity. For any $a, b, c \in P$, it must adhere to the following conditions:
+
+\begin{itemize}
+  \item Reflexivity: $a \leq a$, meaning every element is related to itself.
+  \item Antisymmetry: If $a \leq b$ and $b \leq a$, then $a = b$, implying no two distinct elements precede each other.
+  \item Transitivity: If $a \leq b$ and $b \leq c$, then $a \leq c$.
+\end{itemize}
+
+A non-strict partial order is also known as an antisymmetric preorder. [\todo{cite:https://en.wikipedia.org/wiki/Partially_ordered_set}]
+
+\subsubsection*{Hasse Diagrams}
+\begin{figure}
+  \centering
+
+  \begin{math}
+    \def\arl{\ar@{-}}
+    \xymatrix{
+      & \{x,y,z\}\arl[dl]\arl[d]\arl[dr] & \\
+      \{x,y\}\arl[d]\arl[dr] & \{x,z\}\arl[dl]|\hole\arl[dr]|\hole & \{y,z\}\arl[dl]\arl[d] \\
+      \{x\}\arl[dr]   & \{y\}\arl[d]   & \{z\}\arl[dl] \\
+      & \{\varnothing\} \\
+    }
+  \end{math}
+  \caption{Hasse diagram for the super set of $\left \{ x, y, z\right \}$}
+  \label{fig:hasse_diagram_of_xyz}
+\end{figure}
+\subsubsection{Solvability}
+\subsection{Graph Search}
+\subsubsection{Forward Search}
+\subsubsection{Backword Search}
 
 \section{Methods and Tools}
 \subsection{Forward Search}
