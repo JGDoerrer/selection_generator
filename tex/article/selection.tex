@@ -644,11 +644,18 @@
 % Note that, LaTeX2e, unlike IEEE journals/conferences, places
 % footnotes above bottom floats. This can be corrected via the
 % \fnbelowfloat command of the stfloats package.
-\IEEEPARstart{T}{he} problem of selecting the $i$th largest element in a list of $n$ elements is a well known problem in computer science. The problem can be solved by sorting the list and then selecting the $i$th element. However, this approach has a time complexity of $\mathcal{O}(n \log n)$. For some small values of i and n algorithms could be found that require fewer comparisons. For example, the fourth largest element in a list of 12 elements can be found with 12 comparisons in the worst case (improving the theoretical bound of $n \log n$ by factor 2). \cite[p. 212]{Knuth1973} Generally, by introducing elegant methods for comparing the elements of a list, upper bounds can be established. On the contrary, showing that a method uses the optimal amount of comparisons requires an extended set of tools. Gasarch et al. \cite{Gasarch1996} first introduced computer search to find optimal numbers of comparisons for small values of $n$ and $i$ as well as upper bounds for slightly larger values of $i$ and $n$.
+\IEEEPARstart{T}{he} problem of selecting the $i$th largest element in a list of $n$ elements is a well known problem in computer science. 
+The problem can be solved by sorting the list and then selecting the $i$th element.
+However, this approach has a time complexity of $\mathcal{O}(n \log n)$. 
+For some small values of i and n algorithms could be found that require fewer comparisons. 
+For example, the fourth largest element in a list of 12 elements can be found with 12 comparisons in the worst case (improving the theoretical bound of $n \log n$ by factor 2). \cite[p. 212]{Knuth1973} Generally, by introducing elegant methods for comparing the elements of a list, upper bounds can be established. 
+On the contrary, showing that a method uses the optimal amount of comparisons requires an extended set of tools.
+Gasarch et al. \cite{Gasarch1996} first introduced computer search to find optimal numbers of comparisons for small values of $n$ and $i$ as well as upper bounds for slightly larger values of $i$ and $n$.
 
 On his website, Kenneth Oksanen \cite{Oksanen} published a computer search algorithm for this problem along with results that improve previously known lower bounds for n=13, n=14 and n=15. However, the results are not published in a scientific journal and lack explanation. \newline
 %Der folgende Abschnitt sollte im Hinblick auf unsere Vorgehensweise beim Verfassen der Ausarbeitung angepasst werden. Indem wir uns evtl. im Vorfeld auf eine genaue Formulierung verständigen, platzieren wir den roten Faden für die restliche Ausarbeitung.
-In this project we are interested in retracing the results of Oksanen by implementing his algorithm and exploring the benefit of Forward Search versus Backward Search. Furthermore, the potential of Bidirectional search, Alpha-Beta-Pruning and the exploitation of compatible Posets is assessed. \newline
+In this project we are interested in retracing the results of Oksanen by implementing his algorithm and exploring the benefit of Forward Search versus Backward Search. 
+Furthermore, the potential of Bidirectional search, Alpha-Beta-Pruning and the exploitation of compatible Posets is assessed. \newline
 \\
 \textit{Extract from: cs.hut.fi/~cessu/selection/:}
 \IEEEPARstart{T}{he} problem has been widely studied
@@ -659,11 +666,10 @@ Optimal algorithms are known for any `n' when `i' is one or two, but for example
 the median ($i = n/2$), there is a significant performance gap from the best known algorithm
 (approximately $2.97 n + o(n)$ comparisons) to the tightest known minimum $(2 n - o\left (n \right )$).
 
-Many other special cases are also known, such as the ones given in the table below. Many of
-these were previously found by Gasarch, Kelly and Pugh who introduced computer searching to
-find the optimal selection algorithms. The additional results presented in the table above have
-been found by my independent implementation, but it probably shares many characteristics with
-Gasarch's.
+Many other special cases are also known, such as the ones given in the table below.
+Many of these were previously found by Gasarch, Kelly and Pugh who introduced computer searching to
+find the optimal selection algorithms. 
+The additional results presented in the table above have been found by my independent implementation, but it probably shares many characteristics with Gasarch's.
 
 
 
@@ -672,13 +678,15 @@ Gasarch's.
 The basic algorithm for finding the $i$th largest element of a list of $n$ elements is to compare elements pairwise until the $i$th largest element can be deduced. 
 This process can be regarded as building up a partial order where each edge represents a comparison.
 \subsubsection{Example}
-For example, David G. Doren found an elegant method to determine the fourth largest element in a list of eight elements with twelve comparisons. \cite[p. 212]{Knuth1973}. Let $X_1, \dots , X_8$ be the elements of the list.
+For example, David G. Doren found an elegant method to determine the fourth largest element in a list of eight elements with twelve comparisons \cite[p. 212]{Knuth1973}. 
+Let $X_1, \dots , X_8$ be the elements of the list.
 First compare $X_1 : X_2$ and $X_3 : X_4$. 
 Then, compare the larger two elements.
 The same is done for $X_5 : X_6$ and $X_7 : X_8$.
 To abstract from the actual outcome the elements can be renamed so that $X_1 < X_2 < X_4 > X_3$ and  $X_5 < X_6 < X_8 > X_7$.
 Then, compare $X_2 : X_6$ and assume $X_2 < X_6$.
-The resulting hasse diagram in Figure~\ref{fig:Hasse_i4_n8_a} shows that there are at least four elements that are larger than $X_1$. Therefore, $X_1$ can be excluded from further considerations.
+The resulting hasse diagram in Figure~\ref{fig:Hasse_i4_n8_a} shows that there are at least four elements that are larger than $X_1$. 
+Therefore, $X_1$ can be excluded from further considerations.
 Similar applies to $X_8$ which is found to be larger than at least 5 elements.
 The remaining problem is equivalent to finding the third largest element in a list of six elements.
 Next, compare $X_2 : X_7$.
@@ -734,7 +742,8 @@ Consider the worst case where $X_2 < X_7$. The resulting hasse diagram in Figure
 \subsection{Partial Order}
 A partial order, often simply called a reflexive, weak, or non-strict partial order, is a
 homogeneous relation $\leq$ on a set $P$ that satisfies reflexivity, anti symmetry, and
-transitivity. For any $a, b, c \in P$, it must adhere to the following conditions:
+transitivity. 
+For any $a, b, c \in P$, it must adhere to the following conditions:
 
 \begin{itemize}
   \item Reflexivity: $a \leq a$, meaning every element is related to itself.
