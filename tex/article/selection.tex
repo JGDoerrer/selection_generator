@@ -64,6 +64,8 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
 
 % Some very useful LaTeX packages include:
 % (uncomment the ones you want to load)
@@ -350,7 +352,7 @@
 
 % *** PDF, URL AND HYPERLINK PACKAGES ***
 %
-%\usepackage{url}
+\usepackage{url}
 % url.sty was written by Donald Arseneau. It provides better support for
 % handling and breaking URLs. url.sty is already installed on most LaTeX
 % systems. The latest version and documentation can be obtained at:
@@ -666,8 +668,57 @@ Gasarch's.
 
 
 \section{Fundamentals}
-\subsection{Algorithms for Finding the 'i-th' of 'n'}
+\subsection{Algorithms for Finding the i-th largest of n elements}
+The basic algorithm for finding the $i$th largest element of a list of $n$ elements is to compare elements pairwise until the $i$th largest element can be deduced. 
+This process can be regarded as building up a partial order where each edge represents a comparison.
 \subsubsection{Example}
+For example, David G. Doren found an elegant method to determine the fourth largest element in a list of eight elements with twelve comparisons. \cite[p. 212]{Knuth1973}. Let $X_1, \dots , X_8$ be the elements of the list.
+First compare $X_1 : X_2$ and $X_3 : X_4$. 
+Then, compare the larger two elements.
+The same is done for $X_5 : X_6$ and $X_7 : X_8$.
+To abstract from the actual outcome the elements can be renamed so that $X_1 < X_2 < X_4 > X_3$ and  $X_5 < X_6 < X_8 > X_7$.
+Then, compare $X_2 : X_6$ and assume $X_2 < X_6$.
+The resulting hasse diagram in Figure~\ref{fig:Hasse_i4_n8_a} shows that there are at least four elements that are larger than $X_1$. Therefore, $X_1$ can be excluded from further considerations.
+Similar applies to $X_8$ which is found to be larger than at least 5 elements.
+The remaining problem is equivalent to finding the third largest element in a list of six elements.
+Next, compare $X_2 : X_7$.
+The smaller element can be excluded, since it will be smaller than three elements. 
+Consider the worst case where $X_2 < X_7$. The resulting hasse diagram in Figure~\ref{fig:Hasse_i4_n8_b} shows that the third largest element can be found with at most four more comparisons.
+\begin{figure}
+  \subfloat[]{
+    \begin{tikzpicture}[scale=0.8]
+      \node (X1) at (2,-1) {$X_1$};
+      \node (X2) at (2,0) {$X_2$};
+      \node (X3) at (0,0) {$X_3$};
+      \node (X4) at (1,1) {$X_4$};
+      \node (X5) at (4,0) {$X_5$};
+      \node (X6) at (3,1) {$X_6$};
+      \node (X7) at (5,1) {$X_7$};
+      \node (X8) at (4,2) {$X_8$};
+  
+      \draw (X1) -- (X2) -- (X4);
+      \draw (X4) -- (X3);
+      \draw (X5) -- (X6) -- (X8);
+      \draw (X7) -- (X8);
+      \draw (X2) -- (X6);
+  \end{tikzpicture}
+  \label{fig:Hasse_i4_n8_a}}
+  \subfloat[]{
+    \begin{tikzpicture}[scale=0.8]
+      \node (X3) at (0,0) {$X_3$};
+      \node (X4) at (0,1) {$X_4$};
+      \node (X5) at (3,0) {$X_5$};
+      \node (X6) at (3,1) {$X_6$};
+      \node (X7) at (1.5,0.5) {$X_7$};
+
+      \draw (X4) -- (X3);
+      \draw (X5) -- (X6);
+
+    \end{tikzpicture}
+  \label{fig:Hasse_i4_n8_b}}
+\caption{Hasse diagram for finding the $4$th largest element in a list of $8$ elements.}
+\label{fig:Hasse_i4_n8}
+\end{figure}
 \begin{figure}
   \centering
   \includegraphics[width=0.5\columnwidth]{figures/Median_of_5.svg.png}
@@ -691,7 +742,7 @@ transitivity. For any $a, b, c \in P$, it must adhere to the following condition
   \item Transitivity: If $a \leq b$ and $b \leq c$, then $a \leq c$.
 \end{itemize}
 
-A non-strict partial order is also known as an antisymmetric preorder. [\todo{cite:https://en.wikipedia.org/wiki/Partially_ordered_set}]
+A non-strict partial order is also known as an antisymmetric preorder. %[\todo{cite:https://en.wikipedia.org/wiki/Partially_ordered_set}]
 
 \subsubsection*{Hasse Diagrams}
 \begin{figure}
