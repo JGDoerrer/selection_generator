@@ -770,6 +770,10 @@ A non-strict partial order is also known as an antisymmetric preorder. %[\todo{c
   \label{fig:hasse_diagram_of_xyz}
 \end{figure}
 \subsubsection{Solvability}
+The solvability of a partial order can be determined in the following way.
+For each element count the nodes that are smaller than it and count the elements that are larger than it.
+If theree is an element that is larger than $n-i$ elements and smaller than $i-1$ elements, this element is the $i$th largest element.
+This element is the $i$th largest in the list and thus, the poset is solvable.
 \subsection{Graph Search}
 \subsubsection{Forward Search}
 \subsubsection{Backword Search}
