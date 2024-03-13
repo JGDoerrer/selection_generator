@@ -82,7 +82,7 @@
 % When switching from latex to pdflatex and vice-versa, the compiler may
 % have to be run twice to clear warning/error messages.
 
-
+\usepackage{tikz}
 
 
 
@@ -666,6 +666,48 @@ Gasarch's.
 
 \section{Methods and Tools}
 \subsection{Forward Search}
+The notion of forward search encompasses the top-down traversal of a search tree whose nodes are partial orders.
+The root of the tree is the empty poset, and the leaves are the solvable posets. 
+The search tree is traversed in a depth-first manner, and the search is terminated as soon as a solved poset is found.
+The goal is to determine the minimum number of comparisons required to solve the poset. 
+This number has to hold even for the worst case outcome of the comparisons. 
+However, the comparisons, e.g. the choice of the elements to be compared is free. 
+The optimal choice is to be determined during the search.
+This premise is implemented by Minimax algorithms as shown in figure~\ref{fig:minimax_search}.
+
+\begin{figure}
+  \begin{tikzpicture}[scale=0.8]
+    \tiny
+    \node (A1) at (0,0) {$\vdots$};
+    \node (A2) at (2,0) {$\vdots$};
+    \node (A3) at (3.5,0.4) {$\dots$};
+    \node (A4) at (6,0) {$\vdots$};
+
+    \node (B1) at (2,1) {MIN};
+
+    \draw (B1) -- (A1) node[above,pos=0.6, xshift=-0.4cm] {$\{1,3\}$};
+    \draw (B1) -- (A2) node[right, midway] {$\{1,4\}$};
+    \draw (B1) -- (A4) node[right, pos=0.3, xshift=6mm] {$\{n \!- \! 1,n\}$};
+
+    \node (C1) at (5,2) {MAX};
+    \node (B2) at (7,1) {$\vdots$};
+
+    \draw (C1) -- (B2) node[right, pos=0.3, xshift=4mm] {$(2,1)$};
+
+    \draw (B1) -- (C1) node[left, pos=0.7, xshift=-4mm] {$(1,2)$};
+
+    \node (D1) at (8,3) {MIN};
+    \node (C2) at (8,2) {$\vdots$};
+    \node (C3) at (8.7,2.3) {$\dots$};
+    \node (C4) at (10,2) {$\vdots$};
+
+    \draw (D1) -- (C1) node[left,pos=0.3,xshift=-3mm] {$\{1,2\}$};
+    \draw (D1) -- (C2) node[left, midway, xshift=0.5mm] {$\{1,3 \! \}$};
+    \draw (D1) -- (C4) node[right, pos=0.3,xshift=2mm] {$\{n \! - \! 1,n\}$};
+    
+  \end{tikzpicture}
+  \caption{Minimax search algorithm} \label{fig:minimax_search}
+\end{figure}
 
 \subsection{Backward search}
 
