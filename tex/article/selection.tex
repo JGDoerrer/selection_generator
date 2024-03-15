@@ -50,11 +50,11 @@
 
 \IEEEtitleabstractindextext{%
   \begin{abstract}
-    This summary aims to briefly describe the core points of the.
+    This research project aims to find worst case optimal comparison algorithms for selecting the i-th smallest of n elements of a set for n up to 15 with computer search.
   \end{abstract}
 
   \begin{IEEEkeywords}
-    Add some keywords of your summary/the article. \cite{DBLP:journals/corr/abs-2001-02478,}
+    Selection, Pessimistic lower Bound, Partial Order Sets, Computer Search
   \end{IEEEkeywords}}
 
 
@@ -67,7 +67,7 @@
 
 \IEEEraisesectionheading{\section{Motivation}\label{sec:motivation}}
 
-\IEEEPARstart{T}{he} problem of selecting the $i$th largest element in a list of $n$ elements is a well known problem in computer science. The problem can be solved by sorting the list and then selecting the $i$th element. However, this approach has a time complexity of $\mathcal{O}(n \log n)$. For some small values of i and n algorithms could be found that require fewer comparisons. For example, the fourth largest element in a list of 12 elements can be found with 12 comparisons in the worst case (improving the theoretical bound of $n \log n$ by factor 2). \cite[p. 212]{Knuth1973} Generally, by introducing elegant methods for comparing the elements of a list, upper bounds can be established. On the contrary, showing that a method uses the optimal amount of comparisons requires an extended set of tools. Gasarch et al. \cite{Gasarch1996} first introduced computer search to find optimal numbers of comparisons for small values of $n$ and $i$ as well as upper bounds for slightly larger values of $i$ and $n$.
+\IEEEPARstart{T}{he} problem of selecting the $i$th smallest element in a list of $n$ elements is a well known problem in computer science. The problem can be solved by sorting the list and then selecting the $i$th element. However, this approach has a time complexity of $\mathcal{O}(n \log n)$. For some small values of i and n algorithms could be found that require fewer comparisons. For example, the fourth largest element in a list of 12 elements can be found with 12 comparisons in the worst case (improving the theoretical bound of $n \log n$ by factor 2). \cite[p. 212]{Knuth1973} Generally, by introducing elegant methods for comparing the elements of a list, upper bounds can be established. On the contrary, showing that a method uses the optimal amount of comparisons requires an extended set of tools. Gasarch et al. \cite{Gasarch1996} first introduced computer search to find optimal numbers of comparisons for small values of $n$ and $i$ as well as upper bounds for slightly larger values of $i$ and $n$.
 
 On his website, Kenneth Oksanen \cite{Oksanen} published a computer search algorithm for this problem along with results that improve previously known lower bounds for n=13, n=14 and n=15. However, the results are not published in a scientific journal and lack explanation. \newline
 %Der folgende Abschnitt sollte im Hinblick auf unsere Vorgehensweise beim Verfassen der Ausarbeitung angepasst werden. Indem wir uns evtl. im Vorfeld auf eine genaue Formulierung verständigen, platzieren wir den roten Faden für die restliche Ausarbeitung.
@@ -94,14 +94,21 @@ Gasarch's.
 
 \section{Methods and Tools}
 \subsection{Forward Search}
-The notion of forward search encompasses the top-down traversal of a search tree whose nodes are partial orders.
-The root of the tree is the empty poset, and the leaves are the solvable posets. 
-The search tree is traversed in a depth-first manner, and the search is terminated as soon as a solved poset is found.
-The goal is to determine the minimum number of comparisons required to solve the poset. 
-This number has to hold even for the worst case outcome of the comparisons. 
-However, the comparisons, e.g. the choice of the elements to be compared is free. 
-The optimal choice is to be determined during the search.
+Forward Search starts with an empty Poset, i.e. one with entirely unknown ordering of its elements, and recursively determines solvability of a given Poset within some bound by exhaustively searching the results of all possible comparisons to be made unless it is already solved or we determine that it cannot be solved within the alloted number of comparisons by some heuristic.
+
+Between the two possible outcomes of a comparison we assume the worse, but since an algorithm is free to choose which elements to compare we are looking for the most useful comparison, the one that yields result Posets cheapest to solve themselves, still in terms of worst case outcome. 
+The algorithms output by the search program are built by saving the comparison that lead to this cheapest to solve result.
+
+To limit memory cost and allow further pruning we traverse the search tree depth first, reducing the maximum number of comparisons alloted to child Posets to one less than the current best result found.
 This premise is implemented by Minimax algorithms as shown in figure~\ref{fig:minimax_search}.
+
+We can drastically speed up this exploration by caching previous results, even with a simple usage based ejection policy. Since the search always imposes an upper bound for the number of comparisons to allow this also includes yet unsolved Posets, for which we note the currently known minimum.
+
+It is optimal because of an inductive argument over the number of relative orders deternined. An already solved Poset obviously takes no further comparisons to solve. Then given an unsolved Poset with all elements already too large or small excluded we must make at least one more comparison to make progress. 
+Since all Posets resulting from these comparisons must have more elemets ordered than the current one has we can assume as per induction that we know their optimal cost.
+Then we cannot solve the Poset in less than the cost of the cheapest of these comparisons, plus one for the comparison itself, hence the current Poset is also solved optimally.
+
+It is also complete for a given upper bound, explainable through a similar inductive argument. If the Poset is solvable within that bound then at least one of its possible comparisons must have both outcomes be solvable within the bound lowered by one. Since the search only lowers the bound imposed on its recursive descendants beyond that once at least one has been solved, we are also guaranteed to find a solution for the original Poset if it exists within the bound.
 
 \begin{figure}
   \begin{tikzpicture}[scale=0.8]
@@ -137,7 +144,15 @@ This premise is implemented by Minimax algorithms as shown in figure~\ref{fig:mi
   \caption{Minimax search algorithm} \label{fig:minimax_search}
 \end{figure}
 
-\subsection{Backward search}
+\subsection{Backward Search}
+
+Backward search starts with a solved Poset, then repeatedly attempts to remove comparisons from its frontier Posets such that the same Poset with the opposite comparison result is also found within those already discovered.
+
+Thus the number of iterations taken until a Poset is added to the frontier equals the number of worst case comparisons needed to solve it, which means that the search terminates once the empty Poset with the desired $n$ and $i$ is found.
+
+The argument for the correctness is the number of comparisons we have found all Posets solvable within them for, equal to the number of iterations of the search.
+If for a given Poset and a comparison within it we have already discovered both results then their cost must be less than the current number of iterations, so the Poset is solvable within that number and because this did not hold true in a previous iteration the cost must also be optimal.
+And if a Poset is solvable within that number of comparisons it must have at least one comparison with a result among the Posets discovered in the previous iteration, as otherwise it would have to be solvable in less.
 
 \subsection{Bidirectional Search}
 
