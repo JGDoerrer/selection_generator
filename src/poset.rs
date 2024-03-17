@@ -547,21 +547,16 @@ impl Poset {
     debug_assert!((self.n as usize) < MAX_N);
     debug_assert!(self.is_closed());
 
-    let (less, greater) = self.calculate_relations(); //TODO: in normal: less and greater swapped
+    let (less, greater) = self.calculate_relations();
 
     let mut new_indices = [0u8; MAX_N];
     let mut n_less_dropped = 0;
     let mut new_n = 0u8;
-    let mut b = (self.n - 1) as usize;
 
     for i in 0..self.n {
       if self.i < less[i as usize] {
-        new_indices[b] = i;
-        b -= 1;
       } else if (self.n - 1) - self.i < greater[i as usize] {
         n_less_dropped += 1;
-        new_indices[b] = i;
-        b -= 1;
       } else {
         new_indices[new_n as usize] = i;
         new_n += 1;
@@ -917,14 +912,16 @@ impl Poset {
     }
 
     let mut swap_init = VecDeque::new();
-    swap_init.push_back((temp, 0));
-    while let Some((poset, number)) = swap_init.pop_back() {
+    swap_init.push_back((temp, 0, false));
+    while let Some((poset, number, is_result)) = swap_init.pop_back() {
       for k in number..(poset.n - 1) {
         if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
           let new_poset = poset.with_less(k, poset.n - 1);
-          swap_init.push_back((new_poset.clone(), k + 1));
-          if new_poset.can_reduce_element_greater(new_poset.n - 1) {
+          if is_result || new_poset.can_reduce_element_greater(new_poset.n - 1) {
+            swap_init.push_back((new_poset.clone(), k + 1, true));
             result.insert(new_poset);
+          } else {
+            swap_init.push_back((new_poset.clone(), k + 1, false));
           }
         }
       }
@@ -995,14 +992,16 @@ impl Poset {
     }
 
     let mut swap_init = VecDeque::new();
-    swap_init.push_back((temp, 0));
-    while let Some((poset, number)) = swap_init.pop_back() {
+    swap_init.push_back((temp, 0, false));
+    while let Some((poset, number, is_result)) = swap_init.pop_back() {
       for k in number..(poset.n - 1) {
         if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
           let new_poset = poset.with_less(poset.n - 1, k);
-          swap_init.push_back((new_poset.clone(), k + 1));
-          if new_poset.can_reduce_element_less(new_poset.n - 1) {
+          if is_result || new_poset.can_reduce_element_less(new_poset.n - 1) {
+            swap_init.push_back((new_poset.clone(), k + 1, true));
             result.insert(new_poset);
+          } else {
+            swap_init.push_back((new_poset.clone(), k + 1, false));
           }
         }
       }
