@@ -285,33 +285,25 @@ impl NormalPoset {
     #[inline]
     pub fn reduce_elements(&mut self) -> [usize; MAX_N] {
         // can the element be ignored, because it is too large/small
-        let mut dropped = [false; MAX_N];
         let mut n_less_dropped = 0;
 
         let (less, greater) = self.calculate_relations();
 
-        for i in 0..self.n as usize {
-            if greater[i] > self.n - self.i - 1 {
-                n_less_dropped += 1;
-                dropped[i] = true;
-            } else if less[i] > self.i {
-                dropped[i] = true;
-            }
-        }
-
         // maps the old indices to the new ones
         let mut new_indices = [0; MAX_N];
         let mut new_n = 0;
-        // let mut b = self.n as usize - 1;
 
         for i in 0..self.n {
-            if !dropped[i as usize] {
-                new_indices[new_n] = i as usize;
+            if self.i < less[i as usize] {
+            } else if (self.n - 1) - self.i < greater[i as usize] {
+                n_less_dropped += 1;
+            } else {
+                new_indices[new_n as usize] = i as usize;
                 new_n += 1;
             }
         }
 
-        if self.n == new_n as u8 {
+        if self.n == new_n {
             return new_indices;
         }
 
@@ -321,7 +313,7 @@ impl NormalPoset {
         for i in 0..new.n {
             for j in 0..new.n {
                 if self.is_less(new_indices[i as usize] as u8, new_indices[j as usize] as u8) {
-                    new.set_is_less(i, j)
+                    new.set_is_less(i, j);
                 }
             }
         }

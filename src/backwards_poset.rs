@@ -416,21 +416,16 @@ impl BackwardsPoset {
         debug_assert!((self.n as usize) < MAX_N);
         debug_assert!(self.is_closed());
 
-        let (less, greater) = self.calculate_relations(); //TODO: in normal: less and greater swapped
+        let (less, greater) = self.calculate_relations();
 
         let mut new_indices = [0u8; MAX_N];
         let mut n_less_dropped = 0;
         let mut new_n = 0u8;
-        let mut b = (self.n - 1) as usize;
 
         for i in 0..self.n {
             if self.i < less[i as usize] {
-                new_indices[b] = i;
-                b -= 1;
             } else if (self.n - 1) - self.i < greater[i as usize] {
                 n_less_dropped += 1;
-                new_indices[b] = i;
-                b -= 1;
             } else {
                 new_indices[new_n as usize] = i;
                 new_n += 1;
