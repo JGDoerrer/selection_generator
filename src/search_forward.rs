@@ -255,6 +255,9 @@ impl<'a> Search<'a> {
 
         let (less, greater) = poset.calculate_relations();
 
+        let mut best = (0, 0);
+        let mut best_count = 0;
+
         for i in 0..poset.n() {
             if !(less[i as usize] == 0 && greater[i as usize] >= 2) {
                 continue;
@@ -265,14 +268,23 @@ impl<'a> Search<'a> {
                     continue;
                 }
 
-                let cost = self.search_rec(poset.with_less(i, j), max_comparisons, depth + 1);
-                match cost {
-                    Cost::Solved(solved) => {
-                        return Some(solved <= max_comparisons);
-                    }
-                    Cost::Minimum(_) => {
-                        return Some(false);
-                    }
+                let count = greater[i as usize] + less[j as usize];
+
+                if count > best_count {
+                    best = (i, j);
+                    best_count = count;
+                }
+            }
+        }
+
+        if best_count > 0 {
+            let cost = self.search_rec(poset.with_less(best.0, best.1), max_comparisons, depth + 1);
+            match cost {
+                Cost::Solved(solved) => {
+                    return Some(solved <= max_comparisons);
+                }
+                Cost::Minimum(_) => {
+                    return Some(false);
                 }
             }
         }
