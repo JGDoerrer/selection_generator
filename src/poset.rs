@@ -75,8 +75,8 @@ pub trait Poset: Sized + Debug {
         let mut sum = 0;
 
         for i in 0..self.n() as usize {
-            sum += (MAX_N as u32 - (self.i() - greater[i]) as u32).pow(2);
-            sum += (MAX_N as u32 - (self.n() - self.i() - 1 - less[i]) as u32).pow(2);
+            sum += (MAX_N as u32 - (self.i() - less[i]) as u32).pow(2);
+            sum += (MAX_N as u32 - (self.n() - self.i() - 1 - greater[i]) as u32).pow(2);
         }
 
         sum
@@ -143,48 +143,6 @@ pub trait Poset: Sized + Debug {
                 .filter(|s| s.len() == self.i() as usize)
                 .count();
         }
-        // for i in 0..self.n() as usize {
-        //     // assume the ith element is the solution
-
-        //     let less_than_i = all_less_than[i];
-        //     let greater_than_i = self.get_all_greater_than(i as u8);
-
-        //     less_subsets.clear();
-        //     less_subsets.push(BitSet::empty());
-
-        //     for j in 0..self.n() as usize {
-        //         if j == i || greater_than_i.contains(j) {
-        //             continue;
-        //         }
-
-        //         let less_than_j = all_less_than[j];
-
-        //         // try adding j to all previous subsets
-        //         if less_than_i.contains(j) {
-        //             // all subsets must contain j to be valid
-        //             for subset in &mut less_subsets {
-        //                 subset.insert(j);
-        //             }
-        //         } else {
-        //             for i in 0..less_subsets.len() {
-        //                 let subset = less_subsets[i];
-
-        //                 // test if adding j would make a valid subset
-        //                 // we know, that there is no k with p[k] > p[j]
-        //                 if less_than_j.intersect(subset) == less_than_j {
-        //                     let mut new_subset = subset;
-        //                     new_subset.insert(j);
-        //                     less_subsets.push(new_subset);
-        //                 }
-        //             }
-        //         }
-        //     }
-
-        //     sum += less_subsets
-        //         .iter()
-        //         .filter(|s| s.len() == self.i() as usize)
-        //         .count();
-        // }
 
         sum
     }

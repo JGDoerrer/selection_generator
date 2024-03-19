@@ -10,7 +10,8 @@ use crate::{
     cache::Cache,
     canonified_poset::CanonifiedPoset,
     constants::{LOWER_BOUNDS, UPPER_BOUNDS},
-    poset::Poset, utils::format_duration,
+    poset::Poset,
+    utils::format_duration,
 };
 
 pub struct Search<'a> {
@@ -247,27 +248,10 @@ impl<'a> Search<'a> {
         max_comparisons: u8,
         depth: u8,
     ) -> Option<bool> {
-        let mut comparisons = 0;
-        for i in 0..poset.n() {
-            'j_loop: for j in poset.get_all_greater_than(i) {
-                let j = j as u8;
-                for k in (i + 1)..j {
-                    if poset.is_less(i, k) && poset.is_less(k, j) {
-                        continue 'j_loop;
-                    }
-                }
-
-                comparisons += 1;
-            }
-        }
-        if comparisons + max_comparisons < poset.n() {
+        let compatible_posets = poset.num_compatible_posets();
+        if compatible_posets == 0 || (max_comparisons as u32) < compatible_posets.ilog2() {
             return Some(false);
         }
-
-        // let compatible_posets = poset.num_compatible_posets();
-        // if compatible_posets == 0 || (max_comparisons as u32) < compatible_posets.ilog2() {
-        //     return Some(false);
-        // }
 
         let (less, greater) = poset.calculate_relations();
 

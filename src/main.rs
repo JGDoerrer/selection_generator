@@ -285,7 +285,7 @@ where
     .unwrap();
     writeln!(
         writer,
-        "    if {} > {} {{",
+        "    if {} < {} {{",
         VARIABLES[i as usize], VARIABLES[j as usize]
     )
     .unwrap();

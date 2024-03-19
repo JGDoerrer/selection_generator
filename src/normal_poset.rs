@@ -137,7 +137,7 @@ impl NormalPoset {
 
         canonified
     }
-    
+
     #[inline]
     pub fn canonify(&mut self) {
         self.reduce_elements();
@@ -291,10 +291,10 @@ impl NormalPoset {
         let (less, greater) = self.calculate_relations();
 
         for i in 0..self.n as usize {
-            if greater[i] > self.i {
-                dropped[i] = true;
-            } else if less[i] > self.n - self.i - 1 {
+            if greater[i] > self.n - self.i - 1 {
                 n_less_dropped += 1;
+                dropped[i] = true;
+            } else if less[i] > self.i {
                 dropped[i] = true;
             }
         }
