@@ -314,16 +314,29 @@ where
             poset.n()
         )
         .unwrap();
-        writeln!(
-            writer,
-            "    let ({less_diff}) = if {} < {} {{",
-            VARIABLES[i as usize], VARIABLES[j as usize]
-        )
-        .unwrap();
-        writeln!(writer, "        ({less_diff})").unwrap();
-        writeln!(writer, "    }} else {{").unwrap();
-        writeln!(writer, "        ({greater_diff})").unwrap();
-        writeln!(writer, "    }};").unwrap();
+        if different.iter().filter(|a| **a).count() == 1 {
+            writeln!(
+                writer,
+                "    let {less_diff} = if {} < {} {{",
+                VARIABLES[i as usize], VARIABLES[j as usize]
+            )
+            .unwrap();
+            writeln!(writer, "        {less_diff}").unwrap();
+            writeln!(writer, "    }} else {{").unwrap();
+            writeln!(writer, "        {greater_diff}").unwrap();
+            writeln!(writer, "    }};").unwrap();
+        } else {
+            writeln!(
+                writer,
+                "    let ({less_diff}) = if {} < {} {{",
+                VARIABLES[i as usize], VARIABLES[j as usize]
+            )
+            .unwrap();
+            writeln!(writer, "        ({less_diff})").unwrap();
+            writeln!(writer, "    }} else {{").unwrap();
+            writeln!(writer, "        ({greater_diff})").unwrap();
+            writeln!(writer, "    }};").unwrap();
+        }
         writeln!(writer, "    select_{less_index}([{less_vars}])").unwrap();
         writeln!(writer, "}}").unwrap();
     } else {
