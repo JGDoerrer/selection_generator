@@ -270,30 +270,88 @@ where
         .map(|s| ", ".to_string() + s.as_str())
         .unwrap_or("".to_string());
 
-    writeln!(
-        writer,
-        "/// n = {}, i = {}{comparisons}",
-        poset.n(),
-        poset.i()
-    )
-    .unwrap();
-    writeln!(
-        writer,
-        "fn select_{index}([{vars}]: [usize; {}]) -> usize {{",
-        poset.n()
-    )
-    .unwrap();
-    writeln!(
-        writer,
-        "    if {} < {} {{",
-        VARIABLES[i as usize], VARIABLES[j as usize]
-    )
-    .unwrap();
-    writeln!(writer, "        select_{less_index}([{less_vars}])").unwrap();
-    writeln!(writer, "    }} else {{").unwrap();
-    writeln!(writer, "        select_{greater_index}([{greater_vars}])").unwrap();
-    writeln!(writer, "    }}").unwrap();
-    writeln!(writer, "}}").unwrap();
+    if less_index == greater_index {
+        debug_assert_eq!(less.n(), greater.n());
+        let mut different = [false; MAX_N];
+        let n = less.n() as usize;
+
+        for i in 0..n {
+            if less_mapping[i] != greater_mapping[i] {
+                different[i] = true;
+            }
+        }
+
+        let less_diff = less_mapping
+            .iter()
+            .take(less.n() as usize)
+            .map(|i| VARIABLES[*i as usize].to_string())
+            .enumerate()
+            .filter(|(i, _)| different[*i])
+            .map(|(_, v)| v)
+            .reduce(|a, b| format!("{a}, {b}"))
+            .unwrap();
+
+        let greater_diff = greater_mapping
+            .iter()
+            .take(greater.n() as usize)
+            .map(|i| VARIABLES[*i as usize].to_string())
+            .enumerate()
+            .filter(|(i, _)| different[*i])
+            .map(|(_, v)| v)
+            .reduce(|a, b| format!("{a}, {b}"))
+            .unwrap();
+
+        writeln!(
+            writer,
+            "/// n = {}, i = {}{comparisons}",
+            poset.n(),
+            poset.i()
+        )
+        .unwrap();
+        writeln!(
+            writer,
+            "fn select_{index}([{vars}]: [usize; {}]) -> usize {{",
+            poset.n()
+        )
+        .unwrap();
+        writeln!(
+            writer,
+            "    let ({less_diff}) = if {} < {} {{",
+            VARIABLES[i as usize], VARIABLES[j as usize]
+        )
+        .unwrap();
+        writeln!(writer, "        ({less_diff})").unwrap();
+        writeln!(writer, "    }} else {{").unwrap();
+        writeln!(writer, "        ({greater_diff})").unwrap();
+        writeln!(writer, "    }};").unwrap();
+        writeln!(writer, "    select_{less_index}([{less_vars}])").unwrap();
+        writeln!(writer, "}}").unwrap();
+    } else {
+        writeln!(
+            writer,
+            "/// n = {}, i = {}{comparisons}",
+            poset.n(),
+            poset.i()
+        )
+        .unwrap();
+        writeln!(
+            writer,
+            "fn select_{index}([{vars}]: [usize; {}]) -> usize {{",
+            poset.n()
+        )
+        .unwrap();
+        writeln!(
+            writer,
+            "    if {} < {} {{",
+            VARIABLES[i as usize], VARIABLES[j as usize]
+        )
+        .unwrap();
+        writeln!(writer, "        select_{less_index}([{less_vars}])").unwrap();
+        writeln!(writer, "    }} else {{").unwrap();
+        writeln!(writer, "        select_{greater_index}([{greater_vars}])").unwrap();
+        writeln!(writer, "    }}").unwrap();
+        writeln!(writer, "}}").unwrap();
+    }
 
     index
 }
