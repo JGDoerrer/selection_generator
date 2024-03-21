@@ -40,7 +40,7 @@ pub struct Task {
     pub comparison: (u8, u8),
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
 pub struct Priority {
     pub max_comparisons: u8,
     pub compatible_posets: usize,
@@ -112,7 +112,7 @@ impl Task {
         }
     }
 
-    pub fn expand(self) -> (Arc<SearchState>, impl Iterator<Item = Task>) {
+    pub fn expand(self) -> (Arc<SearchState>, impl Iterator<Item = (Task, Priority)>) {
         let pairs = self.poset.get_comparison_pairs();
         let n_pairs = pairs.len() as u64;
 
@@ -130,13 +130,24 @@ impl Task {
             state.clone(),
             pairs
                 .into_iter()
-                .rev()
-                .map(move |(first, second, i, j, _)| Task {
-                    poset: first,
-                    parent: Parent::Parent(state.clone()),
-                    other: OtherState::Open(second),
-                    depth: state.depth + 1,
-                    comparison: (i, j),
+                .map(move |(first, second, i, j, hardness)| {
+                    let task = Task {
+                        poset: first,
+                        parent: Parent::Parent(state.clone()),
+                        other: OtherState::Open(second),
+                        depth: state.depth + 1,
+                        comparison: (i, j),
+                    };
+                    let max_comparisons = task.max_comparisons();
+                    let compatible_posets = task.poset.num_compatible_posets();
+                    (
+                        task,
+                        Priority {
+                            max_comparisons,
+                            compatible_posets,
+                            hardness,
+                        },
+                    )
                 }),
         )
     }
@@ -215,7 +226,67 @@ impl Ord for Priority {
         other
             .max_comparisons
             .cmp(&self.max_comparisons)
-            .then(self.hardness.cmp(&other.hardness))
             .then(other.compatible_posets.cmp(&self.compatible_posets))
+            .then(self.hardness.cmp(&other.hardness))
+    }
+}
+
+mod test {
+    use std::cmp::Reverse;
+
+    use priority_queue::PriorityQueue;
+
+    use super::Priority;
+
+    #[test]
+    fn priority() {
+        let mut queue = PriorityQueue::new();
+        let p0 = Priority {
+            max_comparisons: 2,
+            compatible_posets: 3,
+            hardness: 10,
+        };
+        let p1 = Priority {
+            max_comparisons: 3,
+            compatible_posets: 2,
+            hardness: 1,
+        };
+        let p2 = Priority {
+            max_comparisons: 2,
+            compatible_posets: 2,
+            hardness: 11,
+        };
+        queue.push(0, p0);
+        queue.push(1, p1);
+        queue.push(2, p2);
+
+        assert_eq!(queue.pop().unwrap().1, p2);
+        assert_eq!(queue.pop().unwrap().1, p0);
+        assert_eq!(queue.pop().unwrap().1, p1);
+
+    }
+
+    #[test]
+    fn sort() {
+        let p0 = Priority {
+            max_comparisons: 2,
+            compatible_posets: 3,
+            hardness: 10,
+        };
+        let p1 = Priority {
+            max_comparisons: 3,
+            compatible_posets: 2,
+            hardness: 1,
+        };
+        let p2 = Priority {
+            max_comparisons: 2,
+            compatible_posets: 2,
+            hardness: 11,
+        };
+
+        let mut queue = vec![p0, p1, p2];
+        queue.sort_unstable_by_key(|e| e.clone());
+
+        assert_eq!(queue, vec![p1, p0, p2]);
     }
 }

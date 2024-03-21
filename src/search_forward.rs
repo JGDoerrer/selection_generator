@@ -1,12 +1,8 @@
 use std::{
-    collections::HashMap,
-    ops::Deref,
-    sync::{
+    cmp::Reverse, collections::HashMap, ops::Deref, sync::{
         atomic::{AtomicU64, AtomicU8, AtomicUsize, Ordering},
         Arc, Mutex, RwLock,
-    },
-    thread::{self, spawn},
-    time::{Duration, Instant},
+    }, thread::{self, spawn}, time::{Duration, Instant}
 };
 
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
@@ -39,7 +35,7 @@ pub struct Search {
 
 struct Worker {
     search: Arc<Search>,
-    private_queue: Vec<Task>,
+    private_queue: Vec<(Task, Priority)>,
 }
 
 impl Deref for Worker {
@@ -168,8 +164,7 @@ impl Search {
         .expand();
 
         worker.private_queue.extend(children);
-        worker.private_queue.sort_by_cached_key(|task| task.poset.estimate_hardness());
-        worker.private_queue.reverse();
+        worker.private_queue.sort_unstable_by_key(|e| e.1);
         self.analytics.inc_length(0, worker.private_queue.len() as u64);
 
 
@@ -239,11 +234,13 @@ impl Worker {
         }
     }
 
-    fn do_task(&mut self, task: Task) {
-        // self.private_queue.push((start, false));
+    fn do_task(&mut self, (task, priority): (Task, Priority)) {
+        let max_comparisons = task.max_comparisons();
+        if priority.compatible_posets.ilog2() as u8 > max_comparisons {
+            self.apply_heuristic_result(&task, Cost::Minimum(max_comparisons + 1));
+        }
 
-        // while let Some(task) = self.fetch_private_task() {
-        if task.max_comparisons() < self.n - 1 {
+        if max_comparisons < self.n - 1 {
             let cost = self.search_rec(task.poset, task.max_comparisons(), task.depth);
             self.apply_heuristic_result(&task, cost);
         } else {
@@ -261,9 +258,6 @@ impl Worker {
                 }
             }
         };
-        // }
-
-        // assert!(self.private_queue.is_empty());
     }
 
     fn search_cache(&self, poset: &CanonifiedPoset) -> Option<Cost> {
@@ -306,18 +300,18 @@ impl Worker {
     }
 
     
-    fn fetch_task(&mut self) -> Option<Task> {
-        if self.private_queue.last().is_some_and(|task| task.depth >= 6) {
+    fn fetch_task(&mut self) -> Option<(Task, Priority)> {
+        if self.private_queue.last().is_some_and(|task| task.0.depth >= 6) {
             // self.analytics.multiprogress.println("pop private");
             self.private_queue.pop()
         } else {
             // self.analytics.multiprogress.println("pop public");
-            let task = self.task_queue.lock().unwrap().pop().map(|e| e.0);
+            let task = self.task_queue.lock().unwrap().pop();
             task.or_else(|| self.private_queue.pop())
         }
     }
 
-    fn fetch_inactive_task(&mut self) -> Option<Task> {
+    fn fetch_inactive_task(&mut self) -> Option<(Task, Priority)> {
         self.fetch_task()
         // while let Some(task) = self.fetch_task() {
         //     let mut active_posets = self.search.active_posets.write().unwrap();
@@ -343,8 +337,8 @@ impl Worker {
     fn queue_global(&mut self, task: Task) {
         let priority = task.priority();
         if queue_privately(&task, &priority) {
-            self.private_queue.push(task);
-            self.private_queue.sort_by_key(|e| e.depth);
+            let i = self.private_queue.binary_search_by_key(&task.depth, |e| e.0.depth).map_or_else(|e| e, |e| e);
+            self.private_queue.insert(i, (task, priority));
         } else {
             self.task_queue.lock().unwrap().push(task, priority);
         }
@@ -510,13 +504,10 @@ impl Worker {
 
         self.analytics.inc_length(state.depth, state.total_children);
 
-        let (mut private, public): (Vec<_>, Vec<_>) = children.map(|e| {
-            let priority = e.priority();
-            (e, priority)
-        }).partition(|e| queue_privately(&e.0, &e.1));
+        let (mut private, public): (Vec<_>, Vec<_>) = children.partition(|e| queue_privately(&e.0, &e.1));
 
         private.sort_by_key(|e| e.1.hardness);
-        self.private_queue.extend(private.into_iter().map(|e| e.0).rev());
+        self.private_queue.extend(private.into_iter().rev());
 
         self.task_queue.lock().unwrap().extend(public);
 
@@ -650,7 +641,7 @@ impl Worker {
 }
 
 fn queue_privately(task: &Task, priority: &Priority) -> bool {
-    task.depth < 6 || priority.compatible_posets.ilog2() < priority.max_comparisons as u32 / 2
+    task.depth < 6 || priority.compatible_posets.ilog2() < 3 * priority.max_comparisons as u32 / 4
 }
 
 fn answers(task: &Task, cost: Cost) -> bool {
