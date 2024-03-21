@@ -18,7 +18,6 @@ use crate::{
     constants::{LOWER_BOUNDS, UPPER_BOUNDS},
     poset::Poset,
     tree::{OtherState, Parent, Priority, SearchState, Task},
-   
     utils::format_duration,
 };
 
@@ -40,7 +39,7 @@ pub struct Search {
 
 struct Worker {
     search: Arc<Search>,
-    private_queue: Vec<(Task, bool)>,
+    private_queue: Vec<Task>,
 }
 
 impl Deref for Worker {
@@ -113,7 +112,7 @@ impl Search {
             let current = current as u8;
             self.current_max.store(current, Ordering::Relaxed);
 
-            let search_result = self.search_threaded(CanonifiedPoset::new(self.n, self.i), current);
+            let search_result = self.search_tree(CanonifiedPoset::new(self.n, self.i), current);
             result = match search_result {
                 Cost::Solved(solved) => solved,
                 Cost::Minimum(min) => {
@@ -148,12 +147,11 @@ impl Search {
         result
     }
 
-    fn search_threaded(self: &Arc<Search>, poset: CanonifiedPoset, max_comparisons: u8) -> Cost {
-        let worker = Worker::new(self.clone());
-        if max_comparisons < Search::MIN_THREAD_COMPARISONS || (self.i == 5 && max_comparisons == 24) {
+    fn search_tree(self: &Arc<Search>, poset: CanonifiedPoset, max_comparisons: u8) -> Cost {
+        let mut worker = Worker::new(self.clone());
+        if max_comparisons < Search::MIN_THREAD_COMPARISONS {
             return worker.search_rec(poset, max_comparisons, 0);
         }
-
         let thread_count = if let Ok(count) = thread::available_parallelism() {
             count.get()
         } else {
@@ -169,52 +167,29 @@ impl Search {
         }
         .expand();
 
-        self.task_queue.lock().unwrap().extend(children.map(|t| {
-            let priority = t.priority();
-            (t, priority)
-        }));
-        self.analytics.inc_length(root.depth, root.total_children);
+        worker.private_queue.extend(children);
+        worker.private_queue.sort_by_cached_key(|task| task.poset.estimate_hardness());
+        worker.private_queue.reverse();
+        self.analytics.inc_length(0, worker.private_queue.len() as u64);
 
-        for _ in 0..max_comparisons / 2 {
-            let task = if let Some(t) = worker.fetch_task() {
-                t
-            } else {
-                return root.current_best();
-            };
-            let r = worker.check_heuristics(&task);
-            if let Some(cost) = r {
-                worker.apply_heuristic_result(&task, cost);
-            } else {
-                worker.expand_task(task);
-            }
-        }
 
         let mut threads = Vec::new();
         self.threads.store(thread_count, Ordering::Relaxed);
-
         for _ in 0..thread_count {
-            let worker = Worker::new(self.clone());
             let root = root.clone();
             threads.push(spawn(move || {
-                // let mut i: u64 = 0;
                 while root.open_children.load(Ordering::Relaxed) > 0 {
-                    while let Some(task) = worker.fetch_task() {
-                        // i = i.wrapping_add(1);
-                        // // update max comparisons
-                        // if i % (1 << 20) == 0 {
-                        //     let mut queue = worker.task_queue.lock().unwrap();
-                        //     queue.iter_mut().for_each(|(t, p)| p.max_comparisons = t.max_comparisons());
-                        // }
-                        worker.search_tree(task);
+                    while let Some(task) = worker.fetch_inactive_task() {
+                        worker.do_task(task);
                     }
-                    thread::sleep(Duration::from_nanos(500));
+                    // let _ = worker.analytics.multiprogress.println(format!("{i}: queue empty"));
+                    thread::sleep(Duration::from_millis(10));
                 }
                 worker.threads.fetch_sub(1, Ordering::Relaxed);
-            }))
+            }));
+            worker = Worker::new(self.clone());
         }
-
         let mut panicking = false;
-
         for handle in threads {
             match handle.join() {
                 Ok(()) => {}
@@ -223,13 +198,11 @@ impl Search {
                 }
             }
         }
-
         assert_eq!(self.active_posets.read().unwrap().len(), 0);
 
         if panicking {
             panic!("Worker panicked")
         }
-
         root.current_best()
     }
 
@@ -266,7 +239,7 @@ impl Worker {
         }
     }
 
-    fn search_tree(&self, task: Task) {
+    fn do_task(&mut self, task: Task) {
         // self.private_queue.push((start, false));
 
         // while let Some(task) = self.fetch_private_task() {
@@ -332,44 +305,70 @@ impl Worker {
         }
     }
 
-    fn fetch_task(&self) -> Option<Task> {
-        let mut active_posets = self.search.active_posets.write().unwrap();
-        let mut task_queue = self.task_queue.lock().unwrap();
-
-        while let Some((task, _)) = task_queue.pop() {
-            let entry = active_posets.get_mut(&task.poset);
-
-            match entry {
-                Some(waiting) => {
-                    self.analytics.stashed.fetch_add(1, Ordering::Relaxed);
-                    waiting.push(task);
-                }
-                None => {
-                    active_posets.insert(task.poset, Vec::new());
-                    return Some(task);
-                }
-            }
+    
+    fn fetch_task(&mut self) -> Option<Task> {
+        if self.private_queue.last().is_some_and(|task| task.depth >= 6) {
+            // self.analytics.multiprogress.println("pop private");
+            self.private_queue.pop()
+        } else {
+            // self.analytics.multiprogress.println("pop public");
+            let task = self.task_queue.lock().unwrap().pop().map(|e| e.0);
+            task.or_else(|| self.private_queue.pop())
         }
-        None
     }
 
-    fn queue_global(&self, task: Task) {
+    fn fetch_inactive_task(&mut self) -> Option<Task> {
+        self.fetch_task()
+        // while let Some(task) = self.fetch_task() {
+        //     let mut active_posets = self.search.active_posets.write().unwrap();
+        //     let entry = active_posets.get_mut(&task.poset);
+
+        //     match entry {
+        //         Some(waiting) => {
+        //             self.analytics.stashed.fetch_add(1, Ordering::Relaxed);
+        //             waiting.push(task);
+        //             drop(active_posets);
+        //         }
+        //         None => {
+        //             active_posets.insert(task.poset, Vec::new());
+        //             drop(active_posets);
+        //             // self.analytics.multiprogress.println("got task");
+        //             return Some(task);
+        //         }
+        //     }
+        // }
+        // None
+    }
+
+    fn queue_global(&mut self, task: Task) {
         let priority = task.priority();
-        self.task_queue.lock().unwrap().push(task, priority);
+        if queue_privately(&task, &priority) {
+            self.private_queue.push(task);
+            self.private_queue.sort_by_key(|e| e.depth);
+        } else {
+            self.task_queue.lock().unwrap().push(task, priority);
+        }
     }
 
-    fn propagate_done(&self, parent: &Parent) {
+    fn propagate_done(&mut self, parent: &Parent) {
         if let Parent::Parent(state) = parent {
             self.analytics.inc(state.depth, 1);
             let open = state.open_children.fetch_sub(1, Ordering::Relaxed) - 1;
 
             if open == 0 {
-                let result = state.current_best();
-                self.insert_cache(state.poset, result);
                 self.analytics
                     .inc_complete(state.depth, state.total_children);
                 self.update_stats(state.depth);
-                self.apply_result(state, result);
+                let max_comparisons = state.max_comparisons();
+                let result = state.current_best();
+
+                // if max_comp was lowered from above a solved result might be suboptimal
+                if !result.is_solved() || result.value() <= max_comparisons + 1 {
+                    self.insert_cache(state.poset, result);
+                    self.apply_result(state, result);
+                } else {
+                    self.apply_result(state, Cost::Minimum(max_comparisons + 1));
+                }
             }
         }
     }
@@ -394,7 +393,7 @@ impl Worker {
         }
     }
 
-    fn apply_result(&self, state: &Arc<SearchState>, cost: Cost) {
+    fn apply_result(&mut self, state: &Arc<SearchState>, cost: Cost) {
         assert!(cost.is_solved() || cost.value() > state.max_comparisons());
 
         if let Some(task) = state.make_second_task(cost) {
@@ -416,7 +415,7 @@ impl Worker {
         self.notify_stashed(&state.poset, cost);
     }
 
-    fn apply_heuristic_result(&self, task: &Task, cost: Cost) {
+    fn apply_heuristic_result(&mut self, task: &Task, cost: Cost) {
         assert!(cost.is_solved() || cost.value() > task.max_comparisons());
         if let Cost::Solved(solved) = cost {
             if let OtherState::Solved(other) = task.other {
@@ -443,7 +442,7 @@ impl Worker {
         self.notify_stashed(&task.poset, cost);
     }
 
-    fn notify_stashed(&self, poset: &CanonifiedPoset, cost: Cost) {
+    fn notify_stashed(&mut self, poset: &CanonifiedPoset, cost: Cost) {
         let waiters = self.active_posets.write().unwrap().remove(poset);
         if let Some(waiters) = waiters {
             self.analytics
@@ -506,12 +505,20 @@ impl Worker {
         None
     }
 
-    fn expand_task(&self, task: Task) -> Arc<SearchState> {
+    fn expand_task(&mut self, task: Task) -> Arc<SearchState> {
         let (state, children) = task.expand();
 
         self.analytics.inc_length(state.depth, state.total_children);
 
-        children.for_each(|task| self.queue_global(task));
+        let (mut private, public): (Vec<_>, Vec<_>) = children.map(|e| {
+            let priority = e.priority();
+            (e, priority)
+        }).partition(|e| queue_privately(&e.0, &e.1));
+
+        private.sort_by_key(|e| e.1.hardness);
+        self.private_queue.extend(private.into_iter().map(|e| e.0).rev());
+
+        self.task_queue.lock().unwrap().extend(public);
 
         state
     }
@@ -640,6 +647,10 @@ impl Worker {
 
         None
     }
+}
+
+fn queue_privately(task: &Task, priority: &Priority) -> bool {
+    task.depth < 6 || priority.compatible_posets.ilog2() < priority.max_comparisons as u32 / 2
 }
 
 fn answers(task: &Task, cost: Cost) -> bool {
