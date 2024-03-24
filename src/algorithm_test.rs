@@ -1,21 +1,13 @@
 #[cfg(test)]
 mod test {
 
+    use indicatif::ProgressBar;
     use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
     use crate::utils::{advance_permutations, fac};
 
-    /// n = 1
-    fn select_1([a]: [usize; 1]) -> usize {
-        a
-    }
-    /// n = 2, i = 0
     fn select_0([a, b]: [usize; 2]) -> usize {
-        if b > a {
-            select_1([a])
-        } else {
-            select_1([b])
-        }
+        return a.min(b);
     }
 
     #[test]
@@ -38,11 +30,13 @@ mod test {
 
         starters.push(numbers.clone());
 
-        while advance_permutations(&mut numbers, &mut split_cycles) {
+        while !advance_permutations(&mut numbers, &mut split_cycles) {
             starters.push(numbers.clone());
         }
 
         assert_eq!(starters.len(), fac(N, N - SPLITS));
+
+        let pb = ProgressBar::new(fac(N, 1) as u64 / 10000);
 
         starters.into_par_iter().for_each(|mut permutation| {
             assert_eq!(select_0(permutation.clone()), I, "{permutation:?}");
@@ -51,8 +45,13 @@ mod test {
             for i in 0..N - SPLITS {
                 cycles[i] = N - SPLITS - i - 1
             }
-            while advance_permutations(&mut permutation[SPLITS..], &mut cycles) {
+            let mut i: usize = 0;
+            while !advance_permutations(&mut permutation[SPLITS..], &mut cycles) {
                 assert_eq!(select_0(permutation.clone()), I, "{permutation:?}");
+                i += 1;
+                if i % 10000 == 0 {
+                    pb.inc(1);
+                }
             }
         });
     }
