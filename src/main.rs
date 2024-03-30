@@ -6,16 +6,23 @@ use clap::{
 use search_backward::single;
 use search_forward::Cost;
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     fs::{DirBuilder, OpenOptions},
     io::{BufWriter, Write},
     str::FromStr,
-    sync::{atomic::AtomicBool, Arc},
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc, RwLock,
+    },
+    thread,
 };
 
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+
 use crate::{
+    backwards_poset::BackwardsPoset,
     cache::Cache,
-    constants::{KNOWN_VALUES, MAX_N},
+    constants::{KNOWN_VALUES, MAX_N, USE_BACKWARD},
     normal_poset::NormalPoset,
     poset::Poset,
     search_forward::Search,
@@ -84,12 +91,101 @@ struct Args {
 }
 
 fn main() {
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(6)
+        .build_global()
+        .unwrap();
+
     let args = Args::parse();
     match args.search_mode {
         SearchMode::Forward => run_forward(args),
         SearchMode::Backward => run_backward(),
         SearchMode::Bidirectional => search_bidirectional::main(),
     }
+}
+
+fn start_search_backward(
+    interrupt: &Arc<AtomicBool>,
+    backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
+    start_poset: BackwardsPoset,
+    n: u8,
+    i0: u8,
+    max_comparisons: u8,
+) -> Option<u8> {
+    {
+        let mut write_lock = backward_search_state
+            .write()
+            .expect("cache shouldn't be poisoned");
+        write_lock.0.insert(start_poset.clone(), 0);
+        write_lock.1 = 0;
+    }
+
+    let mut source = HashSet::new();
+    source.insert(start_poset);
+
+    let mut table = [[false; MAX_N]; MAX_N];
+    BackwardsPoset::rec_temp(&mut table, n as usize, i0 as usize);
+
+    for k in 1..max_comparisons {
+        let start = std::time::Instant::now();
+        let results: Vec<_> = source
+            .par_iter()
+            .map(|item| {
+                if interrupt.load(Ordering::Relaxed) {
+                    HashSet::new()
+                } else {
+                    item.enlarge_and_remove_less(
+                        interrupt,
+                        &backward_search_state
+                            .read()
+                            .expect("cache shouldn't be poisoned")
+                            .0,
+                        &table,
+                        n,
+                        i0,
+                    )
+                }
+            })
+            .collect();
+
+        let mut destination: HashSet<BackwardsPoset> = HashSet::new();
+        for item in results {
+            destination.extend(item);
+        }
+        {
+            let mut write_lock = backward_search_state
+                .write()
+                .expect("cache shouldn't be poisoned");
+            for item in &destination {
+                write_lock.0.insert(item.clone(), k);
+            }
+            write_lock.1 = k as i8;
+        }
+
+        println!(
+            "# {k}: {} => {} in {:.3?} | total cached: {}",
+            source.len(),
+            destination.len(),
+            start.elapsed(),
+            backward_search_state
+                .read()
+                .expect("cache shouldn't be poisoned")
+                .0
+                .len()
+        );
+
+        if destination.contains(&BackwardsPoset::new(n, i0)) {
+            return Some(k);
+        }
+
+        source = destination;
+
+        if interrupt.load(Ordering::Relaxed) {
+            return None;
+        }
+    }
+
+    None
 }
 
 fn run_forward(args: Args) {
@@ -112,7 +208,34 @@ fn run_forward(args: Args) {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
         for i in start_i..(n + 1) / 2 {
-            let result = Search::new(n, i, &mut cache, &mut algorithm).search();
+            let result = if USE_BACKWARD {
+                let backward_search_state = Arc::new(RwLock::new((HashMap::new(), -1)));
+                let interrupt = Arc::new(AtomicBool::new(false));
+                let handle = {
+                    let interrupt_local = interrupt.clone();
+                    let backward_search_state_local = backward_search_state.clone();
+                    thread::spawn(move || {
+                        start_search_backward(
+                            &interrupt_local,
+                            &backward_search_state_local,
+                            BackwardsPoset::new(1, 0),
+                            n,
+                            i,
+                            n * n,
+                        );
+                    })
+                };
+
+                let result =
+                    Search::new(n, i, &mut cache, &mut algorithm).search(&backward_search_state);
+
+                interrupt.store(true, Ordering::Relaxed);
+                handle.join().unwrap();
+                result
+            } else {
+                let backward_search_state = Arc::new(RwLock::new((HashMap::new(), -1)));
+                Search::new(n, i, &mut cache, &mut algorithm).search(&backward_search_state)
+            };
 
             if (n as usize) < KNOWN_VALUES.len() && (i as usize) < KNOWN_VALUES[n as usize].len() {
                 assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);
@@ -369,6 +492,7 @@ where
     index
 }
 
+#[allow(clippy::too_many_lines)]
 fn explore(poset: NormalPoset, mapping: [u8; MAX_N], cache: &Cache) {
     loop {
         let old_mapping = {

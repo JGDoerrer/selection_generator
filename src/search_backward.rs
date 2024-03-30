@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
@@ -14,8 +14,8 @@ fn start_search_backward(
     i0: u8,
     max_comparisons: u8,
 ) -> Option<u8> {
-    let mut poset_cache = HashSet::new();
-    poset_cache.insert(start_poset.clone());
+    let mut poset_cache = HashMap::new();
+    poset_cache.insert(start_poset.clone(), 0);
 
     let mut source = HashSet::new();
     source.insert(start_poset);
@@ -40,7 +40,9 @@ fn start_search_backward(
         for item in results {
             destination.extend(item);
         }
-        poset_cache.extend(destination.clone());
+        for item in &destination {
+            poset_cache.insert(item.clone(), k);
+        }
 
         println!(
             "# {k}: {} => {} in {:.3?} | total cached: {}",

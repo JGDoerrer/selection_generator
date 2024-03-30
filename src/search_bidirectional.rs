@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fmt::{self, Display};
 use std::sync::atomic::{AtomicBool, AtomicI8, Ordering};
 use std::sync::{Arc, RwLock};
@@ -14,7 +14,7 @@ use crate::constants::{lower_bound, upper_bound, KNOWN_VALUES, MAX_N};
 
 fn start_search_backward(
     interrupt: &Arc<AtomicBool>,
-    backward_search_state: &Arc<RwLock<(HashSet<BackwardsPoset>, i8)>>,
+    backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
     start_poset: BackwardsPoset,
     n: u8,
     i0: u8,
@@ -24,7 +24,7 @@ fn start_search_backward(
         let mut write_lock = backward_search_state
             .write()
             .expect("cache shouldn't be poisoned");
-        write_lock.0.insert(start_poset.clone());
+        write_lock.0.insert(start_poset.clone(), 0);
         write_lock.1 = 0;
     }
 
@@ -64,7 +64,9 @@ fn start_search_backward(
             let mut write_lock = backward_search_state
                 .write()
                 .expect("cache shouldn't be poisoned");
-            write_lock.0.extend(destination.clone());
+            for item in &destination {
+                write_lock.0.insert(item.clone(), k);
+            }
             write_lock.1 = k as i8;
         }
 
@@ -122,7 +124,7 @@ impl Display for Statistics {
 }
 
 fn search_recursive(
-    backward_search_state: &Arc<RwLock<(HashSet<BackwardsPoset>, i8)>>,
+    backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
     poset: &BackwardsPoset,
     cache_solvable: &mut CacheTreeSolvable,
     cache_not_solvable: &mut CacheTreeNotSolvable,
@@ -134,7 +136,7 @@ fn search_recursive(
             .read()
             .expect("cache shouldn't be poisoned");
         if remaining_comparisons as i8 == read_lock.1 {
-            return if read_lock.0.contains(poset) {
+            return if read_lock.0.contains_key(poset) {
                 SearchResult::FoundSolution
             } else {
                 SearchResult::NoSolution
@@ -211,7 +213,7 @@ fn search_recursive(
 }
 
 fn start_search_now(
-    backward_search_state: &Arc<RwLock<(HashSet<BackwardsPoset>, i8)>>,
+    backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
     n: u8,
     i: u8,
     cache_solvable: &mut CacheTreeSolvable,
@@ -261,7 +263,7 @@ fn start_search_now(
 }
 
 fn start_search(
-    backward_search_state: &Arc<RwLock<(HashSet<BackwardsPoset>, i8)>>,
+    backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
     n: u8,
     i: u8,
     cache_solvable: &mut CacheTreeSolvable,
@@ -351,6 +353,11 @@ fn start_search(
 }
 
 pub fn main() {
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(8)
+        .build_global()
+        .unwrap();
+
     let mut cache_solvable = CacheTreeSolvable::new();
     let mut cache_not_solvable = CacheTreeNotSolvable::new();
     cache_solvable.insert(&BackwardsPoset::new(1, 0), 0);
@@ -359,7 +366,7 @@ pub fn main() {
         for i in 0..((n + 1) / 2) {
             let mut statistics = Statistics::default();
 
-            let backward_search_state = Arc::new(RwLock::new((HashSet::new(), -1)));
+            let backward_search_state = Arc::new(RwLock::new((HashMap::new(), -1)));
             let interrupt = Arc::new(AtomicBool::new(false));
             let dyn_level = Arc::new(AtomicI8::new(-1));
             let handle = {

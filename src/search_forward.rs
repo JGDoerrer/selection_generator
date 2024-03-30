@@ -1,15 +1,19 @@
 use std::{
     collections::HashMap,
-    sync::atomic::{AtomicU64, Ordering},
+    sync::{
+        atomic::{AtomicU64, Ordering},
+        Arc, RwLock,
+    },
     time::Instant,
 };
 
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 
 use crate::{
+    backwards_poset::BackwardsPoset,
     cache::Cache,
     canonified_poset::CanonifiedPoset,
-    constants::{LOWER_BOUNDS, UPPER_BOUNDS},
+    constants::{LOWER_BOUNDS, UPPER_BOUNDS, USE_BACKWARD},
     poset::Poset,
     utils::format_duration,
 };
@@ -106,7 +110,10 @@ impl<'a> Search<'a> {
         }
     }
 
-    pub fn search(&mut self) -> u8 {
+    pub fn search(
+        &mut self,
+        backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
+    ) -> u8 {
         let start = Instant::now();
 
         let min = LOWER_BOUNDS[self.n as usize][self.i as usize];
@@ -119,7 +126,12 @@ impl<'a> Search<'a> {
             self.current_max = current;
             self.analytics.set_max_depth(current / 2);
 
-            let search_result = self.search_rec(CanonifiedPoset::new(self.n, self.i), current, 0);
+            let search_result = self.search_rec(
+                backward_search_state,
+                CanonifiedPoset::new(self.n, self.i),
+                current,
+                0,
+            );
             result = match search_result {
                 Cost::Solved(solved) => solved,
                 Cost::Minimum(min) => {
@@ -154,7 +166,28 @@ impl<'a> Search<'a> {
         result
     }
 
-    fn search_rec(&mut self, poset: CanonifiedPoset, max_comparisons: u8, depth: u8) -> Cost {
+    fn transform(poset: &CanonifiedPoset) -> BackwardsPoset {
+        let mut result = BackwardsPoset::new(poset.n(), poset.i());
+        for i in 0..poset.n() {
+            for j in 0..poset.n() {
+                if i < j && poset.is_less(i, j) {
+                    result.add_less(i, j);
+                }
+            }
+        }
+        result.normalize();
+
+        result
+    }
+
+    #[allow(clippy::too_many_lines)]
+    fn search_rec(
+        &mut self,
+        backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
+        poset: CanonifiedPoset,
+        max_comparisons: u8,
+        depth: u8,
+    ) -> Cost {
         if poset.n() == 1 {
             return Cost::Solved(0);
         }
@@ -176,7 +209,22 @@ impl<'a> Search<'a> {
             }
         }
 
-        if let Some(false) = self.estimate_solvable(poset, max_comparisons, depth) {
+        if USE_BACKWARD {
+            let read_lock = backward_search_state
+                .read()
+                .expect("cache shouldn't be poisoned");
+            if max_comparisons as i8 + 1 <= read_lock.1 {
+                return if let Some(&value) = read_lock.0.get(&Self::transform(&poset)) {
+                    Cost::Solved(value)
+                } else {
+                    Cost::Minimum(max_comparisons + 1)
+                };
+            }
+        }
+
+        if let Some(false) =
+            self.estimate_solvable(backward_search_state, poset, max_comparisons, depth)
+        {
             let result = Cost::Minimum(max_comparisons + 1);
 
             self.insert_cache(poset, result);
@@ -201,7 +249,8 @@ impl<'a> Search<'a> {
             );
 
             // search the first case of the comparison
-            let first_result = self.search_rec(first, current_best - 2, depth + 1);
+            let first_result =
+                self.search_rec(backward_search_state, first, current_best - 2, depth + 1);
 
             if !first_result.is_solved() || first_result.value() > current_best - 2 {
                 self.analytics.inc(depth, 1);
@@ -209,7 +258,8 @@ impl<'a> Search<'a> {
             }
 
             // search the second case of the comparison
-            let second_result = self.search_rec(second, current_best - 2, depth + 1);
+            let second_result =
+                self.search_rec(backward_search_state, second, current_best - 2, depth + 1);
 
             if !second_result.is_solved() || second_result.value() > current_best - 2 {
                 self.analytics.inc(depth, 1);
@@ -244,6 +294,7 @@ impl<'a> Search<'a> {
 
     fn estimate_solvable(
         &mut self,
+        backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
         poset: CanonifiedPoset,
         max_comparisons: u8,
         depth: u8,
@@ -278,7 +329,12 @@ impl<'a> Search<'a> {
         }
 
         if best_count > 0 {
-            let cost = self.search_rec(poset.with_less(best.0, best.1), max_comparisons, depth + 1);
+            let cost = self.search_rec(
+                backward_search_state,
+                poset.with_less(best.0, best.1),
+                max_comparisons,
+                depth + 1,
+            );
             match cost {
                 Cost::Solved(solved) => {
                     return Some(solved <= max_comparisons);
