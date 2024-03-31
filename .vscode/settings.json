@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
+    "Antisymmetry",
     "Archlinux",
     "bitmask",
     "canonified",
@@ -7,6 +8,7 @@
     "canonify",
     "defaultptn",
     "densenauty",
+    "Doren",
     "Gasarch",
     "getcanon",
     "hashbrown",
@@ -25,10 +27,14 @@
     "posets",
     "powf",
     "prio",
+    "quickselect",
+    "Rivest",
     "rustc",
+    "Schöning",
     "statsblk",
     "stdvec",
-    "topo"
+    "topo",
+    "Zonklar"
   ],
   "cSpell.ignoreWords": [
     "AHCI",
@@ -43,7 +49,5 @@
     "simpledrmdrmfb",
     "wlan"
   ],
-  "rust-analyzer.linkedProjects": [
-    "./Cargo.toml"
-  ]
+  "rust-analyzer.linkedProjects": ["./Cargo.toml"]
 }
