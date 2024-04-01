@@ -19,7 +19,7 @@
     {{\scriptstyle\mathcal{O}}}% \displaystyle
     {{\scriptstyle\mathcal{O}}}% \textstyle
     {{\scriptscriptstyle\mathcal{O}}}% \scriptstyle
-    {\scalebox{.65}{$\scriptscriptstyle\mathcal{O}$}}%\scriptscriptstyle
+    {\scalebox{.50}{$\scriptscriptstyle\mathcal{O}$}}%\scriptscriptstyle
   }
 
 \interdisplaylinepenalty=2500
@@ -116,11 +116,12 @@ data into sets of five in linear time. Then it calls itself on each of the sets 
 of these sets of five. The result is a algorithm that returns the median in $\mathcal{O}(n)$. In
 practice the algorithm performs poorly compared to quickselect and is also slower than sorting the
 list of moderate size due to its high constant factor. Better algorithms like quickselect or PICK
-have a lower constant factor but all these algorithms share the same time complexity $\mathcal{O}(n)$.
+have a lower constant factor but all these algorithms share the same time complexity
+$\mathcal{O}(n)$.
 \todo{hier fehlt ein cite}
 % https://en.wikipedia.org/wiki/Selection_algorithm#cite_note-knuth-14
 
-\subsubsection{Lower bounds}
+\subsubsection{Lower and upper bounds}
 The time complexity of $\mathcal{O}(n)$ of the mentioned algorithms is necessary, because the input
 to these algorithm is a list of values in arbitrary order. Therefore the algorithm must look at all
 the input values to determine a correct solution. If any of these input values will not be
@@ -128,6 +129,17 @@ considered it could be the one that should have been returned by the algorithm l
 results. Apart from this simple and straight forward argument, there is a considerable amount of
 research on the exact number of comparisons required for selection, both in the randomized and
 deterministic cases.
+
+It has been found that selecting the $i$-th element of $n$ requires at least
+$n+\min(i,n-i)-\mathcal{O}(1)$ comparisons, thus matching the average case of the Floyd-Rivest
+algorithm up to his $\smallO(n)$ term. For deterministic algorithms it has also been shown that
+\begin{eqnarray*}
+  &\left (1 + H(i/n) \right ) \cdot n + \Omega(\sqrt n) \\
+  &\text{with~} H(x) = x \cdot \log_2 \frac{1}{x} + (1-x) \log_2 \frac{1}{1-x}
+\end{eqnarray*}
+are required. An upper bound is been proposed by Blum, in the paper \textit{Time Bounds for
+  Selection} it stated that no more than $5.430\dot{5} \cdot n$ comparisons are ever required.
+Therefore selection is for sure in a time complexity of $\mathcal{O}(n)$ for best and worst-case.
 
 \subsection{Partial Order}
 To dive deeper into these algorithms the concept of partial orders needs to be introduced. A partial
@@ -295,8 +307,6 @@ Let $P_{n,i}$ be a poset.
 
 \begin{theorem}
   A poset $P_{n,i}$ is not solvable in less than $\log_2(|\mathcal{C}(P_{n,i})|)$ comparisons.
-
-
 \end{theorem}
 
 \section{Results}
