@@ -459,8 +459,13 @@ If the new poset is found to be solvable in the given number of comparisons, we 
 If the new poset is not solvable, we estimate the original is not solvable either.
 This heuristic can be slightly improved by maximising the number of elements smaller than the maximal element and greater than the minimal element.
 
-\subsubsection{Lower-Triangle}
+\subsubsection{Triangular Adjacency Matrix}
+Storing an adjacency matrix for a poset of size $n$ takes $n^2 - n$ bits, one for each possible relation.
+The diagonal does not need to be stored, as an element can not be smaller than itself.
 
+By canonifying the poset, the elements can be sorted in a way such that each element is not smaller than any element before it.
+This property can be used to reduce the adjacency matrix to a triangular matrix, which can then be stored using $\frac{n^2 - n}{2}$ bits.
+It can also simplify some algorithms, for example calculating the number of compatible posets.
 
 \subsubsection{Multithreading}
 
