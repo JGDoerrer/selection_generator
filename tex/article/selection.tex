@@ -276,93 +276,167 @@ Im Gegensatz zur Vorwärtssuche unterscheidet die Rückwärtssuche zwischen `kan
 \begin{description}
   \item[kanonifizieren]
     überführt das Poset in eine \textbf{eindeutige} Normalform.
-    Das `kanonifizieren` der Vorwärtssuche ist nicht eindeutig aus Performancegründen. 
+    Das `kanonifizieren` der Vorwärtssuche ist nicht eindeutig aus Performancegründen.
+  \item[reduzieren]
+    umfasst das eliminieren von Elementen, die nicht das $i$-kleinste Element sein können.
   \item[normalisieren]
-    umfasst das reduzieren von Elementen, die nicht das $i$-kleinste Element sein können sowie das anschließende eindeutige `kanonifizieren'. 
+    umfasst das Reduzieren gefolgt von Kanonifizieren
 \end{description}
 
-% TODO: Problem Fall 5 2 und k < n / 2 IMMER
+Um eine eindeutige Darstellung zu erhalten, wird zunächst geprüft, ob $2 * i < n$ gilt.
+Sollte dies verletzt sein, werden alle Vergleiche umgedreht und $i := n - 1 - i$ gesetzt.
+Ein mögliches Problem tritt auf, wenn $n - 1 = 2 * i$ gilt.
+\begin{figure}
+  \begin{tikzpicture}
+    \node[circle,draw=black] (A1) at (1, 0) {};
+    \node[circle,draw=black] (A2) at (0, 2) {};
+    \node[circle,draw=black] (A3) at (2, 2) {};
 
-Zum Kanonifizieren werden intern zunächst alle trivialen Fälle ohne Nauty kanonifiziert.
-Anderenfalls wird nauty verwendet.
-In Abbildung~? sind die Nauty-Ratios bis $n = 12$ abgebildet. % TODO: Abbildung erstellen
+    \draw (A1) -- (A2) node {};
+    \draw (A1) -- (A3) node {};
+    \node (AL) at (1, -0.5) {n = 3, i = 1};
+
+
+    \node[circle,draw=black] (B1) at (3 + 1, 2) {};
+    \node[circle,draw=black] (B2) at (3 + 0, 0) {};
+    \node[circle,draw=black] (B3) at (3 + 2, 0) {};
+
+    \draw (B1) -- (B2) node {};
+    \draw (B1) -- (B3) node {};
+    \node (BL) at (3 + 1, -0.5) {n = 3, i = 1};
+  \end{tikzpicture}
+  \centering
+  \caption{Problematischer Fall}
+  \label{fig:backward_canonify_problematic}
+\end{figure}
+Wie in Abbildung~\ref{fig:backward_canonify_problematic} illustriert, sind beide Posets mittels nauty kanonifiziert und für beide Posets gilt  $2 * i < n$.
+Offensichtlicherweise sind diese jedoch gleich, wenn alle Vergleiche umgekehrt werden.
+Um dieses Problem zu beheben, wird jedes Poset, für das $n - 1 = i$ gilt normal kanonifiziert und anschließend werden alle Vergleiche umgedreht und es erneut kanonifiziert.
+Anschließend wird deterministisch eins der beiden ausgewählt.
+
+Da das Kanonifizieren für die Rückwärtssuche unumgänglich ist und während der Entwicklung ein Bottleneck darstellte, werden alle trivialen Fälle abgefangen und nur die restlichen mittels nauty kanonifiziert.
+% TODO: Wie werden die trivialen Fälle abgefangen
+In Abbildung~\ref{table:nauty-ratio} ist für $n = 12$ dargestellt, in wie vielen Prozent der Fälle das Programm nauty aufruft.
+
+\begin{table}
+  \begin{tabular}{l|l}
+    $i$ & Nauty-Ratio \\
+    \hline
+    $0$ & $0\%$       \\
+    $1$ & $10.12\%$   \\
+    $2$ & $7.96\%$    \\
+    $3$ & $3.67\%$    \\
+    $4$ & $2.03\%$    \\
+    $5$ & $1.49\%$
+  \end{tabular}
+  \centering
+  \caption{Prozentwert der Aufrufe an `nauty' zum kanonifizieren}
+  \label{table:nauty-ratio}
+\end{table}
 
 \subsubsection{Algorithmus}
-Eingabe für den Rückwärtssuche stellen die Parameter $n$ und $i$ dar. Die Rückwärtssuche startet bei dem kleinsten gelösten Poset und berechnet iterativ alle Posets, die in $1, 2, 3, \dots$ Vergleichen gelöst werden können, bis das leere Poset der Größe $n$ und $i$ gefunden wird.
+Eingabe für den Rückwärtssuche stellen die Parameter $n$ und $i$ dar.
+Die Rückwärtssuche startet bei dem kleinsten gelösten Poset und berechnet iterativ alle Posets, die in $1, 2, 3, \dots$ Vergleichen gelöst werden können, bis das leere Poset der Größe $n$ und $i$ gefunden wird.
 Das kleinste gelöste Poset ist das Poset, das aus einem Element besteht und keinen Vergleichen besteht.
+Das leere Poset ist das Poset, das $n$ Elemente hat, das $i$-kleinste Element gesucht wird und keine Vergleiche umfasst.
 Verallgemeinert sei $A_k$ die Menge aller Posets, die in $k$ Vergleichen lösbar ist (in diesem Fall besteht $A_0$ nur aus dem kleinsten gelösten Poset).
 Im Folgenden berechnet die Rückwärtssuche für jedes Posets in der Menge $A_k$, die entsprechenden Nachfolger.
 Ein Nachfolger von Poset $p$ hat folgende Eigenschaften:
 \begin{itemize}
   \item es ist vollständig normalisiert
   \item es ist nicht in einer vorherigen Runde gefunden (da es sonst in weniger Vergleichen lösbar wäre)
-  \item es existiert einen Vergleich $(i, j)$, durch deren Hinzunahme und anschließender Normalisierung wieder Poset $p$ resultiert und durch durch Hinzunahme des Umkehrvergleichs $(j, i)$ und anschließender Normalisierung wieder ein bereits gefundes Poset resultiert
+  \item es existiert ein Vergleich $(i, j)$, durch deren Hinzunahme und anschließender Normalisierung wieder Poset $p$ resultiert und durch Hinzunahme des Umkehrvergleichs $(j, i)$ und anschließender Normalisierung wieder ein bereits gefundenes Poset resultiert
 \end{itemize}
 Die Menge aller Nachfolger bildet die Menge $A_{k + 1}$.
 
 \subsubsection{Nachfolgerberechnung}
-% um ein Poset `q' zu ``enlarge_and_remove_less'':
-% 1. ``enlarge''-Schritt
-% 2. ``remove-less''-Schritt
-% 3. ``enlarge2''-Schritt
+Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, bei dem das $i$-kleinste Element gesucht ist, erfolgt in drei Schritten:
+\begin{itemize}
+  \item[1.]
+    Da die Rückwärtssuche auf dem Entfernen von Vergleichen basiert, wird dem Poset $p$ ein `Dummy-Element' eingefügt, damit Vergleiche entfernt werden können.
+    Des Weiteren müssen zu dem `Dummy-Element' entsprechende Vergleiche eingefügt werden, sodass das `Dummy-Element' wegreduziert werden kann, damit das Poset nicht verändert wird.
+    Das Poset mit dem `Dummy-Element' hat folglich $n + 1$ Elemente und es wird entweder das $k$ oder $k + 1$-kleinste Element gesucht wird.
+    Dies liegt daran, dass das `Dummy-Element' unter oder über dem gesuchten $k$-kleinsten Element eingefügt werden kann, wodurch sich das ursprüngliche $k$-kleinste Element eventuell verschiebt.
+    Letztlich muss sichergestellt werden, dass alle Posets in eine eindeutige Normalform kanonifiziert werden für den nächsten Schritt.
 
-1. Die Rückwärtssuche basiert auf dem Entfernen von Vergleichen. Da es Posets gibt (und um alle Posets zu erwischen), wird zunächst das Poset `q' mit Größe `n' und dem `k'-kleinsten Element vergrößert. Das heißt es wird ein Dummy-Element eingefügt. Um dies zu konkretisieren, berechnet dieser Schritt alle Posets, die Größe `n + 1' haben und entweder das `k' oder `k + 1'-kleinste Element gesucht wird (dies liegt daran, dass das Dummy-Element unter oder über unserem gesuchten k-kleinsten Element eingefügt wird, wodurch sich das ursprüngliche k-kleinste Element eventuell verschiebt). Des Weiteren müssen entsprechende Vergleiche eingefügt werden, sodass das Dummy-Element nicht das `k' bzw. `k + 1'-kleinste Element sein kann.
-Letztlich sollte sichergestellt werden, dass alle Posets in einer eindeutigen kanonifizierten Normalform für den nächsten Schritt umgewandelt werden.
-Die aktuelle Menge der gespeicherten Posets umfasst alle neu berechneten sowie das ursprüngliche Poset `q'.
+  \item[2.]
+    In diesem Schritt wird aus dem Poset $p$ ein beliebiger Vergleich entfernt.
+    Des Weiteren wird für jedes Poset, dass im 1. Schritt berechnet wurde ein Vergleich zwischen einem beliebigen Element und dem eingfügten `Dummy-Element' entfernt.
 
-2. In diesem Schritt wird ein beliebiger Vergleich `(i, j)' entfernt. Eine Schwierigkeit stellen hierbei die transitiven Vergleiche dar: \\
-Zum Beispiel können Poset (2) und (3) durch das Entfernen des Vergleichs vom mittleren zum unteren Element entstehen, wie in Abbildung~\ref{fig:backward_problematic} veranschaulicht. \\
-\begin{center}
-\begin{figure}
-  \begin{tikzpicture}
-    \node[circle,draw=black] (A1) at (0, 0) {};
-    \node[circle,draw=black] (A2) at (0, 1) {};
-    \node[circle,draw=black] (A3) at (0, 2) {};
+    Hierbei darf ein Vergleich nur entfernt werden, wenn dadurch kein Element wegreduziert werden könnte, da ?. % TODO: Begründung
 
-    \draw (A1) -- (A2) node {};
-    \draw (A2) -- (A3) node {};
-    \node (A) at (0, -1) {(1)}; 
+    Eine Schwierigkeit stellen hierbei die transitiven Vergleiche dar: \\
+    \begin{figure}
+      \begin{tikzpicture}
+        \node[circle,draw=black] (A1) at (0, 0) {};
+        \node[circle,draw=black] (A2) at (0, 1) {};
+        \node[circle,draw=black] (A3) at (0, 2) {};
 
-
-    \node[circle,draw=black] (B1) at (3 + 0, 0) {};
-    \node[circle,draw=black] (B2) at (3 + 0, 2) {};
-    \node[circle,draw=black] (B3) at (3 + 1, 1) {};
-
-    \draw (B1) -- (B2) node {};
-    \node (B) at (3 + 0.5, -1) {(2)}; 
+        \draw (A1) -- (A2) node {};
+        \draw (A2) -- (A3) node {};
+        \node (AL) at (0, -0.5) {n = 3, i = 0};
+        \node (A) at (0, -1) {(1)};
 
 
-    \node[circle,draw=black] (C1) at (6 + 1, 2) {};
-    \node[circle,draw=black] (C2) at (6 + 0, 0) {};
-    \node[circle,draw=black] (C3) at (6 + 2, 0) {};
+        \node[circle,draw=black] (B1) at (3 + 0, 0) {};
+        \node[circle,draw=black] (B2) at (3 + 0, 2) {};
+        \node[circle,draw=black] (B3) at (3 + 1, 1) {};
 
-    \draw (C1) -- (C2) node {};
-    \draw (C1) -- (C3) node {};
-    \node (C) at (6 + 1, -1) {(3)}; 
-  \end{tikzpicture}
-  \caption{Problematischer Fall} \label{fig:backward_problematic}
+        \draw (B1) -- (B2) node {};
+        \node (BL) at (3 + 0.5, -0.5) {n = 3, i = 0};
+        \node (B) at (3 + 0.5, -1) {(2)};
+
+
+        \node[circle,draw=black] (C1) at (6 + 1, 2) {};
+        \node[circle,draw=black] (C2) at (6 + 0, 0) {};
+        \node[circle,draw=black] (C3) at (6 + 2, 0) {};
+
+        \draw (C1) -- (C2) node {};
+        \draw (C1) -- (C3) node {};
+        \node (CL) at (6 + 1, -0.5) {n = 3, i = 0};
+        \node (C) at (6 + 1, -1) {(3)};
+      \end{tikzpicture}
+      \centering
+      \caption{Problematischer Fall}
+      \label{fig:backward_problematic}
+    \end{figure}
+    Durch entfernen des Vergleichs vom mittleren zum unteren Element in Poset (1) können sowohl Poset (2), als auch Poset (3) entstehen, wie in Abbildung~\ref{fig:backward_problematic} veranschaulicht. \\
+    Um dieses Problem zu lösen, werden alle möglichen Nachfolger berechnet.
+
+  \item[3.]
+    Die Menge an Posets im zweiten Schritt stellt eine Teilmenge aller möglichen Nachfolger dar.
+    Um im letzten Schritt alle möglichen Nachfolger zu berechnen, wird die existierende Menge iterativ immer um ein Element vergrößert.
+    % Suche hierbei alle Posets, die folgendes erfüllen (in einem Vergrößerungsschritt):
+    % - n + 1 Elemente
+    % - k oder k + 1 kleinstes Element
+    % - kein Element darf wegreduziert werden können
+    % - durch Hinzunahme des entfernten Vergleichs im 2. Schritt, muss wieder das ursprüngliche Poset aus dem 1. Schritt herauskommen
+\end{itemize}
+
+% TODO: Hier muss ein Bild vom Suchbaum hin für z.B. 4,1 (also schöner)
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/backward-search-tree.jpg}
+  \caption{Das wird noch schöner.}
+  \label{fig:backward-search-tree}
 \end{figure}
-\end{center}
-Um dieses Problem zu lösen, werden alle möglichen Nachfolger berechnet.
-
-Eine weiter Optimierung ist hierbei nur Vergleiche zu entfernen, die im 1. Schritt eingefügt wurden oder normal.
-
-3. Anschließend werden alle Posets gesucht, die folgenden Bedingung erfüllen:
-
-
-
-- Menge B := alle Posets in A kanonifiziert (ACHTUNG: man muss sich merken, welches Element neu hinzugekommen ist)
-- Menge C := alle Posetes, die sich ergeben, wenn aus `q` ODER einem Poset aus B ein beliebiger Vergleich entfernt wird
-  - hierbei kann das entfernen eines beliebigen Vergleiches mehrere Posets produzieren, da nicht klar ist, wann welcher transitive Vergleich eingefügt wurde
-  - Vergleich darf nur entfernt werden, wenn dadurch nicht ein Element wegreduziert werden könnte
-  - kanonifiziere diese Menge anschließend
-- berechne iteraitv (vergrößere entweder nur n ODER n und k) anschließend noch alle größeren Posets, die 
-  - das hinzugefügte Element durch transitive Verlgeiche wegoptimiert werden könnte
-  - durch hinzufügen
 
 \subsubsection{Parallelisierung}
-- dies kann sehr gut parallelisiert werden
-- Analyse des Faktors
+Die Rückwärtssuche kann sehr gut parallelisiert werden, indem die Berechnung der Nachfolger parallel passiert. Wie in Abbildung~\ref{table:backward-parallel} beispielhaft für $n = 10, i = 4$ dargestellt, skaliert die Rückwärtssuche relativ gut mit der Anzahl der Kerne.
+
+\begin{table}
+  \begin{tabular}{l|l|l}
+    Anzahl Kerne & Zeit in s & Parallelitätsfaktor \\
+    \hline
+    $1$          & $43.070$  & $?$                 \\ % TODO: diese Werte sind bis jetzt nur dummy-werte
+    $2$          & $25.038$  & $?$                 \\
+    $3$          & $18.925$  & $?$                 \\
+    $4$          & $16.307$  & $?$                 \\
+  \end{tabular}
+  \centering
+  \caption{Faktor der Parallelisierung für $n = 10, i = 4$}
+  \label{table:backward-parallel}
+\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
