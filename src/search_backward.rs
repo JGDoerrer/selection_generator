@@ -8,6 +8,8 @@ use global_counter::primitive::exact::CounterUsize;
 use hashbrown::HashSet;
 use rayon::iter::{ParallelBridge, ParallelIterator};
 
+use crate::util::upper_bound;
+
 use super::cache_tree::{CacheTreeNotSolvable, CacheTreeSolvable};
 use super::poset::Poset;
 use super::util::{KNOWN_MIN_VALUES, MAX_N};
@@ -145,8 +147,14 @@ fn start_search_backward(
 
     let mut destination: HashSet<Poset> = HashSet::new();
     for item in results {
-      destination.extend(item);
+      for poset in item {
+        if k as usize + poset.count_min_comparisons()
+          <= upper_bound(n as i32, i0 as i32) as usize
+      {
+        destination.insert(poset);
+      }
     }
+  }
     poset_cache.extend(destination.clone());
     let search_duration = start.elapsed();
 
@@ -263,13 +271,12 @@ fn single(
   let end = start.elapsed() - check_time;
   let ratio = 100.0 * COUTNER_USE_NAUTY.get() as f64
     / (COUTNER_USE_NAUTY.get() as f64 + COUTNER_USE_NOT_NAUTY.get() as f64);
-  println!("nauty ratio: {ratio:.3?}%");
 
-  if let Some(comparisons) = comparisons2 {
+    if let Some(comparisons) = comparisons2 {
     if USE_CHECKS {
-      println!("time '{end:.3?}' (check-time: {check_time:.3?}): n = {n}, i = {i}, comparisons: {comparisons}");
+      println!("time '{end:.3?}' (check-time: {check_time:.3?}): n = {n}, i = {i}, comparisons: {comparisons}, nauty ratio: {ratio:.3?}%");
     } else {
-      println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}");
+      println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}, nauty ratio: {ratio:.3?}%");
     }
     assert_eq!(
       comparisons, KNOWN_MIN_VALUES[n as usize][i as usize],

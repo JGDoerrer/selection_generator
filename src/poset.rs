@@ -614,6 +614,18 @@ impl Poset {
     false
   }
 
+  pub fn count_min_comparisons(&self) -> usize {
+    let mut counter = 0;
+    for i in 0..self.n {
+      for j in 0..self.n {
+        if self.is_less(i, j) && !self.is_redundant(i, j) {
+          counter += 1;
+        }
+      }
+    }
+    counter
+  }
+
   #[inline(always)]
   fn fun_name(
     temp_set_level: &mut (HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>),
