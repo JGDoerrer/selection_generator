@@ -448,7 +448,7 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
       legend style={at={(0.5,-0.1)},anchor=north}
     ]
     \addlegendentry{forward-search}
-    \addplot[fill=blue] table {
+    \addplot[fill=blue,shift={(1pt, 0)}] table {
         x y
         0 1
         1 3
@@ -473,7 +473,7 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
         20 1
       };
     \addlegendentry{backward-search}
-    \addplot[fill=red,shift={(0, 0)}] table {
+    \addplot[fill=red,shift={(-1pt, 0)}] table {
         x y
         0 1
         1 3
