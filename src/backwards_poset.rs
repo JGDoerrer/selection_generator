@@ -801,7 +801,9 @@ impl BackwardsPoset {
 
         let mut cleaned_result = HashSet::new();
         for (mut item, i, j) in result {
-            if item.can_reduce_any_element() {
+            if only_last.is_none() {
+                debug_assert!(!item.can_reduce_any_element());
+            } else if item.can_reduce_any_element() {
                 continue;
             }
             let indices = item.canonify_transform((i, j));
@@ -809,6 +811,13 @@ impl BackwardsPoset {
         }
         cleaned_result
     }
+
+    // fn assert_is_canonified(&self) -> bool {
+    //     let mut canon = self.clone();
+    //     canon.canonify();
+    //     assert_eq!(self, &canon);
+    //     true
+    // }
 
     fn can_reduce_element_greater(&self, element: u8) -> bool {
         let mut greater = 0u8;
