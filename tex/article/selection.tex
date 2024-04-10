@@ -320,7 +320,7 @@ In Abbildung~\ref{table:nauty-ratio} ist für $n = 12$ dargestellt, in wie viele
 
 \begin{table}
   \begin{tabular}{l|l}
-    $i$ & Nauty-Ratio \\
+    $i$ & Nauty-Ratio \\ % TODO: finale Zahlen
     \hline
     $0$ & $0\%$       \\
     $1$ & $10.12\%$   \\
@@ -404,13 +404,16 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
     Um dieses Problem zu lösen, werden alle möglichen Nachfolger berechnet.
 
   \item[3.]
-    Die Menge an Posets im zweiten Schritt stellt eine Teilmenge aller möglichen Nachfolger dar.
-    Um im letzten Schritt alle möglichen Nachfolger zu berechnen, wird die existierende Menge iterativ immer um ein Element vergrößert.
+    Die Menge an Posets im zweiten Schritt stellt eine Teilmenge aller potentiell möglichen Nachfolger dar.
+    Um im vorletzten Schritt alle möglichen Nachfolger zu berechnen, wird die existierende Menge iterativ immer um ein Element vergrößert.
     % Suche hierbei alle Posets, die folgendes erfüllen (in einem Vergrößerungsschritt):
     % - n + 1 Elemente
     % - k oder k + 1 kleinstes Element
     % - kein Element darf wegreduziert werden können
     % - durch Hinzunahme des entfernten Vergleichs im 2. Schritt, muss wieder das ursprüngliche Poset aus dem 1. Schritt herauskommen
+
+  \item[4.]
+    Im letzten Schritt wird für jeden potentiellen Nachfolger die minimale Anzahl an Vergleichen berechnet, die noch entfernt werden müssen, bis das leere Poset gefunden ist. Anhand der bekannten theoretischen oberen Schranken können alle Posets verworfen werden, die zu viele Vergleiche haben, da diese auch in der Vorwärtssuche nicht betrachtet werden können.
 \end{itemize}
 
 % TODO: Hier muss ein Bild vom Suchbaum hin für z.B. 4,1 (also schöner)
