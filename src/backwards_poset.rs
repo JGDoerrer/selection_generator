@@ -8,6 +8,7 @@ use std::sync::Arc;
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 
 use crate::constants::MAX_N;
+use crate::search_backward::{COUTNER_USE_NAUTY, COUTNER_USE_NOT_NAUTY};
 
 const fn init_table() -> [([(u8, u8); MAX_N * MAX_N], usize); MAX_N] {
     let mut table1 = [([(0u8, 0u8); MAX_N * MAX_N], 0); MAX_N];
@@ -443,7 +444,10 @@ impl BackwardsPoset {
             }
         }
 
-        if !is_unique {
+        if is_unique {
+            COUTNER_USE_NOT_NAUTY.inc();
+        } else {
+            COUTNER_USE_NAUTY.inc();
             new_indices = self.canonify_nauty_indicies();
         }
 
@@ -550,6 +554,18 @@ impl BackwardsPoset {
             }
         }
         false
+    }
+
+    pub fn count_min_comparisons(&self) -> usize {
+        let mut counter = 0;
+        for i in 0..self.n {
+            for j in 0..self.n {
+                if self.is_less(i, j) && !self.is_redundant(i, j) {
+                    counter += 1;
+                }
+            }
+        }
+        counter
     }
 
     #[inline(always)]

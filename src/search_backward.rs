@@ -2,10 +2,14 @@ use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
+use global_counter::primitive::exact::CounterUsize;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::backwards_poset::BackwardsPoset;
-use crate::constants::{KNOWN_VALUES, MAX_N};
+use crate::constants::{KNOWN_VALUES, MAX_N, UPPER_BOUNDS};
+
+pub static COUTNER_USE_NOT_NAUTY: CounterUsize = CounterUsize::new(0);
+pub static COUTNER_USE_NAUTY: CounterUsize = CounterUsize::new(0);
 
 fn start_search_backward(
     interrupt: &Arc<AtomicBool>,
@@ -38,7 +42,14 @@ fn start_search_backward(
 
         let mut destination: HashSet<BackwardsPoset> = HashSet::new();
         for item in results {
-            destination.extend(item);
+            for poset in item {
+                if k as usize + poset.count_min_comparisons()
+                    <= UPPER_BOUNDS[n as usize][i0 as usize]
+                // TODO: idealerweise wäre hier KNOWN_VALUES
+                {
+                    destination.insert(poset);
+                }
+            }
         }
         for item in &destination {
             poset_cache.insert(item.clone(), k);
@@ -67,12 +78,16 @@ fn start_search_backward(
 }
 
 pub fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) {
+    COUTNER_USE_NOT_NAUTY.set(0);
+    COUTNER_USE_NAUTY.set(0);
     let start = std::time::Instant::now();
     let comparisons = start_search_backward(interrupt, BackwardsPoset::new(1, 0), n, i, n * n);
     let end = start.elapsed();
+    let ratio = 100.0 * COUTNER_USE_NAUTY.get() as f64
+        / (COUTNER_USE_NAUTY.get() as f64 + COUTNER_USE_NOT_NAUTY.get() as f64);
 
     if let Some(comparisons) = comparisons {
-        println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}");
+        println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}, nauty ratio: {ratio:.3?}%");
         if comparisons as usize != KNOWN_VALUES[n as usize][i as usize] {
             eprintln!(
                 "Error: got {}, but expected {}",

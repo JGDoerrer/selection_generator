@@ -91,11 +91,6 @@ struct Args {
 }
 
 fn main() {
-    rayon::ThreadPoolBuilder::new()
-        .num_threads(6)
-        .build_global()
-        .unwrap();
-
     let args = Args::parse();
     match args.search_mode {
         SearchMode::Forward => run_forward(args),

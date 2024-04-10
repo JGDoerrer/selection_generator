@@ -10,7 +10,7 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::backwards_poset::BackwardsPoset;
 use crate::cache_tree::{CacheTreeNotSolvable, CacheTreeSolvable};
-use crate::constants::{lower_bound, upper_bound, KNOWN_VALUES, MAX_N};
+use crate::constants::{lower_bound, upper_bound, KNOWN_VALUES, MAX_N, UPPER_BOUNDS};
 
 fn start_search_backward(
     interrupt: &Arc<AtomicBool>,
@@ -58,7 +58,14 @@ fn start_search_backward(
 
         let mut destination: HashSet<BackwardsPoset> = HashSet::new();
         for item in results {
-            destination.extend(item);
+            for poset in item {
+                if k as usize + poset.count_min_comparisons()
+                    <= UPPER_BOUNDS[n as usize][i0 as usize]
+                // TODO: idealerweise wäre hier KNOWN_VALUES
+                {
+                    destination.insert(poset);
+                }
+            }
         }
         {
             let mut write_lock = backward_search_state
@@ -354,7 +361,7 @@ fn start_search(
 
 pub fn main() {
     rayon::ThreadPoolBuilder::new()
-        .num_threads(8)
+        .num_threads(5)
         .build_global()
         .unwrap();
 
