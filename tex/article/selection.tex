@@ -276,6 +276,8 @@ that number of comparisons it must have at least one comparison with a result am
 discovered in the previous iteration, as otherwise it would have to be solvable in less.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TODO: Die Rückwärtssuche ist komplett neues Gebiet?
+
 \subsubsection{Normalform}
 Im Gegensatz zur Vorwärtssuche unterscheidet die Rückwärtssuche zwischen `kanonifizieren' und `normalisieren', wie folgt:
 \begin{description}
@@ -439,7 +441,7 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
       enlarge x limits = .1,%x-Achse erweitern
       x axis line style = {-},%kein Pfeil
       bar width=5pt,
-      title = {Anzahl Posets vs. Anzahl Vergleiche},
+      title = {Anzahl Posets vs. Anzahl Vergleiche für $n=12,i=5$},
       ylabel={Anzahl Posets},
       xlabel={Anzahl Vergleiche (rot: backward, blue: forward)},
     ]
