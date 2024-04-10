@@ -13,6 +13,11 @@
 \usepackage{subcaption}
 \usetikzlibrary{positioning}
 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{pgfplots}
+
 % Commands
 \newcommand\smallO{
   \mathchoice
@@ -361,9 +366,11 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
 
   \item[2.]
     In diesem Schritt wird aus dem Poset $p$ ein beliebiger Vergleich entfernt.
-    Des Weiteren wird für jedes Poset, dass im 1. Schritt berechnet wurde ein Vergleich zwischen einem beliebigen Element und dem eingfügten `Dummy-Element' entfernt.
+    Hierbei kann kein Element verloren gehen, da das Poset bereits davor normalisiert war und wenn ein weiterer Vergleich entfernt wird, `Information' nur verloren geht. % TODO: verständlicher formulieren
 
-    Hierbei darf ein Vergleich nur entfernt werden, wenn dadurch kein Element wegreduziert werden könnte, da ?. % TODO: Begründung
+    Des Weiteren wird für jedes Poset, dass im 1. Schritt berechnet wurde ein Vergleich zwischen einem beliebigen Element und dem eingfügten `Dummy-Element' entfernt.
+    Hierbei darf ein Vergleich nur entfernt werden, wenn dadurch kein Element wegreduziert werden könnte, da sonst das `Dummy-Element' wieder entfernt werden würde.
+     % TODO: Begründung
 
     Eine Schwierigkeit stellen hierbei die transitiven Vergleiche dar: \\
     \begin{figure}
@@ -424,6 +431,68 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
   \caption{Suchbaum für $n = 4, i = 1$}
   \label{fig:backward-search-tree}
 \end{figure}
+
+\begin{tikzpicture}
+  \begin{axis}[
+      ybar,
+      axis x line = bottom,%x-Achse nur unten
+      enlarge x limits = .1,%x-Achse erweitern
+      x axis line style = {-},%kein Pfeil
+      bar width=5pt,
+      title = {Anzahl Posets vs. Anzahl Vergleiche},
+      ylabel={Anzahl Posets},
+      xlabel={Anzahl Vergleiche (rot: backward, blue: forward)},
+    ]
+    \addplot[fill=blue,forget plot] table {
+        x y
+        0 1
+        1 1
+        2 3
+        3 16
+        4 365
+        5 10298
+        6 120149
+        7 454379
+        8 700318
+        9 538043
+        10 247641
+        11 81100
+        12 21852
+        13 5534
+        14 1370
+        15 372
+        16 96
+        17 27
+        18 9
+        19 3
+        20 1
+      };
+      \addplot[fill=red,forget plot] table { % DUMMY-WERTE
+        x y
+        0 1
+        1 3
+        2 9
+        3 27
+        4 96
+        5 372
+        6 1370
+        7 5534
+        8 21852
+        9 81100
+        10 247641
+        11 538043
+        12 700318
+        13 454379
+        14 120149
+        15 10298
+        16 365
+        17 16
+        18 3
+        19 1
+        20 1
+      };
+  \end{axis}
+\end{tikzpicture}
 
 \subsubsection{Parallelisierung}
 Die Rückwärtssuche kann sehr gut parallelisiert werden, indem die Berechnung der Nachfolger parallel passiert. Wie in Abbildung~\ref{table:backward-parallel} beispielhaft für $n = 10, i = 4$ dargestellt, skaliert die Rückwärtssuche relativ gut mit der Anzahl der Kerne.
