@@ -413,14 +413,15 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
     % - durch Hinzunahme des entfernten Vergleichs im 2. Schritt, muss wieder das ursprüngliche Poset aus dem 1. Schritt herauskommen
 
   \item[4.]
-    Im letzten Schritt wird für jeden potentiellen Nachfolger die minimale Anzahl an Vergleichen berechnet, die noch entfernt werden müssen, bis das leere Poset gefunden ist. Anhand der bekannten theoretischen oberen Schranken können alle Posets verworfen werden, die zu viele Vergleiche haben, da diese auch in der Vorwärtssuche nicht betrachtet werden können.
+    Im letzten Schritt wird für jeden potentiellen Nachfolger die minimale Anzahl an Vergleichen berechnet, die noch entfernt werden müssen, bis das leere Poset gefunden ist.
+    Anhand der bekannten theoretischen oberen Schranken können alle Posets verworfen werden, die zu viele Vergleiche haben, da diese auch in der Vorwärtssuche nicht betrachtet werden können.
 \end{itemize}
 
 % TODO: Hier muss ein Bild vom Suchbaum hin für z.B. 4,1 (also schöner)
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\columnwidth]{figures/backward-search-tree.jpg}
-  \caption{Das wird noch schöner.}
+  \caption{Suchbaum für $n = 4, i = 1$}
   \label{fig:backward-search-tree}
 \end{figure}
 
