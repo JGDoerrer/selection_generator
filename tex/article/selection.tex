@@ -372,7 +372,7 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
 
     Des Weiteren wird für jedes Poset, dass im 1. Schritt berechnet wurde ein Vergleich zwischen einem beliebigen Element und dem eingfügten `Dummy-Element' entfernt.
     Hierbei darf ein Vergleich nur entfernt werden, wenn dadurch kein Element wegreduziert werden könnte, da sonst das `Dummy-Element' wieder entfernt werden würde.
-     % TODO: Begründung
+    % TODO: Begründung
 
     Eine Schwierigkeit stellen hierbei die transitiven Vergleiche dar: \\
     \begin{figure}
@@ -437,15 +437,80 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
 \begin{tikzpicture}
   \begin{axis}[
       ybar,
+      ymode=log,
       axis x line = bottom,%x-Achse nur unten
       enlarge x limits = .1,%x-Achse erweitern
       x axis line style = {-},%kein Pfeil
-      bar width=5pt,
+      bar width=3pt,
       title = {Anzahl Posets vs. Anzahl Vergleiche für $n=12,i=5$},
       ylabel={Anzahl Posets},
       xlabel={Anzahl Vergleiche (rot: backward, blue: forward)},
+      legend style={at={(0.5,-0.1)},anchor=north}
     ]
-    \addplot[fill=blue,forget plot] table {
+    \addlegendentry{forward-search}
+    \addplot[fill=blue] table {
+        x y
+        0 1
+        1 3
+        2 53
+        3 495
+        4 5921
+        5 49147
+        6 182188
+        7 283839
+        8 207294
+        9 81898
+        10 23841
+        11 6437
+        12 1708
+        13 477
+        14 136
+        15 42
+        16 14
+        17 6
+        18 3
+        19 2
+        20 1
+      };
+    \addlegendentry{backward-search}
+    \addplot[fill=red,shift={(0, 0)}] table {
+        x y
+        0 1
+        1 3
+        2 9
+        3 27
+        4 96
+        5 372
+        6 1370
+        7 5534
+        8 21852
+        9 81100
+        10 247641
+        11 538043
+        12 700318
+        13 454379
+        14 120149
+        15 10298
+        16 365
+        17 16
+        18 3
+        19 1
+        20 1
+      };
+  \end{axis}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+  \begin{axis}[
+      ymode=log,
+      axis x line = bottom,%x-Achse nur unten
+      enlarge x limits = .1,%x-Achse erweitern
+      x axis line style = {-},%kein Pfeil
+      title = {\dots},
+      ylabel={\dots},
+      xlabel={\dots},
+    ]
+    \addplot+[blue] table { % n=12,i=5
         x y
         0 1
         1 1
@@ -469,29 +534,104 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
         19 3
         20 1
       };
-      \addplot[fill=red,forget plot] table { % DUMMY-WERTE
+    \addplot+[red] table { %n=12,i=4
         x y
         0 1
-        1 3
-        2 9
-        3 27
-        4 96
-        5 372
-        6 1370
-        7 5534
-        8 21852
-        9 81100
-        10 247641
-        11 538043
-        12 700318
-        13 454379
-        14 120149
-        15 10298
-        16 365
-        17 16
-        18 3
+        1 1
+        2 3
+        3 16
+        4 315
+        5 7176
+        6 88248
+        7 453446
+        8 997004
+        9 1075759
+        10 647116
+        11 251116
+        12 70941
+        13 16467
+        14 3454
+        15 725
+        16 138
+        17 24
+        18 6
         19 1
-        20 1
+      };
+    \addplot+[yellow] table { %n=12,i=3
+        x y
+        0 1
+        1 1
+        2 3
+        3 16
+        4 175
+        5 1995
+        6 14288
+        7 44696
+        8 62666
+        9 46507
+        10 21919
+        11 7734
+        12 2351
+        13 689
+        14 204
+        15 57
+        16 16
+        17 5
+        18 1
+      };
+    \addplot+[green] table { %n=12,i=2
+        x y
+        0 1
+        1 1
+        2 3
+        3 14
+        4 60
+        5 275
+        6 960
+        7 1735
+        8 1545
+        9 870
+        10 386
+        11 159
+        12 65
+        13 27
+        14 10
+        15 4
+        16 1
+        17 1
+      };
+    \addplot+[magenta] table { %n=12,i=1
+        x y
+        0 1
+        1 1
+        2 3
+        3 6
+        4 11
+        5 21
+        6 36
+        7 39
+        8 29
+        9 18
+        10 12
+        11 7
+        12 4
+        13 2
+        14 1
+      };
+    \addplot+[orange] table { %n=12,i=0
+        x y
+        0 1
+        1 1
+        2 1
+        3 1
+        4 1
+        5 1
+        6 1
+        7 1
+        8 1
+        9 1
+        10 1
+        11 1
       };
   \end{axis}
 \end{tikzpicture}
