@@ -10,7 +10,6 @@ build = "build.rs"
 clap = { version = "4.4.7", features = ["derive"] }
 hashbrown = { version = "0.14.2" }
 indicatif = "0.17.7"
-nauty-Traces-sys = { version = "0.7.0", features = ["native"] }
 chrono = "0.4.34"
 rayon = "1.9.0"
 

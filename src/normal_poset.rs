@@ -1,5 +1,5 @@
 use core::fmt::Debug;
-use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
+// use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use std::os::raw::c_int;
 
 use crate::{bitset::BitSet, canonified_poset::CanonifiedPoset, constants::MAX_N, poset::Poset};
@@ -333,115 +333,115 @@ impl NormalPoset {
         new_indices
     }
 
-    #[allow(unused)]
-    fn canonify_nauty_indicies(&self) -> [usize; MAX_N] {
-        let mut options = optionblk {
-            getcanon: TRUE,
-            defaultptn: FALSE,
-            digraph: TRUE,
-            ..Default::default()
-        };
-        let mut stats = statsblk::default();
+    // #[allow(unused)]
+    // fn canonify_nauty_indicies(&self) -> [usize; MAX_N] {
+    //     let mut options = optionblk {
+    //         getcanon: TRUE,
+    //         defaultptn: FALSE,
+    //         digraph: TRUE,
+    //         ..Default::default()
+    //     };
+    //     let mut stats = statsblk::default();
 
-        let mut labels: [c_int; MAX_N] =
-            (0..MAX_N as c_int).collect::<Vec<_>>().try_into().unwrap();
+    //     let mut labels: [c_int; MAX_N] =
+    //         (0..MAX_N as c_int).collect::<Vec<_>>().try_into().unwrap();
 
-        let mut ptn = [c_int::from(1); MAX_N];
-        ptn[self.n as usize - 1] = 0;
-        let mut zeroes2 = [c_int::from(0); MAX_N];
+    //     let mut ptn = [c_int::from(1); MAX_N];
+    //     ptn[self.n as usize - 1] = 0;
+    //     let mut zeroes2 = [c_int::from(0); MAX_N];
 
-        let mut dg = [0; MAX_N];
-        for (i, mask) in dg.iter_mut().enumerate().take(self.n as usize) {
-            for j in 0..self.n {
-                if self.is_less(i as u8, j) {
-                    *mask |= nauty_Traces_sys::bit[j as usize];
-                }
-            }
-        }
+    //     let mut dg = [0; MAX_N];
+    //     for (i, mask) in dg.iter_mut().enumerate().take(self.n as usize) {
+    //         for j in 0..self.n {
+    //             if self.is_less(i as u8, j) {
+    //                 *mask |= nauty_Traces_sys::bit[j as usize];
+    //             }
+    //         }
+    //     }
 
-        let mut canonical = [0; MAX_N];
+    //     let mut canonical = [0; MAX_N];
 
-        unsafe {
-            densenauty(
-                dg.as_mut_ptr(),
-                labels.as_mut_ptr(),
-                ptn.as_mut_ptr(),
-                zeroes2.as_mut_ptr(),
-                &mut options,
-                &mut stats,
-                1 as c_int,
-                self.n as c_int,
-                canonical.as_mut_ptr(),
-            );
-        }
+    //     unsafe {
+    //         densenauty(
+    //             dg.as_mut_ptr(),
+    //             labels.as_mut_ptr(),
+    //             ptn.as_mut_ptr(),
+    //             zeroes2.as_mut_ptr(),
+    //             &mut options,
+    //             &mut stats,
+    //             1 as c_int,
+    //             self.n as c_int,
+    //             canonical.as_mut_ptr(),
+    //         );
+    //     }
 
-        let mut result = [0; MAX_N];
-        for i in 0..self.n as usize {
-            result[i] = labels[i] as usize;
-        }
-        result
-    }
+    //     let mut result = [0; MAX_N];
+    //     for i in 0..self.n as usize {
+    //         result[i] = labels[i] as usize;
+    //     }
+    //     result
+    // }
 
-    #[allow(unused)]
-    fn canonify_nauty(&mut self) {
-        let n = self.n as usize;
+    // #[allow(unused)]
+    // fn canonify_nauty(&mut self) {
+    //     let n = self.n as usize;
 
-        let mut options = optionblk {
-            getcanon: TRUE,
-            defaultptn: FALSE,
-            digraph: TRUE,
-            ..Default::default()
-        };
-        let mut stats = statsblk::default();
+    //     let mut options = optionblk {
+    //         getcanon: TRUE,
+    //         defaultptn: FALSE,
+    //         digraph: TRUE,
+    //         ..Default::default()
+    //     };
+    //     let mut stats = statsblk::default();
 
-        let mut labels: [c_int; 64] = (0..64 as c_int).collect::<Vec<_>>().try_into().unwrap();
+    //     let mut labels: [c_int; 64] = (0..64 as c_int).collect::<Vec<_>>().try_into().unwrap();
 
-        let mut ptn = [c_int::from(1); 64];
-        ptn[n - 1] = 0;
-        let mut zeroes2 = [c_int::from(0); 64];
+    //     let mut ptn = [c_int::from(1); 64];
+    //     ptn[n - 1] = 0;
+    //     let mut zeroes2 = [c_int::from(0); 64];
 
-        // use nauty_Traces_sys::bit as bitmask for the adjacency matrix.
-        // E.g. (g[i] & bit[j]) != 0 checks whether there is an edge i -> j.
-        let mut dg = [0; 64];
-        for (i, mask) in dg.iter_mut().enumerate().take(n) {
-            for j in 0..n {
-                if self.is_less(i as u8, j as u8) {
-                    *mask |= nauty_Traces_sys::bit[j];
-                }
-            }
-        }
+    //     // use nauty_Traces_sys::bit as bitmask for the adjacency matrix.
+    //     // E.g. (g[i] & bit[j]) != 0 checks whether there is an edge i -> j.
+    //     let mut dg = [0; 64];
+    //     for (i, mask) in dg.iter_mut().enumerate().take(n) {
+    //         for j in 0..n {
+    //             if self.is_less(i as u8, j as u8) {
+    //                 *mask |= nauty_Traces_sys::bit[j];
+    //             }
+    //         }
+    //     }
 
-        let mut canonical = [0; 64];
+    //     let mut canonical = [0; 64];
 
-        unsafe {
-            densenauty(
-                dg.as_mut_ptr(),
-                labels.as_mut_ptr(),
-                ptn.as_mut_ptr(),
-                zeroes2.as_mut_ptr(),
-                &mut options,
-                &mut stats,
-                1 as c_int,
-                n as c_int,
-                canonical.as_mut_ptr(),
-            );
-        }
+    //     unsafe {
+    //         densenauty(
+    //             dg.as_mut_ptr(),
+    //             labels.as_mut_ptr(),
+    //             ptn.as_mut_ptr(),
+    //             zeroes2.as_mut_ptr(),
+    //             &mut options,
+    //             &mut stats,
+    //             1 as c_int,
+    //             n as c_int,
+    //             canonical.as_mut_ptr(),
+    //         );
+    //     }
 
-        let mut new = NormalPoset::new(self.n, self.i);
+    //     let mut new = NormalPoset::new(self.n, self.i);
 
-        // make the new poset
-        for i in 0..new.n {
-            for j in 0..new.n {
-                if canonical[i as usize] & nauty_Traces_sys::bit[j as usize] != 0 {
-                    new.set_is_less(i, j)
-                }
-            }
-        }
+    //     // make the new poset
+    //     for i in 0..new.n {
+    //         for j in 0..new.n {
+    //             if canonical[i as usize] & nauty_Traces_sys::bit[j as usize] != 0 {
+    //                 new.set_is_less(i, j)
+    //             }
+    //         }
+    //     }
 
-        // dbg!(&self, &new);
-        // dbg!(labels);
-        *self = new;
-    }
+    //     // dbg!(&self, &new);
+    //     // dbg!(labels);
+    //     *self = new;
+    // }
 
     /// adds i < j to the poset and normalize
     #[allow(unused)]
