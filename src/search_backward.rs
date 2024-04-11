@@ -27,6 +27,17 @@ fn start_search_backward(
     let mut table = [[false; MAX_N]; MAX_N];
     BackwardsPoset::rec_temp(&mut table, n as usize, i0 as usize);
 
+    // println!(
+    //     "# `comparisons done`: `posets per level` in `time per level`, total: `total cached posets`",
+    // );
+    println!(
+        "# {}: {} in {:.3?}, total: {}",
+        0,
+        1,
+        std::time::Instant::now().elapsed(),
+        poset_cache.len(),
+    );
+
     for k in 1..max_comparisons {
         let start = std::time::Instant::now();
         let results: Vec<_> = source
@@ -55,11 +66,11 @@ fn start_search_backward(
         }
 
         println!(
-            "# {k}: {} => {} in {:.3?} | total cached: {}",
-            source.len(),
+            "# {}: {} in {:.3?}, total: {}",
+            k,
             destination.len(),
             start.elapsed(),
-            poset_cache.len()
+            poset_cache.len(),
         );
 
         if destination.contains(&BackwardsPoset::new(n, i0)) {
