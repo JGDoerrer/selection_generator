@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 
-use crate::constants::MAX_N;
+use crate::constants::{MAX_N, UPPER_BOUNDS};
 use crate::search_backward::{COUTNER_USE_NAUTY, COUTNER_USE_NOT_NAUTY};
 
 const fn init_table() -> [([(u8, u8); MAX_N * MAX_N], usize); MAX_N] {
@@ -568,28 +568,6 @@ impl BackwardsPoset {
         counter
     }
 
-    #[inline(always)]
-    fn fun_name(
-        temp_set_level: &mut (HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>),
-        itq: Self,
-        old_indices: (u8, u8),
-        poset_cache: &HashMap<Self, u8>,
-        removed: &mut HashSet<(Self, (u8, u8))>,
-    ) {
-        if temp_set_level.0.contains(&(itq.clone(), old_indices))
-            || temp_set_level.1.contains(&(itq.clone(), old_indices))
-        {
-            return;
-        }
-
-        if poset_cache.contains_key(&itq.with_less_normalized(old_indices.1, old_indices.0)) {
-            removed.insert((itq.clone(), old_indices));
-            temp_set_level.0.insert((itq, old_indices));
-        } else {
-            temp_set_level.1.insert((itq, old_indices));
-        }
-    }
-
     #[allow(clippy::too_many_lines)]
     pub fn enlarge_and_remove_less(
         &self,
@@ -598,13 +576,17 @@ impl BackwardsPoset {
         table: &[[bool; 15]; 15],
         n: u8,
         i: u8,
+        comparisons_done: u8,
     ) -> HashSet<Self> {
         debug_assert!(2 * self.i < self.n);
         debug_assert!(table[self.n as usize][self.i as usize]);
 
+        let max_remaining_comparisons =
+            UPPER_BOUNDS[n as usize][i as usize] - comparisons_done as usize; // TODO: idealerweise wäre hier KNOWN_VALUES
+
         if self.n == n && self.i == i {
             let mut result = HashSet::new();
-            for (item, (i, j)) in self.remove_less(None) {
+            for (item, (i, j)) in self.remove_less(None, max_remaining_comparisons) {
                 if !poset_cache.contains_key(&item)
                     && poset_cache.contains_key(&item.with_less_normalized(j, i))
                 {
@@ -640,31 +622,29 @@ impl BackwardsPoset {
             }
         }
 
-        let mut enlarged_canonifed: HashMap<Self, u8> = HashMap::new();
+        let mut enlarged_canonifed: HashMap<Self, Option<u8>> = HashMap::new();
+        enlarged_canonifed.insert(self.clone(), None);
         for mut item in enlarged {
             let new_ind = item.canonify_transform((item.n() - 1, item.n() - 1)).0;
-            enlarged_canonifed.insert(item, new_ind);
+            enlarged_canonifed.insert(item, Some(new_ind));
         }
 
         let mut removed = HashSet::new();
-        for (itq, old_indices) in self.remove_less(None) {
-            Self::fun_name(
-                &mut temp_set_level[itq.n as usize][itq.i as usize],
-                itq,
-                old_indices,
-                poset_cache,
-                &mut removed,
-            );
-        }
         for (it, num) in enlarged_canonifed {
-            for (itq, old_indices) in it.remove_less(Some(num)) {
-                Self::fun_name(
-                    &mut temp_set_level[itq.n as usize][itq.i as usize],
-                    itq,
-                    old_indices,
-                    poset_cache,
-                    &mut removed,
-                );
+            for (itq, old_indices) in it.remove_less(num, max_remaining_comparisons) {
+                let current = &mut temp_set_level[itq.n as usize][itq.i as usize];
+                if !current.0.contains(&(itq.clone(), old_indices))
+                    && !current.1.contains(&(itq.clone(), old_indices))
+                {
+                    if poset_cache
+                        .contains_key(&itq.with_less_normalized(old_indices.1, old_indices.0))
+                    {
+                        removed.insert((itq.clone(), old_indices));
+                        current.0.insert((itq, old_indices));
+                    } else {
+                        current.1.insert((itq, old_indices));
+                    }
+                }
             }
 
             if interrupt.load(Ordering::Relaxed) {
@@ -677,7 +657,11 @@ impl BackwardsPoset {
                 for (item, indices) in &temp_set_level[n0 as usize][i0 as usize].0.clone() {
                     let mut super_enlarged: HashSet<(Self, (u8, u8))> = HashSet::new();
                     if table[n0 as usize + 1][i0 as usize] {
-                        item.super_enlarge_n(*indices, &mut super_enlarged);
+                        item.super_enlarge_n(
+                            *indices,
+                            &mut super_enlarged,
+                            max_remaining_comparisons,
+                        );
                     }
 
                     let condition = 2 * (i0 + 1) < n0 + 1;
@@ -686,7 +670,11 @@ impl BackwardsPoset {
                             && i0 < n0
                             && table[n0 as usize + 1][n0 as usize - i0 as usize - 1])
                     {
-                        item.super_enlarge_nk(*indices, &mut super_enlarged);
+                        item.super_enlarge_nk(
+                            *indices,
+                            &mut super_enlarged,
+                            max_remaining_comparisons,
+                        );
                     }
 
                     for (itq, new_indices) in super_enlarged {
@@ -695,13 +683,19 @@ impl BackwardsPoset {
                             *self
                         );
 
-                        Self::fun_name(
-                            &mut temp_set_level[itq.n as usize][itq.i as usize],
-                            itq,
-                            new_indices,
-                            poset_cache,
-                            &mut removed,
-                        );
+                        let current = &mut temp_set_level[itq.n as usize][itq.i as usize];
+                        if !current.0.contains(&(itq.clone(), new_indices))
+                            && !current.1.contains(&(itq.clone(), new_indices))
+                        {
+                            if poset_cache.contains_key(
+                                &itq.with_less_normalized(new_indices.1, new_indices.0),
+                            ) {
+                                removed.insert((itq.clone(), new_indices));
+                                current.0.insert((itq, new_indices));
+                            } else {
+                                current.1.insert((itq, new_indices));
+                            }
+                        }
                     }
                 }
             }
@@ -721,7 +715,11 @@ impl BackwardsPoset {
         result
     }
 
-    pub fn remove_less(&self, only_last: Option<u8>) -> HashSet<(Self, (u8, u8))> {
+    pub fn remove_less(
+        &self,
+        only_last: Option<u8>,
+        max_remaining_comparisons: usize,
+    ) -> HashSet<(Self, (u8, u8))> {
         // // precondition
         // debug_assert!(self.i < self.n);
         // debug_assert!((self.n as usize) < MAX_N);
@@ -806,6 +804,9 @@ impl BackwardsPoset {
             } else if item.can_reduce_any_element() {
                 continue;
             }
+            if max_remaining_comparisons < item.count_min_comparisons() {
+                continue;
+            }
             let indices = item.canonify_transform((i, j));
             cleaned_result.insert((item, indices));
         }
@@ -829,7 +830,12 @@ impl BackwardsPoset {
         self.i < greater
     }
 
-    pub fn super_enlarge_n(&self, (k, j): (u8, u8), result: &mut HashSet<(Self, (u8, u8))>) {
+    pub fn super_enlarge_n(
+        &self,
+        (k, j): (u8, u8),
+        result: &mut HashSet<(Self, (u8, u8))>,
+        max_remaining_comparisons: usize,
+    ) {
         debug_assert!(!self.is_less(k, j) && !self.is_less(j, k));
 
         let mut init_poset = Self::new(self.n + 1, self.i);
@@ -841,10 +847,13 @@ impl BackwardsPoset {
 
         let mut unfiltered = HashSet::new();
         let mut swap_init = VecDeque::new();
-        swap_init.push_back((init_poset, 0));
-        while let Some((poset, number)) = swap_init.pop_back() {
+        swap_init.push_back((init_poset, 0, self.count_min_comparisons()));
+        while let Some((poset, number, min_comparisons_done)) = swap_init.pop_back() {
             for index in number..(poset.n - 1) {
-                if poset.is_less(index, poset.n - 1) || poset.is_less(poset.n - 1, index) {
+                if poset.is_less(index, poset.n - 1)
+                    || poset.is_less(poset.n - 1, index)
+                    || max_remaining_comparisons < min_comparisons_done + 1
+                {
                     continue;
                 }
 
@@ -856,7 +865,7 @@ impl BackwardsPoset {
                     continue;
                 }
 
-                swap_init.push_back((new_poset.clone(), index + 1));
+                swap_init.push_back((new_poset.clone(), index + 1, min_comparisons_done + 1));
 
                 if new_poset
                     .with_less(k, j)
@@ -911,7 +920,12 @@ impl BackwardsPoset {
         (self.n - 1) - self.i < less
     }
 
-    pub fn super_enlarge_nk(&self, (k, j): (u8, u8), result: &mut HashSet<(Self, (u8, u8))>) {
+    pub fn super_enlarge_nk(
+        &self,
+        (k, j): (u8, u8),
+        result: &mut HashSet<(Self, (u8, u8))>,
+        max_remaining_comparisons: usize,
+    ) {
         debug_assert!(!self.is_less(k, j) && !self.is_less(j, k));
 
         let mut init_poset = Self::new(self.n + 1, self.i + 1);
@@ -923,10 +937,13 @@ impl BackwardsPoset {
 
         let mut unfiltered = HashSet::new();
         let mut swap_init = VecDeque::new();
-        swap_init.push_back((init_poset, 0));
-        while let Some((poset, number)) = swap_init.pop_back() {
+        swap_init.push_back((init_poset, 0, self.count_min_comparisons()));
+        while let Some((poset, number, min_comparisons_done)) = swap_init.pop_back() {
             for index in number..(poset.n - 1) {
-                if poset.is_less(index, poset.n - 1) || poset.is_less(poset.n - 1, index) {
+                if poset.is_less(index, poset.n - 1)
+                    || poset.is_less(poset.n - 1, index)
+                    || max_remaining_comparisons < min_comparisons_done + 1
+                {
                     continue;
                 }
 
@@ -938,7 +955,7 @@ impl BackwardsPoset {
                     continue;
                 }
 
-                swap_init.push_back((new_poset.clone(), index + 1));
+                swap_init.push_back((new_poset.clone(), index + 1, min_comparisons_done + 1));
 
                 if new_poset
                     .with_less(k, j)

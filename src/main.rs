@@ -138,6 +138,7 @@ fn start_search_backward(
                         &table,
                         n,
                         i0,
+                        k,
                     )
                 }
             })

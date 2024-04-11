@@ -51,6 +51,7 @@ fn start_search_backward(
                         &table,
                         n,
                         i0,
+                        k,
                     )
                 }
             })
@@ -59,12 +60,11 @@ fn start_search_backward(
         let mut destination: HashSet<BackwardsPoset> = HashSet::new();
         for item in results {
             for poset in item {
-                if k as usize + poset.count_min_comparisons()
-                    <= UPPER_BOUNDS[n as usize][i0 as usize]
-                // TODO: idealerweise wäre hier KNOWN_VALUES
-                {
-                    destination.insert(poset);
-                }
+                debug_assert!(
+                    poset.count_min_comparisons()
+                        <= UPPER_BOUNDS[n as usize][i0 as usize] - k as usize
+                );
+                destination.insert(poset);
             }
         }
         {
