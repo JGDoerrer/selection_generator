@@ -13,7 +13,7 @@ use crate::{
     backwards_poset::BackwardsPoset,
     cache::Cache,
     canonified_poset::CanonifiedPoset,
-    constants::{LOWER_BOUNDS, UPPER_BOUNDS, USE_BACKWARD},
+    constants::{LOWER_BOUNDS, UPPER_BOUNDS},
     poset::Poset,
     utils::format_duration,
 };
@@ -25,6 +25,7 @@ pub struct Search<'a> {
     cache: &'a mut Cache,
     analytics: Analytics,
     comparisons: &'a mut HashMap<CanonifiedPoset, (u8, u8)>,
+    use_bidirectional_search: bool,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -64,6 +65,7 @@ impl<'a> Search<'a> {
         i: u8,
         cache: &'a mut Cache,
         comparisons: &'a mut HashMap<CanonifiedPoset, (u8, u8)>,
+        use_bidirectional_search: bool,
     ) -> Self {
         Search {
             n,
@@ -72,6 +74,7 @@ impl<'a> Search<'a> {
             cache,
             analytics: Analytics::new(n.max(4) - 3),
             comparisons,
+            use_bidirectional_search,
         }
     }
 
@@ -209,7 +212,7 @@ impl<'a> Search<'a> {
             }
         }
 
-        if USE_BACKWARD {
+        if self.use_bidirectional_search {
             let read_lock = backward_search_state
                 .read()
                 .expect("cache shouldn't be poisoned");

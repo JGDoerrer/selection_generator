@@ -22,7 +22,7 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use crate::{
     backwards_poset::BackwardsPoset,
     cache::Cache,
-    constants::{KNOWN_VALUES, MAX_N, USE_BACKWARD},
+    constants::{KNOWN_VALUES, MAX_N},
     normal_poset::NormalPoset,
     poset::Poset,
     search_forward::Search,
@@ -38,7 +38,6 @@ mod constants;
 mod normal_poset;
 mod poset;
 mod search_backward;
-mod search_bidirectional;
 mod search_forward;
 mod utils;
 
@@ -93,9 +92,9 @@ struct Args {
 fn main() {
     let args = Args::parse();
     match args.search_mode {
-        SearchMode::Forward => run_forward(args),
+        SearchMode::Forward => run_forward(args, false),
         SearchMode::Backward => run_backward(args),
-        SearchMode::Bidirectional => search_bidirectional::main(),
+        SearchMode::Bidirectional => run_forward(args, true),
     }
 }
 
@@ -184,7 +183,16 @@ fn start_search_backward(
     None
 }
 
-fn run_forward(args: Args) {
+fn run_forward(args: Args, use_bidirectional_search: bool) {
+    // TODO: adjustable thread-count
+    // if we don't limit the threads, the backward-search will consume all resources and the forward-search gets super slow
+    if use_bidirectional_search {
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(5)
+            .build_global()
+            .unwrap();
+    }
+
     let start_n = args.n.unwrap_or(1);
 
     let mut cache = Cache::new(args.max_cache_size);
@@ -204,7 +212,7 @@ fn run_forward(args: Args) {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
         for i in start_i..(n + 1) / 2 {
-            let result = if USE_BACKWARD {
+            let result = if use_bidirectional_search {
                 let backward_search_state = Arc::new(RwLock::new((HashMap::new(), -1)));
                 let interrupt = Arc::new(AtomicBool::new(false));
                 let handle = {
@@ -223,14 +231,16 @@ fn run_forward(args: Args) {
                 };
 
                 let result =
-                    Search::new(n, i, &mut cache, &mut algorithm).search(&backward_search_state);
+                    Search::new(n, i, &mut cache, &mut algorithm, use_bidirectional_search)
+                        .search(&backward_search_state);
 
                 interrupt.store(true, Ordering::Relaxed);
                 handle.join().unwrap();
                 result
             } else {
                 let backward_search_state = Arc::new(RwLock::new((HashMap::new(), -1)));
-                Search::new(n, i, &mut cache, &mut algorithm).search(&backward_search_state)
+                Search::new(n, i, &mut cache, &mut algorithm, use_bidirectional_search)
+                    .search(&backward_search_state)
             };
 
             if (n as usize) < KNOWN_VALUES.len() && (i as usize) < KNOWN_VALUES[n as usize].len() {

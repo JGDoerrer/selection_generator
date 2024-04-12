@@ -1,7 +1,4 @@
-pub const MAX_COMPARISONS: usize = 25;
 pub const MAX_N: usize = 15;
-
-pub const USE_BACKWARD: bool = false;
 
 pub const KNOWN_VALUES: [&[usize]; 16] = [
     &[0],
