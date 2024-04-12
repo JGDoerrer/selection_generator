@@ -94,7 +94,7 @@ fn main() {
     let args = Args::parse();
     match args.search_mode {
         SearchMode::Forward => run_forward(args),
-        SearchMode::Backward => run_backward(),
+        SearchMode::Backward => run_backward(args),
         SearchMode::Bidirectional => search_bidirectional::main(),
     }
 }
@@ -287,21 +287,36 @@ fn run_forward(args: Args) {
     }
 }
 
-fn run_backward() {
+fn run_backward(args: Args) {
+    let start_n = args.n.unwrap_or(1);
+
+    // additional meta information
+    if args.verbose != 0 {
+        utils::print_git_info();
+        utils::print_lscpu();
+        utils::print_current_time();
+    }
+
     let interrupt = Arc::new(AtomicBool::new(false));
 
-    if false {
-        single(&interrupt, 9, 4);
-    } else {
-        for n in 2..MAX_N as u8 {
-            for i in 0..((n + 1) / 2) {
-                single(&interrupt, n, i);
+    for n in start_n..=MAX_N as u8 {
+        let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
+
+        for i in start_i..(n + 1) / 2 {
+            let result = single(&interrupt, n, i);
+
+            if (n as usize) < KNOWN_VALUES.len() && (i as usize) < KNOWN_VALUES[n as usize].len() {
+                assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);
             }
-            println!();
+
+            if args.single {
+                return;
+            }
         }
     }
 }
 
+#[allow(clippy::too_many_lines)]
 fn print_algorithm<W>(
     poset: CanonifiedPoset,
     writer: &mut BufWriter<W>,

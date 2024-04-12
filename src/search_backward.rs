@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::mem::size_of;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
@@ -7,9 +8,17 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::backwards_poset::BackwardsPoset;
 use crate::constants::{KNOWN_VALUES, MAX_N, UPPER_BOUNDS};
+use crate::utils::format_duration;
 
 pub static COUTNER_USE_NOT_NAUTY: CounterUsize = CounterUsize::new(0);
 pub static COUTNER_USE_NAUTY: CounterUsize = CounterUsize::new(0);
+
+const USE_LEGACY_OUTPUT: bool = false;
+
+pub fn cache_size_as_gigabyte(elements: usize) -> f64 {
+    (size_of::<HashMap<BackwardsPoset, u8>>() + elements * size_of::<(BackwardsPoset, u8)>()) as f64
+        / 1024_f64.powf(3.0)
+}
 
 fn start_search_backward(
     interrupt: &Arc<AtomicBool>,
@@ -17,7 +26,11 @@ fn start_search_backward(
     n: u8,
     i0: u8,
     max_comparisons: u8,
-) -> Option<u8> {
+) -> Option<(u8, usize)> {
+    if 1 == n {
+        return Some((0, 0));
+    }
+
     let mut poset_cache = HashMap::new();
     poset_cache.insert(start_poset.clone(), 0);
 
@@ -74,7 +87,7 @@ fn start_search_backward(
         );
 
         if destination.contains(&BackwardsPoset::new(n, i0)) {
-            return Some(k);
+            return Some((k, poset_cache.len()));
         }
 
         source = destination;
@@ -87,17 +100,37 @@ fn start_search_backward(
     None
 }
 
-pub fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) {
+pub fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) -> u8 {
     COUTNER_USE_NOT_NAUTY.set(0);
     COUTNER_USE_NAUTY.set(0);
     let start = std::time::Instant::now();
-    let comparisons = start_search_backward(interrupt, BackwardsPoset::new(1, 0), n, i, n * n);
+    let result = start_search_backward(interrupt, BackwardsPoset::new(1, 0), n, i, n * n);
     let end = start.elapsed();
     let ratio = 100.0 * COUTNER_USE_NAUTY.get() as f64
-        / (COUTNER_USE_NAUTY.get() as f64 + COUTNER_USE_NOT_NAUTY.get() as f64);
+        / if 0 == COUTNER_USE_NAUTY.get() + COUTNER_USE_NOT_NAUTY.get() {
+            1
+        } else {
+            COUTNER_USE_NAUTY.get() + COUTNER_USE_NOT_NAUTY.get()
+        } as f64;
 
-    if let Some(comparisons) = comparisons {
-        println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}, nauty ratio: {ratio:.3?}%");
+    if let Some((comparisons, cache_entries)) = result {
+        if USE_LEGACY_OUTPUT {
+            println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}, nauty ratio: {ratio:.3?}%");
+        } else {
+            println!();
+            println!("Congratulations. A solution was found!\n\nn: {n}, i: {i}",);
+            println!("Comparisons: {comparisons}");
+            println!();
+            println!("Cache entries: {cache_entries}");
+            println!(
+                "Cache size: {:.3} Gigabyte",
+                cache_size_as_gigabyte(cache_entries)
+            );
+            println!("Nauty Ratio: {ratio:.3?}%");
+            println!();
+            println!("{}", format_duration(start));
+            println!("==============================================================");
+        }
         if comparisons as usize != KNOWN_VALUES[n as usize][i as usize] {
             eprintln!(
                 "Error: got {}, but expected {}",
@@ -105,6 +138,7 @@ pub fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) {
             );
             std::process::exit(0);
         }
+        comparisons
     } else {
         eprintln!(
             "Error: got 'nothing' but expected {}",
