@@ -32,7 +32,6 @@ mod algorithm_test;
 mod backwards_poset;
 mod bitset;
 mod cache;
-mod cache_tree;
 mod canonified_poset;
 mod constants;
 mod normal_poset;
