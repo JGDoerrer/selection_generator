@@ -1,23 +1,39 @@
 pub const MAX_N: usize = 15;
 
 pub const KNOWN_VALUES: [&[usize]; 16] = [
-    &[0],
-    &[0],
-    &[1],
-    &[2, 3],
-    &[3, 4],
-    &[4, 6, 6],
-    &[5, 7, 8],
-    &[6, 8, 10, 10],
-    &[7, 9, 11, 12],
-    &[8, 11, 12, 14, 14],
-    &[9, 12, 14, 15, 16],
-    &[10, 13, 15, 17, 18, 18],
-    &[11, 14, 17, 18, 19, 20],
-    &[12, 15, 18, 20, 21, 22, 23],
-    &[13, 16, 19, 21, 23, 24],
-    &[14, 17, 20, 23],
+    &[0],                          // n = 0
+    &[0],                          // n = 1
+    &[1],                          // n = 2
+    &[2, 3],                       // n = 3
+    &[3, 4],                       // n = 4
+    &[4, 6, 6],                    // n = 5
+    &[5, 7, 8],                    // n = 6
+    &[6, 8, 10, 10],               // n = 7
+    &[7, 9, 11, 12],               // n = 8
+    &[8, 11, 12, 14, 14],          // n = 9
+    &[9, 12, 14, 15, 16],          // n = 10
+    &[10, 13, 15, 17, 18, 18],     // n = 11
+    &[11, 14, 17, 18, 19, 20],     // n = 12
+    &[12, 15, 18, 20, 21, 22, 23], // n = 13
+    &[13, 16, 19, 21, 23, 24, 25], // n = 14
+    &[14, 17, 20, 23],             // n = 15
 ];
+
+pub const fn min(a: usize, b: usize) -> usize {
+    if a < b {
+        a
+    } else {
+        b
+    }
+}
+
+pub const fn max(a: usize, b: usize) -> usize {
+    if a < b {
+        b
+    } else {
+        a
+    }
+}
 
 pub const LOWER_BOUNDS: [[usize; MAX_N]; MAX_N + 1] = {
     let mut values = [[0; MAX_N]; MAX_N + 1];
@@ -27,6 +43,14 @@ pub const LOWER_BOUNDS: [[usize; MAX_N]; MAX_N + 1] = {
         let mut i = 0;
         while i < n {
             values[n][i] = lower_bound(n, i);
+            if i < n - 1 {
+                let index = min(i, (n - 1) - i - 1);
+                if (n - 1) < KNOWN_VALUES.len() && index < KNOWN_VALUES[n - 1].len() {
+                    values[n][i] = max(values[n][i], KNOWN_VALUES[n - 1][index]);
+                    // TODO: Ich denke hier sollte noch eine +1 ein
+                    // (9): https://dl.acm.org/doi/pdf/10.1145/360336.360339
+                }
+            }
 
             i += 1;
         }
