@@ -576,13 +576,10 @@ impl BackwardsPoset {
         table: &[[bool; 15]; 15],
         n: u8,
         i: u8,
-        comparisons_done: u8,
+        max_remaining_comparisons: usize,
     ) -> HashSet<Self> {
         debug_assert!(2 * self.i < self.n);
         debug_assert!(table[self.n as usize][self.i as usize]);
-
-        let max_remaining_comparisons =
-            UPPER_BOUNDS[n as usize][i as usize] - comparisons_done as usize; // TODO: idealerweise wäre hier KNOWN_VALUES
 
         if self.n == n && self.i == i {
             let mut result = HashSet::new();

@@ -103,7 +103,7 @@ fn start_search_backward(
     start_poset: BackwardsPoset,
     n: u8,
     i0: u8,
-    max_comparisons: u8,
+    max_comparisons: usize,
 ) -> Option<u8> {
     {
         let mut write_lock = backward_search_state
@@ -119,7 +119,7 @@ fn start_search_backward(
     let mut table = [[false; MAX_N]; MAX_N];
     BackwardsPoset::rec_temp(&mut table, n as usize, i0 as usize);
 
-    for k in 1..max_comparisons {
+    for k in 1..=max_comparisons {
         let start = std::time::Instant::now();
         let results: Vec<_> = source
             .par_iter()
@@ -136,7 +136,7 @@ fn start_search_backward(
                         &table,
                         n,
                         i0,
-                        k,
+                        max_comparisons - k,
                     )
                 }
             })
@@ -151,7 +151,7 @@ fn start_search_backward(
                 .write()
                 .expect("cache shouldn't be poisoned");
             for item in &destination {
-                write_lock.0.insert(item.clone(), k);
+                write_lock.0.insert(item.clone(), k as u8);
             }
             write_lock.1 = k as i8;
         }
@@ -169,7 +169,7 @@ fn start_search_backward(
         );
 
         if destination.contains(&BackwardsPoset::new(n, i0)) {
-            return Some(k);
+            return Some(k as u8);
         }
 
         source = destination;
@@ -224,7 +224,7 @@ fn run_forward(args: Args, use_bidirectional_search: bool) {
                             BackwardsPoset::new(1, 0),
                             n,
                             i,
-                            n * n,
+                            (n * n) as usize,
                         );
                     })
                 };
