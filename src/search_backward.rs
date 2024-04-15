@@ -106,12 +106,14 @@ pub fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) -> u8 {
     let lower = LOWER_BOUNDS[n as usize][i as usize];
     let upper = UPPER_BOUNDS[n as usize][i as usize];
     for bound in lower..=upper {
+        println!("n: {n}, i: {i} needs at least {bound} comparisons");
+        let this_level = std::time::Instant::now();
         let result = start_search_backward(interrupt, BackwardsPoset::new(1, 0), n, i, bound);
+        println!("{}", format_duration(this_level));
 
         if let Some((comparisons, cache_entries)) = result {
             assert!(comparisons as usize == bound);
 
-            let end = start.elapsed();
             let ratio = 100.0 * COUTNER_USE_NAUTY.get() as f64
                 / if 0 == COUTNER_USE_NAUTY.get() + COUTNER_USE_NOT_NAUTY.get() {
                     1
@@ -119,6 +121,7 @@ pub fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) -> u8 {
                     COUTNER_USE_NAUTY.get() + COUTNER_USE_NOT_NAUTY.get()
                 } as f64;
             if USE_LEGACY_OUTPUT {
+                let end = start.elapsed();
                 println!("time '{end:.3?}': n = {n}, i = {i}, comparisons: {comparisons}, nauty ratio: {ratio:.3?}%");
             } else {
                 println!();
