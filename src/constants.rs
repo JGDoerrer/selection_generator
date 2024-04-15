@@ -46,8 +46,7 @@ pub const LOWER_BOUNDS: [[usize; MAX_N]; MAX_N + 1] = {
             if i < n - 1 {
                 let index = min(i, (n - 1) - i - 1);
                 if (n - 1) < KNOWN_VALUES.len() && index < KNOWN_VALUES[n - 1].len() {
-                    values[n][i] = max(values[n][i], KNOWN_VALUES[n - 1][index]);
-                    // TODO: Ich denke hier sollte noch eine +1 ein
+                    values[n][i] = max(values[n][i], KNOWN_VALUES[n - 1][index] + 1);
                     // (9): https://dl.acm.org/doi/pdf/10.1145/360336.360339
                 }
             }
