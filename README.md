@@ -28,6 +28,7 @@
 | 14 | 1 | 0.0s      | 10.8s       | ?          |
 | 14 | 2 | 0.3s      | 46.5s       | ?          |
 | 14 | 3 | 9.3s      | 5m 8.5s     | ?          |
+
 (alles Stand 17.4.2024; Hardware: Julius Laptop -> da kein Server verfügbar)
 
 ## Table of Contents
