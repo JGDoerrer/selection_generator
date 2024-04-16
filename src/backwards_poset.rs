@@ -1,42 +1,14 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt::{Debug, Formatter, Result};
-use std::hash::{Hash, Hasher};
+use std::hash::Hash;
 use std::os::raw::c_int;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 
-use crate::constants::{MAX_N, UPPER_BOUNDS};
+use crate::constants::MAX_N;
 use crate::search_backward::{COUTNER_USE_NAUTY, COUTNER_USE_NOT_NAUTY};
-
-const fn init_table() -> [([(u8, u8); MAX_N * MAX_N], usize); MAX_N] {
-    let mut table1 = [([(0u8, 0u8); MAX_N * MAX_N], 0); MAX_N];
-    table1[0] = ([(0, 0); MAX_N * MAX_N], 0);
-    table1[1] = ([(0, 0); MAX_N * MAX_N], 1);
-    let mut n = 2;
-    while n < MAX_N {
-        table1[n].1 = (n * n - n) / 2;
-        let mut pos = 0;
-        while pos < table1[n].1 {
-            let mut a = 0;
-            let mut k = 0;
-            while k < MAX_N {
-                if pos < (k * k + k) / 2 {
-                    break;
-                }
-                a = k;
-                k += 1;
-            }
-            let b: usize = pos - ((a * a + a) / 2);
-            table1[n].0[pos] = ((a + 1) as u8, b as u8);
-            pos += 1;
-        }
-        n += 1;
-    }
-    table1
-}
-const TABLE_ORDER: [([(u8, u8); MAX_N * MAX_N], usize); MAX_N] = init_table();
 
 /// A partially ordered set with <
 #[derive(Clone, Copy, Hash, PartialEq, Eq)]
@@ -107,15 +79,6 @@ impl BackwardsPoset {
         } else {
             self.adjacency[i as usize] &= !(1 << (j as usize));
         }
-    }
-
-    pub fn adjacency_size(&self) -> usize {
-        TABLE_ORDER[self.n as usize].1
-    }
-
-    pub fn is_index(&self, pos: usize) -> bool {
-        let item = TABLE_ORDER[self.n as usize].0[pos];
-        self.is_less(item.0, item.1)
     }
 
     // add
@@ -595,7 +558,7 @@ impl BackwardsPoset {
 
         let mut enlarged = HashSet::new();
         if table[self.n as usize + 1][self.i as usize] {
-            self.enlarge_n(interrupt, &mut enlarged);
+            self.enlarge_n(&mut enlarged);
             if interrupt.load(Ordering::Relaxed) {
                 return HashSet::new();
             }
@@ -605,7 +568,7 @@ impl BackwardsPoset {
         if (condition && table[self.n as usize + 1][self.i as usize + 1])
             || (!condition && table[self.n as usize + 1][self.n as usize - self.i as usize - 1])
         {
-            self.enlarge_nk(interrupt, &mut enlarged);
+            self.enlarge_nk(&mut enlarged);
             if interrupt.load(Ordering::Relaxed) {
                 return HashSet::new();
             }
@@ -694,11 +657,11 @@ impl BackwardsPoset {
                             }
                         }
                     }
-                }
-            }
 
-            if interrupt.load(Ordering::Relaxed) {
-                return HashSet::new();
+                    if interrupt.load(Ordering::Relaxed) {
+                        return HashSet::new();
+                    }
+                }
             }
         }
 
@@ -879,7 +842,7 @@ impl BackwardsPoset {
         }
     }
 
-    fn enlarge_n(&self, interrupt: &Arc<AtomicBool>, result: &mut HashSet<Self>) {
+    fn enlarge_n(&self, result: &mut HashSet<Self>) {
         let mut temp = Self::new(self.n + 1, self.i);
         for i in 0..self.n {
             for j in 0..self.n {
@@ -900,9 +863,6 @@ impl BackwardsPoset {
                         swap_init.push_back((new_poset.clone(), k + 1, false));
                     }
                 }
-            }
-            if interrupt.load(Ordering::Relaxed) {
-                return;
             }
         }
     }
@@ -969,7 +929,7 @@ impl BackwardsPoset {
         }
     }
 
-    fn enlarge_nk(&self, interrupt: &Arc<AtomicBool>, result: &mut HashSet<Self>) {
+    fn enlarge_nk(&self, result: &mut HashSet<Self>) {
         let mut temp = Self::new(self.n + 1, self.i + 1);
         for i in 0..self.n {
             for j in 0..self.n {
@@ -990,9 +950,6 @@ impl BackwardsPoset {
                         swap_init.push_back((new_poset.clone(), k + 1, false));
                     }
                 }
-            }
-            if interrupt.load(Ordering::Relaxed) {
-                return;
             }
         }
     }

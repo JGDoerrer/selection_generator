@@ -307,6 +307,9 @@ Im Gegensatz zur Vorwärtssuche unterscheidet die Rückwärtssuche zwischen `kan
     umfasst das Reduzieren gefolgt von Kanonifizieren
 \end{description}
 
+Unterschied: hier wird eine eindeutige Normalform benötigt
+-> benutze nauty
+
 Um eine eindeutige Darstellung zu erhalten, wird zunächst geprüft, ob $2 * i < n$ gilt.
 Sollte dies verletzt sein, werden alle Vergleiche umgedreht und $i := n - 1 - i$ gesetzt.
 Ein mögliches Problem tritt auf, wenn $n - 1 = 2 * i$ gilt.
@@ -375,6 +378,7 @@ Die Menge aller Nachfolger bildet die Menge $A_{k + 1}$.
 
 \subsubsection{Nachfolgerberechnung}
 Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, bei dem das $i$-kleinste Element gesucht ist, erfolgt in drei Schritten:
+- iterative deepening Ansatz mit lower / upper bound
 \begin{itemize}
   \item[1.]
     Da die Rückwärtssuche auf dem Entfernen von Vergleichen basiert, wird dem Poset $p$ ein `Dummy-Element' eingefügt, damit Vergleiche entfernt werden können.

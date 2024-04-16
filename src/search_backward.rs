@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::mem::size_of;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
+use std::sync::{Arc, RwLock};
 
 use global_counter::primitive::exact::CounterUsize;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
@@ -20,15 +20,25 @@ pub fn cache_size_as_gigabyte(elements: usize) -> f64 {
         / 1024_f64.powf(3.0)
 }
 
-fn start_search_backward(
+pub fn start_search_backward(
     interrupt: &Arc<AtomicBool>,
-    start_poset: BackwardsPoset,
+    backward_search_state_opt: Option<&Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>>,
     n: u8,
     i0: u8,
     max_comparisons: usize,
 ) -> Option<(u8, usize)> {
+    let start_poset = BackwardsPoset::new(1, 0);
+
     let mut poset_cache = HashMap::new();
     poset_cache.insert(start_poset.clone(), 0);
+
+    if let Some(backward_search_state) = backward_search_state_opt {
+        let mut write_lock = backward_search_state
+            .write()
+            .expect("cache shouldn't be poisoned");
+        write_lock.0.insert(start_poset.clone(), 0);
+        write_lock.1 = 0;
+    }
 
     let mut source = HashSet::new();
     source.insert(start_poset);
@@ -70,13 +80,19 @@ fn start_search_backward(
 
         let mut destination: HashSet<BackwardsPoset> = HashSet::new();
         for item in results {
-            for poset in item {
-                assert!(poset.count_min_comparisons() <= max_comparisons - k);
-                destination.insert(poset);
-            }
+            destination.extend(item);
         }
         for item in &destination {
             poset_cache.insert(item.clone(), k as u8);
+        }
+        if let Some(backward_search_state) = backward_search_state_opt {
+            let mut write_lock = backward_search_state
+                .write()
+                .expect("cache shouldn't be poisoned");
+            for item in &destination {
+                write_lock.0.insert(item.clone(), k as u8);
+            }
+            write_lock.1 = k as i8;
         }
         source = destination;
 
@@ -108,7 +124,7 @@ pub fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) -> u8 {
     for bound in lower..=upper {
         println!("n: {n}, i: {i} needs at least {bound} comparisons");
         let this_level = std::time::Instant::now();
-        let result = start_search_backward(interrupt, BackwardsPoset::new(1, 0), n, i, bound);
+        let result = start_search_backward(interrupt, None, n, i, bound);
         println!("{}", format_duration(this_level));
 
         if let Some((comparisons, cache_entries)) = result {

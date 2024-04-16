@@ -1,6 +1,9 @@
 use core::fmt::Debug;
 
-use crate::{bitset::BitSet, constants::MAX_N, normal_poset::NormalPoset, poset::Poset};
+use crate::{
+    backwards_poset::BackwardsPoset, bitset::BitSet, constants::MAX_N, normal_poset::NormalPoset,
+    poset::Poset,
+};
 
 /// A partially ordered set with <
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
@@ -192,6 +195,20 @@ impl CanonifiedPoset {
             .into_iter()
             .map(|(a, b, c, d, _)| (a, b, c, d))
             .collect()
+    }
+
+    pub fn transform(self) -> BackwardsPoset {
+        let mut result = BackwardsPoset::new(self.n, self.i);
+        for i in 0..self.n {
+            for j in 0..self.n {
+                if i < j && self.is_less(i, j) {
+                    result.set_less(i, j, true);
+                }
+            }
+        }
+
+        result.canonify();
+        result
     }
 }
 

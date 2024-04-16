@@ -6,7 +6,7 @@ use clap::{
 use search_backward::single;
 use search_forward::Cost;
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashMap,
     fs::{DirBuilder, OpenOptions},
     io::{BufWriter, Write},
     str::FromStr,
@@ -17,14 +17,12 @@ use std::{
     thread,
 };
 
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-
 use crate::{
-    backwards_poset::BackwardsPoset,
     cache::Cache,
     constants::{KNOWN_VALUES, MAX_N},
     normal_poset::NormalPoset,
     poset::Poset,
+    search_backward::start_search_backward,
     search_forward::Search,
 };
 
@@ -97,97 +95,12 @@ fn main() {
     }
 }
 
-fn start_search_backward(
-    interrupt: &Arc<AtomicBool>,
-    backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
-    start_poset: BackwardsPoset,
-    n: u8,
-    i0: u8,
-    max_comparisons: usize,
-) -> Option<u8> {
-    {
-        let mut write_lock = backward_search_state
-            .write()
-            .expect("cache shouldn't be poisoned");
-        write_lock.0.insert(start_poset.clone(), 0);
-        write_lock.1 = 0;
-    }
-
-    let mut source = HashSet::new();
-    source.insert(start_poset);
-
-    let mut table = [[false; MAX_N]; MAX_N];
-    BackwardsPoset::rec_temp(&mut table, n as usize, i0 as usize);
-
-    for k in 1..=max_comparisons {
-        let start = std::time::Instant::now();
-        let results: Vec<_> = source
-            .par_iter()
-            .map(|item| {
-                if interrupt.load(Ordering::Relaxed) {
-                    HashSet::new()
-                } else {
-                    item.enlarge_and_remove_less(
-                        interrupt,
-                        &backward_search_state
-                            .read()
-                            .expect("cache shouldn't be poisoned")
-                            .0,
-                        &table,
-                        n,
-                        i0,
-                        max_comparisons - k,
-                    )
-                }
-            })
-            .collect();
-
-        let mut destination: HashSet<BackwardsPoset> = HashSet::new();
-        for item in results {
-            destination.extend(item);
-        }
-        {
-            let mut write_lock = backward_search_state
-                .write()
-                .expect("cache shouldn't be poisoned");
-            for item in &destination {
-                write_lock.0.insert(item.clone(), k as u8);
-            }
-            write_lock.1 = k as i8;
-        }
-
-        println!(
-            "# {k}: {} => {} in {:.3?} | total cached: {}",
-            source.len(),
-            destination.len(),
-            start.elapsed(),
-            backward_search_state
-                .read()
-                .expect("cache shouldn't be poisoned")
-                .0
-                .len()
-        );
-
-        if destination.contains(&BackwardsPoset::new(n, i0)) {
-            return Some(k as u8);
-        }
-
-        source = destination;
-
-        if interrupt.load(Ordering::Relaxed) {
-            return None;
-        }
-    }
-
-    None
-}
-
 fn run_forward(args: Args, use_bidirectional_search: bool) {
     // TODO: adjustable thread-count
     // if we don't limit the threads, the backward-search will consume all resources and the forward-search gets super slow
     if use_bidirectional_search {
         rayon::ThreadPoolBuilder::new()
-            .num_threads(5)
+            .num_threads(15)
             .build_global()
             .unwrap();
     }
@@ -220,8 +133,7 @@ fn run_forward(args: Args, use_bidirectional_search: bool) {
                     thread::spawn(move || {
                         start_search_backward(
                             &interrupt_local,
-                            &backward_search_state_local,
-                            BackwardsPoset::new(1, 0),
+                            Some(&backward_search_state_local),
                             n,
                             i,
                             (n * n) as usize,
