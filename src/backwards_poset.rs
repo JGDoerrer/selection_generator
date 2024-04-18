@@ -710,6 +710,12 @@ impl BackwardsPoset {
                 while let Some(poset) = queue.pop() {
                     for i1 in 0..self.n {
                         for j1 in 0..self.n {
+                            if let Some(value) = only_last {
+                                if i1 != value && j1 != value {
+                                    continue;
+                                }
+                            }
+
                             if !poset.is_less(i1, j1) || poset.is_redundant(i1, j1)
                             // || (j as i32 - i as i32).abs() >= (j1 as i32 - i1 as i32).abs()
                             {
