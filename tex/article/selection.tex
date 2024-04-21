@@ -295,6 +295,13 @@ discovered in the previous iteration, as otherwise it would have to be solvable 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TODO: Die Rückwärtssuche ist komplett neues Gebiet?
 
+Angenommen wir haben das leere Poset der Größe `n, i` gegeben und dieses ist NICHT in `k - 1` Vergleichen lösbar, aber in `k` Vergleichen lösbar.
+Zu zeigen: Dann ist das leere Poset der Größe `n + 1, i` NICHT in `k` Vergleichen lösbar.
+Beweis: Angenommen das leere Poset der Größe `n + 1, i` wäre auch in `k` Vergleichen lösbar, dann gibt es min. einen Vergleich zwischen dem neuen Element und irgendeinem alten Element. Das heißt, wenn man das neue Element entfernt, hätte man wieder das Poset der Größe `n, i` und min. einen Vergleich weniger. Somit müsste das Poset der Größe `n, i` in `k - 1` Vergleichen lösbar sein, was nach Vorraussetzung nicht erlaubt ist. q.e.d.
+=> Dann KNOWN[n - 1][i] + 1
+
+- TODO: Schreibt ihr irendetwas über nauty?
+
 \subsubsection{Normalform}
 Im Gegensatz zur Vorwärtssuche unterscheidet die Rückwärtssuche zwischen `kanonifizieren' und `normalisieren', wie folgt:
 \begin{description}
