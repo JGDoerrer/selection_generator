@@ -715,7 +715,7 @@ impl BackwardsPoset {
     }
 
     fn handle_poset(
-        poset_bucket: &mut [[(
+        poset_buckets: &mut [[(
             HashSet<(BackwardsPoset, (u8, u8))>,
             HashSet<(BackwardsPoset, (u8, u8))>,
         ); 15]; 15],
@@ -724,7 +724,7 @@ impl BackwardsPoset {
         poset_cache: &HashMap<BackwardsPoset, u8>,
         removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
     ) {
-        let current = &mut poset_bucket[poset.n as usize][poset.i as usize];
+        let current = &mut poset_buckets[poset.n as usize][poset.i as usize];
         if !current.0.contains(&(poset, indices)) && !current.1.contains(&(poset, indices)) {
             if poset_cache.contains_key(&poset.with_less_normalized(indices.1, indices.0)) {
                 removed.insert((poset, indices));
@@ -748,20 +748,20 @@ impl BackwardsPoset {
         debug_assert!(2 * self.i < self.n);
         debug_assert!(table[self.n as usize][self.i as usize]);
 
-        let mut temp_set_level: [[(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N];
+        let mut poset_buckets: [[(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N];
             MAX_N] = Default::default();
         for n0 in 0..MAX_N {
             for i0 in 0..MAX_N {
-                temp_set_level[n0][i0] = (HashSet::new(), HashSet::new());
+                poset_buckets[n0][i0] = (HashSet::new(), HashSet::new());
             }
         }
 
         let mut removed = HashSet::new();
-        for (itq, old_indices) in self.remove_less(max_remaining_comparisons) {
+        for (poset, indices) in self.remove_less(max_remaining_comparisons) {
             Self::handle_poset(
-                &mut temp_set_level,
-                itq,
-                old_indices,
+                &mut poset_buckets,
+                poset,
+                indices,
                 poset_cache,
                 &mut removed,
             );
@@ -774,7 +774,7 @@ impl BackwardsPoset {
 
             if table[self.n as usize + 1][self.i as usize] {
                 self.enlarge_n(
-                    &mut temp_set_level,
+                    &mut poset_buckets,
                     max_remaining_comparisons,
                     poset_cache,
                     &mut removed,
@@ -786,22 +786,22 @@ impl BackwardsPoset {
                 || (!condition && table[self.n as usize + 1][self.n as usize - self.i as usize - 1])
             {
                 self.enlarge_nk(
-                  &mut temp_set_level,
-                  max_remaining_comparisons,
-                  poset_cache,
-                  &mut removed,
+                    &mut poset_buckets,
+                    max_remaining_comparisons,
+                    poset_cache,
+                    &mut removed,
                 );
             }
 
             for n0 in self.n..n {
                 for i0 in self.i..=i {
-                    for (item, indices) in &temp_set_level[n0 as usize][i0 as usize].0.clone() {
+                    for (item, indices) in &poset_buckets[n0 as usize][i0 as usize].0.clone() {
                         if table[n0 as usize + 1][i0 as usize] {
                             item.super_enlarge_n(
-                              &mut temp_set_level,
-                              max_remaining_comparisons,
-                              poset_cache,
-                              &mut removed,
+                                &mut poset_buckets,
+                                max_remaining_comparisons,
+                                poset_cache,
+                                &mut removed,
                                 *indices,
                             );
                         }
@@ -813,10 +813,10 @@ impl BackwardsPoset {
                                 && table[n0 as usize + 1][n0 as usize - i0 as usize - 1])
                         {
                             item.super_enlarge_nk(
-                              &mut temp_set_level,
-                              max_remaining_comparisons,
-                              poset_cache,
-                              &mut removed,
+                                &mut poset_buckets,
+                                max_remaining_comparisons,
+                                poset_cache,
+                                &mut removed,
                                 *indices,
                             );
                         }
@@ -853,10 +853,10 @@ impl BackwardsPoset {
                     continue;
                 }
 
-                let mut poset_initial = self.clone();
+                let mut poset_initial = *self;
                 poset_initial.set_less(i, j, false);
 
-                result.insert((poset_initial.clone(), i, j));
+                result.insert((poset_initial, i, j));
 
                 let mut queue = Vec::new();
                 queue.push(poset_initial);
@@ -870,16 +870,16 @@ impl BackwardsPoset {
                                 continue;
                             }
 
-                            let mut poset_next = poset.clone();
+                            let mut poset_next = poset;
                             poset_next.set_less(i1, j1, false);
 
-                            if result.contains(&(poset_next.clone(), i, j))
+                            if result.contains(&(poset_next, i, j))
                                 || *self != poset_next.with_less(i, j)
                             {
                                 continue;
                             }
 
-                            result.insert((poset_next.clone(), i, j));
+                            result.insert((poset_next, i, j));
                             queue.push(poset_next);
                         }
                     }
@@ -895,8 +895,8 @@ impl BackwardsPoset {
         //   debug_assert!(item.is_canonified());
         //   debug_assert!({
         //     let mut is_possible = false;
-        //     'all_for: for i in 0..item.n() {
-        //       for j in 0..item.n() {
+        //     'all_for: for i in 0..item.n {
+        //       for j in 0..item.n {
         //         if i != j && !item.is_less(i, j) && !item.is_less(j, i) {
         //           let mut temp = item.with_less(i, j);
         //           temp.canonify();
@@ -942,7 +942,7 @@ impl BackwardsPoset {
 
     pub fn super_enlarge_n(
         &self,
-        temp_set_level: &mut [[(
+        poset_bucket: &mut [[(
             HashSet<(BackwardsPoset, (u8, u8))>,
             HashSet<(BackwardsPoset, (u8, u8))>,
         ); 15]; 15],
@@ -980,7 +980,7 @@ impl BackwardsPoset {
                     continue;
                 }
 
-                swap_init.push_back((new_poset.clone(), index + 1, min_comparisons_done + 1));
+                swap_init.push_back((new_poset, index + 1, min_comparisons_done + 1));
 
                 if new_poset
                     .with_less(k, j)
@@ -993,19 +993,13 @@ impl BackwardsPoset {
 
         for mut item in unfiltered {
             let indices = item.canonify_transform((k, j));
-            Self::handle_poset(
-                temp_set_level,
-                item,
-                indices,
-                poset_cache,
-                removed,
-            );
+            Self::handle_poset(poset_bucket, item, indices, poset_cache, removed);
         }
     }
 
     fn enlarge_n(
         &self,
-        temp_set_level: &mut [[(
+        poset_buckets: &mut [[(
             HashSet<(BackwardsPoset, (u8, u8))>,
             HashSet<(BackwardsPoset, (u8, u8))>,
         ); 15]; 15],
@@ -1013,16 +1007,16 @@ impl BackwardsPoset {
         poset_cache: &HashMap<BackwardsPoset, u8>,
         removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
     ) {
-        let mut temp = Self::new(self.n + 1, self.i);
+        let mut empty_poset = Self::new(self.n + 1, self.i);
         for i in 0..self.n {
             for j in 0..self.n {
-                temp.set_less(i, j, self.is_less(i, j));
+                empty_poset.set_less(i, j, self.is_less(i, j));
             }
         }
 
         let mut enlarged = HashSet::new();
         let mut swap_init = VecDeque::new();
-        swap_init.push_back((temp, 0));
+        swap_init.push_back((empty_poset, 0));
         while let Some((poset, number)) = swap_init.pop_back() {
             for k in number..(poset.n - 1) {
                 if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
@@ -1040,35 +1034,31 @@ impl BackwardsPoset {
                 continue;
             }
             let mut canonified = None;
-            for i in 0..item.n {
-                for j in 0..item.n {
-                    if i != j
-                        && !item.is_less(i, j)
-                        && !item.is_less(j, i)
-                        && (i == item.n() - 1 || j == item.n() - 1)
-                        && item
-                            .with_less(i, j)
-                            .can_reduce_element_greater(item.n() - 1)
-                    {
-                        if canonified.is_none() {
-                            let mut canon = *item;
-                            let indices = canon.canonify_transform2();
-                            canonified = Some((canon, indices));
-                        }
-                        if let Some((canon, (indices, is_dual))) = canonified {
-                            let pairwise = if is_dual {
-                                (indices[j as usize] as u8, indices[i as usize] as u8)
-                            } else {
-                                (indices[i as usize] as u8, indices[j as usize] as u8)
-                            };
-                            Self::handle_poset(
-                                temp_set_level,
-                                canon,
-                                pairwise,
-                                poset_cache,
-                                removed,
-                            );
-                        }
+            for k in 0..item.n - 1 {
+                if !item.is_less(k, item.n - 1)
+                    && !item.is_less(item.n - 1, k)
+                    && item
+                        .with_less(k, item.n - 1)
+                        .can_reduce_element_greater(item.n - 1)
+                {
+                    if canonified.is_none() {
+                        let mut canon = *item;
+                        let indices = canon.canonify_transform2();
+                        canonified = Some((canon, indices));
+                    }
+                    if let Some((canon, (indices, is_dual))) = canonified {
+                        let pairwise = if is_dual {
+                            (
+                                indices[item.n as usize - 1] as u8,
+                                indices[k as usize] as u8,
+                            )
+                        } else {
+                            (
+                                indices[k as usize] as u8,
+                                indices[item.n as usize - 1 as usize] as u8,
+                            )
+                        };
+                        Self::handle_poset(poset_buckets, canon, pairwise, poset_cache, removed);
                     }
                 }
             }
@@ -1086,15 +1076,15 @@ impl BackwardsPoset {
     }
 
     pub fn super_enlarge_nk(
-      &self,
-      temp_set_level: &mut [[(
-          HashSet<(BackwardsPoset, (u8, u8))>,
-          HashSet<(BackwardsPoset, (u8, u8))>,
-      ); 15]; 15],
-      max_remaining_comparisons: usize,
-      poset_cache: &HashMap<BackwardsPoset, u8>,
-      removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
-      (k, j): (u8, u8),
+        &self,
+        poset_buckets: &mut [[(
+            HashSet<(BackwardsPoset, (u8, u8))>,
+            HashSet<(BackwardsPoset, (u8, u8))>,
+        ); 15]; 15],
+        max_remaining_comparisons: usize,
+        poset_cache: &HashMap<BackwardsPoset, u8>,
+        removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
+        (k, j): (u8, u8),
     ) {
         debug_assert!(!self.is_less(k, j) && !self.is_less(j, k));
 
@@ -1125,7 +1115,7 @@ impl BackwardsPoset {
                     continue;
                 }
 
-                swap_init.push_back((new_poset.clone(), index + 1, min_comparisons_done + 1));
+                swap_init.push_back((new_poset, index + 1, min_comparisons_done + 1));
 
                 if new_poset
                     .with_less(k, j)
@@ -1138,19 +1128,13 @@ impl BackwardsPoset {
 
         for mut item in unfiltered {
             let indices = item.canonify_transform((k, j));
-            Self::handle_poset(
-              temp_set_level,
-              item,
-              indices,
-              poset_cache,
-              removed,
-          );
+            Self::handle_poset(poset_buckets, item, indices, poset_cache, removed);
         }
     }
 
     fn enlarge_nk(
         &self,
-        temp_set_level: &mut [[(
+        poset_buckets: &mut [[(
             HashSet<(BackwardsPoset, (u8, u8))>,
             HashSet<(BackwardsPoset, (u8, u8))>,
         ); 15]; 15],
@@ -1158,16 +1142,16 @@ impl BackwardsPoset {
         poset_cache: &HashMap<BackwardsPoset, u8>,
         removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
     ) {
-        let mut temp = Self::new(self.n + 1, self.i + 1);
+        let mut empty_poset = Self::new(self.n + 1, self.i + 1);
         for i in 0..self.n {
             for j in 0..self.n {
-                temp.set_less(i, j, self.is_less(i, j));
+                empty_poset.set_less(i, j, self.is_less(i, j));
             }
         }
 
         let mut enlarged = HashSet::new();
         let mut swap_init = VecDeque::new();
-        swap_init.push_back((temp, 0));
+        swap_init.push_back((empty_poset, 0));
         while let Some((poset, number)) = swap_init.pop_back() {
             for k in number..(poset.n - 1) {
                 if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
@@ -1185,33 +1169,31 @@ impl BackwardsPoset {
                 continue;
             }
             let mut canonified = None;
-            for i in 0..item.n {
-                for j in 0..item.n {
-                    if i != j
-                        && !item.is_less(i, j)
-                        && !item.is_less(j, i)
-                        && (i == item.n() - 1 || j == item.n() - 1)
-                        && item.with_less(i, j).can_reduce_element_less(item.n() - 1)
-                    {
-                        if canonified.is_none() {
-                            let mut canon = *item;
-                            let indices = canon.canonify_transform2();
-                            canonified = Some((canon, indices));
-                        }
-                        if let Some((canon, (indices, is_dual))) = canonified {
-                            let pairwise = if is_dual {
-                                (indices[j as usize] as u8, indices[i as usize] as u8)
-                            } else {
-                                (indices[i as usize] as u8, indices[j as usize] as u8)
-                            };
-                            Self::handle_poset(
-                                temp_set_level,
-                                canon,
-                                pairwise,
-                                poset_cache,
-                                removed,
-                            );
-                        }
+            for k in 0..item.n - 1 {
+                if !item.is_less(item.n - 1, k)
+                    && !item.is_less(k, item.n - 1)
+                    && item
+                        .with_less(item.n - 1, k)
+                        .can_reduce_element_less(item.n - 1)
+                {
+                    if canonified.is_none() {
+                        let mut canon = *item;
+                        let indices = canon.canonify_transform2();
+                        canonified = Some((canon, indices));
+                    }
+                    if let Some((canon, (indices, is_dual))) = canonified {
+                        let pairwise = if is_dual {
+                            (
+                                indices[k as usize] as u8,
+                                indices[item.n as usize - 1] as u8,
+                            )
+                        } else {
+                            (
+                                indices[item.n as usize - 1] as u8,
+                                indices[k as usize] as u8,
+                            )
+                        };
+                        Self::handle_poset(poset_buckets, canon, pairwise, poset_cache, removed);
                     }
                 }
             }
