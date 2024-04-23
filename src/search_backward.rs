@@ -8,6 +8,8 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::backwards_poset::BackwardsPoset;
 use crate::constants::{KNOWN_VALUES, LOWER_BOUNDS, MAX_N, UPPER_BOUNDS};
+use crate::normal_poset::NormalPoset;
+use crate::poset::Poset;
 use crate::utils::format_duration;
 
 pub static COUTNER_USE_NOT_NAUTY: CounterUsize = CounterUsize::new(0);
@@ -105,6 +107,30 @@ pub fn start_search_backward(
         );
 
         if source.contains(&BackwardsPoset::new(n, i0)) {
+            // let mut counter_0 = 0;
+            // let mut counter_r = 0;
+            // for (item, _) in &poset_cache {
+            //     let mut pos = NormalPoset::new(item.n(), item.i());
+            //     for i in 0..item.n() {
+            //         for j in 0..item.n() {
+            //             if item.is_less(i, j) {
+            //                 pos.set_less(i, j, true);
+            //             }
+            //         }
+            //     }
+            //     pos.canonify();
+            //     let compatible_posets = pos.num_compatible_posets();
+            //     if 0 == compatible_posets {
+            //         counter_0 += 1;
+            //         let mut ig = *item;
+            //         ig.normalize();
+            //         dbg!(ig, pos);
+            //     } else if (max_comparisons as u32) < compatible_posets.ilog2() {
+            //         counter_r += 1;
+            //     }
+            // }
+            // dbg!(counter_0, counter_r);
+
             return Some((k as u8, poset_cache.len()));
         } else if source.is_empty() || interrupt.load(Ordering::Relaxed) {
             return None;
