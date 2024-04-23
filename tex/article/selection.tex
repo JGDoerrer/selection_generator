@@ -144,8 +144,8 @@ $\mathcal{O}(n)$.
 % https://en.wikipedia.org/wiki/Selection_algorithm#cite_note-knuth-14
 
 \subsubsection{Lower and upper bounds}
-The time complexity of $\mathcal{O}(n)$ of the mentioned algorithms is necessary, because the input
-to these algorithm is a list of values in arbitrary order. Therefore the algorithm must look at all
+The time complexity of $\mathcal{O}(n)$ of the mentioned algorithms is inevitable, because the input
+to these algorithm is a list of values in arbitrary order. Therefore, the algorithm must look at all
 the input values to determine a correct solution. If any of these input values will not be
 considered it could be the one that should have been returned by the algorithm leading to wrong
 results. Apart from this simple and straight forward argument, there is a considerable amount of
@@ -160,7 +160,7 @@ algorithm up to his $\smallO(n)$ term. For deterministic algorithms it has also 
   &\text{with~} H(x) = x \cdot \log_2 \frac{1}{x} + (1-x) \log_2 \frac{1}{1-x}
 \end{eqnarray*}
 are required. An upper bound is been proposed by Blum, in the paper \textit{Time Bounds for
-  Selection} it stated that no more than $5.430\dot{5} \cdot n$ comparisons are ever required.
+  Selection}. It stated that no more than $5.430\dot{5} \cdot n$ comparisons are ever required.
 Therefore selection is for sure in a time complexity of $\mathcal{O}(n)$ for best and worst-case.
 
 \subsection{Partial Order}
@@ -192,7 +192,7 @@ A good visual example is finding the median $i=3$ in a list of $n=5$ elements. F
 the comparisons to be performed next as a yellow line. A Hasse diagram of the order of relation
 found so far (smaller=lower, larger=higher) is shown as the blue lines. The red circles have already
 found to be greater than three others and disqualified The red elements have already been determined
-to be larger than three other elements and are therefore are disqualified as medians. The larger
+to be larger than three other elements and are therefore disqualified as medians. The larger
 element of the final comparison is the median. This is also the optimal algorithm for $i=3$ and
 $n=5$.
 
@@ -205,7 +205,7 @@ $i$-th largest element. Thus, the poset is solvable.
 
 
 \section{Methods and Tools}
-\subsection{Forward Search}
+\subsection{Forward Search}\label{chapter:forward_search}
 Forward Search starts with an empty Poset, i.e. one with entirely unknown ordering of its elements,
 and recursively determines solvability of a given Poset within some bound by exhaustively searching
 the results of all possible comparisons to be made unless it is already solved or we determine that
@@ -227,15 +227,15 @@ based ejection policy. Since the search always imposes an upper bound for the nu
 to allow this also includes yet unsolved Posets, for which we note the currently known minimum.
 
 It is optimal because of an inductive argument over the number of relative orders determined. An
-already solved Poset obviously takes no further comparisons to solve. Then given an unsolved Poset
+already solved Poset obviously takes no further comparisons to solve. Then, given an unsolved Poset
 with all elements already too large or small excluded we must make at least one more comparison to
 make progress. Since all Posets resulting from these comparisons must have more elements ordered
-than the current one has we can assume as per induction that we know their optimal cost. Then we
+than the current one has we can assume as per induction that we know their optimal cost. As a result, we
 cannot solve the Poset in less than the cost of the cheapest of these comparisons, plus one for the
 comparison itself, hence the current Poset is also solved optimally.
 
 It is also complete for a given upper bound, explainable through a similar inductive argument. If
-the Poset is solvable within that bound then at least one of its possible comparisons must have both
+the Poset is solvable within that bound, then at least one of its possible comparisons must have both
 outcomes be solvable within the bound lowered by one. Since the search only lowers the bound imposed
 on its recursive descendants beyond that once at least one has been solved, we are also guaranteed
 to find a solution for the original Poset if it exists within the bound.
@@ -662,7 +662,7 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
 \end{tikzpicture}
 
 \subsubsection{Parallelisierung}
-Die Rückwärtssuche kann sehr gut parallelisiert werden, indem die Berechnung der Nachfolger parallel passiert. Wie in Abbildung~\ref{table:backward-parallel} beispielhaft für $n = 10, i = 4$ dargestellt, skaliert die Rückwärtssuche relativ gut mit der Anzahl der Kerne.
+Die Rückwärtssuche kann sehr gut parallelisiert werden, indem die Berechnung der Nachfolger parallel passiert. Wie in Tabelle~\ref{table:backward-parallel} beispielhaft für $n = 10, i = 4$ dargestellt, skaliert die Rückwärtssuche relativ gut mit der Anzahl der Kerne.
 
 \begin{table}
   \begin{tabular}{l|l|l}
@@ -682,7 +682,18 @@ Die Rückwärtssuche kann sehr gut parallelisiert werden, indem die Berechnung d
 
 \subsection{Bidirectional Search}
 
-\subsection{$\alpha$-$\beta$-pruning}
+\subsection{Pruning Decisions}
+The minimax search algorithm explained in chapter~\ref{chapter:forward_search} allows for cutting off unpromising branches. For this means, the following strategies are applied.
+
+\begin{enumerate}
+  \item[1.] 
+    Use solvable-heuristic. A heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states 'unsolvable', the branch is pruned.
+    Otherwise, the search continues regularly.
+  \item[2.] 
+    Use \texttt{current\_best}. Each call of \texttt{search\_rec} gets a maximum numbers of comparisons. 
+    When searching the children of a node, the limit is the best (minimal) value found so far.
+    
+\end{enumerate}
 
 \subsection{Compatible Posets}
 
