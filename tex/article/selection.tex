@@ -710,39 +710,6 @@ The minimax search algorithm explained in chapter~\ref{chapter:forward_search} a
 
 \subsection{Compatible Posets}
 
-Let $P_{n,i}$ be a poset.
-\begin{definition}
-  A poset $R_{n,i}$ is compatible with $P_{n,i}$, if $R_{n,i}$ is solved and $P_{n,i} \subseteq R_{n,i}$.
-  Let $$\mathcal{C}(P_{n,i}) = \{ R_{n,i} \text{ canonical poset } \mid R_{n,i} \text{ compatible with } P_{n,i} \}$$ be the set of all compatible posets of $P$.
-\end{definition}
-
-\begin{lemma}
-  A poset $P_{n,i}$ is solved iff $|\mathcal{C}(P_{n,i})| = 1$.
-
-  $\implies$: trivial
-
-  $\impliedby$: trivial
-\end{lemma}
-
-\begin{lemma}
-  Adding a comparison reduces the number of compatible posets by a factor $\leq 2$.
-
-  Let $R_{n,i} = P_{n,i} + uv$.
-
-  \begin{align*}
-    \mathcal{C}(R_{n,i}) & = \mathcal{C}(P_{n,i}) \cap \{ \text{Posets with } uv \}   \\
-    \mathcal{C}(P_{n,i}) & = \mathcal{C}(P_{n,i} + uv) \cup \mathcal{C}(P_{n,i} + vu) \\
-  \end{align*}
-
-  $$2 \cdot |\mathcal{C}(R_{n,i})| \leq |\mathcal{C}(P_{n,i})|$$
-\end{lemma}
-
-\begin{theorem}
-  A poset $P_{n,i}$ is not solvable in less than $\log_2(|\mathcal{C}(P_{n,i})|)$ comparisons.
-
-
-\end{theorem}
-
 \section{Results}
 
 \begin{table}
