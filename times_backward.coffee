@@ -1744,3 +1744,77 @@ Cache size: 0.020 Gigabyte
 Nauty Ratio: 4.306%
 
 Duration: 0d 0h 1m 42.43741s
+==============================================================
+n: 14, i: 4 needs at least 22 comparisons
+# 0: 1 in 24.000ns, total: 1
+# 1: 1 in 1.161ms, total: 2
+# 2: 3 in 15.717µs, total: 5
+# 3: 16 in 546.233µs, total: 21
+# 4: 323 in 10.474ms, total: 344
+# 5: 9790 in 323.988ms, total: 10134
+# 6: 163423 in 5.251s, total: 173557
+# 7: 882563 in 35.088s, total: 1056120
+# 8: 1810253 in 101.233s, total: 2866373
+# 9: 1748270 in 134.486s, total: 4614643
+# 10: 969057 in 122.838s, total: 5583700
+# 11: 367773 in 67.715s, total: 5951473
+# 12: 111418 in 40.277s, total: 6062891
+# 13: 30559 in 15.336s, total: 6093450
+# 14: 8215 in 6.278s, total: 6101665
+# 15: 2193 in 1.436s, total: 6103858
+# 16: 611 in 360.726ms, total: 6104469
+# 17: 158 in 68.646ms, total: 6104627
+# 18: 46 in 15.491ms, total: 6104673
+# 19: 12 in 4.548ms, total: 6104685
+# 20: 5 in 3.760ms, total: 6104690
+# 21: 1 in 4.365ms, total: 6104691
+# 22: 0 in 361.379µs, total: 6104691
+Duration: 0d 0h 8m 50.733032s
+n: 14, i: 4 needs at least 23 comparisons
+# 0: 1 in 36.000ns, total: 1
+# 1: 1 in 8.968µs, total: 2
+# 2: 3 in 20.800µs, total: 5
+# 3: 16 in 562.285µs, total: 21
+# 4: 323 in 13.564ms, total: 344
+# 5: 10111 in 466.373ms, total: 10455
+# 6: 200521 in 8.425s, total: 210976
+# 7: 1386176 in 65.040s, total: 1597152
+# 8: 3607272 in 205.650s, total: 5204424
+# 9: 4267576 in 351.525s, total: 9472000
+# 10: 2763862 in 314.804s, total: 12235862
+# 11: 1162696 in 245.520s, total: 13398558
+# 12: 367875 in 116.765s, total: 13766433
+# 13: 100552 in 63.080s, total: 13866985
+# 14: 26024 in 21.294s, total: 13893009
+# 15: 6745 in 7.528s, total: 13899754
+# 16: 1781 in 1.545s, total: 13901535
+# 17: 474 in 407.715ms, total: 13902009
+# 18: 127 in 76.900ms, total: 13902136
+# 19: 34 in 16.925ms, total: 13902170
+# 20: 12 in 4.589ms, total: 13902182
+# 21: 4 in 3.800ms, total: 13902186
+# 22: 1 in 598.658µs, total: 13902187
+# 23: 1 in 4.956µs, total: 13902188
+Duration: 0d 0h 23m 22.168335s
+
+Congratulations. A solution was found!
+
+n: 14, i: 4
+Comparisons: 23
+
+Cache entries: 13902188
+Cache size: 0.440 Gigabyte
+Nauty Ratio: 1.874%
+
+Duration: 0d 0h 32m 12.901489s
+==============================================================
+n: 14, i: 5 needs at least 23 comparisons
+# 0: 1 in 26.000ns, total: 1
+# 1: 1 in 1.344ms, total: 2
+# 2: 3 in 14.745µs, total: 5
+# 3: 16 in 320.014µs, total: 21
+# 4: 446 in 26.607ms, total: 467
+# 5: 25865 in 1.311s, total: 26332
+# 6: 620661 in 26.783s, total: 646993
+# 7: 4085493 in 201.796s, total: 4732486
+# 8: 9714884 in 590.633s, total: 14447370
