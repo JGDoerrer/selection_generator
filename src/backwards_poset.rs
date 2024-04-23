@@ -319,6 +319,45 @@ impl BackwardsPoset {
         }
     }
 
+    pub fn decide_deterministic(
+        &self,
+        indices_0: [u8; MAX_N],
+        indices_1: [u8; MAX_N],
+    ) -> [u8; MAX_N] {
+        for i in 0..self.n {
+            for j in 0..self.n {
+                if self.is_less(indices_0[i as usize], indices_0[j as usize])
+                    != self.is_less(indices_1[i as usize], indices_1[j as usize])
+                {
+                    return if self.is_less(indices_0[i as usize], indices_0[j as usize]) {
+                        indices_0
+                    } else {
+                        indices_1
+                    };
+                }
+            }
+        }
+        indices_0
+    }
+
+    pub fn canonify_pairwise_elements(
+        &self,
+        equal_items: &Vec<(usize, usize)>,
+        index: usize,
+        mut new_indices: [u8; MAX_N],
+    ) -> [u8; 15] {
+        if index == equal_items.len() {
+            return new_indices;
+        }
+
+        let indices_0 = self.canonify_pairwise_elements(equal_items, index + 1, new_indices);
+
+        new_indices.swap(equal_items[index].0, equal_items[index].1);
+        let indices_1 = self.canonify_pairwise_elements(equal_items, index + 1, new_indices);
+
+        self.decide_deterministic(indices_0, indices_1)
+    }
+
     #[allow(clippy::too_many_lines)]
     pub fn canonify_without_dual(&mut self, indices: [usize; MAX_N]) -> [usize; MAX_N] {
         // precondition
@@ -370,6 +409,7 @@ impl BackwardsPoset {
         new_indices[0..self.n as usize].sort_unstable_by(comparator);
 
         let mut is_unique = true;
+        let mut can_canonify_pairwise = true;
         let mut equal_items: Vec<(usize, usize)> = vec![];
         let mut index = 1;
         while index < self.n as usize {
@@ -395,36 +435,19 @@ impl BackwardsPoset {
 
                 if !delete {
                     is_unique = false;
-                    equal_items.push((from, to));
-                    if 2 < equal_items.len() {
+                    if from + 1 != to {
+                        can_canonify_pairwise = false;
                         break;
                     }
+                    equal_items.push((from, to));
                 }
             }
             index += 1;
         }
 
-        if !is_unique && equal_items.len() == 2 {
-            let &(i0, i1) = &equal_items[0];
-            let &(j0, j1) = &equal_items[1];
-
-            debug_assert!(comparator(&new_indices[i0], &new_indices[j0]).is_ne());
-
-            if i0 + 1 == i1 && j0 + 1 == j1 {
-                let mut cloned = *self;
-                cloned.swap(new_indices[i0], new_indices[i1]);
-                cloned.swap(new_indices[j0], new_indices[j1]);
-
-                if *self == cloned {
-                    is_unique = true;
-
-                    if self.is_less(new_indices[j1], new_indices[i1])
-                        && !self.is_less(new_indices[j1], new_indices[i0])
-                    {
-                        new_indices.swap(i0, i1);
-                    }
-                }
-            }
+        if !is_unique && can_canonify_pairwise {
+            is_unique = true;
+            new_indices = self.canonify_pairwise_elements(&equal_items, 0, new_indices);
         }
 
         if is_unique {
@@ -434,7 +457,7 @@ impl BackwardsPoset {
             new_indices = self.canonify_nauty_indices();
         }
 
-        let old_poset = self.clone();
+        let old_poset = *self;
         for i in 0..self.n {
             for j in 0..self.n {
                 self.set_less(

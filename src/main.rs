@@ -218,6 +218,11 @@ fn run_backward(args: Args) {
         utils::print_current_time();
     }
 
+    // rayon::ThreadPoolBuilder::new()
+    //     .num_threads(2)
+    //     .build_global()
+    //     .unwrap();
+
     let interrupt = Arc::new(AtomicBool::new(false));
 
     for n in start_n..=MAX_N as u8 {
