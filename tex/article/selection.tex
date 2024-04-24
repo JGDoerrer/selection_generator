@@ -50,7 +50,7 @@
 \newtheorem{lemma}{Lemma}
 \newtheorem{definition}{Definition}
 
-\hyphenation{op-tical net-works semi-conduc-tor}
+\hyphenation{op-tical net-works semi-conduc-tor ver-glei-che}
 
 \makeatletter
 \def\endthebibliography{%
@@ -403,7 +403,7 @@ Für kleine Werte von $i$ stellt der hohe prozentuale Anteil von nauty kein Prob
     $6$ & $0.116\%$
   \end{tabular}
   \centering
-  \caption{Prozentuale Häufigkeit der Aufrufe von `nauty' zur Kanonisierung}
+  \caption{Prozentuale Häufigkeit der Aufrufe von nauty zur Kanonisierung}
   \label{table:nauty-ratio}
 \end{table}
 
@@ -412,7 +412,7 @@ Für kleine Werte von $i$ stellt der hohe prozentuale Anteil von nauty kein Prob
 Die Eingabe für die Rückwärtssuche sind die Parameter $n$ und $i$.
 Die Rückwärtssuche beginnt mit dem kleinsten gelösten Poset und berechnet iterativ alle Posets, die in $1, 2, 3, \dots$ Vergleichen gelöst werden können, bis das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element gefunden wird.
 Das kleinste gelöste Poset besteht aus einem Element und enthält keine Vergleiche.
-Das leere Poset besteht aus $n$ Elementen, wobei das $i$-kleinste Element gesucht wird und beinhaltet keinen Vergleich.
+Das leere Poset besteht aus $n$ Elementen, wobei das $i$-kleinste Element gesucht wird, und beinhaltet keinen Vergleich.
 Allgemein sei $A_k$ die Menge aller Posets, die in $k$ Vergleichen lösbar sind.
 $A_0$ besteht nur aus dem kleinsten gelösten Poset.
 Im Folgenden berechnet die Rückwärtssuche für jedes Poset in der Menge $A_k$ die entsprechenden Vorgänger.
@@ -426,7 +426,7 @@ Wenn das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element i
   \begin{itemize}
     \item $q$ ist reduziert und eindeutig kanonisiert.
     \item $q$ wurde in keiner vorherigen Runde gefunden (da es sonst in weniger Vergleichen lösbar wäre).
-    \item Es existiert ein Vergleich $(i, j)$, durch dessen Hinzunahme in $q$ und anschließende Normalisierung wieder das Poset $p$ resultiert, und durch Hinzunahme des umgekehrten Vergleichs $(j, i)$ und anschließende Normalisierung ein bereits gefundenes Poset resultiert.
+    \item Es existiert ein Vergleich $(i, j)$, durch dessen Hinzunahme in $q$ und anschließende Normalisierung wieder das Poset $p$ resultiert und durch Hinzunahme des umgekehrten Vergleichs $(j, i)$ und anschließende Normalisierung ein bereits gefundenes Poset resultiert.
   \end{itemize}
 \end{definition}
 
@@ -468,6 +468,8 @@ Die Berechnung eines Vorgängers für ein gegebenes Poset $p$ mit $n$ Elementen,
     Im nächsten Schritt werden alle Vorgänger berechnet, die $n + 1$ Elemente haben und durch Einfügen eines Vergleichs gefolgt von einer Kanonisierung erneut das Poset $p$ ergeben.
 
     Da das neue Element kleiner oder größer als das gesuchte $i$-kleinste Element ist, wird bei diesen Vorgängern nach dem $i + 1$-kleinsten bzw. dem $i$-kleinsten Element gesucht.
+    Da das Poset $p$ kanonifiziert ist, gilt $i \leq n - 1 - i$ für $p$.
+    Durch das Kanonifizieren des Posets mit $n + 1$-Elementen und dem $(i + 1)$-kleinsten gesuchten Element, kann es hier jedoch nötig sein das Inverse Poset zu bilden wodurch das $(n + 1) - (i + 1) - 1 = n - i + 1$-te Element gesucht ist.
 
     Hierfür wird in Poset $p$ ein neues Element sowie passende Vergleiche eingefügt.
     Passende Vergleiche bedeutet, dass das neue Element nicht unmittelbar wegreduziert werden darf und es noch einen Vergleich gibt, der eingefügt werden könnte, ohne dass das neue Element wegreduziert werden kann, nach Lemma~\ref{lemma:remove_only_last_element_edge}.
@@ -482,18 +484,12 @@ Die Berechnung eines Vorgängers für ein gegebenes Poset $p$ mit $n$ Elementen,
     \end{proof}
 
     Anschließend werden die Posets aus dem 1. und 2. Schritt in einer Menge zusammengeführt und es wird sichergestellt, dass alle Posets kanonisiert sind.
+    Bezeichne den Vergleich, der eingefügt werden könnte, ohne das ein Element wegreduziert werden kann im folgenden als den entfernten Vergleich.
 
   \item[3.]
     Im dritten Schritt wird für jedes bereits gefundene Element iterativ neue Elemente eingefügt, bis die obere Grenze $n_{\text{max}}$ erreicht ist.
-
-    % Die Menge der Posets im zweiten Schritt bildet eine Teilmenge aller potenziell möglichen Vorgänger.
-    % Um im vorletzten Schritt alle möglichen Vorgänger zu berechnen, wird die existierende Menge iterativ um ein Element erweitert.
-
-    % Suche hierbei alle Posets, die folgendes erfüllen (in einem Vergrößerungsschritt):
-    % - n + 1 Elemente
-    % - k oder k + 1 kleinstes Element
-    % - kein Element darf wegreduziert werden können
-    % - durch Hinzunahme des entfernten Vergleichs im 2. Schritt, muss wieder das ursprüngliche Poset aus dem 1. Schritt herauskommen
+    Wenn ein neues Element eingefügt wird, muss beachtet werden, dass eventuell nicht mehr das $i$-kleinste, sondern das $(i + 1)$-kleinste Element gesucht wird, genau wie im 2. Schritt, und das neue Element nicht direkt wegreduziert werden kann.
+    Des Weiteren muss durch das Einfügen im 1. und 2. Schritt entferten Vergleichs und anschließendem reduzieren sowie kanonifizieren wieder Poset $p$ resultieren.
 
   \item[4.]
     Im letzten Schritt wird für jeden Vorgänger die minimale Anzahl an Vergleichen berechnet, die noch entfernt werden müssen, bis das leere Poset erreicht ist.
@@ -543,7 +539,7 @@ Die Effizienz kann wie folgt berechnet werden:
 
 \subsection{Bidirektionale Suche} \label{sec:bidirectional}
 
-Bei der bidirektionalen Suche werden sowohl Vorwärts- als auch Rückwärtssuche gleichzeitig gestartet.
+Bei der bidirektionalen Suche werden sowohl die Vorwärts- als auch Rückwärtssuche gleichzeitig gestartet.
 Es ist zu beachten, dass die Rückwärtssuche mit der theoretischen oberen Schranke gestartet wird und nicht den iterativen deepening-Ansatz verwendet, wie es bei der reinen Rückwärtssuche der Fall ist.
 Während der Rückwärtssuche werden alle bereits gefundenen Posets in einem globalen Cache gespeichert und zusätzlich bis zu welcher Ebene der Cache vollständig ist, das heißt, in welcher Ebene sie sich derzeit befindet.
 Diese Ebene sei im Folgenden als $k$ bezeichnet.
@@ -553,11 +549,11 @@ Andernfalls wird zurückgegeben, dass mindestens $k + 1$ Vergleiche erforderlich
 \begin{figure}[h!]
   \input{figures/tikz_backward_forward.tex}
   \centering
-  \caption{Anzahl Posets vs. Anzahl Vergleiche für $n=12, i=5$ (rot: Rückwärtssuche, blau: Vorwärtssuche)}
+  \caption{Anzahl Posets vs. Anzahl Vergleiche für $n=13, i=6$ (rot: Rückwärtssuche, blau: Vorwärtssuche)}
   \label{fig:backward_forward_count}
 \end{figure}
 
-Wie in Abbildung~\ref{fig:backward_forward_count} zu sehen, durchsucht die Vorwärtssuche für $n = 12, i = 5$ die meisten Posets bei $k = 6$ Vergleichen, während die Rückwärtssuche die meisten Posets bei $k = 12$ durchsucht.
+Wie in Abbildung~\ref{fig:backward_forward_count} zu sehen, durchsucht die Vorwärtssuche für $n = 13, i = 6$ die meisten Posets bei $k = 6$ Vergleichen, während die Rückwärtssuche die meisten Posets bei $k = 14$ durchsucht.
 Dies ist sehr unvorteilhaft für eine bidirektionale Suche, da der Großteil des Suchraums vor dem Treffpunkt beider Suchen liegt.
 
 % TODO: Ergebnisse der Bidirektionalen Suche vorstellen

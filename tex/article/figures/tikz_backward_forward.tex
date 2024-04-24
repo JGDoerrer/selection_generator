@@ -8,7 +8,11 @@
       bar width=3pt,
       ylabel={Anzahl Posets},
       xlabel={Anzahl Vergleiche},
+      % legend cell align=left,
+      % legend pos=outer north east,
+      legend style={at={(0.5,-0.2)},anchor=north}, % draw=none
     ]
+    \addlegendentry{forward search}
     \addplot[fill=blue,shift={(1pt, 0)}] table {
         x y
         0 1
@@ -18,7 +22,7 @@
         4 5921
         5 49147
         6 182188
-        7 283839
+        7 0 % TODO: NEW NUMBERS !!!!!
         8 207294
         9 81898
         10 23841
@@ -32,30 +36,37 @@
         18 3
         19 2
         20 1
+        21 1
+        22 1
+        23 1
       };
+    \addlegendentry{backward search}
     \addplot[fill=red,shift={(-1pt, 0)}] table { % TODO: update numbers
         x y
         0 1
         1 1
-        2 4
-        3 9
-        4 36
-        5 130
-        6 461
-        7 1770
-        8 6848
-        9 25372
-        10 82456
-        11 202924
-        12 318522
-        13 259021
-        14 88920
-        15 9509
-        16 365
-        17 16
-        18 3
-        19 1
-        20 1
+        2 2
+        3 6
+        4 17
+        5 58
+        6 227
+        7 893
+        8 3898
+        9 16728
+        10 72346
+        11 291970
+        12 1006071
+        13 2592437
+        14 4368185
+        15 4058631
+        16 1750707
+        17 290138
+        18 15227
+        19 381
+        20 16
+        21 3
+        22 1
+        23 1
       };
   \end{axis}
 \end{tikzpicture}
