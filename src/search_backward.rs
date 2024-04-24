@@ -1,9 +1,9 @@
-use std::collections::{HashMap, HashSet};
 use std::mem::size_of;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
 
 use global_counter::primitive::exact::CounterUsize;
+use hashbrown::{HashMap, HashSet};
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::backwards_poset::BackwardsPoset;
@@ -61,24 +61,34 @@ pub fn start_search_backward(
 
     for k in 1..=max_comparisons {
         let start = std::time::Instant::now();
-        current_level = current_level
-            .par_iter()
-            .map(|item| {
-                if interrupt.load(Ordering::Relaxed) {
-                    HashSet::new()
-                } else {
-                    item.enlarge_and_remove_less(
-                        interrupt,
-                        &poset_cache,
-                        &table,
-                        n0,
-                        i0,
-                        max_comparisons - k,
-                    )
-                }
-            })
-            .flatten()
-            .collect::<HashSet<_>>();
+
+        let next_level: Arc<RwLock<HashSet<BackwardsPoset>>> =
+            Arc::new(RwLock::new(HashSet::new()));
+        current_level.par_iter().for_each(|poset| {
+            if !interrupt.load(Ordering::Relaxed) {
+                let result = poset.enlarge_and_remove_less(
+                    interrupt,
+                    &poset_cache,
+                    &table,
+                    n0,
+                    i0,
+                    max_comparisons - k,
+                );
+                next_level
+                    .write()
+                    .expect("cache shouldn't be poisoned")
+                    .extend(result);
+            }
+        });
+
+        current_level.clear();
+        for item in next_level
+            .read()
+            .expect("cache shouldn't be poisoned")
+            .iter()
+        {
+            current_level.insert(*item);
+        }
 
         for item in &current_level {
             poset_cache.insert(*item, k as u8);

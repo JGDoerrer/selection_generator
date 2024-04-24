@@ -3,10 +3,10 @@ use clap::{
     error::{Error, ErrorKind},
     ArgAction, Parser,
 };
+use hashbrown::HashMap;
 use search_backward::single;
 use search_forward::Cost;
 use std::{
-    collections::HashMap,
     fs::{DirBuilder, OpenOptions},
     io::{BufWriter, Write},
     str::FromStr,

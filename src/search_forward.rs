@@ -1,5 +1,4 @@
 use std::{
-    collections::HashMap,
     sync::{
         atomic::{AtomicU64, Ordering},
         Arc, RwLock,
@@ -7,6 +6,7 @@ use std::{
     time::Instant,
 };
 
+use hashbrown::HashMap;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 
 use crate::{
@@ -216,7 +216,8 @@ impl<'a> Search<'a> {
             let read_lock = backward_search_state
                 .read()
                 .expect("cache shouldn't be poisoned");
-            if max_comparisons as i8 + 1 <= read_lock.1 { // TODO: idk, ob das passt; oder ohne '+1'?
+            if max_comparisons as i8 + 1 <= read_lock.1 {
+                // TODO: idk, ob das passt; oder ohne '+1'?
                 return if let Some(&value) = read_lock.0.get(&Self::transform(&poset)) {
                     Cost::Solved(value)
                 } else {

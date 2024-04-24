@@ -1,4 +1,5 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use hashbrown::{HashMap, HashSet};
+use std::collections::VecDeque;
 use std::fmt::{Debug, Formatter, Result};
 use std::hash::Hash;
 use std::os::raw::c_int;
