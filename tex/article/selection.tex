@@ -31,8 +31,8 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[ngerman]{babel}
 \usepackage{pgfplots}
+\usepackage{amsthm}
 
 % Commands
 \newcommand\smallO{
@@ -285,37 +285,9 @@ to find a solution for the original Poset if it exists within the bound.
 
 
 \begin{figure}
-  \begin{tikzpicture}[scale=0.8]
-    \tiny
-    \node (A1) at (0,0) {$\vdots$};
-    \node (A2) at (2,0) {$\vdots$};
-    \node (A3) at (3.5,0.4) {$\dots$};
-    \node (A4) at (6,0) {$\vdots$};
-
-    \node (B1) at (2,1) {MIN};
-
-    \draw (B1) -- (A1) node[above,pos=0.6, xshift=-0.4cm] {$\{1,3\}$};
-    \draw (B1) -- (A2) node[right, midway] {$\{1,4\}$};
-    \draw (B1) -- (A4) node[right, pos=0.3, xshift=6mm] {$\{n \!- \! 1,n\}$};
-
-    \node (C1) at (5,2) {MAX};
-    \node (B2) at (7,1) {$\vdots$};
-
-    \draw (C1) -- (B2) node[right, pos=0.3, xshift=4mm] {$(2,1)$};
-
-    \draw (B1) -- (C1) node[left, pos=0.7, xshift=-4mm] {$(1,2)$};
-
-    \node (D1) at (8,3) {MIN};
-    \node (C2) at (8,2) {$\vdots$};
-    \node (C3) at (8.7,2.3) {$\dots$};
-    \node (C4) at (10,2) {$\vdots$};
-
-    \draw (D1) -- (C1) node[left,pos=0.3,xshift=-3mm] {$\{1,2\}$};
-    \draw (D1) -- (C2) node[left, midway, xshift=0.5mm] {$\{1,3 \! \}$};
-    \draw (D1) -- (C4) node[right, pos=0.3,xshift=2mm] {$\{n \! - \! 1,n\}$};
-
-  \end{tikzpicture}
-  \caption{Minimax search algorithm} \label{fig:minimax_search}
+  \input{figures/tikz_minimax_search_algorithm.tex}
+  \caption{Minimax search algorithm}
+  \label{fig:minimax_search}
 \end{figure}
 
 \subsubsection{Canonification}
@@ -354,30 +326,35 @@ discovered in the previous iteration, as otherwise it would have to be solvable 
 % TODO: @Johanna: ab hier übersetzen :)
 
 \subsubsection{Normalform}
-Im Gegensatz zur Vorwärtssuche benutzt die Rückwärtssuche eindeutiges kanonifizieren.
-Das kanonifizieren der Vorwärtssuche ist nicht eindeutig aus Performancegründen.
 
-Definition:
-Inverse Poset zu $p$ mit $n$-Elementen sei das Poset $q$ mit $n$-Elementen, bei dem alle Vergleiche aus $p$ umgedreht sind und nicht das $i$-kleinste, sondern das $n - 1 - i$-kleinste Element gesucht ist.
+Im Unterschied zur Vorwärtssuche nutzt die Rückwärtssuche eine eindeutige Kanonisierung.
+Die Kanonisierung der Vorwärtssuche ist aus Performancegründen nicht eindeutig.
 
-Lemma (X):
-Poset $p$ ist in $k$ Vergleichen lösbar gdw. das inverse Poset zu $p$ in k Vergleichen lösbar ist.
+\begin{definition}[Inverses Poset] \label{definition:inverse_poset}
+  Das inverse Poset eines Posets $p$ mit $n$ Elementen ist das Poset $q$ mit ebenfalls $n$ Elementen, bei dem alle Vergleiche aus $p$ umgekehrt sind und nicht das $i$-kleinste, sondern das $(n - 1 - i)$-kleinste Element gesucht wird.
+\end{definition}
 
-Proof:
-% TODO: @Johanna: vielleicht hast du da eine Idee, wie man das aufschreiben könnte
+\begin{lemma} \label{lemma:inverse_poset}
+  Ein Poset $p$ ist in $k$ Vergleichen lösbar, genau dann, wenn das inverse Poset zu $p$ in $k$ Vergleichen lösbar ist.
+\end{lemma}
 
-Um eine eindeutige Darstellung zu erhalten, wird zunächst bestimmt, ob $i$ oder $n - 1 - i$ kleiner ist und gegebenfalls Poset $p$ durch dessen Inverse ersetzt. Nach Lemma (X) ändert sich die Lösbarkeit dadurch nicht.
+\begin{proof} \label{proof:inverse_poset}
+  % TODO: @Johanna: vielleicht hast du da eine Idee, wie man das aufschreiben könnte
+\end{proof}
+
+Um eine eindeutige Darstellung zu gewährleisten, wird zunächst ermittelt, ob $i$ oder $n - 1 - i$ kleiner ist, und gegebenenfalls wird das Poset $p$ durch sein Inverses ersetzt.
+Nach Lemma~\ref{lemma:inverse_poset} ändert sich dadurch nichts an seiner Lösbarkeit.
 
 Abschließend werden die Elemente kanonisch angeordnet.
-Dafür wird das Poset intern als gerichteter Graph dargestellt, wobei sich diese Darstellung an den Hasse-Diagrammen orientiert.
-Um alle Elemente kanonisch anzuordnen, müssen die Knoten des Graphen kanonisch gelabeled werden.
-Hierfür wird primär auf ``nauty'' gesetzt.
-Nauty ist ein C-Program zur Berechnung von Automorphismengruppen von Graphen und kann ein kanonisches Label für einen gegebenen Graphen erzeugen.
+Dazu wird das Poset intern als gerichteter Graph repräsentiert, wobei sich diese Darstellung an den Hasse-Diagrammen orientiert.
+Um alle Elemente kanonisch anzuordnen, müssen die Knoten des Graphen kanonisch beschriftet werden.
+Hierfür wird primär auf ``nauty'' zurückgegriffen.
+Nauty ist ein C-Programm zur Berechnung von Automorphismengruppen von Graphen und kann ein kanonisches Label für einen gegebenen Graphen erzeugen.
 % TODO: @Johanna: bibtex cite von https://pallini.di.uniroma1.it/
-Durch dieses kanonische labelling kann das Poset eindeutig dargestellt werden.
+Durch diese kanonische Beschriftung kann das Poset eindeutig dargestellt werden.
 
-Ein mögliches Problem tritt auf, wenn $i = n - 1 - i$ gilt.
-Dann kann nicht anhand von $i$ unterschieden werden, ob $p$ oder das inverse von $p$ der kanonischen Normalform entsprechen.
+Ein potentielles Problem tritt auf, wenn die Gleichung $i = n - 1 - i$ erfüllt ist.
+In diesem Fall ist es nicht möglich, basierend auf dem Wert von $i$ zu unterscheiden, ob $p$ oder sein Inverses der kanonischen Normalform entspricht.
 
 \begin{figure}
   \begin{tikzpicture}
@@ -403,32 +380,34 @@ Dann kann nicht anhand von $i$ unterschieden werden, ob $p$ oder das inverse von
   \label{fig:backward_canonify_problematic}
 \end{figure}
 
-Wie in Abbildung~\ref{fig:backward_canonify_problematic} als Hasse-Diagram illustriert, sehen beide Postes unterschiedlich aus, aber das eine ist genau das Inverse von dem anderen.
-Um diese Uneindeutigkeit zu beheben, wird jedes Poset, für das $i = n - 1 - i$ gilt zusätzlich das Inverse berechnet und kanonifiziert.
-Anschließend wird deterministisch eins der beiden ausgewählt.
+Wie aus dem Hasse-Diagramm in Abbildung~\ref{fig:backward_canonify_problematic} ersichtlich ist, erscheinen beide Posets unterschiedlich, obwohl eines das genaue Inverse des anderen ist.
+Um diese Unklarheit zu beheben, wird für jedes Poset, für das $i = n - 1 - i$ gilt, zusätzlich das Inverse berechnet und kanonisiert.
+Anschließend wird eines der beiden deterministisch ausgewählt.
 
-Da das Kanonifizieren für die Rückwärtssuche unumgänglich ist und einen großteils der Rechenzeit beanspruchte, werden alle trivialen Fälle abgefangen und nur die restlichen mittels nauty kanonifiziert.
+Da das Kanonisieren für die Rückwärtssuche unvermeidbar ist und einen Großteil der Rechenzeit beansprucht, werden alle trivialen Fälle abgefangen, und nur die verbleibenden Fälle werden mittels nauty kanonisiert.
 
-Zunächst wird für jeden Knoten, genau wie bei der Vorwärtssuche, der Grad an eingehenden und ausgehenden Kanten berechnet.
-Anschließend wird ein `hash'-Wert für jeden Knoten berechnet, der jeweils die topologische Struktur aller Nachbarknoten sowie rekursiv bis zu einer gegebenen Grenze dessen Nachbarknoten berücksichtigt.
+Zunächst wird für jeden Knoten, ähnlich wie bei der Vorwärtssuche, der Grad der eingehenden und ausgehenden Kanten berechnet.
+Anschließend wird ein Hash-Wert für jeden Knoten berechnet.
+Dieser berücksichtigt die topologische Struktur aller Nachbarknoten sowie rekursiv bis zu einer gegebenen Grenze deren Nachbarknoten.
 
-Daraufhin werden die Knoten nach ihren Knotengraden sowie den `hash'-Werten sortiert.
-Sind alle Knotengrade bzw. `hash'-Werte unterschiedlich, ist der Graph in einer eindeutigen Normalform.
-Sofern es zwei Knoten mit den selben Vergleichsattributen gibt, wird versucht diese zu tauschen.
-Sollte sich an der internen Darstellung des Posets nichts ändern, können diese als eindeutig kanonifiziert betrachtet werden, da beide Graphen auf dieselbe interne Darstellung abbilden.
+Daraufhin werden die Knoten nach ihren Knotengraden sowie den Hash-Werten sortiert.
+Wenn jeder Knotengrad bzw. jeder Hash-Wert einzigartig ist, befindet sich der Graph in einer eindeutigen Normalform.
+Falls es zwei Knoten mit denselben Vergleichsattributen gibt, wird versucht, diese zu vertauschen.
+Sollte sich dabei die interne Darstellung des Posets nicht ändern, kann das Poset als eindeutig kanonisiert betrachtet werden, da beide Graphen auf dieselbe interne Darstellung abbilden.
 
-Sofern das Poset nicht bereits eindeutige kanonifiziert ist, wird der Fall abgefangen, dass es $o$ Paare an Knonten gilt, die auf die gleichen Attribute abbilden.
-Anschließend wird über alle Permutationen iteriert.
-Da es in der Regel wenige Paare an Knoten gibt, die auf die gleichen Attribute abbilden, können die $2^{o}$ viele Permutationen effizient iteriert werden.
-Letztlich wird deterministisch eine der Permutationen anhand dessen internen Darstellung ausgewählt.
+Sollte das Poset noch nicht eindeutig kanonisiert sein, wird der Fall berücksichtigt, dass es $l$ Paare von Knoten gibt, die auf die gleichen Attribute abbilden.
+Anschließend wird über alle möglichen Permutationen iteriert.
+Für das erste Paar gibt es beispielsweise zwei Möglichkeiten: Entweder es bleibt so oder die beiden Knoten werden vertauscht.
+Da in der Regel nur wenige Knotenpaare mit denselben Attributen vorhanden sind, ist $l$ klein, und die $2^l$ möglichen Permutationen können effizient iteriert werden. Schließlich wird eine der Permutationen deterministisch anhand ihrer internen Darstellung ausgewählt.
 
-Durch das Abfangen dieser trivialen Fälle, kann die Verwendung von nauty stark reduziert werden, wie in Abbildung~\ref{table:nauty-ratio} exemplarisch für $n = 13$ dargestellt.
-Sehr schön ist hierbei, dass mit steigendem $i$ nauty prozentual weniger aufgerufen wird.
-Für kleine $i$ ist der prozentual hohe Anteil von nauty kein Problem, da für kleine $i$ sowieso schnell das Ergebnis berechnet werden kann.
+Durch die Behandlung dieser trivialen Fälle kann die Notwendigkeit der Verwendung von nauty stark reduziert werden, wie beispielhaft in Tabelle~\ref{table:nauty-ratio} für $n = 13$ dargestellt.
+
+Es ist besonders bemerkenswert, dass mit höherem $i$ der prozentuale Anteil der Aufrufe von nauty abnimmt.
+Für kleine Werte von $i$ stellt der hohe prozentuale Anteil von nauty kein Problem dar, da das Ergebnis für kleine $i$ ohnehin schnell berechnet werden kann.
 
 \begin{table}
   \begin{tabular}{l|l}
-    $i$ & Nauty-Ratio \\
+    $i$ & nauty-Ratio \\
     \hline
     $0$ & $0.000\%$   \\
     $1$ & $30.205\%$  \\
@@ -439,29 +418,47 @@ Für kleine $i$ ist der prozentual hohe Anteil von nauty kein Problem, da für k
     $6$ & $0.116\%$
   \end{tabular}
   \centering
-  \caption{Prozentwert der Aufrufe an `nauty' zum kanonifizieren}
+  \caption{Prozentuale Häufigkeit der Aufrufe von `nauty' zur Kanonisierung}
   \label{table:nauty-ratio}
 \end{table}
 
 \subsubsection{Algorithmus}
-Eingabe für den Rückwärtssuche stellen die Parameter $n$ und $i$ dar.
-Die Rückwärtssuche startet bei dem kleinsten gelösten Poset und berechnet iterativ alle Posets, die in $1, 2, 3, \dots$ Vergleichen gelöst werden können, bis das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element gefunden wird.
-Das kleinste gelöste Poset ist das Poset, das aus einem Element besteht und keinen Vergleichen besteht.
-Das leere Poset ist das Poset, das $n$ Elemente hat, das $i$-kleinste Element gesucht wird und keine Vergleiche umfasst.
-Verallgemeinert sei $A_k$ die Menge aller Posets, die in $k$ Vergleichen lösbar ist.
-$A_0$ besteht hierbei nur aus dem kleinsten gelösten Poset.
-Im Folgenden berechnet die Rückwärtssuche für jedes Posets in der Menge $A_k$, die entsprechenden Vorgänger.
-Ein Vorgänger von Poset $p$ hat folgende Eigenschaften:
-\begin{itemize}
-  \item es ist vollständig normalisiert
-  \item es ist nicht in einer vorherigen Runde gefunden (da es sonst in weniger Vergleichen lösbar wäre)
-  \item es existiert ein Vergleich $(i, j)$, durch deren Hinzunahme und anschließender Normalisierung wieder Poset $p$ resultiert und durch Hinzunahme des Umkehrvergleichs $(j, i)$ und anschließender Normalisierung wieder ein bereits gefundenes Poset resultiert
-\end{itemize}
-Die Menge aller Vorgängern bildet die Menge $A_{k + 1}$.
+
+Die Eingabe für die Rückwärtssuche sind die Parameter $n$ und $i$.
+Die Rückwärtssuche beginnt mit dem kleinsten gelösten Poset und berechnet iterativ alle Posets, die in $1, 2, 3, \dots$ Vergleichen gelöst werden können, bis das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element gefunden wird.
+Das kleinste gelöste Poset besteht aus einem Element und enthält keine Vergleiche.
+Das leere Poset besteht aus $n$ Elementen, wobei das $i$-kleinste Element gesucht wird und beinhaltet keinen Vergleich.
+Allgemein sei $A_k$ die Menge aller Posets, die in $k$ Vergleichen lösbar sind.
+$A_0$ besteht nur aus dem kleinsten gelösten Poset.
+Im Folgenden berechnet die Rückwärtssuche für jedes Poset in der Menge $A_k$ die entsprechenden Vorgänger.
+Die Menge aller Vorgänger bildet die Menge $A_{k + 1}$.
+Wenn das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element in $A_l$ vorhanden ist, werden genau $l$ Vergleiche benötigt, um das $i$-kleinste Element einer $n$-elementigen Liste zu bestimmen.
 
 \subsubsection{Vorgängerberechnung}
-Die Berechnung eines Vorgängern für ein gegebenes Poset $p$ mit $n$ Elementen, bei dem das $i$-kleinste Element gesucht ist, erfolgt in 3 Schritten.
-Da es potentiell unendlich viele Vorgänger gilt, werden diese nur bis zu einer maximalen Grenzen von $n_{max}$ Elementen berechnet.
+
+\begin{definition}[Vorgänger] \label{definition:predecessor_calculation}
+  Poset $q$ ist Vorgänger von Poset $p$, wenn folgende Eigenschaften gelten:
+  \begin{itemize}
+    \item $q$ ist reduziert und eindeutig kanonisiert.
+    \item $q$ wurde in keiner vorherigen Runde gefunden (da es sonst in weniger Vergleichen lösbar wäre).
+    \item Es existiert ein Vergleich $(i, j)$, durch dessen Hinzunahme in $q$ und anschließende Normalisierung wieder das Poset $p$ resultiert, und durch Hinzunahme des umgekehrten Vergleichs $(j, i)$ und anschließende Normalisierung ein bereits gefundenes Poset resultiert.
+  \end{itemize}
+\end{definition}
+
+\begin{lemma} \label{lemma:predecessor_calculation}
+  Wenn Poset $p$ in $k$ Vergleichen lösbar ist und $q$ ein Vorgänger von Poset $p$ ist, ist Poset $q$ in $k + 1$ Vergleichen lösbar
+\end{lemma}
+
+\begin{proof} \label{proof:predecessor_calculation}
+  Da $q$ in keiner vorherigen Runde gefunden wurde, ist es gemäß Annahme nicht in weniger Vergleichen lösbar.
+  Da ein Vergleich $(i, j)$ existiert, durch dessen Hinzunahme und anschließende Normalisierung das Poset $p$ resultiert, kann $q$ durch die Hinzunahme eines Vergleichs erreicht werden.
+  Da $p$ in $k$ Vergleichen lösbar ist, ist somit $q$ in $k + 1$ Vergleichen lösbar.
+  Wenn der Vergleich umgekehrt eingefügt wird, befindet sich das resultierende Poset, gemäß Annahme, bereits im Cache.
+  Dadurch ist dieser Pfad in höchstens $k + 1$ Vergleichen lösbar.
+\end{proof}
+
+Da potenziell unendlich viele Vorgänger existieren, werden diese nur bis zu einer maximalen Grenze von $n_{\text{max}}$ Elementen berechnet.
+Die Berechnung eines Vorgängers für ein gegebenes Poset $p$ mit $n$ Elementen, bei dem das $i$-kleinste Element gesucht wird, erfolgt in drei Schritten:
 
 \begin{itemize}
   \item[1.]
@@ -469,35 +466,7 @@ Da es potentiell unendlich viele Vorgänger gilt, werden diese nur bis zu einer 
     Eine Schwierigkeit stellen hierbei die Vergleiche dar, die transitiv entstehen.
 
     \begin{figure}
-      \begin{tikzpicture}
-        \node[circle,draw=black] (A1) at (0, 0) {};
-        \node[circle,draw=black] (A2) at (0, 1) {};
-        \node[circle,draw=black] (A3) at (0, 2) {};
-
-        \draw (A1) -- (A2) node {};
-        \draw (A2) -- (A3) node {};
-        \node (AL) at (0, -0.5) {n = 3, i = 0};
-        \node (A) at (0, -1) {(1)};
-
-
-        \node[circle,draw=black] (B1) at (3 + 0, 0) {};
-        \node[circle,draw=black] (B2) at (3 + 0, 2) {};
-        \node[circle,draw=black] (B3) at (3 + 1, 1) {};
-
-        \draw (B1) -- (B2) node {};
-        \node (BL) at (3 + 0.5, -0.5) {n = 3, i = 0};
-        \node (B) at (3 + 0.5, -1) {(2)};
-
-
-        \node[circle,draw=black] (C1) at (6 + 1, 2) {};
-        \node[circle,draw=black] (C2) at (6 + 0, 0) {};
-        \node[circle,draw=black] (C3) at (6 + 2, 0) {};
-
-        \draw (C1) -- (C2) node {};
-        \draw (C1) -- (C3) node {};
-        \node (CL) at (6 + 1, -0.5) {n = 3, i = 0};
-        \node (C) at (6 + 1, -1) {(3)};
-      \end{tikzpicture}
+      \input{figures/tikz_problematic_case.tex}
       \centering
       \caption{Problematischer Fall}
       \label{fig:backward_problematic}
@@ -516,12 +485,14 @@ Da es potentiell unendlich viele Vorgänger gilt, werden diese nur bis zu einer 
     Hierfür wird in Poset $p$ ein neues Element und `passend' Vergleiche eingefügt.
     `passend' bedeutet in diesem Kontext, dass das neue Element nicht direkt wegreduziert werden darf und es noch einen Vergleich gibt, der eingefügt werden könnte ohne das das neue Element wegreduziert werden kann.
 
-    Lemma:
-    Es müssen nur Vergleiche zwischen dem neuen Element und beliebig vielen alten Elementen eingefügt werden.
+    \begin{lemma} \label{lemma:remove_only_last_element_edge}
+      Es müssen nur Vergleiche zwischen dem neuen Element und beliebig vielen alten Elementen eingefügt werden.
+    \end{lemma}
 
-    Proof:
-    Angenommen es gibt einen Vorgänger mit $n + 1$ Elementen, bei dem das $n + 1$ Element wegreduziert werden kann, wenn ein Vergleich zwischen dem $i$-ten und $j$-ten Element eingefügt wurde mit $0 <= i, j <= n$.
-    Dann ... % TODO: idk
+    \begin{proof} \label{proof:remove_only_last_element_edge}
+      Angenommen es gibt einen Vorgänger mit $n + 1$ Elementen, bei dem das $n + 1$ Element wegreduziert werden kann, wenn ein Vergleich zwischen dem $i$-ten und $j$-ten Element eingefügt wurde mit $0 <= i, j <= n$.
+      Dann ... % TODO: idk
+    \end{proof}
 
     Führe im folgenden alle Posets aus dem 1. und 2. Schritt in eine Menge zusammen und stelle sicher, dass alle Posets kanonifiziert sind.
 
@@ -555,141 +526,7 @@ Durch diesen Ansatz wird die Rückwärtssuche zwar mehrfach komplett neu gestart
   \label{fig:backward-search-tree}
 \end{figure}
 
-\begin{tikzpicture}
-  \begin{axis}[
-      ymode=log,
-      axis x line = bottom,%x-Achse nur unten
-      enlarge x limits = .1,%x-Achse erweitern
-      x axis line style = {-},%kein Pfeil
-      title = {\dots},
-      ylabel={\dots},
-      xlabel={\dots},
-    ]
-    \addplot+[blue] table { % n=12,i=5
-        x y
-        0 1
-        1 1
-        2 3
-        3 16
-        4 365
-        5 10298
-        6 120149
-        7 454379
-        8 700318
-        9 538043
-        10 247641
-        11 81100
-        12 21852
-        13 5534
-        14 1370
-        15 372
-        16 96
-        17 27
-        18 9
-        19 3
-        20 1
-      };
-    \addplot+[red] table { %n=12,i=4
-        x y
-        0 1
-        1 1
-        2 3
-        3 16
-        4 315
-        5 7176
-        6 88248
-        7 453446
-        8 997004
-        9 1075759
-        10 647116
-        11 251116
-        12 70941
-        13 16467
-        14 3454
-        15 725
-        16 138
-        17 24
-        18 6
-        19 1
-      };
-    \addplot+[yellow] table { %n=12,i=3
-        x y
-        0 1
-        1 1
-        2 3
-        3 16
-        4 175
-        5 1995
-        6 14288
-        7 44696
-        8 62666
-        9 46507
-        10 21919
-        11 7734
-        12 2351
-        13 689
-        14 204
-        15 57
-        16 16
-        17 5
-        18 1
-      };
-    \addplot+[green] table { %n=12,i=2
-        x y
-        0 1
-        1 1
-        2 3
-        3 14
-        4 60
-        5 275
-        6 960
-        7 1735
-        8 1545
-        9 870
-        10 386
-        11 159
-        12 65
-        13 27
-        14 10
-        15 4
-        16 1
-        17 1
-      };
-    \addplot+[magenta] table { %n=12,i=1
-        x y
-        0 1
-        1 1
-        2 3
-        3 6
-        4 11
-        5 21
-        6 36
-        7 39
-        8 29
-        9 18
-        10 12
-        11 7
-        12 4
-        13 2
-        14 1
-      };
-    \addplot+[orange] table { %n=12,i=0
-        x y
-        0 1
-        1 1
-        2 1
-        3 1
-        4 1
-        5 1
-        6 1
-        7 1
-        8 1
-        9 1
-        10 1
-        11 1
-      };
-  \end{axis}
-\end{tikzpicture}
+\input{figures/tikz_posets_per_level.tex}
 
 \subsubsection{Parallelisierung}
 Die Rückwärtssuche kann sehr gut parallelisiert werden, indem die Berechnung der Vorgänger parallel berechnet wird.
@@ -719,71 +556,15 @@ In der bidirektionalen Suche werden Vor- bzw. Rückwärstsuche parallel gestarte
 Hierbei speichert die Rückwärstsuche alle bereits gefundenen Postes in einen globalen Cache und zusätzlich bis zu welcher Ebene der Cache vollständig ist.
 Die Vorwärtssuche überprüft, ob sie diese Grenze erreicht hat und bricht bei Bedarf die Suche ab und gibt die Anzahl an Schritten zurück, wenn das Poset im Cache der Rückwärstssuche zu finden ist oder anderenfalls, dass es mehr Vergleiche bräuchte.
 
-Wie Abbildung~TIKZBILD zu sehen, durchsucht die Vorwärtssuche die meisten Posets, bei ungefähr $k = 6$ Vergleichen und die Rückwörtssuche bei $k = 12$.
-Das ist sehr unvorteilhaft für eine bidirectionale Suche, da ein großteil des Suchraums vor dem ``Treffpunkt'' beider Suchen liegt.
+\begin{figure}[h!]
+  \input{figures/tikz_backward_forward.tex}
+  \centering
+  \caption{Anzahl Posets vs. Anzahl Vergleiche für $n=12, i=5$ (rot: backward, blue: forward)}
+  \label{fig:backward_forward_count}
+\end{figure}
 
-\begin{tikzpicture}
-  \begin{axis}[
-      ybar,
-      ymode=log,
-      axis x line = bottom,%x-Achse nur unten
-      enlarge x limits = .1,%x-Achse erweitern
-      x axis line style = {-},%kein Pfeil
-      bar width=3pt,
-      title = {Anzahl Posets vs. Anzahl Vergleiche für $n=12,i=5$},
-      ylabel={Anzahl Posets},
-      xlabel={Anzahl Vergleiche (rot: backward, blue: forward)},
-    ]
-    \addplot[fill=blue,shift={(1pt, 0)}] table {
-        x y
-        0 1
-        1 3
-        2 53
-        3 495
-        4 5921
-        5 49147
-        6 182188
-        7 283839
-        8 207294
-        9 81898
-        10 23841
-        11 6437
-        12 1708
-        13 477
-        14 136
-        15 42
-        16 14
-        17 6
-        18 3
-        19 2
-        20 1
-      };
-    \addplot[fill=red,shift={(-1pt, 0)}] table { % TODO: update numbers
-        x y
-        0 1
-        1 1
-        2 4
-        3 9
-        4 36
-        5 130
-        6 461
-        7 1770
-        8 6848
-        9 25372
-        10 82456
-        11 202924
-        12 318522
-        13 259021
-        14 88920
-        15 9509
-        16 365
-        17 16
-        18 3
-        19 1
-        20 1
-      };
-  \end{axis}
-\end{tikzpicture}
+Wie Abbildung~\ref{fig:backward_forward_count} zu sehen, durchsucht die Vorwärtssuche die meisten Posets, bei ungefähr $k = 6$ Vergleichen und die Rückwörtssuche bei $k = 12$.
+Das ist sehr unvorteilhaft für eine bidirectionale Suche, da ein großteil des Suchraums vor dem ``Treffpunkt'' beider Suchen liegt.
 
 % TODO: Ergebnisse der Bidirektionalen Suche vorstellen
 
