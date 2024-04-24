@@ -166,15 +166,17 @@ are required. An upper bound is been proposed by Blum, in the paper \textit{Time
   Selection}. It stated that no more than $5.430\dot{5} \cdot n$ comparisons are ever required.
 Therefore selection is for sure in a time complexity of $\mathcal{O}(n)$ for best and worst-case.
 
-Lemma:
-If $k$ is a lower bound for selecting $i$ of $n$, then selecting $i$ of $n+1$ must take at least $k+1$ comparisons.
+\begin{lemma}
+  If $k$ is a lower bound for selecting $i$ of $n$, then selecting $i$ of $n+1$ must take at least $k+1$ comparisons.
+\end{lemma}
 
-Proof:
-Assume some algorithm exists that selects $i$ of $n+1$ in $k$ comparisons. It must have two elements it compares first.
-If we input a by definition largest element in place of one of them the algorithm must still return the correct $i$-th
-largest of the remaining $n$ elements. But because this element is larger by definition, the first comparison may be
-skipped, thus reducing the number of comparisons by at least 1. Thus taking out all occurrences of that element will
-yield an algorithm for $i$ of $n$ in $k-1$ comparisons, which contradicts the precondition of $k$ being a lower bound.
+\begin{proof}
+  Assume some algorithm exists that selects $i$ of $n+1$ in $k$ comparisons. It must have two elements it compares first.
+  If we input a by definition largest element in place of one of them the algorithm must still return the correct $i$-th
+  largest of the remaining $n$ elements. But because this element is larger by definition, the first comparison may be
+  skipped, thus reducing the number of comparisons by at least 1. Thus taking out all occurrences of that element will
+  yield an algorithm for $i$ of $n$ in $k-1$ comparisons, which contradicts the precondition of $k$ being a lower bound.
+\end{proof}
 
 
 \subsection{Partial Order}
@@ -302,7 +304,7 @@ Computing the canonical form can be done using Nauty, but this takes a significa
 Some performance tests show that it is faster to compute an almost canonical form, where some posets that are isomorphic to eachother result in different canofied forms.
 As a result, some posets that are isomorphic occupy several cache entries, but canonifying a poset is much faster.
 
-\subsection{Backward Search}
+\subsection{Backward Search} \label{sec:backward}
 
 Backward search starts with a solved Poset, then repeatedly attempts to remove comparisons from its
 frontier Posets such that the same Poset with the opposite comparison result is also found within
@@ -325,7 +327,7 @@ discovered in the previous iteration, as otherwise it would have to be solvable 
 
 % TODO: @Johanna: ab hier übersetzen :)
 
-\subsubsection{Normalform}
+\subsubsection{Normalform} \label{sec:backward:normal_form}
 
 Im Unterschied zur Vorwärtssuche nutzt die Rückwärtssuche eine eindeutige Kanonisierung.
 Die Kanonisierung der Vorwärtssuche ist aus Performancegründen nicht eindeutig.
@@ -357,24 +359,7 @@ Ein potentielles Problem tritt auf, wenn die Gleichung $i = n - 1 - i$ erfüllt 
 In diesem Fall ist es nicht möglich, basierend auf dem Wert von $i$ zu unterscheiden, ob $p$ oder sein Inverses der kanonischen Normalform entspricht.
 
 \begin{figure}
-  \begin{tikzpicture}
-    \node[circle,draw=black] (A1) at (1, 0) {};
-    \node[circle,draw=black] (A2) at (0, 2) {};
-    \node[circle,draw=black] (A3) at (2, 2) {};
-
-    \draw (A1) -- (A2) node {};
-    \draw (A1) -- (A3) node {};
-    \node (AL) at (1, -0.5) {n = 3, i = 1};
-
-
-    \node[circle,draw=black] (B1) at (3 + 1, 2) {};
-    \node[circle,draw=black] (B2) at (3 + 0, 0) {};
-    \node[circle,draw=black] (B3) at (3 + 2, 0) {};
-
-    \draw (B1) -- (B2) node {};
-    \draw (B1) -- (B3) node {};
-    \node (BL) at (3 + 1, -0.5) {n = 3, i = 1};
-  \end{tikzpicture}
+  \input{figures/tikz_backward_canonify_problematic.tex}
   \centering
   \caption{Problematischer Fall}
   \label{fig:backward_canonify_problematic}
@@ -422,7 +407,7 @@ Für kleine Werte von $i$ stellt der hohe prozentuale Anteil von nauty kein Prob
   \label{table:nauty-ratio}
 \end{table}
 
-\subsubsection{Algorithmus}
+\subsubsection{Algorithmus} \label{sec:backward:algorithm}
 
 Die Eingabe für die Rückwärtssuche sind die Parameter $n$ und $i$.
 Die Rückwärtssuche beginnt mit dem kleinsten gelösten Poset und berechnet iterativ alle Posets, die in $1, 2, 3, \dots$ Vergleichen gelöst werden können, bis das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element gefunden wird.
@@ -434,7 +419,7 @@ Im Folgenden berechnet die Rückwärtssuche für jedes Poset in der Menge $A_k$ 
 Die Menge aller Vorgänger bildet die Menge $A_{k + 1}$.
 Wenn das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element in $A_l$ vorhanden ist, werden genau $l$ Vergleiche benötigt, um das $i$-kleinste Element einer $n$-elementigen Liste zu bestimmen.
 
-\subsubsection{Vorgängerberechnung}
+\subsubsection{Vorgängerberechnung} \label{sec:backward:predecessor_calculation}
 
 \begin{definition}[Vorgänger] \label{definition:predecessor_calculation}
   Poset $q$ ist Vorgänger von Poset $p$, wenn folgende Eigenschaften gelten:
@@ -462,47 +447,48 @@ Die Berechnung eines Vorgängers für ein gegebenes Poset $p$ mit $n$ Elementen,
 
 \begin{itemize}
   \item[1.]
-    Im ersten Schritt werden alle Posets mit $n$ Elementen gesucht, durch deren Hinzunahme eines neuen Vergleichs Poset $p$ resultiert.
-    Eine Schwierigkeit stellen hierbei die Vergleiche dar, die transitiv entstehen.
+    Zunächst werden alle Posets mit $n$ Elementen gesucht, die durch das Einfügen eines Vergleichs, gefolgt von der Kanonisierung, wieder in Poset $p$ resultieren.
+
+    Eine Schwierigkeit stellen die transitiven Vergleiche dar, da durch das Einfügen eines Vergleichs mehrere Vergleiche miteingefügt werden können.
 
     \begin{figure}
-      \input{figures/tikz_problematic_case.tex}
       \centering
-      \caption{Problematischer Fall}
+      \input{figures/tikz_problematic_case.tex}
+      \caption{Problematischer Fall mit transitiven Vergleichen}
       \label{fig:backward_problematic}
     \end{figure}
 
-    Durch entfernen des Vergleichs vom mittleren zum unteren Element in Poset (1) können sowohl Poset (2), als auch Poset (3) entstehen, wie in Abbildung~\ref{fig:backward_problematic} veranschaulicht.
+    Wie in Abbildung~\ref{fig:backward_problematic} veranschaulicht, sind alle drei Posets vollständig reduziert und kanonisiert.
+    Durch das Einfügen eines Vergleichs in Poset (2) oder in Poset (3) kann beide Male Poset (1) resultieren.
+    Das bedeutet, dass je nach aktuellem Cache Poset (2) und Poset (3) potentielle Vorgänger sind, obwohl beide Male der gleiche Vergleich eingefügt wird.
 
-    Um dieses Problem zu lösen, werden alle möglichen Vorgänger berechnet.
-    Durch einfügen des neuen Vergleichs und den resultierenden transitiven Vergleichen, gefolgt von kanonifizieren, resultiert wieder Poset $p$.
+    Um dieses Problem zu lösen, werden alle potentiellen Vorgänger berechnet.
 
   \item[2.]
-    Im nächsten Schritt werden alle Vorgänger berechnet, die $n + 1$ Elemente haben und durch das einfügen eines neuen Vergleichs und anschließendem kanonifizieren wieder Poset $p$ resultiert.
+    Im nächsten Schritt werden alle Vorgänger berechnet, die $n + 1$ Elemente haben und durch Einfügen eines Vergleichs gefolgt von einer Kanonisierung erneut das Poset $p$ ergeben.
 
-    Da das neue Element kleiner oder größer als das gesuchte $i$-kleinste Element ist, wird bei diesen Vorgängern das $i + 1$ bzw. $i$-kleinste Element gesucht.
+    Da das neue Element kleiner oder größer als das gesuchte $i$-kleinste Element ist, wird bei diesen Vorgängern nach dem $i + 1$-kleinsten bzw. dem $i$-kleinsten Element gesucht.
 
-    Hierfür wird in Poset $p$ ein neues Element und `passend' Vergleiche eingefügt.
-    `passend' bedeutet in diesem Kontext, dass das neue Element nicht direkt wegreduziert werden darf und es noch einen Vergleich gibt, der eingefügt werden könnte ohne das das neue Element wegreduziert werden kann.
+    Hierfür wird in Poset $p$ ein neues Element sowie passende Vergleiche eingefügt.
+    Passende Vergleiche bedeutet, dass das neue Element nicht unmittelbar wegreduziert werden darf und es noch einen Vergleich gibt, der eingefügt werden könnte, ohne dass das neue Element wegreduziert werden kann, nach Lemma~\ref{lemma:remove_only_last_element_edge}.
 
     \begin{lemma} \label{lemma:remove_only_last_element_edge}
-      Es müssen nur Vergleiche zwischen dem neuen Element und beliebig vielen alten Elementen eingefügt werden.
+      Um alle möglichen Vorgänger mit $n + 1$ Elementen zu konstruieren, müssen nur Vergleiche zwischen dem neuen Element und beliebig vielen anderen Elemente hinzugefügt werden.
     \end{lemma}
 
     \begin{proof} \label{proof:remove_only_last_element_edge}
-      Angenommen es gibt einen Vorgänger mit $n + 1$ Elementen, bei dem das $n + 1$ Element wegreduziert werden kann, wenn ein Vergleich zwischen dem $i$-ten und $j$-ten Element eingefügt wurde mit $0 <= i, j <= n$.
+      Angenommen, es existiert ein Vorgänger mit $n + 1$ Elementen, bei dem das $(n + 1)$-te Element wegreduziert werden kann, wenn ein Vergleich zwischen dem $i$-ten und dem $j$-ten Element eingefügt wird, wobei $0 \leq i < j \leq n$.
       Dann ... % TODO: idk
     \end{proof}
 
-    Führe im folgenden alle Posets aus dem 1. und 2. Schritt in eine Menge zusammen und stelle sicher, dass alle Posets kanonifiziert sind.
+    Anschließend werden die Posets aus dem 1. und 2. Schritt in einer Menge zusammengeführt und es wird sichergestellt, dass alle Posets kanonisiert sind.
 
   \item[3.]
-    Als Drittes wird für jedes bereits gefundene Element iterativ solange neue Elemente eingefügt, bis die obere Grenze $n_{max}$ erreicht ist.
-    Um eine
+    Im dritten Schritt wird für jedes bereits gefundene Element iterativ neue Elemente eingefügt, bis die obere Grenze $n_{\text{max}}$ erreicht ist.
 
+    % Die Menge der Posets im zweiten Schritt bildet eine Teilmenge aller potenziell möglichen Vorgänger.
+    % Um im vorletzten Schritt alle möglichen Vorgänger zu berechnen, wird die existierende Menge iterativ um ein Element erweitert.
 
-    Die Menge an Posets im zweiten Schritt stellt eine Teilmenge aller potentiell möglichen Vorgänger dar.
-    Um im vorletzten Schritt alle möglichen Vorgänger zu berechnen, wird die existierende Menge iterativ immer um ein Element vergrößert.
     % Suche hierbei alle Posets, die folgendes erfüllen (in einem Vergrößerungsschritt):
     % - n + 1 Elemente
     % - k oder k + 1 kleinstes Element
@@ -510,13 +496,14 @@ Die Berechnung eines Vorgängers für ein gegebenes Poset $p$ mit $n$ Elementen,
     % - durch Hinzunahme des entfernten Vergleichs im 2. Schritt, muss wieder das ursprüngliche Poset aus dem 1. Schritt herauskommen
 
   \item[4.]
-    Im letzten Schritt wird für jeden Vorgänger die minimale Anzahl an Vergleichen berechnet, die noch entfernt werden müssen, bis das leere Poset gefunden ist.
-    Diese Zahl entspricht der Kanten zum zugehörigen Hasse-Diagramm.
-    Anhand der bekannten theoretischen oberen Schranken können alle Posets verworfen werden, die zu viele Vergleiche haben, da diese auch in der Vorwärtssuche nicht betrachtet werden können.
+    Im letzten Schritt wird für jeden Vorgänger die minimale Anzahl an Vergleichen berechnet, die noch entfernt werden müssen, bis das leere Poset erreicht ist.
+    Diese Anzahl entspricht den Kanten im zugehörigen Hasse-Diagramm.
+    Anhand der bekannten theoretischen oberen Schranken können alle Posets verworfen werden, die zu viele Vergleiche enthalten, da diese zu keinem leeren Poset in den verbleibenden Vergleichen führen können und somit auch in der Vorwärtssuche nicht betrachtet werden können.
 \end{itemize}
 
-Da die theoretischen oberen Schranken in der Praxis zu hoch sind, verwendet das Program ein iterative deeeping-Ansatz verwendet, der mit einer oberen Grenze startet, die der theoretischen unteren Schranke entspricht und solange iterativ erhöht, bis schließlich eine Lösung gefunden wurde.
-Durch diesen Ansatz wird die Rückwärtssuche zwar mehrfach komplett neu gestartet, jedoch kann der Suchraum dadurch erheblich eingeschränkt werden.
+Da die theoretischen oberen Schranken in der Praxis zu hoch sind, verwendet das Programm einen iterative deepening-Ansatz.
+Dieser beginnt mit einer oberen Grenze, die der theoretischen unteren Schranke entspricht, und erhöht diese Grenze iterativ, bis schließlich eine Lösung gefunden wird.
+Obwohl dieser Ansatz dazu führt, dass die Rückwärtssuche mehrfach neu gestartet wird, da keine Ergebnisse aus vorherigen Runden übernommen werden können, kann dadurch der Suchraum erheblich eingeschränkt werden.
 
 % TODO: Hier muss ein Bild vom Suchbaum hin für z.B. 4,1 (also schöner)
 \begin{figure}[h!]
@@ -528,43 +515,50 @@ Durch diesen Ansatz wird die Rückwärtssuche zwar mehrfach komplett neu gestart
 
 \input{figures/tikz_posets_per_level.tex}
 
-\subsubsection{Parallelisierung}
-Die Rückwärtssuche kann sehr gut parallelisiert werden, indem die Berechnung der Vorgänger parallel berechnet wird.
+\subsubsection{Parallelisierung} \label{sec:backward:parallelisation}
+Die Rückwärtssuche kann effizient parallelisiert werden, indem die Berechnung der Vorgänger parallel durchgeführt wird.
 
 \begin{table}
   \begin{tabular}{l|l|l}
-    Number of cores & Time      & Efficiency \\
+    % TODO: Zahlen erheben -> brauche Server
+    Anzahl der Kerne & Zeit      & Effizienz \\
     \hline
-    $1$             & $23.341s$ & $1.000$    \\ % TODO: Zahlen erheben -> brauche Server
-    $2$             & $12.710s$ & $0.918$    \\
-    $3$             & $8.654s$  & $0.899$    \\
-    $4$             & $6.765s$  & $0.863$    \\
+    $1$              & $23.341s$ & $1.000$   \\
+    $2$              & $12.710s$ & $0.918$   \\
+    $3$              & $8.654s$  & $0.899$   \\
+    $4$              & $6.765s$  & $0.863$   \\
   \end{tabular}
   \centering
-  \caption{Faktor der Parallelisierung für $n = 11, i = 5$}
+  \caption{Effizienz der Parallelität für $n = 11, i = 5$}
   \label{table:backward-parallel}
 \end{table}
 
-Wie in Tabelle~\ref{table:backward-parallel} beispielhaft für $n = 11, i = 5$ dargestellt, skaliert die Rückwärtssuche relativ gut mit der Anzahl der Kerne.
-Die Effizient berechnet sich hierbei als
+Wie in Tabelle~\ref{table:backward-parallel} für $n = 11, i = 5$ dargestellt, skaliert die Rückwärtssuche relativ gut mit der Anzahl der Kerne.
+Die Effizienz ist hierbei zwischen 0 und 1.
+Umso höher der Wert, desto besser die Paralleisierung.
+Die Effizienz kann wie folgt berechnet werden:
 \[
   \text{Effizienz} = \cfrac{\text{single-core time}}{\text{number of cores} \cdot \text{multi-core time}}
 \]
 
-\subsection{Bidirectional Search}
-In der bidirektionalen Suche werden Vor- bzw. Rückwärstsuche parallel gestartet.
-Hierbei speichert die Rückwärstsuche alle bereits gefundenen Postes in einen globalen Cache und zusätzlich bis zu welcher Ebene der Cache vollständig ist.
-Die Vorwärtssuche überprüft, ob sie diese Grenze erreicht hat und bricht bei Bedarf die Suche ab und gibt die Anzahl an Schritten zurück, wenn das Poset im Cache der Rückwärstssuche zu finden ist oder anderenfalls, dass es mehr Vergleiche bräuchte.
+\subsection{Bidirektionale Suche} \label{sec:bidirectional}
+
+Bei der bidirektionalen Suche werden sowohl Vorwärts- als auch Rückwärtssuche gleichzeitig gestartet.
+Es ist zu beachten, dass die Rückwärtssuche mit der theoretischen oberen Schranke gestartet wird und nicht den iterativen deepening-Ansatz verwendet, wie es bei der reinen Rückwärtssuche der Fall ist.
+Während der Rückwärtssuche werden alle bereits gefundenen Posets in einem globalen Cache gespeichert und zusätzlich bis zu welcher Ebene der Cache vollständig ist, das heißt, in welcher Ebene sie sich derzeit befindet.
+Diese Ebene sei im Folgenden als $k$ bezeichnet.
+Die Vorwärtssuche wird abgebrochen, wenn höchstens $k$ Vergleiche übrig sind und gibt die genaue Grenze zurück, falls sich das Poset im Cache der Rückwärtssuche befindet.
+Andernfalls wird zurückgegeben, dass mindestens $k + 1$ Vergleiche erforderlich sind.
 
 \begin{figure}[h!]
   \input{figures/tikz_backward_forward.tex}
   \centering
-  \caption{Anzahl Posets vs. Anzahl Vergleiche für $n=12, i=5$ (rot: backward, blue: forward)}
+  \caption{Anzahl Posets vs. Anzahl Vergleiche für $n=12, i=5$ (rot: Rückwärtssuche, blau: Vorwärtssuche)}
   \label{fig:backward_forward_count}
 \end{figure}
 
-Wie Abbildung~\ref{fig:backward_forward_count} zu sehen, durchsucht die Vorwärtssuche die meisten Posets, bei ungefähr $k = 6$ Vergleichen und die Rückwörtssuche bei $k = 12$.
-Das ist sehr unvorteilhaft für eine bidirectionale Suche, da ein großteil des Suchraums vor dem ``Treffpunkt'' beider Suchen liegt.
+Wie in Abbildung~\ref{fig:backward_forward_count} zu sehen, durchsucht die Vorwärtssuche für $n = 12, i = 5$ die meisten Posets bei $k = 6$ Vergleichen, während die Rückwärtssuche die meisten Posets bei $k = 12$ durchsucht.
+Dies ist sehr unvorteilhaft für eine bidirektionale Suche, da der Großteil des Suchraums vor dem Treffpunkt beider Suchen liegt.
 
 % TODO: Ergebnisse der Bidirektionalen Suche vorstellen
 
