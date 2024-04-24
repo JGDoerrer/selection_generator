@@ -94,7 +94,10 @@
   \section{Motivation}
   \label{sec:motivation}
 } \IEEEPARstart{T}{he} problem of selecting the $i$-th smallest element in a list of $n$ elements is
-a well known problem in computer science and called \textit{selection}. A first approach to solve
+a well known problem in computer science and called \textit{selection}. Explicitly, we
+concern ourselves with optimal worst-case selection of a single element from a set of
+initially unordered unique others, measuring the cost as number of comparisons made.
+A first approach to solve
 this can be achieved by sorting the list at first and selecting the $i$-th element. However, this
 approach has a time complexity of $\mathcal{O}(n \cdot \log n)$. Putting more thought into this
 problem one can find algorithms like the median of medians (Schöning \cite{Schoening1993}) or PICK
@@ -184,7 +187,7 @@ A non-strict partial order is also known as an antisymmetric pre order.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.5\columnwidth]{figures/Median_of_5.svg.png}
-  \caption{Finding the median $i=3$ of $n=5$ values using six comparisons.}
+  \caption{Finding the median $i=2$ of $n=5$ values using six comparisons.}
   \label{fig:median_of_5}
 \end{figure}
 A good visual example is finding the median $i=3$ in a list of $n=5$ elements. Figure
@@ -193,7 +196,7 @@ the comparisons to be performed next as a yellow line. A Hasse diagram of the or
 found so far (smaller=lower, larger=higher) is shown as the blue lines. The red circles have already
 found to be greater than three others and disqualified The red elements have already been determined
 to be larger than three other elements and are therefore disqualified as medians. The larger
-element of the final comparison is the median. This is also the optimal algorithm for $i=3$ and
+element of the final comparison is the median. This is also the optimal algorithm for $i=2$ and
 $n=5$.
 
 
@@ -202,6 +205,19 @@ The solvability of a partial order can be determined in the following way. For e
 the elements that are smaller than it and count the elements that are larger than it. If there is an
 element that is larger than $n-i$ elements and smaller than $i-1$ elements, this element is the
 $i$-th largest element. Thus, the poset is solvable.
+
+
+\subsubsection{Reduced and Canonified Posets}
+
+If a Poset contains only those elements not yet excludable from being a solution, we call it \textit{reduced}. 
+Figure (\ref{fig:median_of_5}) for example incorporates this idea by
+coloring eliminated elements in red.
+Using reduction a Poset is solved if and only if it has only one element, the trivial solution.
+We call a reduced Poset \textit{canonified} if it satisfies additional constraints that
+aim to reduce the likelyhood of unequal but isomorphic representations.
+The different search algorithms used employ different strategies here deepening on whether we
+found a more unique representation or cheaper canonification to be more advantagous for
+the given application. Explicit approaches will hence be covered individually.
 
 
 \section{Methods and Tools}
@@ -391,7 +407,7 @@ Sehr schön ist hierbei, dass mit steigendem $i$ `nauty' prozentual weniger aufg
     $2$ & $6.797\%$   \\
     $3$ & $1.530\%$   \\
     $4$ & $0.469\%$   \\
-    $5$ & $0.188\%$
+    $5$ & $0.188\%$   \\
     $6$ & $0.116\%$
   \end{tabular}
   \centering
