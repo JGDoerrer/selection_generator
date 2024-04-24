@@ -8,8 +8,6 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::backwards_poset::BackwardsPoset;
 use crate::constants::{KNOWN_VALUES, LOWER_BOUNDS, MAX_N, UPPER_BOUNDS};
-use crate::normal_poset::NormalPoset;
-use crate::poset::Poset;
 use crate::utils::format_duration;
 
 pub static COUTNER_USE_NOT_NAUTY: CounterUsize = CounterUsize::new(0);
@@ -25,44 +23,45 @@ pub fn cache_size_as_gigabyte(elements: usize) -> f64 {
 pub fn start_search_backward(
     interrupt: &Arc<AtomicBool>,
     backward_search_state_opt: Option<&Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>>,
-    n: u8,
+    n0: u8,
     i0: u8,
     max_comparisons: usize,
 ) -> Option<(u8, usize)> {
-    let start_poset = BackwardsPoset::new(1, 0);
+    let start = std::time::Instant::now();
+    let mut current_level: HashSet<_> = [BackwardsPoset::new(1, 0)].into();
 
     let mut poset_cache = HashMap::new();
-    poset_cache.insert(start_poset.clone(), 0);
-
+    for item in &current_level {
+        poset_cache.insert(*item, 0);
+    }
     if let Some(backward_search_state) = backward_search_state_opt {
         let mut write_lock = backward_search_state
             .write()
             .expect("cache shouldn't be poisoned");
-        write_lock.0.insert(start_poset.clone(), 0);
+        for item in &current_level {
+            write_lock.0.insert(*item, 0);
+        }
         write_lock.1 = 0;
     }
 
-    let mut source = HashSet::new();
-    source.insert(start_poset);
-
     println!(
         "# {}: {} in {:.3?}, total: {}",
-        0,                                   // comparisons done
-        1,                                   // posets per level
-        std::time::Instant::now().elapsed(), // time per level
-        poset_cache.len(),                   // total cached posets
+        0,                   // comparisons done
+        current_level.len(), // posets per level
+        start.elapsed(),     // time per level
+        poset_cache.len(),   // total cached posets
     );
 
-    if source.contains(&BackwardsPoset::new(n, i0)) {
+    if current_level.contains(&BackwardsPoset::new(n0, i0)) {
         return Some((0, poset_cache.len()));
     }
 
     let mut table = [[false; MAX_N]; MAX_N];
-    BackwardsPoset::rec_temp(&mut table, n as usize, i0 as usize);
+    BackwardsPoset::rec_temp(&mut table, n0 as usize, i0 as usize);
 
     for k in 1..=max_comparisons {
         let start = std::time::Instant::now();
-        let results: Vec<_> = source
+        current_level = current_level
             .par_iter()
             .map(|item| {
                 if interrupt.load(Ordering::Relaxed) {
@@ -72,67 +71,39 @@ pub fn start_search_backward(
                         interrupt,
                         &poset_cache,
                         &table,
-                        n,
+                        n0,
                         i0,
                         max_comparisons - k,
                     )
                 }
             })
-            .collect();
+            .flatten()
+            .collect::<HashSet<_>>();
 
-        let mut destination: HashSet<BackwardsPoset> = HashSet::new();
-        for item in results {
-            destination.extend(item);
-        }
-        for item in &destination {
-            poset_cache.insert(item.clone(), k as u8);
+        for item in &current_level {
+            poset_cache.insert(*item, k as u8);
         }
         if let Some(backward_search_state) = backward_search_state_opt {
             let mut write_lock = backward_search_state
                 .write()
                 .expect("cache shouldn't be poisoned");
-            for item in &destination {
-                write_lock.0.insert(item.clone(), k as u8);
+            for item in &current_level {
+                write_lock.0.insert(*item, k as u8);
             }
             write_lock.1 = k as i8;
         }
-        source = destination;
 
         println!(
             "# {}: {} in {:.3?}, total: {}",
             k,
-            source.len(),
+            current_level.len(),
             start.elapsed(),
             poset_cache.len(),
         );
 
-        if source.contains(&BackwardsPoset::new(n, i0)) {
-            // let mut counter_0 = 0;
-            // let mut counter_r = 0;
-            // for (item, _) in &poset_cache {
-            //     let mut pos = NormalPoset::new(item.n(), item.i());
-            //     for i in 0..item.n() {
-            //         for j in 0..item.n() {
-            //             if item.is_less(i, j) {
-            //                 pos.set_less(i, j, true);
-            //             }
-            //         }
-            //     }
-            //     pos.canonify();
-            //     let compatible_posets = pos.num_compatible_posets();
-            //     if 0 == compatible_posets {
-            //         counter_0 += 1;
-            //         let mut ig = *item;
-            //         ig.normalize();
-            //         dbg!(ig, pos);
-            //     } else if (max_comparisons as u32) < compatible_posets.ilog2() {
-            //         counter_r += 1;
-            //     }
-            // }
-            // dbg!(counter_0, counter_r);
-
+        if current_level.contains(&BackwardsPoset::new(n0, i0)) {
             return Some((k as u8, poset_cache.len()));
-        } else if source.is_empty() || interrupt.load(Ordering::Relaxed) {
+        } else if current_level.is_empty() || interrupt.load(Ordering::Relaxed) {
             return None;
         }
     }
