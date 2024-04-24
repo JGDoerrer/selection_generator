@@ -1,0 +1,227 @@
+\documentclass[a4paper]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={210mm,297mm},
+ left=20mm,
+ right=20mm,
+ top=20mm,
+ bottom=20mm,
+ }
+
+ % New definitions
+\algnewcommand\algorithmicswitch{\textbf{switch}}
+\algnewcommand\algorithmicmatch{\textbf{match}}
+\algnewcommand\algorithmiccase{\textbf{case}}
+\algnewcommand\algorithmicassert{\texttt{assert}}
+% Define custom keywords as State commands
+\algnewcommand\algorithmiccontinue{\textbf{continue}}
+\algnewcommand\Continue{\State \algorithmiccontinue}
+\algnewcommand\algorithmicbreak{\textbf{break}}
+\algnewcommand\Break{\State \algorithmicbreak}
+
+% New "environments"
+\algdef{SE}[SWITCH]{Switch}{EndSwitch}[1]{\algorithmicswitch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicswitch}%
+\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}%
+\algtext*{EndSwitch}%
+\algtext*{EndCase}%
+
+\algdef{SE}[MATCH]{Match}{EndMatch}[1]{\algorithmicmatch\ #1}{\algorithmicend\ \algorithmicmatch}%
+\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}%
+\algtext*{EndMatch}%
+\algtext*{EndCase}%
+
+\begin{document}
+
+
+\begin{algorithm}
+    \caption{Search Function}
+    \begin{algorithmic}[1]
+        \Function{search}{$\text{n, i}$}
+        \State $start \gets \text{Instant::now()}$ \Comment{Save the current time}
+        \State $min \gets \text{LOWER\_BOUNDS}[n][i]$
+        \State $max \gets \text{UPPER\_BOUNDS}[n][i]$
+        \State $result \gets \text{max}$
+        \State
+
+        \For{$\text{current} \gets \text{min..}$}
+        \State $current \gets \text{current}$
+        \State $current\_max \gets \text{current}$
+
+        \State $result \gets \text{search\_rec(CanonifiedPoset::new(n, i), current, 0)}$ \Comment{Recursive search}
+
+        \Match{result}
+        \Case{Cost::Solved(solved)}
+        \State $result \gets \text{solved}$
+        \EndCase
+        \Case{Cost::Minimum(min)}
+        \State $\text{print}(\text{"n: \{\}, i: \{\} needs at least \{\} comparisons"}, \text{n}, \text{i}, \text{min})$
+        \State $\text{print\_duration}(\text{start})$ \Comment{Information about the duration}
+        \State \Continue
+        \EndCase
+        \EndMatch
+        \Break
+        \State
+        \EndFor
+
+        \State
+        \State $\text{print}(\text{"Congratulations. A solution was found!"})$
+        \State $\text{print}(\text{"Comparisons: \{\}"}, \text{result})$
+        \State
+        \State $\text{print\_cache()}$ \Comment{Information about the cache e.g. entries, size}
+        \State $\text{print\_duration(\text{start})}$ \Comment{Information about the duration}
+        \State
+        \State \Return $result$
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+    \caption{Recursive search Algorithm}
+    \begin{algorithmic}[1]
+        \Function{search\_rec}{poset, max\_comparisons, depth}
+
+        \If{$\text{poset.n()} = 1$}
+        \State \Return \text{Cost::Solved}(0)
+        \EndIf
+        \State
+
+        \If{$\text{max\_comparisons} = 0$}
+        \State \Return \text{Cost::Minimum}(1)
+        \EndIf
+        \State
+
+        \If{$\text{search\_cache}(\text{poset}) \neq \text{None}$} \Comment {Search if the Poset has been calculated already}
+
+        \Match $\text{search\_cache}(\text{poset})$
+        \Case \text{Cost::Solved}(\_)
+        \State \Return \text{Cost::Solved}(\_)
+        \EndCase
+
+        \Case \text{Cost::Minimum}(\text{min})
+        \If{$\text{min} > \text{max\_comparisons}$}
+        \State \Return \text{Cost::Minimum}(\text{min})
+        \EndIf
+        \EndCase
+        \EndMatch
+        \EndIf
+        \State
+
+        \If{$\text{estimate\_solvable}(\text{poset, max\_comparisons, depth}) = \text{Some(false)}$}
+        \State $result \gets \text{Cost::Minimum}(\text{max\_comparisons} + 1)$
+        \State $\text{insert\_cache}(\text{poset, result})$ \Comment {Insert the Poset into the cache}
+        \State \Return $\text{result}$
+        \EndIf
+        \State
+
+        \State $pairs \gets \text{poset.get\_comparison\_pairs()}$
+        \State $n\_pairs \gets \text{pairs.len()}$
+
+        \State $best\_comparison \gets (0, 0)$
+        \State $current\_best \gets \text{max\_comparisons} + 1$
+        \State
+
+        \For{$(first, second, i, j) \in \text{pairs}$}
+
+        \State $first\_result \gets \text{search\_rec}(\text{first, current\_best - 2, depth + 1})$
+
+        \If{$\lnot \text{first\_result.is\_solved()} \lor \text{first\_result.value()} > \text{current\_best} - 2$}
+        \Continue
+        \EndIf
+        \State
+
+        \State $second\_result \gets \text{search\_rec}(\text{second, current\_best - 2, depth + 1})$
+
+        \If{$\lnot \text{second\_result.is\_solved()} \lor \text{second\_result.value()} > \text{current\_best} - 2$}
+        \Continue
+        \EndIf
+
+        \State $best\_comparison \gets (\text{i, j})$
+        \State $current\_best \gets max(\text{first\_result.value(), second\_result.value()}) + 1$
+        \EndFor
+        \State
+
+        \If{$\text{current\_best} \leq \text{max\_comparisons}$}
+        \State $\text{comparisons.insert}(\text{poset, best\_comparison})$
+        \State \Return \text{Cost::Solved}(\text{current\_best})
+        \Else
+        \State \Return \text{Cost::Minimum}(\text{max\_comparisons} + 1)
+        \EndIf
+
+        \State $\text{insert\_cache}(\text{poset, result})$ \Comment {Insert the Poset into the cache}
+        \State \Return $\text{result}$
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+
+
+\begin{algorithm}
+    \caption{Estimate Solvable Function}
+    \begin{algorithmic}[1]
+        \Function{estimate\_solvable}{$\text{poset}$, $\text{max\_comparisons}$, $\text{depth}$}
+        \State $compatible\_posets \gets \text{poset.num\_compatible\_posets()}$
+
+        \If{$\text{compatible\_posets} = 0$ \textbf{or} $\text{max\_comparisons} < \log_2(\text{compatible\_posets})$}
+        \State \Return $\text{Some(false)}$
+        \EndIf
+        \State
+
+        \State $(less, greater) \gets \text{poset.calculate\_relations()}$
+        \State $best \gets (0, 0)$
+        \State $best\_count \gets 0$
+        \State
+
+        \For{$i \gets 0$ \textbf{to} $\text{poset.n()} - 1$}
+        \If{$ \lnot (\text{less}[i] = 0$ \textbf{and} $\text{greater}[i] \geq 2)$}
+        \State \textbf{continue}
+        \EndIf
+        \State
+
+        \For{$j \gets i$ \textbf{to} $\text{poset.n()} - 1$}
+        \If{$ \lnot (\text{greater}[j] = 0$ \textbf{and} $\text{less}[j] \geq 2)$ \textbf{or} $\text{poset.has\_order}(i, j)$}
+        \State \textbf{continue}
+        \EndIf
+        \State
+
+        \State $count \gets \text{greater}[i] + \text{less}[j]$
+
+        \If{$\text{count} > \text{best\_count}$}
+        \State $best \gets (i, j)$
+        \State $best\_count\gets \text{count}$
+        \EndIf
+        \EndFor
+        \EndFor
+        \State
+
+        \If{$\text{best\_count} > 0$}
+        \State $cost \gets \text{search\_rec}(\text{poset.with\_less}(\text{best}), \text{max\_comparisons}, \text{depth} + 1)$
+
+        \Match{cost}
+        \Case{Cost::Solved(solved)}
+        \State \Return $\text{Some}(\text{solved} \leq \text{max\_comparisons})$
+        \EndCase
+        \Case{Cost::Minimum(\_)}
+        \State \Return $\text{Some(false)}$
+        \EndCase
+        \EndMatch
+        \EndIf
+        \State
+
+        \State \Return $\text{None}$
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+\end{document}

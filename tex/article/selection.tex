@@ -167,6 +167,7 @@ are required. An upper bound is been proposed by Blum, in the paper \textit{Time
 Therefore selection is for sure in a time complexity of $\mathcal{O}(n)$ for best and worst-case.
 
 \subsection{Partial Order}
+\label{sec:partial_order}
 To dive deeper into these algorithms the concept of partial orders needs to be introduced. A partial
 order, often simply called a reflexive, weak, or non-strict partial order, is a homogeneous relation
 $\leq$ on a set $P$ that satisfies reflexivity, anti symmetry, and transitivity. For any $a, b, c
@@ -178,10 +179,25 @@ $\leq$ on a set $P$ that satisfies reflexivity, anti symmetry, and transitivity.
         precede each other.
   \item Transitivity: If $a \leq b$ and $b \leq c$, then $a \leq c$.
 \end{itemize}
+A non-strict
+partial order is also known as an antisymmetric pre order.
 
-
-A non-strict partial order is also known as an antisymmetric pre order.
 %[\todo{cite:https://en.wikipedia.org/wiki/Partially_ordered_set}]
+
+\subsection{Linear extensions}
+A partial order denoted as $\leq^*$ on a set X is considered an extension of
+another partial order $\leq$ (see \ref{sec:partial_order}) on the same set $X$
+if, for all $x$ and $y$ in $X$, whenever $x \leq y$, it's also true that $x
+  \leq^* y$. A linear extension is an extension that maintains a total order. The
+most common example in the literature for instance, the lexicographic order of
+completely ordered sets serves as a linear extension of their product order.
+According to the order-extension principle \cite{Jech1973}, every partial order
+can be expanded into a total order.
+
+In computer science, algorithms designed to discover linear extensions of
+partial orders, which are often depicted as reachability orders in directed
+acyclic graphs, and are used referred to as topological sorting.
+
 
 \subsection{Example}
 \begin{figure}[h!]
@@ -209,7 +225,7 @@ $i$-th largest element. Thus, the poset is solvable.
 
 \subsubsection{Reduced and Canonified Posets}
 
-If a Poset contains only those elements not yet excludable from being a solution, we call it \textit{reduced}. 
+If a Poset contains only those elements not yet excludable from being a solution, we call it \textit{reduced}.
 Figure (\ref{fig:median_of_5}) for example incorporates this idea by
 coloring eliminated elements in red.
 Using reduction a Poset is solved if and only if it has only one element, the trivial solution.
