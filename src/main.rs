@@ -72,6 +72,8 @@ struct Args {
     /// Do only a single calculation
     #[arg(short, long, default_value_t = false, requires("i"))]
     single: bool,
+    #[arg(long)]
+    max_core: Option<usize>,
     /// Explore the cache interactively
     #[arg(short, long, default_value_t = false)]
     explore: bool,
@@ -88,21 +90,31 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
+
+    if let Some(max_cores) = args.max_core {
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(max_cores)
+            .build_global()
+            .unwrap();
+    }
+
+    // additional meta information
+    if args.verbose != 0 {
+        utils::print_git_info();
+        utils::print_lscpu();
+        utils::print_current_time();
+    }
+
     match args.search_mode {
-        SearchMode::Forward => run_forward(args, false),
-        SearchMode::Backward => run_backward(args),
-        SearchMode::Bidirectional => run_forward(args, true),
+        SearchMode::Forward => run_forward(&args, false),
+        SearchMode::Backward => run_backward(&args),
+        SearchMode::Bidirectional => run_forward(&args, true),
     }
 }
 
-fn run_forward(args: Args, use_bidirectional_search: bool) {
-    // TODO: adjustable thread-count
-    // if we don't limit the threads, the backward-search will consume all resources and the forward-search gets super slow
+fn run_forward(args: &Args, use_bidirectional_search: bool) {
     if use_bidirectional_search {
-        rayon::ThreadPoolBuilder::new()
-            .num_threads(15)
-            .build_global()
-            .unwrap();
+        assert!(args.max_core.is_some(), "You should specify the maximum number of cores via e.g. '--max-cores 4'. Otherwise the backward-search will consume all resources and the forward-search gets really slow. Hint: leave at least one core for the forward-search");
     }
 
     let start_n = args.n.unwrap_or(1);
@@ -112,13 +124,6 @@ fn run_forward(args: Args, use_bidirectional_search: bool) {
 
     println!("Cache entries: {}", cache.len());
     println!("Maximum cache entries: {}", cache.max_entries());
-
-    // additional meta information
-    if args.verbose != 0 {
-        utils::print_git_info();
-        utils::print_lscpu();
-        utils::print_current_time();
-    }
 
     for n in start_n..=MAX_N as u8 {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
@@ -208,20 +213,8 @@ fn run_forward(args: Args, use_bidirectional_search: bool) {
     }
 }
 
-fn run_backward(args: Args) {
+fn run_backward(args: &Args) {
     let start_n = args.n.unwrap_or(1);
-
-    // additional meta information
-    if args.verbose != 0 {
-        utils::print_git_info();
-        utils::print_lscpu();
-        utils::print_current_time();
-    }
-
-    // rayon::ThreadPoolBuilder::new()
-    //     .num_threads(2)
-    //     .build_global()
-    //     .unwrap();
 
     let interrupt = Arc::new(AtomicBool::new(false));
 
