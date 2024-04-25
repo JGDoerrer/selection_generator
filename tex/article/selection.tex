@@ -558,14 +558,21 @@ Diese Ebene sei im Folgenden als $k$ bezeichnet.
 Die Vorwärtssuche wird abgebrochen, wenn höchstens $k$ Vergleiche übrig sind und gibt die genaue Grenze zurück, falls sich das Poset im Cache der Rückwärtssuche befindet.
 Andernfalls wird zurückgegeben, dass mindestens $k + 1$ Vergleiche erforderlich sind.
 
-\begin{figure}[h!]
-  \input{figures/tikz_backward_forward.tex}
+\begin{figure}[h!] % Das ist eigentlich unnötig -> bietet kein Mehrwert gegenüber 13,6
+  \input{figures/tikz_backward_forward_12_5.tex}
   \centering
-  \caption{Anzahl Posets vs. Anzahl Vergleiche für $n=13, i=6$ (rot: Rückwärtssuche, blau: Vorwärtssuche)}
-  \label{fig:backward_forward_count}
+  \caption{Anzahl Posets vs. Anzahl Vergleiche für $n=12, i=5$ (rot: Rückwärtssuche, blau: Vorwärtssuche)}
+  \label{fig:backward_forward_count_12_5}
 \end{figure}
 
-Wie in Abbildung~\ref{fig:backward_forward_count} zu sehen, durchsucht die Vorwärtssuche für $n = 13, i = 6$ die meisten Posets bei $k = 6$ Vergleichen, während die Rückwärtssuche die meisten Posets bei $k = 14$ durchsucht.
+\begin{figure}[h!]
+  \input{figures/tikz_backward_forward_13_6.tex}
+  \centering
+  \caption{Anzahl Posets vs. Anzahl Vergleiche für $n=13, i=6$ (rot: Rückwärtssuche, blau: Vorwärtssuche)}
+  \label{fig:backward_forward_count_13_6}
+\end{figure}
+
+Wie in Abbildung~\ref{fig:backward_forward_count_13_6} zu sehen, durchsucht die Vorwärtssuche für $n = 13, i = 6$ die meisten Posets bei $k = 6$ Vergleichen, während die Rückwärtssuche die meisten Posets bei $k = 14$ durchsucht.
 Dies ist sehr unvorteilhaft für eine bidirektionale Suche, da der Großteil des Suchraums vor dem Treffpunkt beider Suchen liegt.
 
 % TODO: Ergebnisse der Bidirektionalen Suche vorstellen
