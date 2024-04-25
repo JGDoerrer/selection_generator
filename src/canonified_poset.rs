@@ -12,7 +12,7 @@ pub struct CanonifiedPoset {
     n: u8,
     i: u8,
     /// The comparisons as an adjacency matrix
-    adjacency: [BitSet; (MAX_N + 1) / 2],
+    adjacency: [BitSet; MAX_N / 2 + 1],
 }
 
 impl Poset for CanonifiedPoset {
@@ -20,7 +20,7 @@ impl Poset for CanonifiedPoset {
         CanonifiedPoset {
             n,
             i,
-            adjacency: [BitSet::empty(); (MAX_N + 1) / 2],
+            adjacency: [BitSet::empty(); MAX_N / 2 + 1],
         }
     }
 
@@ -52,7 +52,7 @@ impl Poset for CanonifiedPoset {
 
             let mut i = 0;
             while i < MAX_N {
-                masks[i] = if i < (MAX_N + 1) / 2 {
+                masks[i] = if i < MAX_N / 2 + 1 {
                     BitSet::from_u16((((1u32 << (MAX_N - i + 1)) - 1) as u16) << (i + 1))
                 } else {
                     BitSet::from_u16(((1u32 << (MAX_N - i + 1)) - 1) as u16)
@@ -66,7 +66,7 @@ impl Poset for CanonifiedPoset {
         let i = i as usize;
         let mask = MASKS[i];
 
-        if i < (MAX_N + 1) / 2 {
+        if i < MAX_N / 2 + 1 {
             let row = i;
             self.adjacency[row].intersect(mask)
         } else {
@@ -133,8 +133,8 @@ impl CanonifiedPoset {
         let i = i as usize;
         let j = j as usize;
 
-        let row = if i < (MAX_N + 1) / 2 { i } else { MAX_N - i };
-        let column = if i < (MAX_N + 1) / 2 { j } else { j - i - 1 };
+        let row = if i < MAX_N / 2 + 1 { i } else { MAX_N - i };
+        let column = if i < MAX_N / 2 + 1 { j } else { j - i - 1 };
 
         (row, column)
     }

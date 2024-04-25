@@ -346,7 +346,7 @@ impl BackwardsPoset {
         equal_items: &Vec<(usize, usize)>,
         index: usize,
         mut new_indices: [u8; MAX_N],
-    ) -> [u8; 15] {
+    ) -> [u8; MAX_N] {
         if index == equal_items.len() {
             return new_indices;
         }
