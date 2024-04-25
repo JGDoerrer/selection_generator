@@ -8,6 +8,7 @@ use std::sync::Arc;
 
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 
+use crate::bitset::BitSet;
 use crate::constants::MAX_N;
 use crate::search_backward::{COUTNER_USE_NAUTY, COUTNER_USE_NOT_NAUTY};
 
@@ -18,7 +19,7 @@ pub struct BackwardsPoset {
     n: u8,
     i: u8,
     /// The comparisons as an adjacency matrix
-    adjacency: [u16; MAX_N],
+    adjacency: [BitSet; MAX_N],
 }
 
 // impl Hash for BackwardsPoset {
@@ -51,13 +52,12 @@ impl Debug for BackwardsPoset {
 impl BackwardsPoset {
     // constructor
     pub fn new(n: u8, i: u8) -> Self {
-        // debug_assert!(i < n);
-        debug_assert!((n as usize) < MAX_N);
+        debug_assert!(n as usize <= MAX_N);
 
         Self {
             n,
             i,
-            adjacency: [0; MAX_N],
+            adjacency: [BitSet::empty(); MAX_N],
         }
     }
 
@@ -71,14 +71,14 @@ impl BackwardsPoset {
     }
 
     pub fn is_less(&self, i: u8, j: u8) -> bool {
-        0 != self.adjacency[i as usize] & (1 << (j as usize))
+        self.adjacency[i as usize].contains(j as usize)
     }
 
     pub fn set_less(&mut self, i: u8, j: u8, value: bool) {
         if value {
-            self.adjacency[i as usize] |= 1 << (j as usize);
+            self.adjacency[i as usize].insert(j as usize);
         } else {
-            self.adjacency[i as usize] &= !(1 << (j as usize));
+            self.adjacency[i as usize].remove(j as usize);
         }
     }
 
@@ -100,7 +100,7 @@ impl BackwardsPoset {
     pub fn add_less(&mut self, i: u8, j: u8) {
         // precondition
         debug_assert!(self.i < self.n);
-        debug_assert!((self.n as usize) < MAX_N);
+        debug_assert!(self.n as usize <= MAX_N);
         debug_assert!(i < self.n);
         debug_assert!(j < self.n);
         debug_assert_ne!(i, j);
@@ -114,7 +114,7 @@ impl BackwardsPoset {
 
         // postcondition
         debug_assert!(self.i < self.n);
-        debug_assert!((self.n as usize) < MAX_N);
+        debug_assert!(self.n as usize <= MAX_N);
         debug_assert!(!self.is_less(j, i));
         debug_assert!(self.is_less(i, j));
         // debug_assert!(self.is_closed());
@@ -123,7 +123,7 @@ impl BackwardsPoset {
     pub fn with_less(&self, i: u8, j: u8) -> Self {
         // precondition
         debug_assert!(self.i < self.n);
-        debug_assert!((self.n as usize) < MAX_N);
+        debug_assert!(self.n as usize <= MAX_N);
         debug_assert!(i < self.n);
         debug_assert!(j < self.n);
         debug_assert_ne!(i, j);
@@ -135,7 +135,7 @@ impl BackwardsPoset {
 
         // postcondition
         debug_assert!(poset.i < poset.n);
-        debug_assert!((poset.n as usize) < MAX_N);
+        debug_assert!(poset.n as usize <= MAX_N);
         debug_assert!(!poset.is_less(j, i));
         debug_assert!(poset.is_less(i, j));
         // debug_assert!(poset.is_closed());
@@ -147,7 +147,7 @@ impl BackwardsPoset {
     pub fn with_less_normalized(&self, i: u8, j: u8) -> Self {
         // precondition
         debug_assert!(self.i < self.n);
-        debug_assert!((self.n as usize) < MAX_N);
+        debug_assert!(self.n as usize <= MAX_N);
         debug_assert!(i < self.n);
         debug_assert!(j < self.n);
         debug_assert_ne!(i, j);
@@ -160,7 +160,7 @@ impl BackwardsPoset {
 
         // postcondition
         debug_assert!(poset.i < poset.n);
-        debug_assert!((poset.n as usize) < MAX_N);
+        debug_assert!(poset.n as usize <= MAX_N);
         // debug_assert!(poset.is_closed());
         // debug_assert!(poset.is_normalized());
 
@@ -363,7 +363,7 @@ impl BackwardsPoset {
     pub fn canonify_without_dual(&mut self, indices: [usize; MAX_N]) -> [usize; MAX_N] {
         // precondition
         debug_assert!(self.i < self.n);
-        debug_assert!((self.n as usize) < MAX_N);
+        debug_assert!(self.n as usize <= MAX_N);
         // debug_assert!(self.is_closed());
 
         let (less, greater) = self.calculate_relations();
@@ -481,7 +481,7 @@ impl BackwardsPoset {
 
         // postcondition
         // debug_assert!(2 * self.i < self.n);
-        debug_assert!((self.n as usize) < MAX_N);
+        debug_assert!(self.n as usize <= MAX_N);
         // debug_assert!(self.is_closed());
         for i in 0..self.n {
             for j in (i + 1)..self.n {
@@ -493,7 +493,7 @@ impl BackwardsPoset {
 
     pub fn reduce_elements(&mut self) {
         debug_assert!(self.i < self.n);
-        debug_assert!((self.n as usize) < MAX_N);
+        debug_assert!(self.n as usize <= MAX_N);
         debug_assert!(self.is_closed());
 
         let (less, greater) = self.calculate_relations();
@@ -527,13 +527,13 @@ impl BackwardsPoset {
         }
 
         debug_assert!(self.i < self.n);
-        debug_assert!((self.n as usize) < MAX_N);
+        debug_assert!(self.n as usize <= MAX_N);
         debug_assert!(self.is_closed());
     }
 
     pub fn can_reduce_any_element(&self) -> bool {
         debug_assert!(self.i < self.n);
-        debug_assert!((self.n as usize) < MAX_N);
+        debug_assert!(self.n as usize <= MAX_N);
         debug_assert!(self.is_closed());
 
         let (less, greater) = self.calculate_relations();
@@ -606,8 +606,9 @@ impl BackwardsPoset {
         i: u8,
         max_remaining_comparisons: usize,
     ) -> HashSet<Self> {
-        debug_assert!(2 * self.i < self.n);
-        debug_assert!(table[self.n as usize][self.i as usize]);
+        assert!(2 * self.i < self.n);
+        assert!(1 <= self.n);
+        assert!(table[self.n as usize - 1][self.i as usize]);
 
         let mut current_level: [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N] =
             Default::default();
@@ -626,7 +627,7 @@ impl BackwardsPoset {
 
             let mut next_level: [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N] =
                 Default::default();
-            if table[self.n as usize + 1][self.i as usize] {
+            if table[self.n as usize][self.i as usize] {
                 self.enlarge_n(
                     &mut next_level,
                     max_remaining_comparisons,
@@ -636,8 +637,8 @@ impl BackwardsPoset {
             }
 
             let condition = 2 * (self.i + 1) < self.n + 1;
-            if (condition && table[self.n as usize + 1][self.i as usize + 1])
-                || (!condition && table[self.n as usize + 1][self.n as usize - self.i as usize - 1])
+            if (condition && table[self.n as usize][self.i as usize + 1])
+                || (!condition && table[self.n as usize][self.n as usize - self.i as usize - 1])
             {
                 self.enlarge_nk(
                     &mut next_level,
@@ -654,7 +655,7 @@ impl BackwardsPoset {
             for n0 in self.n..n {
                 for i0 in self.i..=i {
                     for (item, indices) in &current_level[i0 as usize].0 {
-                        if table[n0 as usize + 1][i0 as usize] {
+                        if table[n0 as usize][i0 as usize] {
                             item.super_enlarge_n(
                                 &mut next_level,
                                 max_remaining_comparisons,
@@ -665,10 +666,10 @@ impl BackwardsPoset {
                         }
 
                         let condition = 2 * (i0 + 1) < n0 + 1;
-                        if (condition && table[n0 as usize + 1][i0 as usize + 1])
+                        if (condition && table[n0 as usize][i0 as usize + 1])
                             || (!condition
                                 && i0 < n0
-                                && table[n0 as usize + 1][n0 as usize - i0 as usize - 1])
+                                && table[n0 as usize][n0 as usize - i0 as usize - 1])
                         {
                             item.super_enlarge_nk(
                                 &mut next_level,
@@ -709,10 +710,10 @@ impl BackwardsPoset {
         poset_cache: &HashMap<BackwardsPoset, u8>,
         removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
     ) {
-        // // precondition
-        // debug_assert!(self.i < self.n);
-        // debug_assert!((self.n as usize) < MAX_N);
-        // debug_assert!(self.is_closed());
+        // precondition
+        debug_assert!(self.i < self.n);
+        debug_assert!(self.n as usize <= MAX_N);
+        debug_assert!(self.is_closed());
         // debug_assert!(self.is_canonified());
 
         let mut result = HashSet::new();
@@ -759,7 +760,7 @@ impl BackwardsPoset {
         // // postcondition:
         // for item in &result {
         //   debug_assert!(item.i < item.n);
-        //   debug_assert!((item.n as usize) < MAX_N);
+        //   debug_assert!((item.n as usize) <= MAX_N);
         //   debug_assert!(item.is_closed());
         //   debug_assert!(item.is_canonified());
         //   debug_assert!({
@@ -1062,7 +1063,7 @@ impl BackwardsPoset {
     }
 
     pub fn rec_temp(table: &mut [[bool; MAX_N]; MAX_N], n: usize, i: usize) {
-        table[n][i] = true;
+        table[n - 1][i] = true;
         if 1 <= n && 2 * i < n - 1 {
             Self::rec_temp(table, n - 1, i);
         }

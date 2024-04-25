@@ -4,7 +4,7 @@ use clap::{
     ArgAction, Parser,
 };
 use hashbrown::HashMap;
-use search_backward::single;
+use search_backward::iterative_deepening_backward;
 use search_forward::Cost;
 use std::{
     fs::{DirBuilder, OpenOptions},
@@ -222,7 +222,7 @@ fn run_backward(args: &Args) {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
         for i in start_i..(n + 1) / 2 {
-            let result = single(&interrupt, n, i);
+            let result = iterative_deepening_backward(&interrupt, n, i);
 
             if (n as usize) < KNOWN_VALUES.len() && (i as usize) < KNOWN_VALUES[n as usize].len() {
                 assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);
@@ -287,14 +287,14 @@ where
     let less_vars = less_mapping
         .iter()
         .take(less.n() as usize)
-        .map(|i| VARIABLES[*i as usize].to_string())
+        .map(|i| VARIABLES[*i].to_string())
         .reduce(|a, b| format!("{a}, {b}"))
         .unwrap();
 
     let greater_vars = greater_mapping
         .iter()
         .take(greater.n() as usize)
-        .map(|i| VARIABLES[*i as usize].to_string())
+        .map(|i| VARIABLES[*i].to_string())
         .reduce(|a, b| format!("{a}, {b}"))
         .unwrap();
 
@@ -320,8 +320,7 @@ where
         .into_iter()
         .map(|(i, j)| format!("{} < {}", VARIABLES[i as usize], VARIABLES[j as usize]))
         .reduce(|a, b| format!("{a}, {b}"))
-        .map(|s| ", ".to_string() + s.as_str())
-        .unwrap_or("".to_string());
+        .map_or(String::new(), |s| ", ".to_string() + s.as_str());
 
     if less_index == greater_index {
         debug_assert_eq!(less.n(), greater.n());
@@ -337,7 +336,7 @@ where
         let less_diff = less_mapping
             .iter()
             .take(less.n() as usize)
-            .map(|i| VARIABLES[*i as usize].to_string())
+            .map(|i| VARIABLES[*i].to_string())
             .enumerate()
             .filter(|(i, _)| different[*i])
             .map(|(_, v)| v)
@@ -347,7 +346,7 @@ where
         let greater_diff = greater_mapping
             .iter()
             .take(greater.n() as usize)
-            .map(|i| VARIABLES[*i as usize].to_string())
+            .map(|i| VARIABLES[*i].to_string())
             .enumerate()
             .filter(|(i, _)| different[*i])
             .map(|(_, v)| v)
@@ -463,7 +462,7 @@ fn explore(poset: NormalPoset, mapping: [u8; MAX_N], cache: &Cache) {
                 }
 
                 if first {
-                    first = false
+                    first = false;
                 } else {
                     print!(", ");
                 }
@@ -501,7 +500,7 @@ fn explore(poset: NormalPoset, mapping: [u8; MAX_N], cache: &Cache) {
                 let greater = poset.with_less(mapped_j, mapped_i);
                 match cache.get(&less) {
                     Some(Cost::Solved(cost)) => {
-                        print!(" {:<2}|", cost);
+                        print!(" {cost:<2}|");
 
                         if let Some(Cost::Solved(other_cost)) = cache.get(&greater) {
                             let max_cost = cost.max(other_cost);

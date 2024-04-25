@@ -342,6 +342,19 @@ Die Kanonisierung der Vorwärtssuche ist aus Performancegründen nicht eindeutig
 
 \begin{proof} \label{proof:inverse_poset}
   % TODO: @Johanna: vielleicht hast du da eine Idee, wie man das aufschreiben könnte
+
+  % "=>" Poset $p$ in $k$ Vergleichen lösbar => Inverse von Poset $p$ in $k$ Vergleichen lösbar
+  %   Poset $p$ in $k$ Vergleichen lösbar
+  %   => Dann gibt es einen Lösungalgorithmus dafür.
+  %   => Wende diesen Lösungsalgorithmus an, wobei alle Vergleiche invertiert werden.
+  %   => Dann bestimmt dieser das $(n - i - 1)$-te Elemenent.
+  %   => das inverse Poset ist in $k$ Vergleichen lösbar. qed.
+  % "<=" Inverse von Poset $p$ in $k$ Vergleichen lösbar => Poset $p$ in $k$ Vergleichen lösbar
+  %   Inverse Poset $p$ in $k$ Vergleichen lösbar
+  %   => Dann gibt es einen Lösungalgorithmus dafür.
+  %   => Wende diesen Lösungsalgorithmus an, wobei alle Vergleiche invertiert werden.
+  %   => Dann bestimmt dieser das $i$-te Elemenent.
+  %   => das inverse vom inversen Poset ist in $k$ Vergleichen lösbar, d.h. $p$ qed.
 \end{proof}
 
 Um eine eindeutige Darstellung zu gewährleisten, wird zunächst ermittelt, ob $i$ oder $n - 1 - i$ kleiner ist, und gegebenenfalls wird das Poset $p$ durch sein Inverses ersetzt.
@@ -351,8 +364,7 @@ Abschließend werden die Elemente kanonisch angeordnet.
 Dazu wird das Poset intern als gerichteter Graph repräsentiert, wobei sich diese Darstellung an den Hasse-Diagrammen orientiert.
 Um alle Elemente kanonisch anzuordnen, müssen die Knoten des Graphen kanonisch beschriftet werden.
 Hierfür wird primär auf ``nauty'' zurückgegriffen.
-Nauty ist ein C-Programm zur Berechnung von Automorphismengruppen von Graphen und kann ein kanonisches Label für einen gegebenen Graphen erzeugen.
-% TODO: @Johanna: bibtex cite von https://pallini.di.uniroma1.it/
+Nauty ist ein C-Programm zur Berechnung von Automorphismengruppen von Graphen und kann ein kanonisches Label für einen gegebenen Graphen erzeugen \cite{MCKAY201494}.
 Durch diese kanonische Beschriftung kann das Poset eindeutig dargestellt werden.
 
 Ein potentielles Problem tritt auf, wenn die Gleichung $i = n - 1 - i$ erfüllt ist.
@@ -403,7 +415,7 @@ Für kleine Werte von $i$ stellt der hohe prozentuale Anteil von nauty kein Prob
     $6$ & $0.116\%$
   \end{tabular}
   \centering
-  \caption{Prozentuale Häufigkeit der Aufrufe von nauty zur Kanonisierung}
+  \caption{Prozentuale Häufigkeit der Aufrufe von nauty zur Kanonisierung für $n = 13, i = 6$}
   \label{table:nauty-ratio}
 \end{table}
 

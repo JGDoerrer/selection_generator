@@ -22,7 +22,7 @@ impl Default for NormalPoset {
 
 impl Poset for NormalPoset {
     fn new(n: u8, i: u8) -> Self {
-        debug_assert!(n < MAX_N as u8);
+        debug_assert!(n <= MAX_N as u8);
         debug_assert!(i < n);
 
         NormalPoset {
@@ -130,7 +130,7 @@ impl NormalPoset {
             let mapped_i = mapping[i as usize] as u8;
             for j in (i + 1)..canonified.n() {
                 if copy.is_less(mapped_i, mapping[j as usize] as u8) {
-                    canonified.set_is_less(i, j)
+                    canonified.set_is_less(i, j);
                 }
             }
         }
@@ -203,32 +203,6 @@ impl NormalPoset {
 
         new_indices[0..n].sort_unstable_by(comparator);
 
-        // let mut is_unique = true;
-        // for i in 1..self.n as usize {
-        //     let i0 = new_indices[i];
-        //     let i1 = new_indices[i - 1];
-
-        //     let degree = in_out_degree[i0];
-        //     if degree == 0 || degree == 1 || degree == MAX_N as u64 {
-        //         continue;
-        //     }
-
-        //     if in_out_degree[i1] == in_out_degree[i0] && hash[i1] == hash[i0] {
-        //         let mut new = *self;
-        //         new.swap(i1 as u8, i0 as u8);
-        //         if new != *self {
-        //             is_unique = false;
-        //             break;
-        //         }
-        //     }
-        // }
-
-        // if !is_unique {
-        //     new_indices = self.canonify_nauty_indicies();
-
-        //     new_indices[0..n].sort_by(comparator);
-        // }
-
         new_indices
     }
 
@@ -241,7 +215,7 @@ impl NormalPoset {
         for i in 0..new.n {
             for j in (i + 1)..new.n {
                 if self.is_less(new_indices[i as usize] as u8, new_indices[j as usize] as u8) {
-                    new.set_is_less(i, j)
+                    new.set_is_less(i, j);
                 }
             }
         }
@@ -433,7 +407,7 @@ impl NormalPoset {
         for i in 0..new.n {
             for j in 0..new.n {
                 if canonical[i as usize] & nauty_Traces_sys::bit[j as usize] != 0 {
-                    new.set_is_less(i, j)
+                    new.set_is_less(i, j);
                 }
             }
         }

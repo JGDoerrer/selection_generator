@@ -92,7 +92,7 @@ pub fn start_search_backward(
     None
 }
 
-pub fn single(interrupt: &Arc<AtomicBool>, n: u8, i: u8) -> u8 {
+pub fn iterative_deepening_backward(interrupt: &Arc<AtomicBool>, n: u8, i: u8) -> u8 {
     COUTNER_USE_NOT_NAUTY.set(0);
     COUTNER_USE_NAUTY.set(0);
 

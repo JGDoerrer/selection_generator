@@ -12,7 +12,7 @@ pub fn print_git_info() {
 
 /// Print a subset of the information of lscpu.
 /// Interesting values are:
-/// Model name, Core, Thread, min MHz, max MHZ
+/// Model name, Core, Thread, min `MHz`, max MHZ
 pub fn print_lscpu() {
     let lscpu = Command::new("sh")
         .arg("-c")
@@ -21,7 +21,7 @@ pub fn print_lscpu() {
         .unwrap();
     let lscpu = String::from_utf8(lscpu.stdout).unwrap();
 
-    println!("{}", lscpu);
+    println!("{lscpu}");
 }
 
 pub fn print_current_time() {
@@ -32,7 +32,7 @@ pub fn print_current_time() {
     let formatted_time = local_time.format("%Y-%m-%d %H:%M:%S").to_string();
 
     // Print the formatted time
-    println!("Current time: {}", formatted_time);
+    println!("Current time: {formatted_time}");
     println!("===============");
 }
 
@@ -85,11 +85,11 @@ pub const fn fac(n: usize, k: usize) -> usize {
 pub fn format_duration(start: Instant) -> String {
     // Calculate the values for a human readable duration
 
-    let duration = Instant::now() - start;
+    let duration = start.elapsed();
     let seconds = duration.as_secs_f32() % 60.0;
     let minutes = (duration.as_secs() / 60) % 60;
     let hours = (duration.as_secs() / (60 * 60)) % 24;
     let days = duration.as_secs() / (60 * 60 * 24);
 
-    format!("Duration: {}d {}h {}m {}s", days, hours, minutes, seconds)
+    format!("Duration: {days}d {hours}h {minutes}m {seconds}s")
 }

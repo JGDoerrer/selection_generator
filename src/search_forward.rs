@@ -47,14 +47,14 @@ pub struct Analytics {
 }
 
 impl Cost {
-    pub fn value(&self) -> u8 {
+    pub fn value(self) -> u8 {
         match self {
-            Cost::Minimum(min) => *min,
-            Cost::Solved(solved) => *solved,
+            Cost::Minimum(min) => min,
+            Cost::Solved(solved) => solved,
         }
     }
 
-    pub fn is_solved(&self) -> bool {
+    pub fn is_solved(self) -> bool {
         matches!(self, Cost::Solved(_))
     }
 }
@@ -159,7 +159,7 @@ impl<'a> Search<'a> {
             "Congratulations. A solution was found!\n\nn: {}, i: {}",
             self.n, self.i
         );
-        println!("Comparisons: {}", result);
+        println!("Comparisons: {result}");
         println!();
 
         self.print_cache();
@@ -445,7 +445,7 @@ impl Analytics {
         self.progress_bars[0].0.set_message(format!(
             "limit: {:3} total: {:10}, cache: {:10} ({:2.2} %)",
             current_max, self.total_posets, cache_entries, cache_percentage
-        ))
+        ));
     }
 
     fn complete_all(&self) {

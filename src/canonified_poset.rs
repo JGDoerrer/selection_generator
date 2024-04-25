@@ -197,7 +197,7 @@ impl CanonifiedPoset {
             .collect()
     }
 
-    pub fn transform(self) -> BackwardsPoset {
+    pub fn transform(&self) -> BackwardsPoset {
         let mut result = BackwardsPoset::new(self.n, self.i);
         for i in 0..self.n {
             for j in 0..self.n {

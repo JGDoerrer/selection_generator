@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use crate::constants::MAX_N;
 
-/// A bitset to store up to MAX_N bits
+/// A bitset to store up to `MAX_N` bits
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 pub struct BitSet {
     bits: u16,
@@ -20,13 +20,13 @@ impl BitSet {
     }
 
     #[inline]
-    pub const fn bits(&self) -> u16 {
+    pub const fn bits(self) -> u16 {
         self.bits
     }
 
     #[allow(unused)]
     #[inline]
-    pub const fn is_empty(&self) -> bool {
+    pub const fn is_empty(self) -> bool {
         self.bits == 0
     }
 
@@ -37,7 +37,7 @@ impl BitSet {
 
     #[inline]
     pub fn insert(&mut self, index: usize) {
-        debug_assert!(index < MAX_N);
+        debug_assert!(index <= MAX_N);
         let bit_mask = 1 << index;
 
         self.bits |= bit_mask;
@@ -45,36 +45,36 @@ impl BitSet {
 
     #[inline]
     pub fn remove(&mut self, index: usize) {
-        debug_assert!(index < MAX_N);
+        debug_assert!(index <= MAX_N);
         let bit_mask = 1 << index;
 
         self.bits &= !bit_mask;
     }
 
     #[inline]
-    pub const fn contains(&self, index: usize) -> bool {
-        debug_assert!(index < MAX_N);
+    pub const fn contains(self, index: usize) -> bool {
+        debug_assert!(index <= MAX_N);
         let bit_mask = 1 << index;
 
         (self.bits & bit_mask) != 0
     }
 
     #[inline]
-    pub const fn union(&self, other: Self) -> Self {
+    pub const fn union(self, other: Self) -> Self {
         BitSet {
             bits: self.bits | other.bits,
         }
     }
 
     #[inline]
-    pub const fn intersect(&self, other: Self) -> Self {
+    pub const fn intersect(self, other: Self) -> Self {
         BitSet {
             bits: self.bits & other.bits,
         }
     }
 
     #[inline]
-    pub const fn complement(&self) -> Self {
+    pub const fn complement(self) -> Self {
         const MASK: u16 = ((1u32 << (MAX_N + 1)) - 1) as u16;
         BitSet {
             bits: !self.bits & MASK,
@@ -82,12 +82,12 @@ impl BitSet {
     }
 
     #[inline]
-    pub const fn is_disjoint(&self, other: Self) -> bool {
+    pub const fn is_disjoint(self, other: Self) -> bool {
         self.bits & other.bits == 0
     }
 
     #[inline]
-    pub const fn len(&self) -> usize {
+    pub const fn len(self) -> usize {
         self.bits.count_ones() as usize
     }
 }
