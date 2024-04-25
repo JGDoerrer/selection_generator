@@ -459,54 +459,54 @@ Die Berechnung eines Vorgängers für ein gegebenes Poset $p$ mit $n$ Elementen,
 
 \begin{itemize}
   \item[1.]
-        Zunächst werden alle Posets mit $n$ Elementen gesucht, die durch das Einfügen eines Vergleichs, gefolgt von der Kanonisierung, wieder in Poset $p$ resultieren.
+    Zunächst werden alle Posets mit $n$ Elementen gesucht, die durch das Einfügen eines Vergleichs, gefolgt von der Kanonisierung, wieder in Poset $p$ resultieren.
 
-        Eine Schwierigkeit stellen die transitiven Vergleiche dar, da durch das Einfügen eines Vergleichs mehrere Vergleiche miteingefügt werden können.
+    Eine Schwierigkeit stellen die transitiven Vergleiche dar, da durch das Einfügen eines Vergleichs mehrere Vergleiche miteingefügt werden können.
 
-        \begin{figure}
-          \centering
-          \input{figures/tikz_problematic_case.tex}
-          \caption{Problematischer Fall mit transitiven Vergleichen}
-          \label{fig:backward_problematic}
-        \end{figure}
+    \begin{figure}
+      \centering
+      \input{figures/tikz_problematic_case.tex}
+      \caption{Problematischer Fall mit transitiven Vergleichen}
+      \label{fig:backward_problematic}
+    \end{figure}
 
-        Wie in Abbildung~\ref{fig:backward_problematic} veranschaulicht, sind alle drei Posets vollständig reduziert und kanonisiert.
-        Durch das Einfügen eines Vergleichs in Poset (2) oder in Poset (3) kann beide Male Poset (1) resultieren.
-        Das bedeutet, dass je nach aktuellem Cache Poset (2) und Poset (3) potentielle Vorgänger sind, obwohl beide Male der gleiche Vergleich eingefügt wird.
+    Wie in Abbildung~\ref{fig:backward_problematic} veranschaulicht, sind alle drei Posets vollständig reduziert und kanonisiert.
+    Durch das Einfügen eines Vergleichs in Poset (2) oder in Poset (3) kann beide Male Poset (1) resultieren.
+    Das bedeutet, dass je nach aktuellem Cache Poset (2) und Poset (3) potentielle Vorgänger sind, obwohl beide Male der gleiche Vergleich eingefügt wird.
 
-        Um dieses Problem zu lösen, werden alle potentiellen Vorgänger berechnet.
+    Um dieses Problem zu lösen, werden alle potentiellen Vorgänger berechnet.
 
   \item[2.]
-        Im nächsten Schritt werden alle Vorgänger berechnet, die $n + 1$ Elemente haben und durch Einfügen eines Vergleichs gefolgt von einer Kanonisierung erneut das Poset $p$ ergeben.
+    Im nächsten Schritt werden alle Vorgänger berechnet, die $n + 1$ Elemente haben und durch Einfügen eines Vergleichs gefolgt von einer Kanonisierung erneut das Poset $p$ ergeben.
 
-        Da das neue Element kleiner oder größer als das gesuchte $i$-kleinste Element ist, wird bei diesen Vorgängern nach dem $i + 1$-kleinsten bzw. dem $i$-kleinsten Element gesucht.
-        Da das Poset $p$ kanonifiziert ist, gilt $i \leq n - 1 - i$ für $p$.
-        Durch das Kanonifizieren des Posets mit $n + 1$-Elementen und dem $(i + 1)$-kleinsten gesuchten Element, kann es hier jedoch nötig sein das Inverse Poset zu bilden wodurch das $(n + 1) - (i + 1) - 1 = n - i + 1$-te Element gesucht ist.
+    Da das neue Element kleiner oder größer als das gesuchte $i$-kleinste Element ist, wird bei diesen Vorgängern nach dem $i + 1$-kleinsten bzw. dem $i$-kleinsten Element gesucht.
+    Da das Poset $p$ kanonifiziert ist, gilt $i \leq n - 1 - i$ für $p$.
+    Durch das Kanonifizieren des Posets mit $n + 1$-Elementen und dem $(i + 1)$-kleinsten gesuchten Element, kann es hier jedoch nötig sein das Inverse Poset zu bilden wodurch das $(n + 1) - (i + 1) - 1 = n - i + 1$-te Element gesucht ist.
 
-        Hierfür wird in Poset $p$ ein neues Element sowie passende Vergleiche eingefügt.
-        Passende Vergleiche bedeutet, dass das neue Element nicht unmittelbar wegreduziert werden darf und es noch einen Vergleich gibt, der eingefügt werden könnte, ohne dass das neue Element wegreduziert werden kann, nach Lemma~\ref{lemma:remove_only_last_element_edge}.
+    Hierfür wird in Poset $p$ ein neues Element sowie passende Vergleiche eingefügt.
+    Passende Vergleiche bedeutet, dass das neue Element nicht unmittelbar wegreduziert werden darf und es noch einen Vergleich gibt, der eingefügt werden könnte, ohne dass das neue Element wegreduziert werden kann, nach Lemma~\ref{lemma:remove_only_last_element_edge}.
 
-        \begin{lemma} \label{lemma:remove_only_last_element_edge}
-          Um alle möglichen Vorgänger mit $n + 1$ Elementen zu konstruieren, müssen nur Vergleiche zwischen dem neuen Element und beliebig vielen anderen Elemente hinzugefügt werden.
-        \end{lemma}
+    \begin{lemma} \label{lemma:remove_only_last_element_edge}
+      Um alle möglichen Vorgänger mit $n + 1$ Elementen zu konstruieren, müssen nur Vergleiche zwischen dem neuen Element und beliebig vielen anderen Elemente hinzugefügt werden.
+    \end{lemma}
 
-        \begin{proof} \label{proof:remove_only_last_element_edge}
-          Angenommen, es existiert ein Vorgänger mit $n + 1$ Elementen, bei dem das $(n + 1)$-te Element wegreduziert werden kann, wenn ein Vergleich zwischen dem $i$-ten und dem $j$-ten Element eingefügt wird, wobei $0 \leq i < j \leq n$.
-          Dann ... % TODO: idk
-        \end{proof}
+    \begin{proof} \label{proof:remove_only_last_element_edge}
+      Angenommen, es existiert ein Vorgänger mit $n + 1$ Elementen, bei dem das $(n + 1)$-te Element wegreduziert werden kann, wenn ein Vergleich zwischen dem $i$-ten und dem $j$-ten Element eingefügt wird, wobei $0 \leq i < j \leq n$.
+      Dann ... % TODO: idk
+    \end{proof}
 
-        Anschließend werden die Posets aus dem 1. und 2. Schritt in einer Menge zusammengeführt und es wird sichergestellt, dass alle Posets kanonisiert sind.
-        Bezeichne den Vergleich, der eingefügt werden könnte, ohne das ein Element wegreduziert werden kann im folgenden als den entfernten Vergleich.
+    Anschließend werden die Posets aus dem 1. und 2. Schritt in einer Menge zusammengeführt und es wird sichergestellt, dass alle Posets kanonisiert sind.
+    Bezeichne den Vergleich, der eingefügt werden könnte, ohne das ein Element wegreduziert werden kann im folgenden als den entfernten Vergleich.
 
   \item[3.]
-        Im dritten Schritt wird für jedes bereits gefundene Element iterativ neue Elemente eingefügt, bis die obere Grenze $n_{\text{max}}$ erreicht ist.
-        Wenn ein neues Element eingefügt wird, muss beachtet werden, dass eventuell nicht mehr das $i$-kleinste, sondern das $(i + 1)$-kleinste Element gesucht wird, genau wie im 2. Schritt, und das neue Element nicht direkt wegreduziert werden kann.
-        Des Weiteren muss durch das Einfügen im 1. und 2. Schritt entferten Vergleichs und anschließendem reduzieren sowie kanonifizieren wieder Poset $p$ resultieren.
+    Im dritten Schritt wird für jedes bereits gefundene Element iterativ neue Elemente eingefügt, bis die obere Grenze $n_{\text{max}}$ erreicht ist.
+    Wenn ein neues Element eingefügt wird, muss beachtet werden, dass eventuell nicht mehr das $i$-kleinste, sondern das $(i + 1)$-kleinste Element gesucht wird, genau wie im 2. Schritt, und das neue Element nicht direkt wegreduziert werden kann.
+    Des Weiteren muss durch das Einfügen im 1. und 2. Schritt entferten Vergleichs und anschließendem reduzieren sowie kanonifizieren wieder Poset $p$ resultieren.
 
   \item[4.]
-        Im letzten Schritt wird für jeden Vorgänger die minimale Anzahl an Vergleichen berechnet, die noch entfernt werden müssen, bis das leere Poset erreicht ist.
-        Diese Anzahl entspricht den Kanten im zugehörigen Hasse-Diagramm.
-        Anhand der bekannten theoretischen oberen Schranken können alle Posets verworfen werden, die zu viele Vergleiche enthalten, da diese zu keinem leeren Poset in den verbleibenden Vergleichen führen können und somit auch in der Vorwärtssuche nicht betrachtet werden können.
+    Im letzten Schritt wird für jeden Vorgänger die minimale Anzahl an Vergleichen berechnet, die noch entfernt werden müssen, bis das leere Poset erreicht ist.
+    Diese Anzahl entspricht den Kanten im zugehörigen Hasse-Diagramm.
+    Anhand der bekannten theoretischen oberen Schranken können alle Posets verworfen werden, die zu viele Vergleiche enthalten, da diese zu keinem leeren Poset in den verbleibenden Vergleichen führen können und somit auch in der Vorwärtssuche nicht betrachtet werden können.
 \end{itemize}
 
 Da die theoretischen oberen Schranken in der Praxis zu hoch sind, verwendet das Programm einen iterative deepening-Ansatz.
@@ -577,11 +577,11 @@ The minimax search algorithm explained in chapter~\ref{chapter:forward_search} a
 
 \begin{enumerate}
   \item[1.]
-        Use solvable-heuristic. A heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states 'unsolvable', the branch is pruned.
-        Otherwise, the search continues regularly.
+    Use solvable-heuristic. A heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states 'unsolvable', the branch is pruned.
+    Otherwise, the search continues regularly.
   \item[2.]
-        Use \texttt{current\_best}. Each call of \texttt{search\_rec} gets a maximum numbers of comparisons.
-        When searching the children of a node, the limit is the best (minimal) value found so far.
+    Use \texttt{current\_best}. Each call of \texttt{search\_rec} gets a maximum numbers of comparisons.
+    When searching the children of a node, the limit is the best (minimal) value found so far.
 \end{enumerate}
 
 \subsection{Compatible Posets}
