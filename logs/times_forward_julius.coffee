@@ -1,15 +1,17 @@
-Cache entries: 0
-Maximum cache entries: 390451572
 
 Branch: main
-SHA: 8bb148a
+SHA: 32092c5
 
 Model name: 13th Gen Intel(R) Core(TM) i9-13900H
 Thread(s) per core: 2
-Core(s) per socket: 10
+Core(s) per socket: 14
+CPU max MHz: 5400.0000
+CPU min MHz: 400.0000
 
-Current time: 2024-04-16 22:25:47
+Current time: 2024-04-25 22:35:06
 ===============
+Cache entries: 0
+Maximum cache entries: 357913940
 
 Congratulations. A solution was found!
 
@@ -23,7 +25,7 @@ Cache misses: 0
 Cache replaced: 0
 
 Posets searched: 0
-Duration: 0d 0h 0m 0.000012877s
+Duration: 0d 0h 0m 0.000014794s
 
 
 Congratulations. A solution was found!
@@ -38,7 +40,7 @@ Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000020569s
+Duration: 0d 0h 0m 0.000015075s
 
 
 Congratulations. A solution was found!
@@ -53,7 +55,7 @@ Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000066519s
+Duration: 0d 0h 0m 0.000042792s
 
 
 Congratulations. A solution was found!
@@ -68,7 +70,7 @@ Cache misses: 2
 Cache replaced: 0
 
 Posets searched: 2
-Duration: 0d 0h 0m 0.000037973s
+Duration: 0d 0h 0m 0.000022856s
 
 
 Congratulations. A solution was found!
@@ -83,7 +85,7 @@ Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000030311s
+Duration: 0d 0h 0m 0.000043233s
 
 
 Congratulations. A solution was found!
@@ -98,7 +100,7 @@ Cache misses: 3
 Cache replaced: 0
 
 Posets searched: 3
-Duration: 0d 0h 0m 0.000062884s
+Duration: 0d 0h 0m 0.000061348s
 
 
 Congratulations. A solution was found!
@@ -113,7 +115,7 @@ Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000034382s
+Duration: 0d 0h 0m 0.000025167s
 
 
 Congratulations. A solution was found!
@@ -128,7 +130,7 @@ Cache misses: 8
 Cache replaced: 0
 
 Posets searched: 8
-Duration: 0d 0h 0m 0.000155329s
+Duration: 0d 0h 0m 0.000154937s
 
 
 Congratulations. A solution was found!
@@ -143,7 +145,7 @@ Cache misses: 12
 Cache replaced: 0
 
 Posets searched: 6
-Duration: 0d 0h 0m 0.000468143s
+Duration: 0d 0h 0m 0.000124024s
 
 
 Congratulations. A solution was found!
@@ -158,7 +160,7 @@ Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000060468s
+Duration: 0d 0h 0m 0.000038382s
 
 
 Congratulations. A solution was found!
@@ -173,7 +175,7 @@ Cache misses: 5
 Cache replaced: 0
 
 Posets searched: 6
-Duration: 0d 0h 0m 0.000182332s
+Duration: 0d 0h 0m 0.00030785s
 
 
 Congratulations. A solution was found!
@@ -188,7 +190,7 @@ Cache misses: 36
 Cache replaced: 0
 
 Posets searched: 32
-Duration: 0d 0h 0m 0.000373887s
+Duration: 0d 0h 0m 0.000405078s
 
 
 Congratulations. A solution was found!
@@ -203,7 +205,7 @@ Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000028026s
+Duration: 0d 0h 0m 0.000035874s
 
 
 Congratulations. A solution was found!
@@ -218,10 +220,10 @@ Cache misses: 13
 Cache replaced: 0
 
 Posets searched: 15
-Duration: 0d 0h 0m 0.000251591s
+Duration: 0d 0h 0m 0.0001843s
 
 n: 7, i: 2 needs at least 10 comparisons
-Duration: 0d 0h 0m 0.001054501s
+Duration: 0d 0h 0m 0.00108315s
 
 Congratulations. A solution was found!
 
@@ -235,10 +237,10 @@ Cache misses: 97
 Cache replaced: 0
 
 Posets searched: 122
-Duration: 0d 0h 0m 0.00112458s
+Duration: 0d 0h 0m 0.001160692s
 
 n: 7, i: 3 needs at least 10 comparisons
-Duration: 0d 0h 0m 0.001479025s
+Duration: 0d 0h 0m 0.001385883s
 
 Congratulations. A solution was found!
 
@@ -252,7 +254,7 @@ Cache misses: 225
 Cache replaced: 0
 
 Posets searched: 213
-Duration: 0d 0h 0m 0.002293316s
+Duration: 0d 0h 0m 0.002133859s
 
 
 Congratulations. A solution was found!
@@ -267,7 +269,7 @@ Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000042861s
+Duration: 0d 0h 0m 0.000041028s
 
 
 Congratulations. A solution was found!
@@ -282,7 +284,7 @@ Cache misses: 13
 Cache replaced: 0
 
 Posets searched: 16
-Duration: 0d 0h 0m 0.000276944s
+Duration: 0d 0h 0m 0.000279671s
 
 
 Congratulations. A solution was found!
@@ -297,10 +299,10 @@ Cache misses: 167
 Cache replaced: 0
 
 Posets searched: 142
-Duration: 0d 0h 0m 0.002148515s
+Duration: 0d 0h 0m 0.002329955s
 
 n: 8, i: 3 needs at least 12 comparisons
-Duration: 0d 0h 0m 0.007091789s
+Duration: 0d 0h 0m 0.006993355s
 
 Congratulations. A solution was found!
 
@@ -314,7 +316,7 @@ Cache misses: 729
 Cache replaced: 0
 
 Posets searched: 538
-Duration: 0d 0h 0m 0.00923258s
+Duration: 0d 0h 0m 0.008332022s
 
 
 Congratulations. A solution was found!
@@ -329,7 +331,7 @@ Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000119375s
+Duration: 0d 0h 0m 0.00004792s
 
 
 Congratulations. A solution was found!
@@ -344,7 +346,7 @@ Cache misses: 54
 Cache replaced: 0
 
 Posets searched: 62
-Duration: 0d 0h 0m 0.001262701s
+Duration: 0d 0h 0m 0.001060866s
 
 
 Congratulations. A solution was found!
@@ -354,46 +356,46 @@ Comparisons: 12
 
 Cache entries: 1685
 Cache size: 0.000 Gigabyte
-Cache hits: 3224
+Cache hits: 3234
 Cache misses: 313
 Cache replaced: 0
 
-Posets searched: 251
-Duration: 0d 0h 0m 0.005466004s
+Posets searched: 253
+Duration: 0d 0h 0m 0.005635992s
 
 n: 9, i: 3 needs at least 14 comparisons
-Duration: 0d 0h 0m 0.038116764s
+Duration: 0d 0h 0m 0.03649928s
 
 Congratulations. A solution was found!
 
 n: 9, i: 3
 Comparisons: 14
 
-Cache entries: 4052
+Cache entries: 4051
 Cache size: 0.000 Gigabyte
-Cache hits: 29170
-Cache misses: 2367
+Cache hits: 29533
+Cache misses: 2366
 Cache replaced: 0
 
-Posets searched: 1735
-Duration: 0d 0h 0m 0.038577784s
+Posets searched: 1754
+Duration: 0d 0h 0m 0.03689604s
 
 n: 9, i: 4 needs at least 14 comparisons
-Duration: 0d 0h 0m 0.063195206s
+Duration: 0d 0h 0m 0.061404984s
 
 Congratulations. A solution was found!
 
 n: 9, i: 4
 Comparisons: 14
 
-Cache entries: 10164
+Cache entries: 10161
 Cache size: 0.000 Gigabyte
-Cache hits: 82661
-Cache misses: 6112
+Cache hits: 82668
+Cache misses: 6110
 Cache replaced: 0
 
-Posets searched: 4262
-Duration: 0d 0h 0m 0.09339861s
+Posets searched: 4259
+Duration: 0d 0h 0m 0.09172039s
 
 
 Congratulations. A solution was found!
@@ -401,14 +403,14 @@ Congratulations. A solution was found!
 n: 10, i: 0
 Comparisons: 9
 
-Cache entries: 10165
+Cache entries: 10162
 Cache size: 0.000 Gigabyte
 Cache hits: 2
 Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000072235s
+Duration: 0d 0h 0m 0.000051516s
 
 
 Congratulations. A solution was found!
@@ -416,14 +418,14 @@ Congratulations. A solution was found!
 n: 10, i: 1
 Comparisons: 12
 
-Cache entries: 10189
+Cache entries: 10186
 Cache size: 0.000 Gigabyte
 Cache hits: 317
 Cache misses: 24
 Cache replaced: 0
 
 Posets searched: 28
-Duration: 0d 0h 0m 0.000761256s
+Duration: 0d 0h 0m 0.000765105s
 
 
 Congratulations. A solution was found!
@@ -431,14 +433,14 @@ Congratulations. A solution was found!
 n: 10, i: 2
 Comparisons: 14
 
-Cache entries: 10924
+Cache entries: 10921
 Cache size: 0.000 Gigabyte
-Cache hits: 9228
+Cache hits: 9222
 Cache misses: 735
 Cache replaced: 0
 
-Posets searched: 652
-Duration: 0d 0h 0m 0.018287348s
+Posets searched: 651
+Duration: 0d 0h 0m 0.01811684s
 
 
 Congratulations. A solution was found!
@@ -446,31 +448,31 @@ Congratulations. A solution was found!
 n: 10, i: 3
 Comparisons: 15
 
-Cache entries: 16747
+Cache entries: 16696
 Cache size: 0.000 Gigabyte
-Cache hits: 50743
-Cache misses: 5823
+Cache hits: 51718
+Cache misses: 5775
 Cache replaced: 0
 
-Posets searched: 2671
-Duration: 0d 0h 0m 0.08981491s
+Posets searched: 2698
+Duration: 0d 0h 0m 0.08866836s
 
 n: 10, i: 4 needs at least 16 comparisons
-Duration: 0d 0h 0m 0.33382094s
+Duration: 0d 0h 0m 0.33597058s
 
 Congratulations. A solution was found!
 
 n: 10, i: 4
 Comparisons: 16
 
-Cache entries: 38671
+Cache entries: 38565
 Cache size: 0.001 Gigabyte
-Cache hits: 286874
-Cache misses: 21924
+Cache hits: 285454
+Cache misses: 21869
 Cache replaced: 0
 
-Posets searched: 11713
-Duration: 0d 0h 0m 0.36722857s
+Posets searched: 11639
+Duration: 0d 0h 0m 0.36941245s
 
 
 Congratulations. A solution was found!
@@ -478,14 +480,14 @@ Congratulations. A solution was found!
 n: 11, i: 0
 Comparisons: 10
 
-Cache entries: 38672
+Cache entries: 38566
 Cache size: 0.001 Gigabyte
 Cache hits: 2
 Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000265214s
+Duration: 0d 0h 0m 0.000059747s
 
 
 Congratulations. A solution was found!
@@ -493,14 +495,14 @@ Congratulations. A solution was found!
 n: 11, i: 1
 Comparisons: 13
 
-Cache entries: 38719
+Cache entries: 38613
 Cache size: 0.001 Gigabyte
 Cache hits: 621
 Cache misses: 47
 Cache replaced: 0
 
 Posets searched: 58
-Duration: 0d 0h 0m 0.001757247s
+Duration: 0d 0h 0m 0.001574273s
 
 
 Congratulations. A solution was found!
@@ -508,65 +510,65 @@ Congratulations. A solution was found!
 n: 11, i: 2
 Comparisons: 15
 
-Cache entries: 39889
+Cache entries: 39783
 Cache size: 0.001 Gigabyte
-Cache hits: 13862
+Cache hits: 13825
 Cache misses: 1170
 Cache replaced: 0
 
-Posets searched: 818
-Duration: 0d 0h 0m 0.030868344s
+Posets searched: 815
+Duration: 0d 0h 0m 0.03015846s
 
 n: 11, i: 3 needs at least 17 comparisons
-Duration: 0d 0h 0m 0.3976416s
+Duration: 0d 0h 0m 0.39613467s
 
 Congratulations. A solution was found!
 
 n: 11, i: 3
 Comparisons: 17
 
-Cache entries: 59400
+Cache entries: 59352
 Cache size: 0.001 Gigabyte
-Cache hits: 262633
-Cache misses: 19511
+Cache hits: 263175
+Cache misses: 19569
 Cache replaced: 0
 
-Posets searched: 10958
-Duration: 0d 0h 0m 0.44114107s
+Posets searched: 10959
+Duration: 0d 0h 0m 0.4386398s
 
 n: 11, i: 4 needs at least 18 comparisons
-Duration: 0d 0h 0m 2.457436s
+Duration: 0d 0h 0m 2.3664465s
 
 Congratulations. A solution was found!
 
 n: 11, i: 4
 Comparisons: 18
 
-Cache entries: 179517
+Cache entries: 178914
 Cache size: 0.004 Gigabyte
-Cache hits: 1815902
-Cache misses: 120117
+Cache hits: 1816577
+Cache misses: 119562
 Cache replaced: 0
 
-Posets searched: 58336
-Duration: 0d 0h 0m 2.486651s
+Posets searched: 58091
+Duration: 0d 0h 0m 2.392488s
 
 n: 11, i: 5 needs at least 18 comparisons
-Duration: 0d 0h 0m 3.4425974s
+Duration: 0d 0h 0m 3.4058137s
 
 Congratulations. A solution was found!
 
 n: 11, i: 5
 Comparisons: 18
 
-Cache entries: 462405
-Cache size: 0.009 Gigabyte
-Cache hits: 4142767
-Cache misses: 282888
+Cache entries: 461524
+Cache size: 0.010 Gigabyte
+Cache hits: 4149339
+Cache misses: 282610
 Cache replaced: 0
 
-Posets searched: 121042
-Duration: 0d 0h 0m 5.478509s
+Posets searched: 120959
+Duration: 0d 0h 0m 5.4061604s
 
 
 Congratulations. A solution was found!
@@ -574,14 +576,14 @@ Congratulations. A solution was found!
 n: 12, i: 0
 Comparisons: 11
 
-Cache entries: 462406
-Cache size: 0.009 Gigabyte
+Cache entries: 461525
+Cache size: 0.010 Gigabyte
 Cache hits: 2
 Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000082009s
+Duration: 0d 0h 0m 0.000066779s
 
 
 Congratulations. A solution was found!
@@ -589,31 +591,31 @@ Congratulations. A solution was found!
 n: 12, i: 1
 Comparisons: 14
 
-Cache entries: 462455
-Cache size: 0.009 Gigabyte
-Cache hits: 745
+Cache entries: 461574
+Cache size: 0.010 Gigabyte
+Cache hits: 739
 Cache misses: 49
 Cache replaced: 0
 
-Posets searched: 58
-Duration: 0d 0h 0m 0.002240753s
+Posets searched: 57
+Duration: 0d 0h 0m 0.002118146s
 
 n: 12, i: 2 needs at least 17 comparisons
-Duration: 0d 0h 0m 0.11326635s
+Duration: 0d 0h 0m 0.10836718s
 
 Congratulations. A solution was found!
 
 n: 12, i: 2
 Comparisons: 17
 
-Cache entries: 464962
+Cache entries: 464108
 Cache size: 0.010 Gigabyte
-Cache hits: 44890
-Cache misses: 2507
+Cache hits: 44866
+Cache misses: 2534
 Cache replaced: 0
 
-Posets searched: 2402
-Duration: 0d 0h 0m 0.113527186s
+Posets searched: 2406
+Duration: 0d 0h 0m 0.108591504s
 
 
 Congratulations. A solution was found!
@@ -621,14 +623,14 @@ Congratulations. A solution was found!
 n: 12, i: 3
 Comparisons: 18
 
-Cache entries: 501026
-Cache size: 0.010 Gigabyte
-Cache hits: 393211
-Cache misses: 36064
+Cache entries: 499746
+Cache size: 0.011 Gigabyte
+Cache hits: 391248
+Cache misses: 35638
 Cache replaced: 0
 
-Posets searched: 15207
-Duration: 0d 0h 0m 0.91144305s
+Posets searched: 15119
+Duration: 0d 0h 0m 0.8875425s
 
 
 Congratulations. A solution was found!
@@ -636,31 +638,31 @@ Congratulations. A solution was found!
 n: 12, i: 4
 Comparisons: 19
 
-Cache entries: 1085879
-Cache size: 0.022 Gigabyte
-Cache hits: 8766456
-Cache misses: 584853
+Cache entries: 1083722
+Cache size: 0.024 Gigabyte
+Cache hits: 8786433
+Cache misses: 583976
 Cache replaced: 0
 
-Posets searched: 221655
-Duration: 0d 0h 0m 13.314203s
+Posets searched: 221574
+Duration: 0d 0h 0m 12.9524145s
 
 n: 12, i: 5 needs at least 20 comparisons
-Duration: 0d 0h 0m 30.018072s
+Duration: 0d 0h 0m 28.274355s
 
 Congratulations. A solution was found!
 
 n: 12, i: 5
 Comparisons: 20
 
-Cache entries: 2409208
-Cache size: 0.049 Gigabyte
-Cache hits: 19880016
-Cache misses: 1323329
+Cache entries: 2396030
+Cache size: 0.054 Gigabyte
+Cache hits: 19859032
+Cache misses: 1312308
 Cache replaced: 0
 
-Posets searched: 494138
-Duration: 0d 0h 0m 32.134033s
+Posets searched: 490454
+Duration: 0d 0h 0m 30.218687s
 
 
 Congratulations. A solution was found!
@@ -668,14 +670,14 @@ Congratulations. A solution was found!
 n: 13, i: 0
 Comparisons: 12
 
-Cache entries: 2409209
-Cache size: 0.049 Gigabyte
+Cache entries: 2396031
+Cache size: 0.054 Gigabyte
 Cache hits: 2
 Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.00009138s
+Duration: 0d 0h 0m 0.00008377s
 
 
 Congratulations. A solution was found!
@@ -683,14 +685,14 @@ Congratulations. A solution was found!
 n: 13, i: 1
 Comparisons: 15
 
-Cache entries: 2409280
-Cache size: 0.049 Gigabyte
+Cache entries: 2396102
+Cache size: 0.054 Gigabyte
 Cache hits: 1101
 Cache misses: 71
 Cache replaced: 0
 
 Posets searched: 88
-Duration: 0d 0h 0m 0.003899502s
+Duration: 0d 0h 0m 0.003746117s
 
 
 Congratulations. A solution was found!
@@ -698,84 +700,84 @@ Congratulations. A solution was found!
 n: 13, i: 2
 Comparisons: 18
 
-Cache entries: 2412977
-Cache size: 0.049 Gigabyte
-Cache hits: 53344
-Cache misses: 3697
+Cache entries: 2399789
+Cache size: 0.054 Gigabyte
+Cache hits: 52562
+Cache misses: 3687
 Cache replaced: 0
 
-Posets searched: 2526
-Duration: 0d 0h 0m 0.16444588s
+Posets searched: 2486
+Duration: 0d 0h 0m 0.15213661s
 
 n: 13, i: 3 needs at least 20 comparisons
-Duration: 0d 0h 0m 4.170354s
+Duration: 0d 0h 0m 3.8915854s
 
 Congratulations. A solution was found!
 
 n: 13, i: 3
 Comparisons: 20
 
-Cache entries: 2522914
-Cache size: 0.052 Gigabyte
-Cache hits: 1780927
-Cache misses: 109937
+Cache entries: 2508302
+Cache size: 0.056 Gigabyte
+Cache hits: 1782932
+Cache misses: 108513
 Cache replaced: 0
 
-Posets searched: 57499
-Duration: 0d 0h 0m 4.2464075s
+Posets searched: 57437
+Duration: 0d 0h 0m 3.9633105s
 
 n: 13, i: 4 needs at least 21 comparisons
-Duration: 0d 0h 0m 46.641983s
+Duration: 0d 0h 0m 43.863632s
 
 Congratulations. A solution was found!
 
 n: 13, i: 4
 Comparisons: 21
 
-Cache entries: 5353236
-Cache size: 0.110 Gigabyte
-Cache hits: 45557489
-Cache misses: 2830324
-Cache replaced: 2
+Cache entries: 5318491
+Cache size: 0.119 Gigabyte
+Cache hits: 45883415
+Cache misses: 2810189
+Cache replaced: 0
 
-Posets searched: 976621
-Duration: 0d 0h 1m 17.382874s
+Posets searched: 977718
+Duration: 0d 0h 1m 14.059204s
 
 n: 13, i: 5 needs at least 22 comparisons
-Duration: 0d 0h 5m 25.618378s
+Duration: 0d 0h 5m 14.817749s
 
 Congratulations. A solution was found!
 
 n: 13, i: 5
 Comparisons: 22
 
-Cache entries: 20120810
-Cache size: 0.412 Gigabyte
-Cache hits: 233346279
-Cache misses: 14767997
-Cache replaced: 423
+Cache entries: 20030202
+Cache size: 0.448 Gigabyte
+Cache hits: 233581818
+Cache misses: 14712257
+Cache replaced: 546
 
-Posets searched: 4568661
-Duration: 0d 0h 6m 13.886108s
+Posets searched: 4562363
+Duration: 0d 0h 6m 1.4117126s
 
 n: 13, i: 6 needs at least 22 comparisons
-Duration: 0d 0h 7m 2.8415833s
+Duration: 0d 0h 6m 37.925323s
 n: 13, i: 6 needs at least 23 comparisons
-Duration: 0d 0h 23m 55.79602s
+Duration: 0d 0h 23m 15.073608s
 
 Congratulations. A solution was found!
 
 n: 13, i: 6
 Comparisons: 23
 
-Cache entries: 80969323
-Cache size: 1.659 Gigabyte
-Cache hits: 918019647
-Cache misses: 61133065
-Cache replaced: 284552
+Cache entries: 80748519
+Cache size: 1.805 Gigabyte
+Cache hits: 935029051
+Cache misses: 61102724
+Cache replaced: 384407
 
-Posets searched: 16230334
-Duration: 0d 0h 23m 56.870728s
+Posets searched: 16339294
+Duration: 0d 0h 23m 16.126343s
 
 
 Congratulations. A solution was found!
@@ -783,14 +785,14 @@ Congratulations. A solution was found!
 n: 14, i: 0
 Comparisons: 13
 
-Cache entries: 80969324
-Cache size: 1.659 Gigabyte
+Cache entries: 80748520
+Cache size: 1.805 Gigabyte
 Cache hits: 2
 Cache misses: 1
 Cache replaced: 0
 
 Posets searched: 1
-Duration: 0d 0h 0m 0.000443977s
+Duration: 0d 0h 0m 0.000092835s
 
 
 Congratulations. A solution was found!
@@ -798,14 +800,14 @@ Congratulations. A solution was found!
 n: 14, i: 1
 Comparisons: 16
 
-Cache entries: 80969411
-Cache size: 1.659 Gigabyte
-Cache hits: 1754
-Cache misses: 89
-Cache replaced: 2
+Cache entries: 80748606
+Cache size: 1.805 Gigabyte
+Cache hits: 1715
+Cache misses: 90
+Cache replaced: 4
 
-Posets searched: 114
-Duration: 0d 0h 0m 0.006435864s
+Posets searched: 115
+Duration: 0d 0h 0m 0.006172655s
 
 
 Congratulations. A solution was found!
@@ -813,14 +815,14 @@ Congratulations. A solution was found!
 n: 14, i: 2
 Comparisons: 19
 
-Cache entries: 80974507
-Cache size: 1.659 Gigabyte
-Cache hits: 71631
-Cache misses: 5219
-Cache replaced: 123
+Cache entries: 80753691
+Cache size: 1.805 Gigabyte
+Cache hits: 72504
+Cache misses: 5234
+Cache replaced: 149
 
-Posets searched: 3257
-Duration: 0d 0h 0m 0.2912896s
+Posets searched: 3288
+Duration: 0d 0h 0m 0.27052444s
 
 
 Congratulations. A solution was found!
@@ -828,12 +830,46 @@ Congratulations. A solution was found!
 n: 14, i: 3
 Comparisons: 21
 
-Cache entries: 81181495
-Cache size: 1.663 Gigabyte
-Cache hits: 3024804
-Cache misses: 210659
-Cache replaced: 3671
+Cache entries: 80958345
+Cache size: 1.810 Gigabyte
+Cache hits: 3041765
+Cache misses: 209469
+Cache replaced: 4815
 
-Posets searched: 87580
-Duration: 0d 0h 0m 9.286287s
+Posets searched: 87751
+Duration: 0d 0h 0m 8.626149s
+
+n: 14, i: 4 needs at least 23 comparisons
+Duration: 0d 0h 5m 28.821442s
+
+Congratulations. A solution was found!
+
+n: 14, i: 4
+Comparisons: 23
+
+Cache entries: 90492337
+Cache size: 2.023 Gigabyte
+Cache hits: 171403314
+Cache misses: 9754498
+Cache replaced: 220506
+
+Posets searched: 3332402
+Duration: 0d 0h 5m 33.838837s
+
+n: 14, i: 5 needs at least 24 comparisons
+Duration: 0d 0h 59m 46.274902s
+
+Congratulations. A solution was found!
+
+n: 14, i: 5
+Comparisons: 24
+
+Cache entries: 199543759
+Cache size: 4.460 Gigabyte
+Cache hits: 2066605337
+Cache misses: 126877790
+Cache replaced: 17826369
+
+Posets searched: 34190853
+Duration: 0d 0h 59m 58.65454s
 
