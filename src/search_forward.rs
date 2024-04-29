@@ -169,20 +169,6 @@ impl<'a> Search<'a> {
         result
     }
 
-    fn transform(poset: &CanonifiedPoset) -> BackwardsPoset {
-        let mut result = BackwardsPoset::new(poset.n(), poset.i());
-        for i in 0..poset.n() {
-            for j in 0..poset.n() {
-                if i < j && poset.is_less(i, j) {
-                    result.add_less(i, j);
-                }
-            }
-        }
-        result.normalize();
-
-        result
-    }
-
     #[allow(clippy::too_many_lines)]
     fn search_rec(
         &mut self,
@@ -218,7 +204,7 @@ impl<'a> Search<'a> {
                 .expect("cache shouldn't be poisoned");
             if max_comparisons as i8 + 1 <= read_lock.1 {
                 // TODO: idk, ob das passt; oder ohne '+1'?
-                return if let Some(&value) = read_lock.0.get(&Self::transform(&poset)) {
+                return if let Some(&value) = read_lock.0.get(&poset.to_backward()) {
                     Cost::Solved(value)
                 } else {
                     Cost::Minimum(max_comparisons + 1)

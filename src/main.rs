@@ -1,3 +1,5 @@
+use backward_cache::BackwardCache;
+use backwards_poset::BackwardsPoset;
 use canonified_poset::CanonifiedPoset;
 use clap::{
     error::{Error, ErrorKind},
@@ -24,9 +26,11 @@ use crate::{
     poset::Poset,
     search_backward::start_search_backward,
     search_forward::Search,
+    utils::format_duration,
 };
 
 mod algorithm_test;
+mod backward_cache;
 mod backwards_poset;
 mod bitset;
 mod cache;
@@ -222,15 +226,49 @@ fn run_backward(args: &Args) {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
         for i in start_i..(n + 1) / 2 {
-            let result = iterative_deepening_backward(&interrupt, n, i);
+            let (comparisons, cache) = iterative_deepening_backward(&interrupt, n, i);
 
             if (n as usize) < KNOWN_VALUES.len() && (i as usize) < KNOWN_VALUES[n as usize].len() {
-                assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);
+                assert_eq!(comparisons, KNOWN_VALUES[n as usize][i as usize] as u8);
+            }
+
+            if args.print_algorithm {
+                let start = std::time::Instant::now();
+                let mut mapping = [0; MAX_N];
+                mapping
+                    .iter_mut()
+                    .enumerate()
+                    .for_each(|(i, elem)| *elem = i as u8);
+
+                DirBuilder::new()
+                    .recursive(true)
+                    .create("algorithms")
+                    .unwrap();
+
+                let file = OpenOptions::new()
+                    .create(true)
+                    .write(true)
+                    .truncate(true)
+                    .open(format!("algorithms/{n}_{i}.rs"))
+                    .unwrap();
+
+                let mut writer = BufWriter::new(file);
+
+                print_algorithm_backward(
+                    BackwardsPoset::new(n, i),
+                    &mut writer,
+                    &cache,
+                    &mut HashMap::new(),
+                );
+                println!();
+                println!("generating algorithm {}", format_duration(start));
             }
 
             if args.single {
                 return;
             }
+
+            println!("==============================================================");
         }
     }
 }
@@ -245,7 +283,7 @@ fn print_algorithm<W>(
 where
     W: Write,
 {
-    const VARIABLES: [&str; 16] = [
+    const VARIABLES: [&str; MAX_N] = [
         "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
     ];
 
@@ -417,6 +455,131 @@ where
         writeln!(writer, "    }}").unwrap();
         writeln!(writer, "}}").unwrap();
     }
+
+    index
+}
+
+#[allow(clippy::too_many_lines)]
+fn print_algorithm_backward<W>(
+    poset: BackwardsPoset,
+    writer: &mut BufWriter<W>,
+    comparisons: &BackwardCache,
+    done: &mut HashMap<BackwardsPoset, usize>,
+) -> usize
+where
+    W: Write,
+{
+    const VARIABLES: [&str; MAX_N] = [
+        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
+    ];
+
+    if let Some(index) = done.get(&poset) {
+        return *index;
+    }
+
+    let index = done.len();
+
+    done.insert(poset, index);
+    if poset.n() == 1 {
+        writeln!(writer, "/// n = 1, i = 0").unwrap();
+        writeln!(
+            writer,
+            "fn select_{index}([a]: [usize; 1], _: bool) -> usize {{"
+        )
+        .unwrap();
+        writeln!(writer, "    a").unwrap();
+        writeln!(writer, "}}").unwrap();
+
+        return index;
+    }
+
+    let (i, j) = comparisons.get(&poset);
+
+    let (less, (less_mapping, less_is_dual)) = poset.with_less_mapping(i, j);
+    let (greater, (greater_mapping, greater_is_dual)) = poset.with_less_mapping(j, i);
+
+    let less_index = print_algorithm_backward(less, writer, comparisons, done);
+    let greater_index = print_algorithm_backward(greater, writer, comparisons, done);
+
+    let vars = (0..poset.n() as usize)
+        .map(|i| VARIABLES[i].to_string())
+        .reduce(|a, b| format!("{a}, {b}"))
+        .unwrap();
+
+    let less_vars = less_mapping
+        .iter()
+        .take(less.n() as usize)
+        .map(|i| VARIABLES[*i].to_string())
+        .reduce(|a, b| format!("{a}, {b}"))
+        .unwrap();
+
+    let greater_vars = greater_mapping
+        .iter()
+        .take(greater.n() as usize)
+        .map(|i| VARIABLES[*i].to_string())
+        .reduce(|a, b| format!("{a}, {b}"))
+        .unwrap();
+
+    // =====================
+
+    // calculate comparisons
+    let mut comparisons = vec![];
+    for i in 0..poset.n() {
+        'j_loop: for j in i + 1..poset.n() {
+            if !poset.is_less(i, j) {
+                continue;
+            }
+
+            for k in (i + 1)..=j {
+                if poset.is_less(i, k) && poset.is_less(k, j) {
+                    continue 'j_loop;
+                }
+            }
+
+            comparisons.push((i, j));
+        }
+    }
+
+    let comparisons = comparisons
+        .into_iter()
+        .map(|(i, j)| format!("{} < {}", VARIABLES[i as usize], VARIABLES[j as usize]))
+        .reduce(|a, b| format!("{a}, {b}"))
+        .map_or(String::new(), |s| ", ".to_string() + s.as_str());
+
+    writeln!(
+        writer,
+        "/// n = {}, i = {}{comparisons}",
+        poset.n(),
+        poset.i()
+    )
+    .unwrap();
+    writeln!(
+        writer,
+        "fn select_{index}([{vars}]: [usize; {}], is_dual: bool) -> usize {{",
+        poset.n()
+    )
+    .unwrap();
+    writeln!(
+        writer,
+        "    if (!is_dual && {} < {}) || (is_dual && {} > {}) {{",
+        VARIABLES[i as usize], VARIABLES[j as usize], VARIABLES[i as usize], VARIABLES[j as usize]
+    )
+    .unwrap();
+    writeln!(
+        writer,
+        "        select_{less_index}([{less_vars}], {}is_dual)",
+        if less_is_dual { "!" } else { "" }
+    )
+    .unwrap();
+    writeln!(writer, "    }} else {{").unwrap();
+    writeln!(
+        writer,
+        "        select_{greater_index}([{greater_vars}], {}is_dual)",
+        if greater_is_dual { "!" } else { "" }
+    )
+    .unwrap();
+    writeln!(writer, "    }}").unwrap();
+    writeln!(writer, "}}").unwrap();
 
     index
 }

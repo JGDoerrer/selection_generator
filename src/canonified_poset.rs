@@ -156,6 +156,20 @@ impl CanonifiedPoset {
         self.into()
     }
 
+    pub fn to_backward(self) -> BackwardsPoset {
+        let mut result = BackwardsPoset::new(self.n, self.i);
+        for i in 0..self.n {
+            for j in 0..self.n {
+                if i < j && self.is_less(i, j) {
+                    result.add_less(i, j);
+                }
+            }
+        }
+
+        result.normalize();
+        result
+    }
+
     pub fn get_comparison_pairs(&self) -> Vec<(CanonifiedPoset, CanonifiedPoset, u8, u8)> {
         let mut pairs = Vec::with_capacity(self.n() as usize * (self.n() as usize - 1) / 2);
 
@@ -195,20 +209,6 @@ impl CanonifiedPoset {
             .into_iter()
             .map(|(a, b, c, d, _)| (a, b, c, d))
             .collect()
-    }
-
-    pub fn transform(&self) -> BackwardsPoset {
-        let mut result = BackwardsPoset::new(self.n, self.i);
-        for i in 0..self.n {
-            for j in 0..self.n {
-                if i < j && self.is_less(i, j) {
-                    result.set_less(i, j, true);
-                }
-            }
-        }
-
-        result.canonify();
-        result
     }
 }
 

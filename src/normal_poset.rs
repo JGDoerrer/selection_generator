@@ -2,7 +2,10 @@ use core::fmt::Debug;
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use std::os::raw::c_int;
 
-use crate::{bitset::BitSet, canonified_poset::CanonifiedPoset, constants::MAX_N, poset::Poset};
+use crate::{
+    backwards_poset::BackwardsPoset, bitset::BitSet, canonified_poset::CanonifiedPoset,
+    constants::MAX_N, poset::Poset,
+};
 
 /// A partially ordered set with <
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
@@ -500,6 +503,18 @@ impl NormalPoset {
         }
 
         sum
+    }
+
+    pub fn to_backward(self) -> BackwardsPoset {
+        let mut result = BackwardsPoset::new(self.n, self.i);
+        for i in 0..self.n {
+            for j in 0..self.n {
+                if self.is_less(i, j) {
+                    result.set_less(i, j, true);
+                }
+            }
+        }
+        result
     }
 }
 

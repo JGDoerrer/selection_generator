@@ -8,8 +8,11 @@ use std::sync::Arc;
 
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 
+use crate::backward_cache::BackwardCache;
 use crate::bitset::BitSet;
 use crate::constants::MAX_N;
+use crate::normal_poset::NormalPoset;
+use crate::poset::Poset;
 use crate::search_backward::{COUTNER_USE_NAUTY, COUTNER_USE_NOT_NAUTY};
 
 /// A partially ordered set with <
@@ -209,14 +212,13 @@ impl BackwardsPoset {
         true
     }
 
-    fn dual(&mut self, indices: (u8, u8)) -> (u8, u8) {
+    fn dual(&mut self) {
         self.i = (self.n - 1) - self.i;
         for i in 0..self.n {
             for j in (i + 1)..self.n {
                 self.swap_positions(i, j, j, i);
             }
         }
-        (indices.1, indices.0)
     }
 
     // canonify
@@ -272,73 +274,83 @@ impl BackwardsPoset {
         *self = self.canonify_transform_indices().0;
     }
 
-    pub fn canonify_transform_indices(&self) -> (BackwardsPoset, ([usize; MAX_N], bool)) {
-        let mut canonified = *self;
+    pub fn canonify_transform_indices(&self) -> (BackwardsPoset, ([u8; MAX_N], bool)) {
+        if self.n - 1 == 2 * self.i {
+            let mut canonified = *self;
+            let indices = canonified.canonify_without_dual();
 
-        let mut indices = [0; MAX_N];
-        let mut is_dual = false;
-        for i in 0..canonified.n as usize {
-            indices[i] = i;
-        }
-        if canonified.n <= 2 * canonified.i {
-            canonified.dual((0, 0));
-            is_dual = true;
-        }
+            let mut canonified_dual = *self;
+            canonified_dual.dual();
+            let indices_dual = canonified_dual.canonify_without_dual();
 
-        indices = canonified.canonify_without_dual(indices);
-
-        if canonified.n - 1 == 2 * canonified.i {
-            let mut dualed = canonified;
-            dualed.dual((0, 0));
-            let mut transformed_dual = indices;
-            transformed_dual = dualed.canonify_without_dual(transformed_dual);
-            is_dual = false;
-            'break_all: for i in 0..canonified.n {
-                for j in 0..canonified.n {
-                    if canonified.is_less(i, j) != dualed.is_less(i, j) {
-                        is_dual = dualed.is_less(i, j);
+            let mut is_dual = false;
+            'break_all: for i in 0..self.n {
+                for j in 0..self.n {
+                    if canonified.is_less(i, j) != canonified_dual.is_less(i, j) {
+                        is_dual = canonified_dual.is_less(i, j);
                         break 'break_all;
                     }
                 }
             }
             if is_dual {
-                indices = transformed_dual;
-                canonified = dualed;
+                (canonified_dual, (indices_dual, true))
+            } else {
+                (canonified, (indices, false))
+            }
+        } else if self.n <= 2 * self.i {
+            let mut canonified_dual = *self;
+            canonified_dual.dual();
+            let indices_dual = canonified_dual.canonify_without_dual();
+            (canonified_dual, (indices_dual, true))
+        } else {
+            let mut canonified = *self;
+            let indices = canonified.canonify_without_dual();
+            (canonified, (indices, false))
+        }
+    }
+
+    pub fn apply_indices(&self, indices: [u8; MAX_N]) -> Self {
+        let mut new_poset = *self;
+        for i in 0..self.n {
+            for j in 0..self.n {
+                new_poset.set_less(i, j, self.is_less(indices[i as usize], indices[j as usize]));
             }
         }
-        (canonified, (indices, is_dual))
+        new_poset
     }
 
     pub fn canonify_indices(
-        (indices, is_dual): ([usize; MAX_N], bool),
+        n: u8,
+        (indices, is_dual): ([u8; MAX_N], bool),
         (i, j): (u8, u8),
     ) -> (u8, u8) {
+        let mut transformed = [0u8; MAX_N];
+        for k in 0..n {
+            transformed[indices[k as usize] as usize] = k as u8;
+        }
+
         if is_dual {
-            (indices[j as usize] as u8, indices[i as usize] as u8)
+            (transformed[j as usize], transformed[i as usize])
         } else {
-            (indices[i as usize] as u8, indices[j as usize] as u8)
+            (transformed[i as usize], transformed[j as usize])
         }
     }
 
-    pub fn decide_deterministic(
+    pub fn decide_deterministic_internal(
         &self,
-        indices_0: [u8; MAX_N],
-        indices_1: [u8; MAX_N],
-    ) -> [u8; MAX_N] {
+        indices_0: &[u8; MAX_N],
+        indices_1: &[u8; MAX_N],
+    ) -> bool {
         for i in 0..self.n {
             for j in 0..self.n {
                 if self.is_less(indices_0[i as usize], indices_0[j as usize])
                     != self.is_less(indices_1[i as usize], indices_1[j as usize])
                 {
-                    return if self.is_less(indices_0[i as usize], indices_0[j as usize]) {
-                        indices_0
-                    } else {
-                        indices_1
-                    };
+                    return self.is_less(indices_0[i as usize], indices_0[j as usize]);
                 }
             }
         }
-        indices_0
+        true
     }
 
     pub fn canonify_pairwise_elements(
@@ -356,11 +368,15 @@ impl BackwardsPoset {
         new_indices.swap(equal_items[index].0, equal_items[index].1);
         let indices_1 = self.canonify_pairwise_elements(equal_items, index + 1, new_indices);
 
-        self.decide_deterministic(indices_0, indices_1)
+        if self.decide_deterministic_internal(&indices_0, &indices_1) {
+            indices_0
+        } else {
+            indices_1
+        }
     }
 
     #[allow(clippy::too_many_lines)]
-    pub fn canonify_without_dual(&mut self, indices: [usize; MAX_N]) -> [usize; MAX_N] {
+    pub fn canonify_without_dual(&mut self) -> [u8; MAX_N] {
         // precondition
         debug_assert!(self.i < self.n);
         debug_assert!(self.n as usize <= MAX_N);
@@ -458,26 +474,7 @@ impl BackwardsPoset {
             new_indices = self.canonify_nauty_indices();
         }
 
-        let old_poset = *self;
-        for i in 0..self.n {
-            for j in 0..self.n {
-                self.set_less(
-                    i,
-                    j,
-                    old_poset.is_less(new_indices[i as usize], new_indices[j as usize]),
-                );
-            }
-        }
-
-        let mut indices_inv = [0; MAX_N];
-        for i in 0..self.n as usize {
-            indices_inv[indices[i]] = i;
-        }
-
-        let mut transformed = [0; MAX_N];
-        for i in 0..self.n as usize {
-            transformed[indices_inv[new_indices[i] as usize]] = i;
-        }
+        *self = self.apply_indices(new_indices);
 
         // postcondition
         // debug_assert!(2 * self.i < self.n);
@@ -488,10 +485,11 @@ impl BackwardsPoset {
                 debug_assert!(!self.is_less(i, j));
             }
         }
-        transformed
+
+        new_indices
     }
 
-    pub fn reduce_elements(&mut self) {
+    pub fn reduce_elements(&mut self) -> [u8; MAX_N] {
         debug_assert!(self.i < self.n);
         debug_assert!(self.n as usize <= MAX_N);
         debug_assert!(self.is_closed());
@@ -519,7 +517,7 @@ impl BackwardsPoset {
                     new_poset.set_less(
                         i,
                         j,
-                        self.is_less(new_indices[i as usize], new_indices[j as usize]),
+                        self.is_less(new_indices[i as usize] as u8, new_indices[j as usize] as u8),
                     );
                 }
             }
@@ -529,6 +527,8 @@ impl BackwardsPoset {
         debug_assert!(self.i < self.n);
         debug_assert!(self.n as usize <= MAX_N);
         debug_assert!(self.is_closed());
+
+        new_indices
     }
 
     pub fn can_reduce_any_element(&self) -> bool {
@@ -577,17 +577,17 @@ impl BackwardsPoset {
 
     fn handle_poset(
         current_bucket: &mut [(
-            HashSet<(BackwardsPoset, (u8, u8))>,
-            HashSet<(BackwardsPoset, (u8, u8))>,
+            HashSet<(Self, (u8, u8))>,
+            HashSet<(Self, (u8, u8))>,
         ); MAX_N],
-        poset: BackwardsPoset,
+        poset: Self,
         indices: (u8, u8),
-        poset_cache: &HashMap<BackwardsPoset, u8>,
-        removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
+        poset_cache: &BackwardCache,
+        removed: &mut HashSet<(Self, (u8, u8))>,
     ) {
         let current = &mut current_bucket[poset.i as usize];
         if !current.0.contains(&(poset, indices)) && !current.1.contains(&(poset, indices)) {
-            if poset_cache.contains_key(&poset.with_less_normalized(indices.1, indices.0)) {
+            if poset_cache.contains(&poset.with_less_normalized(indices.1, indices.0)) {
                 removed.insert((poset, indices));
                 current.0.insert((poset, indices));
             } else {
@@ -600,12 +600,12 @@ impl BackwardsPoset {
     pub fn enlarge_and_remove_less(
         &self,
         interrupt: &Arc<AtomicBool>,
-        poset_cache: &HashMap<Self, u8>,
+        poset_cache: &BackwardCache,
         table: &[[bool; MAX_N]; MAX_N],
         n: u8,
         i: u8,
         max_remaining_comparisons: usize,
-    ) -> HashSet<Self> {
+    ) -> HashMap<Self, (u8, u8)> {
         assert!(2 * self.i < self.n);
         assert!(1 <= self.n);
         assert!(table[self.n as usize - 1][self.i as usize]);
@@ -622,7 +622,7 @@ impl BackwardsPoset {
 
         if self.n != n || self.i != i {
             if interrupt.load(Ordering::Relaxed) {
-                return HashSet::new();
+                return HashMap::new();
             }
 
             let mut next_level: [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N] =
@@ -649,7 +649,7 @@ impl BackwardsPoset {
             }
 
             if interrupt.load(Ordering::Relaxed) {
-                return HashSet::new();
+                return HashMap::new();
             }
 
             for n0 in self.n..n {
@@ -682,7 +682,7 @@ impl BackwardsPoset {
                     }
 
                     if interrupt.load(Ordering::Relaxed) {
-                        return HashSet::new();
+                        return HashMap::new();
                     }
                 }
                 current_level = next_level;
@@ -690,10 +690,10 @@ impl BackwardsPoset {
             }
         }
 
-        let mut result = HashSet::new();
-        for (item, _) in removed {
-            if !poset_cache.contains_key(&item) {
-                result.insert(item);
+        let mut result = HashMap::new();
+        for (item, indices) in removed {
+            if !poset_cache.contains(&item) {
+                result.insert(item, indices);
             }
         }
 
@@ -707,7 +707,7 @@ impl BackwardsPoset {
             HashSet<(BackwardsPoset, (u8, u8))>,
         ); MAX_N],
         max_remaining_comparisons: usize,
-        poset_cache: &HashMap<BackwardsPoset, u8>,
+        poset_cache: &BackwardCache,
         removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
     ) {
         // precondition
@@ -790,7 +790,7 @@ impl BackwardsPoset {
             Self::handle_poset(
                 poset_buckets,
                 canonified,
-                Self::canonify_indices(indices, (i, j)),
+                Self::canonify_indices(canonified.n, indices, (i, j)),
                 poset_cache,
                 removed,
             );
@@ -821,7 +821,7 @@ impl BackwardsPoset {
             HashSet<(BackwardsPoset, (u8, u8))>,
         ); MAX_N],
         max_remaining_comparisons: usize,
-        poset_cache: &HashMap<BackwardsPoset, u8>,
+        poset_cache: &BackwardCache,
         removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
         (k, j): (u8, u8),
     ) {
@@ -867,7 +867,7 @@ impl BackwardsPoset {
 
         for item in unfiltered {
             let (canonified, indices) = item.canonify_transform_indices();
-            let new_indices = Self::canonify_indices(indices, (k, j));
+            let new_indices = Self::canonify_indices(canonified.n, indices, (k, j));
             Self::handle_poset(poset_buckets, canonified, new_indices, poset_cache, removed);
         }
     }
@@ -879,7 +879,7 @@ impl BackwardsPoset {
             HashSet<(BackwardsPoset, (u8, u8))>,
         ); MAX_N],
         max_remaining_comparisons: usize,
-        poset_cache: &HashMap<BackwardsPoset, u8>,
+        poset_cache: &BackwardCache,
         removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
     ) {
         let mut init_poset = Self::new(self.n + 1, self.i);
@@ -923,7 +923,7 @@ impl BackwardsPoset {
                         Self::handle_poset(
                             poset_buckets,
                             canonified,
-                            Self::canonify_indices(indices, (k, item.n - 1)),
+                            Self::canonify_indices(canonified.n, indices, (k, item.n - 1)),
                             poset_cache,
                             removed,
                         );
@@ -950,7 +950,7 @@ impl BackwardsPoset {
             HashSet<(BackwardsPoset, (u8, u8))>,
         ); MAX_N],
         max_remaining_comparisons: usize,
-        poset_cache: &HashMap<BackwardsPoset, u8>,
+        poset_cache: &BackwardCache,
         removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
         (k, j): (u8, u8),
     ) {
@@ -996,7 +996,7 @@ impl BackwardsPoset {
 
         for item in unfiltered {
             let (canonified, indices) = item.canonify_transform_indices();
-            let new_indices = Self::canonify_indices(indices, (k, j));
+            let new_indices = Self::canonify_indices(canonified.n, indices, (k, j));
             Self::handle_poset(poset_buckets, canonified, new_indices, poset_cache, removed);
         }
     }
@@ -1008,7 +1008,7 @@ impl BackwardsPoset {
             HashSet<(BackwardsPoset, (u8, u8))>,
         ); MAX_N],
         max_remaining_comparisons: usize,
-        poset_cache: &HashMap<BackwardsPoset, u8>,
+        poset_cache: &BackwardCache,
         removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
     ) {
         let mut init_poset = Self::new(self.n + 1, self.i + 1);
@@ -1052,7 +1052,7 @@ impl BackwardsPoset {
                         Self::handle_poset(
                             poset_buckets,
                             canonified,
-                            Self::canonify_indices(indices, (item.n - 1, k)),
+                            Self::canonify_indices(canonified.n, indices, (item.n - 1, k)),
                             poset_cache,
                             removed,
                         );
@@ -1102,5 +1102,33 @@ impl BackwardsPoset {
         }
 
         true
+    }
+
+    pub fn to_normal(&self) -> NormalPoset {
+        let mut result = NormalPoset::new(self.n, self.i);
+        for i in 0..self.n {
+            for j in 0..self.n {
+                if self.is_less(i, j) {
+                    result.set_less(i, j, true);
+                }
+            }
+        }
+        result
+    }
+
+    pub fn with_less_mapping(&self, i: u8, j: u8) -> (Self, ([usize; MAX_N], bool)) {
+        let mut new = *self;
+
+        new.add_less(i, j);
+        let mapping_reduce = new.reduce_elements();
+        let (poset, (mapping_canonify, is_dual)) = new.canonify_transform_indices();
+        new = poset;
+
+        let mut mapping = [0; MAX_N];
+        for i in 0..MAX_N {
+            mapping[i] = mapping_reduce[mapping_canonify[i] as usize] as usize;
+        }
+
+        (new, (mapping, is_dual))
     }
 }
