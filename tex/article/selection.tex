@@ -20,6 +20,7 @@
 % *** MATH PACKAGES ***
 %
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{todonotes}
 \usepackage{nicefrac}
 \usepackage{lmodern,amssymb}
@@ -31,7 +32,8 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[ngerman]{babel}
+%\usepackage[ngerman]{babel}
+\usepackage[english]{babel}
 \usepackage{pgfplots}
 
 % Commands
@@ -285,30 +287,30 @@ to find a solution for the original Poset if it exists within the bound.
 
 \subsection{Backward Search}
 
-Backward search starts with a solved Poset, then repeatedly attempts to remove comparisons from its
-frontier Posets such that the same Poset with the opposite comparison result is also found within
+Backward search starts with a solved poset, then repeatedly attempts to remove comparisons from its
+frontier posets such that the same poset with the opposite comparison result is also found within
 those already discovered.
 
-Thus the number of iterations taken until a Poset is added to the frontier equals the number of
+Thus, the number of iterations taken until a poset is added to the frontier equals the number of
 worst case comparisons needed to solve it, which means that the search terminates once the empty
-Poset with the desired $n$ and $i$ is found.
+poset with the desired $n$ and $i$ is found.
 
-The argument for the correctness is the number of comparisons we have found all Posets solvable
-within them for, equal to the number of iterations of the search. If for a given Poset and a
-comparison within it we have already discovered both results then their cost must be less than the
-current number of iterations, so the Poset is solvable within that number and because this did not
-hold true in a previous iteration the cost must also be optimal. And if a Poset is solvable within
+The argument for correctness is that the number of comparisons for which we have found all posets solvable within them equals the number of iterations of the search.
+If for a given poset and a comparison within it we have already discovered both results then their cost must be less than the current number of iterations. Hence, we can conclude that the poset is solvable within this number of comparisons.
+Since this condition did not hold true in any previous iteration, we can further infer that the cost must also be optimal. 
+And if a poset is solvable within
 that number of comparisons it must have at least one comparison with a result among the Posets
 discovered in the previous iteration, as otherwise it would have to be solvable in less.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TODO: Die Rückwärtssuche ist komplett neues Gebiet?
-
-Angenommen wir haben das leere Poset der Größe `n, i` gegeben und dieses ist NICHT in `k - 1` Vergleichen lösbar, aber in `k` Vergleichen lösbar.
-Zu zeigen: Dann ist das leere Poset der Größe `n + 1, i` NICHT in `k` Vergleichen lösbar.
-Beweis: Angenommen das leere Poset der Größe `n + 1, i` wäre auch in `k` Vergleichen lösbar, dann gibt es min. einen Vergleich zwischen dem neuen Element und irgendeinem alten Element. Das heißt, wenn man das neue Element entfernt, hätte man wieder das Poset der Größe `n, i` und min. einen Vergleich weniger. Somit müsste das Poset der Größe `n, i` in `k - 1` Vergleichen lösbar sein, was nach Vorraussetzung nicht erlaubt ist. q.e.d.
-=> Dann KNOWN[n - 1][i] + 1
-
+\begin{lemma}
+Let $P=(U,\emptyset,i)$ be an empty poset with $\vert U \vert = n$, that is solvable within $k$ comparisons but unsolvable in $k-1$ comparisons.
+Then, the empty poset $P'=(U',\emptyset,i)$ with $\vert U'\vert = n+1$ is not solvable within $k$ comparisons.
+\end{lemma}
+\begin{proof}
+Assume the empty poset $P'=(U',\emptyset,i)$ with $\vert U' \vert = n+1$ is solvable within $k$ comparisons. Then, the solution involves at least one comparison involving the $(n+1)$-th element. Removing this element including all its comparisons results in a solvable poset $P^{*}=(U,R^{*},i)$ with $\vert R^{*}\vert < k$. Contradiction to $P$ not solvable in $k-1$ comparisons.
+\end{proof}
 - TODO: Schreibt ihr irendetwas über nauty?
 
 \subsubsection{Normalform}
