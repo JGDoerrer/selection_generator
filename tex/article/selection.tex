@@ -226,6 +226,13 @@ We can drastically speed up this exploration by caching previous results, even w
 based ejection policy. Since the search always imposes an upper bound for the number of comparisons
 to allow this also includes yet unsolved Posets, for which we note the currently known minimum.
 
+The minimax search algorithm also allows for cutting off unpromising branches. For this means, and inspired by the idea of $\alpha$-$\beta$-pruning, two strategies are applied.
+Firstly, we use a socalled solvable-heuristic. 
+The heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states 'unsolvable', the branch is pruned.
+Otherwise, the search continues regularly.
+Secondly we use a measure called \texttt{current\_best}. 
+Each call of \texttt{search\_rec} gets a maximum numbers of comparisons. When searching the children of a node, the limit is the best (minimal) value found so far.
+
 It is optimal because of an inductive argument over the number of relative orders determined. An
 already solved Poset obviously takes no further comparisons to solve. Then, given an unsolved Poset
 with all elements already too large or small excluded we must make at least one more comparison to
@@ -457,7 +464,7 @@ Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, 
 % TODO: Hier muss ein Bild vom Suchbaum hin für z.B. 4,1 (also schöner)
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=\columnwidth]{figures/backward-search-tree.jpg}
+  \includegraphics[width=\columnwidth]{figures/backward-search-tree.png}
   \caption{Suchbaum für $n = 4, i = 1$}
   \label{fig:backward-search-tree}
 \end{figure}
@@ -681,19 +688,6 @@ Die Rückwärtssuche kann sehr gut parallelisiert werden, indem die Berechnung d
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Bidirectional Search}
-
-\subsection{Pruning Decisions}
-The minimax search algorithm explained in chapter~\ref{chapter:forward_search} allows for cutting off unpromising branches. For this means, the following strategies are applied.
-
-\begin{enumerate}
-  \item[1.] 
-    Use solvable-heuristic. A heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states 'unsolvable', the branch is pruned.
-    Otherwise, the search continues regularly.
-  \item[2.] 
-    Use \texttt{current\_best}. Each call of \texttt{search\_rec} gets a maximum numbers of comparisons. 
-    When searching the children of a node, the limit is the best (minimal) value found so far.
-    
-\end{enumerate}
 
 \subsection{Compatible Posets}
 
