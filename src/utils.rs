@@ -38,6 +38,30 @@ pub fn print_current_time() {
 
 #[allow(unused)]
 pub fn advance_permutations(indices: &mut [usize], cycles: &mut [usize]) -> bool {
+    advance_permutations2(indices, indices.len(), cycles, cycles.len())
+}
+
+pub fn advance_permutations2(
+    indices: &mut [usize],
+    n: usize,
+    cycles: &mut [usize],
+    k: usize,
+) -> bool {
+    for i in (0..k).rev() {
+        if cycles[i] == 0 {
+            cycles[i] = n - i - 1;
+            indices[i..].rotate_left(1);
+        } else {
+            let si = n - cycles[i];
+            indices.swap(i, si);
+            cycles[i] -= 1;
+            return false;
+        }
+    }
+    true
+}
+
+pub fn advance_permutations3(indices: &mut Vec<usize>, cycles: &mut [usize]) -> bool {
     let n = indices.len();
     let k = cycles.len();
     for i in (0..k).rev() {

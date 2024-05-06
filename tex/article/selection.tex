@@ -379,24 +379,47 @@ In Abbildung~\ref{table:nauty-ratio} ist für $n = 12$ dargestellt, in wie viele
   \label{table:nauty-ratio}
 \end{table}
 
-\subsubsection{Algorithmus}
-Eingabe für den Rückwärtssuche stellen die Parameter $n$ und $i$ dar.
-Die Rückwärtssuche startet bei dem kleinsten gelösten Poset und berechnet iterativ alle Posets, die in $1, 2, 3, \dots$ Vergleichen gelöst werden können, bis das leere Poset der Größe $n$ und $i$ gefunden wird.
-Das kleinste gelöste Poset ist das Poset, das aus einem Element besteht und keinen Vergleichen besteht.
-Das leere Poset ist das Poset, das $n$ Elemente hat, das $i$-kleinste Element gesucht wird und keine Vergleiche umfasst.
-Verallgemeinert sei $A_k$ die Menge aller Posets, die in $k$ Vergleichen lösbar ist (in diesem Fall besteht $A_0$ nur aus dem kleinsten gelösten Poset).
-Im Folgenden berechnet die Rückwärtssuche für jedes Posets in der Menge $A_k$, die entsprechenden Nachfolger.
-Ein Nachfolger von Poset $p$ hat folgende Eigenschaften:
-\begin{itemize}
-  \item es ist vollständig normalisiert
-  \item es ist nicht in einer vorherigen Runde gefunden (da es sonst in weniger Vergleichen lösbar wäre)
-  \item es existiert ein Vergleich $(i, j)$, durch deren Hinzunahme und anschließender Normalisierung wieder Poset $p$ resultiert und durch Hinzunahme des Umkehrvergleichs $(j, i)$ und anschließender Normalisierung wieder ein bereits gefundenes Poset resultiert
-\end{itemize}
-Die Menge aller Nachfolger bildet die Menge $A_{k + 1}$.
+\subsubsection{Algorithmus} \label{sec:backward:algorithm}
 
-\subsubsection{Nachfolgerberechnung}
-Die Berechnung eines Nachfolger für ein gegebenes Poset $p$ mit $n$ Elementen, bei dem das $i$-kleinste Element gesucht ist, erfolgt in drei Schritten:
-- iterative deepening Ansatz mit lower / upper bound
+$\text{P}^{n, i}$ <- reinschreiben
+select(n, i)
+
+Die Eingabe für die Rückwärtssuche sind die Parameter $n$ und $i$.
+Die Rückwärtssuche beginnt mit dem kleinsten gelösten Poset und berechnet iterativ alle Posets, die in $1, 2, 3, \dots$ Vergleichen gelöst werden können, bis das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element gefunden wird.
+Das kleinste gelöste Poset besteht aus einem Element und enthält keine Vergleiche.
+Das leere Poset besteht aus $n$ Elementen, wobei das $i$-kleinste Element gesucht wird, und beinhaltet keinen Vergleich.
+Allgemein sei $A_k$ die Menge aller Posets, die in $k$ Vergleichen lösbar sind.
+$A_0$ besteht nur aus dem kleinsten gelösten Poset.
+Im Folgenden berechnet die Rückwärtssuche für jedes Poset in der Menge $A_k$ die entsprechenden Vorgänger.
+Die Menge aller Vorgänger bildet die Menge $A_{k + 1}$.
+Wenn das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element in $A_l$ vorhanden ist, werden genau $l$ Vergleiche benötigt, um das $i$-kleinste Element einer $n$-elementigen Liste zu bestimmen.
+
+\subsubsection{Vorgängerberechnung} \label{sec:backward:predecessor_calculation}
+
+\begin{definition}[Vorgänger] \label{definition:predecessor_calculation}
+  Poset $q$ ist Vorgänger von Poset $p$, wenn folgende Eigenschaften gelten:
+  \begin{itemize}
+    \item $q$ ist reduziert und eindeutig kanonisiert.
+    \item $q$ wurde in keiner vorherigen Runde gefunden (da es sonst in weniger Vergleichen lösbar wäre).
+    \item Es existiert ein Vergleich $(i, j)$, durch dessen Hinzunahme in $q$ und anschließende Normalisierung wieder das Poset $p$ resultiert und durch Hinzunahme des umgekehrten Vergleichs $(j, i)$ und anschließende Normalisierung ein bereits gefundenes Poset resultiert.
+  \end{itemize}
+\end{definition}
+
+\begin{lemma} \label{lemma:predecessor_calculation}
+  Wenn Poset $p$ in $k$ Vergleichen lösbar ist und $q$ ein Vorgänger von Poset $p$ ist, ist Poset $q$ in $k + 1$ Vergleichen lösbar
+\end{lemma}
+
+\begin{proof} \label{proof:predecessor_calculation}
+  Da $q$ in keiner vorherigen Runde gefunden wurde, ist es gemäß Annahme nicht in weniger Vergleichen lösbar.
+  Da ein Vergleich $(i, j)$ existiert, durch dessen Hinzunahme und anschließende Normalisierung das Poset $p$ resultiert, kann $q$ durch die Hinzunahme eines Vergleichs erreicht werden.
+  Da $p$ in $k$ Vergleichen lösbar ist, ist somit $q$ in $k + 1$ Vergleichen lösbar.
+  Wenn der Vergleich umgekehrt eingefügt wird, befindet sich das resultierende Poset, gemäß Annahme, bereits im Cache.
+  Dadurch ist dieser Pfad in höchstens $k + 1$ Vergleichen lösbar.
+\end{proof}
+
+Da potenziell unendlich viele Vorgänger existieren, werden diese nur bis zu einer maximalen Grenze von $n_{\text{max}}$ Elementen berechnet.
+Die Berechnung eines Vorgängers für ein gegebenes Poset $p$ mit $n$ Elementen, bei dem das $i$-kleinste Element gesucht wird, erfolgt in drei Schritten:
+
 \begin{itemize}
   \item[1.]
         Da die Rückwärtssuche auf dem Entfernen von Vergleichen basiert, wird dem Poset $p$ ein `Dummy-Element' eingefügt, damit Vergleiche entfernt werden können.
@@ -790,6 +813,11 @@ Appendix two text goes here.
 
 
 The authors would like to thank...
+
+FMI
+Hardware
+Florian Stober
+Armin weiß
 
 \ifCLASSOPTIONcaptionsoff
   \newpage
