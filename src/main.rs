@@ -577,7 +577,7 @@ where
     index
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct BinaryItem {
     index: usize,
     less_index: usize,

@@ -16,12 +16,12 @@ mod test {
     };
 
     pub fn select(
-        algorithm: &HashMap<usize, BinaryItem>,
+        algorithm: &Vec<BinaryItem>,
         permutation: [usize; MAX_N],
         index: usize,
         is_dual: bool,
     ) -> usize {
-        let action = algorithm.get(&index).unwrap();
+        let action = &algorithm[index];
         let new_dual: bool;
         let new_index: usize;
         let mut new_permutation = [0; MAX_N];
@@ -39,7 +39,7 @@ mod test {
             } else {
                 is_dual
             };
-            for i in 0..algorithm.get(&action.less_index).unwrap().n as usize {
+            for i in 0..MAX_N {
                 new_permutation[i] = permutation[action.less_mapping[i] as usize];
             }
         } else {
@@ -49,18 +49,14 @@ mod test {
             } else {
                 is_dual
             };
-            for i in 0..algorithm.get(&action.greater_index).unwrap().n as usize {
+            for i in 0..MAX_N {
                 new_permutation[i] = permutation[action.greater_mapping[i] as usize];
             }
         }
         select(algorithm, new_permutation, new_index, new_dual)
     }
 
-    pub fn check_threaded<const SPLITS: usize>(
-        n: usize,
-        i: usize,
-        algorithm: &HashMap<usize, BinaryItem>,
-    ) {
+    pub fn check_threaded<const SPLITS: usize>(n: usize, i: usize, algorithm: &Vec<BinaryItem>) {
         let mut numbers = vec![0; n];
         for k in 0..n {
             numbers[k] = k;
@@ -118,10 +114,14 @@ mod test {
     }
 
     pub fn check(n: usize, i: usize, algorithm: &HashMap<usize, BinaryItem>) {
+        let mut algorithm_vec = vec![BinaryItem::default(); algorithm.len()];
+        for (key, value) in algorithm {
+            algorithm_vec[*key] = value.clone();
+        }
         if n < 3 {
-            check_threaded::<1>(n, i, algorithm);
+            check_threaded::<1>(n, i, &algorithm_vec);
         } else {
-            check_threaded::<3>(n, i, algorithm);
+            check_threaded::<2>(n, i, &algorithm_vec);
         }
     }
 
