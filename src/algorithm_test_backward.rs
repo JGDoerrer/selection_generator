@@ -7,7 +7,7 @@ mod test {
 
     use hashbrown::HashMap;
     use indicatif::ProgressBar;
-    use rayon::iter::{IntoParallelIterator, IntoParallelRefMutIterator, ParallelIterator};
+    use rayon::iter::{IntoParallelRefMutIterator, ParallelIterator};
 
     use crate::{
         constants::MAX_N,
@@ -56,9 +56,11 @@ mod test {
         select(algorithm, new_permutation, new_index, new_dual)
     }
 
-    pub fn check(n: usize, i: usize, algorithm: &HashMap<usize, BinaryItem>) {
-        const SPLITS: usize = 1;
-
+    pub fn check_threaded<const SPLITS: usize>(
+        n: usize,
+        i: usize,
+        algorithm: &HashMap<usize, BinaryItem>,
+    ) {
         let mut numbers = vec![0; n];
         for k in 0..n {
             numbers[k] = k;
@@ -113,6 +115,14 @@ mod test {
                 }
             }
         });
+    }
+
+    pub fn check(n: usize, i: usize, algorithm: &HashMap<usize, BinaryItem>) {
+        if n < 3 {
+            check_threaded::<1>(n, i, algorithm);
+        } else {
+            check_threaded::<3>(n, i, algorithm);
+        }
     }
 
     #[test]
