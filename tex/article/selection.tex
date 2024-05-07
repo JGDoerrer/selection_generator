@@ -335,13 +335,13 @@ discovered in the previous iteration, as otherwise it would have to be solvable 
 
 % TODO: @Johanna: ab hier übersetzen :)
 
-\subsubsection{Normalform} \label{sec:backward:normal_form}
+\subsubsection{Normal Form} \label{sec:backward:normal_form}
 
-Im Unterschied zur Vorwärtssuche nutzt die Rückwärtssuche eine eindeutige Kanonisierung.
-Die Kanonisierung der Vorwärtssuche ist aus Performancegründen nicht eindeutig.
+In contrast to the forward search, the backward search uses a unique canonicalization.
+The canonicalization of the forward search is not unique for performance reasons.
 
-\begin{definition}[Inverses Poset] \label{definition:inverse_poset}
-  Das inverse Poset eines Posets $p$ mit $n$ Elementen ist das Poset $q$ mit ebenfalls $n$ Elementen, bei dem alle Vergleiche aus $p$ umgekehrt sind und nicht das $i$-kleinste, sondern das $(n - 1 - i)$-kleinste Element gesucht wird.
+\begin{definition}[Inverse poset] \label{definition:inverse_poset}
+  The inverse of a poset $P=(U, R, i)$ with $\vert U \vert=n$ is the poset $P^{-1}=(U,R',n-1-i)$ with $R' = \{(u,v) \; \vert \; (v,u) \in R\}$.
 \end{definition}
 
 \begin{lemma} \label{lemma:inverse_poset}
@@ -355,32 +355,34 @@ Die Kanonisierung der Vorwärtssuche ist aus Performancegründen nicht eindeutig
 - TODO: Schreibt ihr irendetwas über nauty?
 
 \subsubsection{Normalform}
-Im Gegensatz zur Vorwärtssuche unterscheidet die Rückwärtssuche zwischen `kanonifizieren' und `normalisieren', wie folgt:
+In contrast to the forward search, the backward search distinguishes between `canonify' and `normalize' according to the following definition:
 \begin{description}
-  \item[kanonifizieren]
-        überführt das Poset in eine \textbf{eindeutige} Normalform.
-        Das `kanonifizieren` der Vorwärtssuche ist nicht eindeutig aus Performancegründen.
-  \item[reduzieren]
-        umfasst das eliminieren von Elementen, die nicht das $i$-kleinste Element sein können.
-  \item[normalisieren]
-        umfasst das Reduzieren gefolgt von Kanonifizieren
+  \item[canonification] \hfill
+
+        transforms the poset into a \textit{unique} normal form.
+        Canonification in the forward search is not unique due to performance reasons.
+  \item[reduction] \hfill
+
+        encompasses the elimination of elements, that cannot be the $i$-smallest element.
+  \item[normalization] \hfill
+
+        encompasses reducing followed by canonification.
 \end{description}
 
-Unterschied: hier wird eine eindeutige Normalform benötigt
--> benutze nauty
+Note that the backward search requires a unique normal form. In case our custom canonification does not yiel a unique form, nauty provides the proper canonification.
+In the following, the canonification process is explained.
 
-Um eine eindeutige Darstellung zu gewährleisten, wird zunächst ermittelt, ob $i$ oder $n - 1 - i$ kleiner ist, und gegebenenfalls wird das Poset $p$ durch sein Inverses ersetzt.
-Nach Lemma~\ref{lemma:inverse_poset} ändert sich dadurch nichts an seiner Lösbarkeit.
+First, it is determined whether $i < n-1-i$ holds.
+If this does not hold true, $P$ is replaced by $P^{-1}$.
+According to lemma~\ref{lemma:inverse_poset} the poset's solvability remains unaltered.
 
-Abschließend werden die Elemente kanonisch angeordnet.
-Dazu wird das Poset intern als gerichteter Graph repräsentiert, wobei sich diese Darstellung an den Hasse-Diagrammen orientiert.
-Um alle Elemente kanonisch anzuordnen, müssen die Knoten des Graphen kanonisch beschriftet werden.
-Hierfür wird primär auf ``nauty'' zurückgegriffen.
-Nauty ist ein C-Programm zur Berechnung von Automorphismengruppen von Graphen und kann ein kanonisches Label für einen gegebenen Graphen erzeugen \cite{MCKAY201494}.
-Durch diese kanonische Beschriftung kann das Poset eindeutig dargestellt werden.
-
-Ein potentielles Problem tritt auf, wenn die Gleichung $i = n - 1 - i$ erfüllt ist.
-In diesem Fall ist es nicht möglich, basierend auf dem Wert von $i$ zu unterscheiden, ob $p$ oder sein Inverses der kanonischen Normalform entspricht.
+Finally, the poset's elements are aranged canonically. 
+As a means to this end, the poset is represented as a directed graph with respect to its Hasse diagram.
+The canonic labelling of the elements is provided by nauty, which is a programm in C for the calculation of graph automorphism groups \cite{MCKAY201494}.
+With this canonic labelling the poset can be portrayed canonically.
+A potential problem occurs, if $i = n - 1 - i$ holds.
+In this case, it is impossible to decide whether $P$ or $P^{-1}$ corresponds to
+to the canonical normal form based on the value of $i$.
 
 \begin{figure}
   \input{figures/tikz_backward_canonify_problematic.tex}
@@ -389,9 +391,10 @@ In diesem Fall ist es nicht möglich, basierend auf dem Wert von $i$ zu untersch
   \label{fig:backward_canonify_problematic}
 \end{figure}
 
-Wie aus dem Hasse-Diagramm in Abbildung~\ref{fig:backward_canonify_problematic} ersichtlich ist, erscheinen beide Posets unterschiedlich, obwohl eines das genaue Inverse des anderen ist.
-Um diese Unklarheit zu beheben, wird für jedes Poset, für das $i = n - 1 - i$ gilt, zusätzlich das Inverse berechnet und kanonisiert.
-Anschließend wird eines der beiden deterministisch ausgewählt.
+In the Hasse diagram in figure~\ref{fig:backward_canonify_problematic} the posets appear unidentical, despite them being each others inverse.
+To mitigate th
+In order to eliminate this ambiguity, the inverse is also calculated and canonicalized for each poset for which $i = n - 1 - i$ applies.
+One of the two is then selected deterministically.
 
 Da das Kanonisieren für die Rückwärtssuche unvermeidbar ist und einen Großteil der Rechenzeit beansprucht, werden alle trivialen Fälle abgefangen, und nur die verbleibenden Fälle werden mittels nauty kanonisiert.
 
