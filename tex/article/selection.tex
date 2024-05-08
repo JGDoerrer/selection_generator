@@ -152,7 +152,7 @@ The time complexity of $\mathcal{O}(n)$ of the mentioned algorithms is inevitabl
 to these algorithm is a list of values in arbitrary order. Therefore, the algorithm must look at all
 the input values to determine a correct solution. If any of these input values will not be
 considered it could be the one that should have been returned by the algorithm leading to wrong
-results. Apart from this simple and straight forward argument, there is a considerable amount of
+results. Apart from this simple and straightforward argument, there is a considerable amount of
 research on the exact number of comparisons required for selection, both in the randomized and
 deterministic cases.
 
@@ -167,16 +167,77 @@ are required. An upper bound is been proposed by Blum, in the paper \textit{Time
   Selection}. It stated that no more than $5.430\dot{5} \cdot n$ comparisons are ever required.
 Therefore selection is for sure in a time complexity of $\mathcal{O}(n)$ for best and worst-case.
 
+\begin{lemma}
+  If $k$ is a lower bound for selecting $i$ of $n$, then selecting $i$ of $n+1$ must take at least $k+1$ comparisons.
+\end{lemma}
+\begin{proof}
+  Assume some algorithm exists that selects $i$ of $n+1$ in $k$ comparisons. It must have two elements it compares first.
+  If we input a by definition largest element in place of one of them the algorithm must still return the correct $i$-th
+  largest of the remaining $n$ elements. But because this element is larger by definition, the first comparison may be 
+  skipped, thus reducing the number of comparisons by at least 1. Thus taking out all occurrences of that element will 
+  yield an algorithm for $i$ of $n$ in $k-1$ comparisons, which contradicts the condition of $k$ being a lower bound.
+\end{proof}
+
 \subsection{Partial Order Sets}
 To dive deeper into these algorithms the concept of partial orders needs to be introduced. A partial
 order is an ordering relation
 $\leq$ on a set $P$ that satisfies reflexivity, anti symmetry, and transitivity. 
 
-Given a set of elements $\Omega$ with $|\Omega| = n < \infty$ we write 
-$(n, i, R)$ to express that we wish to 
-find the $i$-th of $n$ elements with the partial order $R$ 
-on $\Omega$ already known.
+\begin{definition}[Selection Poset]
+  Given a set of elements $\Omega$ with $|\Omega| = n < \infty$ we write 
+  $(n, i, R)$ for the selection of the $i$-th largest of $n$ elements
+  with the existing comparisons $R$.
+  Explicitly, $R\subseteq\Omega^2$ such that $(a, b)\in R \Longleftrightarrow a \leq b$.
+
+  The enumeration of $i$ starts at $0$, so $(4, 1, R)$ is the second smallest,
+  rather than the minimum.
+\end{definition}
+
 The SELECT problem is thus embedded as $(n, i, \emptyset)$.
+
+\begin{definition}[Reduced]
+  A poset is \textbf{Reduced} if all of its elements have less than $i-1$ elements smaller than themselves and less than $n-1$ larger. Hence, all elements are still possible solutions.
+\end{definition}
+\begin{definition}[Canonified]
+  A poset \textbf{Canonified} if it matches the following conditions making it unique among all posets isomorphic to it.
+
+  Some parts of this paper use a best effort
+  approximation for this to increase speed, the results are then called \textbf{Pseudo Canonified}.
+\end{definition}
+\begin{definition}[Normal]
+  A \textbf{Normal} poset is reduced and canonified.
+\end{definition}
+
+\begin{definition}[Optimal Cost]
+  The cost $V(P)$ of the poset $P = (n, i, R)$
+  is the optimal number of further comparisons needed to
+  perform the selection.
+
+  We measure this pessimistically, meaning that among all
+  possible outcomes of those further comparisons we assume
+  the most expensive ones.
+\end{definition}
+
+\begin{definition}[Inverse poset] \label{definition:inverse_poset}
+  The inverse of a poset $P=(n, i, R)$ is the poset $P^{-1}=(U,R',n-1-i)$ with $R' = \{(u,v) \; \vert \; (v,u) \in R\}$.
+\end{definition}
+
+\begin{lemma}
+  For a given poset $P = (n, i, R)$ $V(P) = V(P^{-1})$
+\end{lemma}
+
+\begin{proof}
+  Given $V(P)$, we know that we can construct an algorithm that
+  solves $P$ in exactly that many comparisons, i.e. it determines
+  the element with exactly $i-1$ less and exactly $n-i$ greater
+  than itself.
+
+  Since $n$ and $i$ are fixed, this algorithm can be converted into
+  a binary decision tree and by swapping all the children, the new 
+  algorithm must now select the element such that $n-i$ are smaller 
+  and $i-1$ are larger than it while assuming an inverted $R$, which is 
+  the solution for $P^{-1}$. 
+\end{proof}
 
 %[\todo{cite:https://en.wikipedia.org/wiki/Partially_ordered_set}]
 
@@ -197,33 +258,37 @@ $i-1$ elements.
   can't be the solution in both cases.
 \end{proof}
 
-\begin{definition}
-  As such we can define a \textbf{Compatible Solution},
+\begin{definition}[Compatible Solution]
+  As such we can define a \textbf{Compatible Solution} $Q = (n, i, S), |S|=n-1$ of a poset $P=(n, i, R)$,
   similar to the concept of linear extensions for
   regular posets %[todo cite]
-  , to be a partition of the elements of a given poset 
-  $P = (n, i, R)$ into a solution element and sets for
-  those larger and smaller than it that agrees with
-  $R$.
+  , to be solved, and $(a, b)\in S\implies (b, a)\notin R$.
 \end{definition}
 
+Let $P = (U, B, i)$ be a reduced poset, where elements which cannot be the solution are removed.
+Let $Q = (U, C, i)$ be a poset with an element $u \in U$, where $i$ elmenets are smaller than $u$ and $n-i-1$ elements are larger than $u$.
+Every comparison $(a,b) \in C$ in $Q$ compares an element to $u$, meaning either $a = u$ or $b = u$.
 
+We call $Q$ compatible with $P$ if no comparison in $Q$ contradicts a comparison in $P$; meaning for all comparisons $(a,b) \in C$ it should hold that $(b,a) \not\in B$.
+Let $$\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$$ be the set of all posets compatible with $P$.
+
+We conjecture that a poset $P$ is always solvable in $\lceil\log_2(|\mathcal{C}(P)|)\rceil$ or less comparisons.
 
 
 \subsection{Example}
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.5\columnwidth]{figures/Median_of_5.svg.png}
-  \caption{Finding the median $i=3$ of $n=5$ values using six comparisons.}
+  \input{figures/tikz_example_5_2.tex}
+  \caption{Finding the median $i=2$ of $n=5$ values using six comparisons.}
   \label{fig:median_of_5}
 \end{figure}
-A good visual example is finding the median $i=3$ in a list of $n=5$ elements. Figure
+A good visual example is finding the median $i=2$ in a list of $n=5$ elements. Figure
 (\ref{fig:median_of_5}) illustrate the search of the median using Hasse diagrams. Each step shows
 the comparisons to be performed next as a yellow line. A Hasse diagram of the order of relation
 found so far (smaller=lower, larger=higher) is shown as the blue lines. The red circles have already
 found to be greater than three others and disqualified The red elements have already been determined
 to be larger than three other elements and are therefore disqualified as medians. The larger
-element of the final comparison is the median. This is also the optimal algorithm for $i=3$ and
+element of the final comparison is the median. This is also the optimal algorithm for $i=2$ and
 $n=5$.
 
 
@@ -287,7 +352,7 @@ This problem is expensive to solve for every poset comparison.
 After adding a comparison to a poset, we transform the poset to a canonical form.
 All posets, that are isomorphic to eachother should be transformed to the same canonical form.
 Computing the canonical form can be done using Nauty, but this takes a significant amount of time.
-Some performance tests show that it is faster to compute an almost canonical form, where some posets that are isomorphic to eachother result in different canofied forms.
+Some performance tests show that it is faster to compute an almost canonical form, where some posets that are isomorphic to eachother result in different canonified forms.
 As a result, some posets that are isomorphic occupy several cache entries, but canonifying a poset is much faster.
 
 \subsection{Backward Search} \label{sec:backward}
@@ -317,35 +382,7 @@ discovered in the previous iteration, as otherwise it would have to be solvable 
 In contrast to the forward search, the backward search uses a unique canonicalization.
 The canonicalization of the forward search is not unique for performance reasons.
 
-\begin{definition}[Inverse poset] \label{definition:inverse_poset}
-  The inverse of a poset $P=(U, R, i)$ with $\vert U \vert=n$ is the poset $P^{-1}=(U,R',n-1-i)$ with $R' = \{(u,v) \; \vert \; (v,u) \in R\}$.
-\end{definition}
-
-\begin{lemma} \label{lemma:inverse_poset}
-  Let $P=(U,\emptyset,i)$ be an empty poset with $\vert U \vert = n$, that is solvable within $k$ comparisons but unsolvable in $k-1$ comparisons.
-  Then, the empty poset $P'=(U',\emptyset,i)$ with $\vert U'\vert = n+1$ is not solvable within $k$ comparisons.
-\end{lemma}
-
-\begin{proof} \label{proof:inverse_poset}
-  Assume the empty poset $P'=(U',\emptyset,i)$ with $\vert U' \vert = n+1$ is solvable within $k$ comparisons. Then, the solution involves at least one comparison involving the $(n+1)$-th element. Removing this element including all its comparisons results in a solvable poset $P^{*}=(U,R^{*},i)$ with $\vert R^{*}\vert < k$. Contradiction to $P$ not solvable in $k-1$ comparisons.
-\end{proof}
-- TODO: Schreibt ihr irendetwas über nauty?
-
 \subsubsection{Normalform}
-In contrast to the forward search, the backward search distinguishes between `canonify' and `normalize' according to the following definition:
-\begin{description}
-  \item[canonification] \hfill
-
-        transforms the poset into a \textit{unique} normal form.
-        Canonification in the forward search is not unique due to performance reasons.
-  \item[reduction] \hfill
-
-        encompasses the elimination of elements, that cannot be the $i$-smallest element.
-  \item[normalization] \hfill
-
-        encompasses reducing followed by canonification.
-\end{description}
-
 Note that the backward search requires a unique normal form. In case our custom canonification does not yiel a unique form, nauty provides the proper canonification.
 In the following, the canonification process is explained.
 
@@ -584,17 +621,6 @@ The minimax search algorithm explained in chapter~\ref{chapter:forward_search} a
     Use \texttt{current\_best}. Each call of \texttt{search\_rec} gets a maximum numbers of comparisons.
     When searching the children of a node, the limit is the best (minimal) value found so far.
 \end{enumerate}
-
-\subsection{Compatible Posets}
-
-Let $P = (U, B, i)$ be a reduced poset, where elements which cannot be the solution are removed.
-Let $Q = (U, C, i)$ be a poset with an element $u \in U$, where $i$ elmenets are smaller than $u$ and $n-i-1$ elements are larger than $u$.
-Every comparison $(a,b) \in C$ in $Q$ compares an element to $u$, meaning either $a = u$ or $b = u$.
-
-We call $Q$ compatible with $P$ if no comparison in $Q$ contradicts a comparison in $P$; meaning for all comparisons $(a,b) \in C$ it should hold that $(b,a) \not\in B$.
-Let $$\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$$ be the set of all posets compatible with $P$.
-
-We conjecture that a poset $P$ is always solvable in $\lceil\log_2(|\mathcal{C}(P)|)\rceil$ or less comparisons.
 
 \section{Results}
 
