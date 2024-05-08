@@ -545,7 +545,6 @@ Da die theoretischen oberen Schranken in der Praxis zu hoch sind, verwendet das 
 Dieser beginnt mit einer oberen Grenze, die der theoretischen unteren Schranke entspricht, und erhöht diese Grenze iterativ, bis schließlich eine Lösung gefunden wird.
 Obwohl dieser Ansatz dazu führt, dass die Rückwärtssuche mehrfach neu gestartet wird, da keine Ergebnisse aus vorherigen Runden übernommen werden können, kann dadurch der Suchraum erheblich eingeschränkt werden.
 
-% TODO: Hier muss ein Bild vom Suchbaum hin für z.B. 4,1 (also schöner)
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\columnwidth]{figures/backward-search-tree.png}
@@ -553,27 +552,31 @@ Obwohl dieser Ansatz dazu führt, dass die Rückwärtssuche mehrfach neu gestart
   \label{fig:backward-search-tree}
 \end{figure}
 
-\input{figures/tikz_posets_per_level.tex}
+\begin{figure}
+  \centering
+  \input{figures/tikz_posets_per_level.tex}
+  \caption{Number of comparisons required to solve the empty poset with the backward search for $n = 13$ depending on $i$}
+  \label{fig:backward-posets-per-level}
+\end{figure}
 
 \subsubsection{Parallelisierung} \label{sec:backward:parallelisation}
 Die Rückwärtssuche kann effizient parallelisiert werden, indem die Berechnung der Vorgänger parallel durchgeführt wird.
 
 \begin{table}
-  \begin{tabular}{l|l|l}
-    % TODO: Zahlen erheben -> brauche Server
-    Anzahl der Kerne & Zeit      & Effizienz \\
+  \begin{tabular}{l|r|l}
+    number cores & time      & efficiency \\
     \hline
-    $1$              & $23.341s$ & $1.000$   \\
-    $2$              & $12.710s$ & $0.918$   \\
-    $3$              & $8.654s$  & $0.899$   \\
-    $4$              & $6.765s$  & $0.863$   \\
+    $1$          & 7h 2m 59s & $1.000$    \\
+    $4$          & 2h 41s    & $0.877$    \\
+    $8$          & 1h 2m 9s  & $0.851$    \\
+    $32$         & 20m 11s   & $0.655$    \\
   \end{tabular}
   \centering
-  \caption{Effizienz der Parallelität für $n = 11, i = 5$}
+  \caption{Efficiency of parallelism for $n = 13, i = 6$ (note: the drop in efficiency can be partly explained by the shared use of the server)}
   \label{table:backward-parallel}
 \end{table}
 
-Wie in Tabelle~\ref{table:backward-parallel} für $n = 11, i = 5$ dargestellt, skaliert die Rückwärtssuche relativ gut mit der Anzahl der Kerne.
+Wie in Tabelle~\ref{table:backward-parallel} für $n = 13, i = 6$ dargestellt, skaliert die Rückwärtssuche relativ gut mit der Anzahl der Kerne.
 Die Effizienz ist hierbei zwischen 0 und 1.
 Umso höher der Wert, desto besser die Paralleisierung.
 Die Effizienz kann wie folgt berechnet werden:
@@ -589,13 +592,6 @@ Während der Rückwärtssuche werden alle bereits gefundenen Posets in einem glo
 Diese Ebene sei im Folgenden als $k$ bezeichnet.
 Die Vorwärtssuche wird abgebrochen, wenn höchstens $k$ Vergleiche übrig sind und gibt die genaue Grenze zurück, falls sich das Poset im Cache der Rückwärtssuche befindet.
 Andernfalls wird zurückgegeben, dass mindestens $k + 1$ Vergleiche erforderlich sind.
-
-\begin{figure}[h!] % Das ist eigentlich unnötig -> bietet kein Mehrwert gegenüber 13,6
-  \input{figures/tikz_backward_forward_12_5.tex}
-  \centering
-  \caption{Anzahl Posets vs. Anzahl Vergleiche für $n=12, i=5$ (rot: Rückwärtssuche, blau: Vorwärtssuche)}
-  \label{fig:backward_forward_count_12_5}
-\end{figure}
 
 \begin{figure}[h!]
   \input{figures/tikz_backward_forward_13_6.tex}
@@ -651,6 +647,47 @@ The minimax search algorithm explained in chapter~\ref{chapter:forward_search} a
 \end{table}
 
 See Table~\ref{table:num-comparisons}.
+
+
+\begin{table}[htbp]
+  \begin{tabular}{c|c|l|l}
+    \textbf{n} & \textbf{k} & \textbf{Forward Search } & \textbf{Backward Search } \\ \hline
+    12         & 0          & 0.0s                     & 0.0s                      \\
+    12         & 1          & 0.0s                     & 0.1s                      \\
+    12         & 2          & 0.3s                     & 0.7s                      \\
+    12         & 3          & 3.5s                     & 1.6s                      \\
+    12         & 4          & 59.1s                    & 8.4s                      \\
+    12         & 5          & 3m 11.0s                 & 42.0s                     \\
+    \hline
+    13         & 0          & 0.0s                     & 0.0s                      \\
+    13         & 1          & 0.0s                     & 0.5s                      \\
+    13         & 2          & 0.4s                     & 1.5s                      \\
+    13         & 3          & 13.8s                    & 16.1s                     \\
+    13         & 4          & 5m 35.8s                 & 1m 40.2s                  \\
+    13         & 5          & 35m 14.0s                & 8m 34.7s                  \\
+    13         & 6          & 1h 24m 51.8s             & 18m 4.8s                  \\
+    \hline
+    14         & 0          & 0.0s                     & 0.0s                      \\
+    14         & 1          & 0.0s                     & 1.5s                      \\
+    14         & 2          & 0.4s                     & 5.9s                      \\
+    14         & 3          & 22.5s                    & 46.9s                     \\
+    14         & 4          & 19m 36.8s                & 15m 32.5s                 \\
+    14         & 5          & 3h 53m 26.4s             & 1h 39m 59.6s              \\
+    14         & 6          & 18h 57m 26.1s            & 6h 26m 30.8s              \\
+    \hline
+    15         & 0          & 0.0s                     & 0.0s                      \\
+    15         & 1          & 0.0s                     & 4.0s                      \\
+    15         & 2          & 0.6s                     & 25.9s                     \\
+    15         & 3          & 1m 14.8s                 & 13m 10.9s                 \\
+    15         & 4          & 1h 17m 55.0s             & 45m 51.9s                 \\
+    15         & 5          & 1d 16h 41m 26.0s         & 19h 30m 20.6s             \\
+    15         & 6          & 12d 13h 43m 26.9s        & tbd.                      \\
+    15         & 7          & 14d 1h 50m 45.3s         & tbd.                      \\
+  \end{tabular}
+  \centering
+  \label{tab:search_algorithms}
+  \caption{Comparison of the times for the forward and backward search (note: the forward search runs single threaded, in contrast to the reverse search which benefits greatly from hardware X)} % TODO: Verweis auf Hardware einfügen
+\end{table}
 
 
 \subsection{Search evaluation}
