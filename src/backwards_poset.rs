@@ -1116,7 +1116,7 @@ impl BackwardsPoset {
         result
     }
 
-    pub fn with_less_mapping(&self, i: u8, j: u8) -> (Self, ([usize; MAX_N], bool)) {
+    pub fn with_less_mapping(&self, i: u8, j: u8) -> (Self, ([u8; MAX_N], bool)) {
         let mut new = *self;
 
         new.add_less(i, j);
@@ -1126,7 +1126,7 @@ impl BackwardsPoset {
 
         let mut mapping = [0; MAX_N];
         for i in 0..MAX_N {
-            mapping[i] = mapping_reduce[mapping_canonify[i] as usize] as usize;
+            mapping[i] = mapping_reduce[mapping_canonify[i] as usize];
         }
 
         (new, (mapping, is_dual))

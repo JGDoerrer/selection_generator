@@ -8,6 +8,7 @@ use clap::{
 use hashbrown::HashMap;
 use search_backward::iterative_deepening_backward;
 use search_forward::Cost;
+use serde::{Deserialize, Serialize};
 use std::{
     fs::{DirBuilder, OpenOptions},
     io::{BufWriter, Write},
@@ -30,6 +31,7 @@ use crate::{
 };
 
 mod algorithm_test;
+mod algorithm_test_backward;
 mod backward_cache;
 mod backwards_poset;
 mod bitset;
@@ -168,12 +170,6 @@ fn run_forward(args: &Args, use_bidirectional_search: bool) {
             }
 
             if args.print_algorithm {
-                let mut mapping = [0; MAX_N];
-                mapping
-                    .iter_mut()
-                    .enumerate()
-                    .for_each(|(i, elem)| *elem = i as u8);
-
                 DirBuilder::new()
                     .recursive(true)
                     .create("algorithms")
@@ -234,12 +230,6 @@ fn run_backward(args: &Args) {
 
             if args.print_algorithm {
                 let start = std::time::Instant::now();
-                let mut mapping = [0; MAX_N];
-                mapping
-                    .iter_mut()
-                    .enumerate()
-                    .for_each(|(i, elem)| *elem = i as u8);
-
                 DirBuilder::new()
                     .recursive(true)
                     .create("algorithms")
@@ -254,12 +244,15 @@ fn run_backward(args: &Args) {
 
                 let mut writer = BufWriter::new(file);
 
-                print_algorithm_backward(
+                print_algorithm_backward2(
                     BackwardsPoset::new(n, i),
                     &mut writer,
                     &cache,
                     &mut HashMap::new(),
                 );
+
+                writer.flush().expect("Failed to flush BufWriter");
+
                 println!();
                 println!("generating algorithm {}", format_duration(start));
             }
@@ -459,7 +452,7 @@ where
     index
 }
 
-#[allow(clippy::too_many_lines)]
+#[allow(unused, clippy::too_many_lines)]
 fn print_algorithm_backward<W>(
     poset: BackwardsPoset,
     writer: &mut BufWriter<W>,
@@ -509,14 +502,14 @@ where
     let less_vars = less_mapping
         .iter()
         .take(less.n() as usize)
-        .map(|i| VARIABLES[*i].to_string())
+        .map(|i| VARIABLES[*i as usize].to_string())
         .reduce(|a, b| format!("{a}, {b}"))
         .unwrap();
 
     let greater_vars = greater_mapping
         .iter()
         .take(greater.n() as usize)
-        .map(|i| VARIABLES[*i].to_string())
+        .map(|i| VARIABLES[*i as usize].to_string())
         .reduce(|a, b| format!("{a}, {b}"))
         .unwrap();
 
@@ -582,6 +575,78 @@ where
     writeln!(writer, "}}").unwrap();
 
     index
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub struct BinaryItem {
+    index: usize,
+    less_index: usize,
+    greater_index: usize,
+    n: u8,
+    i: u8,
+    j: u8,
+    less_mapping: [u8; MAX_N],
+    greater_mapping: [u8; MAX_N],
+    less_is_dual: bool,
+    greater_is_dual: bool,
+}
+
+#[allow(clippy::too_many_lines)]
+fn print_algorithm_backward2<W>(
+    poset: BackwardsPoset,
+    writer: &mut BufWriter<W>,
+    comparisons: &BackwardCache,
+    done: &mut HashMap<BackwardsPoset, usize>,
+) -> usize
+where
+    W: Write,
+{
+    if let Some(index) = done.get(&poset) {
+        return *index;
+    }
+
+    let index = done.len();
+    done.insert(poset, index);
+
+    let binary_item = if poset.n() == 1 {
+        BinaryItem {
+            index,
+            less_index: 0,
+            greater_index: 0,
+            n: 1,
+            i: 0,
+            j: 0,
+            less_mapping: [0u8; MAX_N],
+            greater_mapping: [0u8; MAX_N],
+            less_is_dual: false,
+            greater_is_dual: false,
+        }
+    } else {
+        let (i, j) = comparisons.get(&poset);
+
+        let (less, (less_mapping, less_is_dual)) = poset.with_less_mapping(i, j);
+        let less_index = print_algorithm_backward2(less, writer, comparisons, done);
+        
+        let (greater, (greater_mapping, greater_is_dual)) = poset.with_less_mapping(j, i);
+        let greater_index = print_algorithm_backward2(greater, writer, comparisons, done);
+
+        BinaryItem {
+            index,
+            less_index,
+            greater_index,
+            n: poset.n(),
+            i,
+            j,
+            less_mapping,
+            greater_mapping,
+            less_is_dual,
+            greater_is_dual,
+        }
+      };
+
+      bincode::serialize_into(writer, &binary_item).expect("Serialization failed");
+
+      index
 }
 
 #[allow(clippy::too_many_lines)]
