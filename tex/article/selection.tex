@@ -165,22 +165,48 @@ are required. An upper bound is been proposed by Blum, in the paper \textit{Time
   Selection}. It stated that no more than $5.430\dot{5} \cdot n$ comparisons are ever required.
 Therefore selection is for sure in a time complexity of $\mathcal{O}(n)$ for best and worst-case.
 
-\subsection{Partial Order}
+\subsection{Partial Order Sets}
 To dive deeper into these algorithms the concept of partial orders needs to be introduced. A partial
-order, often simply called a reflexive, weak, or non-strict partial order, is a homogeneous relation
-$\leq$ on a set $P$ that satisfies reflexivity, anti symmetry, and transitivity. For any $a, b, c
-  \in P$, it must adhere to the following conditions:
+order is an ordering relation
+$\leq$ on a set $P$ that satisfies reflexivity, anti symmetry, and transitivity. 
 
-\begin{itemize}
-  \item Reflexivity: $a \leq a$, meaning every element is related to itself.
-  \item Antisymmetry: If $a \leq b$ and $b \leq a$, then $a = b$, implying no two distinct elements
-        precede each other.
-  \item Transitivity: If $a \leq b$ and $b \leq c$, then $a \leq c$.
-\end{itemize}
+Given a set of elements $\Omega$ with $|\Omega| = n < \infty$ we write 
+$(n, i, R)$ to express that we wish to 
+find the $i$-th of $n$ elements with the partial order $R$ 
+on $\Omega$ already known.
+The SELECT problem is thus embedded as $(n, i, \emptyset)$.
 
-
-A non-strict partial order is also known as an antisymmetric pre order.
 %[\todo{cite:https://en.wikipedia.org/wiki/Partially_ordered_set}]
+
+\subsubsection{Solved Posets and Compatible Solutions}
+By definition of the problem, we seek an
+element that is larger than $n-i$ elements and smaller than
+$i-1$ elements. 
+
+\begin{lemma}
+  Solving a poset requires knowing the explicit elements
+  making up these two sets.
+\end{lemma}
+\begin{proof}
+  Suppose we have determined the element $e$ to be the 
+  solution, and an element $p$ unordered with $e$.
+
+  Then $p$ may be above as well as below $e$, which
+  can't be the solution in both cases.
+\end{proof}
+
+\begin{definition}
+  As such we can define a \textbf{Compatible Solution},
+  similar to the concept of linear extensions for
+  regular posets %[todo cite]
+  , to be a partition of the elements of a given poset 
+  $P = (n, i, R)$ into a solution element and sets for
+  those larger and smaller than it that agrees with
+  $R$.
+\end{definition}
+
+
+
 
 \subsection{Example}
 \begin{figure}[h!]
@@ -197,13 +223,6 @@ found to be greater than three others and disqualified The red elements have alr
 to be larger than three other elements and are therefore disqualified as medians. The larger
 element of the final comparison is the median. This is also the optimal algorithm for $i=3$ and
 $n=5$.
-
-
-\subsubsection{Solvability}
-The solvability of a partial order can be determined in the following way. For each element, count
-the elements that are smaller than it and count the elements that are larger than it. If there is an
-element that is larger than $n-i$ elements and smaller than $i-1$ elements, this element is the
-$i$-th largest element. Thus, the poset is solvable.
 
 
 \section{Methods and Tools}
