@@ -410,27 +410,28 @@ To mitigate th
 In order to eliminate this ambiguity, the inverse is also calculated and canonicalized for each poset for which $i = n - 1 - i$ applies.
 One of the two is then selected deterministically.
 
-Da das Kanonisieren für die Rückwärtssuche unvermeidbar ist und einen Großteil der Rechenzeit beansprucht, werden alle trivialen Fälle abgefangen, und nur die verbleibenden Fälle werden mittels nauty kanonisiert.
+Since canonification is inevitable for the backward search but takes up a large portion of the computing time, all trivial cases are treated manually and only the remaining cases are canonified by nauty.
 
-Zunächst wird für jeden Knoten, ähnlich wie bei der Vorwärtssuche, der Grad der eingehenden und ausgehenden Kanten berechnet.
-Anschließend wird ein Hash-Wert für jeden Knoten berechnet.
-Dieser berücksichtigt die topologische Struktur aller Nachbarknoten sowie rekursiv bis zu einer gegebenen Grenze deren Nachbarknoten.
+The manual cononification works as follows. 
+First, the in- and outdegree is calculated for aeach nodes. 
+Based on these values a hash value is assigned to each node.
+The hash also takes into account the topological structure of all adjacent nodes recursively upto a certain recursion depth limit.
 
-Daraufhin werden die Knoten nach ihren Knotengraden sowie den Hash-Werten sortiert.
-Wenn jeder Knotengrad bzw. jeder Hash-Wert einzigartig ist, befindet sich der Graph in einer eindeutigen Normalform.
-Falls es zwei Knoten mit denselben Vergleichsattributen gibt, wird versucht, diese zu vertauschen.
-Sollte sich dabei die interne Darstellung des Posets nicht ändern, kann das Poset als eindeutig kanonisiert betrachtet werden, da beide Graphen auf dieselbe interne Darstellung abbilden.
+Then, the nodes are sorted according to their in- and outdegree and their hash value.
+If each degree and each hash value is unqiue the graph finally attained its unique normal form.
+For two nodes having identical attributes, it is attempted to swap them.
+If the representation remains unchanged, the poset is regarded as uniquely canonified, since both graphs map to the same representation. 
+If the representations differ, the graph is treated as follows. 
+Let there be $l$ pairs of nodes with the same attributes, respectively.
+The algorithm iterates over all possible permutations.
+For the first pair there are two possibilites: Either the nodes are swaped, or they remain unchanged.
+Under the realistic assumption of $l$ being small, all possible $2^l$ possible permutations can be efficiently iterated.
+Finally, one permutation is selected deterministically based on its representation.
 
-Sollte das Poset noch nicht eindeutig kanonisiert sein, wird der Fall berücksichtigt, dass es $l$ Paare von Knoten gibt, die auf die gleichen Attribute abbilden.
-Anschließend wird über alle möglichen Permutationen iteriert.
-Für das erste Paar gibt es beispielsweise zwei Möglichkeiten: Entweder es bleibt so oder die beiden Knoten werden vertauscht.
-Da in der Regel nur wenige Knotenpaare mit denselben Attributen vorhanden sind, ist $l$ klein, und die $2^l$ möglichen Permutationen können effizient iteriert werden. Schließlich wird eine der Permutationen deterministisch anhand ihrer internen Darstellung ausgewählt.
+Applying this canonification preprocessing reduces the cases requiring nauty drastically, as shown in table~\ref{table:nauty-ratio} for $n=13$.
 
-Durch die Behandlung dieser trivialen Fälle kann die Notwendigkeit der Verwendung von nauty stark reduziert werden, wie beispielhaft in Tabelle~\ref{table:nauty-ratio} für $n = 13$ dargestellt.
-
-Es ist besonders bemerkenswert, dass mit höherem $i$ der prozentuale Anteil der Aufrufe von nauty abnimmt.
-Für kleine Werte von $i$ stellt der hohe prozentuale Anteil von nauty kein Problem dar, da das Ergebnis für kleine $i$ ohnehin schnell berechnet werden kann.
-
+It is particularly noteworthy that for higher $i$, the percentage of nauty calls declines.
+For small values of $i$, the high percentage of nauty is uncritical, as the result for small $i$ can be calculated quickly anyway.
 \begin{table}
   \begin{tabular}{l|l}
     $i$ & nauty-Ratio \\
