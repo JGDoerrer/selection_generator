@@ -263,13 +263,13 @@ $i-1$ elements.
 \end{proof}
 
 \begin{definition}[Compatible Solution]
-  As such we can define a \textbf{Compatible Solution} $Q = (n, i, S)$ of a poset $P=(n, i, R)$, to be solved and agreing with $P$, that is $(a, b)\in S\implies (b, a)\notin R$.
+  As such we can define a \textbf{Compatible Solution} $Q = (n, i, S)$ of a poset $P=(n, i, R)$, to be solved and agreeing with $P$, that is $(a, b)\in S\implies (b, a)\notin R$.
 
   Furthermore, $Q$ has no comparisons other than the $n-1$ needed to prove
   the solution and the ones resulting from application of transitivity to the former.
 \end{definition}
 
-With Lemma \ref{lemma:partition}, a solved poset has exactly one compatile solution.
+With Lemma \ref{lemma:partition}, a solved poset has exactly one compatible solution.
 
 Let $$\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$$ be the set of all posets compatible with $P$.
 
@@ -355,7 +355,7 @@ based ejection policy. Since the search always imposes an upper bound for the nu
 to allow this also includes yet unsolved Posets, for which we note the currently known minimum.
 
 The minimax search algorithm also allows for cutting off unpromising branches. For this means, and inspired by the idea of $\alpha$-$\beta$-pruning, two strategies are applied.
-Firstly, we use a socalled solvable-heuristic.
+Firstly, we use a so called solvable-heuristic.
 The heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states 'unsolvable', the branch is pruned.
 Otherwise, the search continues regularly.
 Secondly we use a measure called \texttt{current\_best}.
@@ -383,14 +383,14 @@ to find a solution for the original Poset if it exists within the bound.
 
 \subsubsection{Canonification}
 
-When caching the posets we have to check, whether two posets are isomorphic to eachother.
+When caching the posets we have to check, whether two posets are isomorphic to each other.
 We consider a poset isomorphic to another poset if we can relabel the elements of one poset to obtain the other poset.
 This problem is expensive to solve for every poset comparison.
 
 After adding a comparison to a poset, we transform the poset to a canonical form.
-All posets, that are isomorphic to eachother should be transformed to the same canonical form.
+All posets, that are isomorphic to each other should be transformed to the same canonical form.
 Computing the canonical form can be done using Nauty, but this takes a significant amount of time.
-Some performance tests show that it is faster to compute an almost canonical form, where some posets that are isomorphic to eachother result in different canonified forms.
+Some performance tests show that it is faster to compute an almost canonical form, where some posets that are isomorphic to each other result in different canonified forms.
 As a result, some posets that are isomorphic occupy several cache entries, but canonifying a poset is much faster.
 
 \subsection{Backward Search} \label{sec:backward}
@@ -426,9 +426,9 @@ First, it is determined whether $i < n-1-i$ holds.
 If this does not hold true, $P$ is replaced by $P^{-1}$.
 According to lemma~\ref{lemma:inverse_poset} the poset's solvability remains unaltered.
 
-Finally, the poset's elements are aranged canonically.
+Finally, the poset's elements are arranged canonically.
 As a means to this end, the poset is represented as a directed graph with respect to its Hasse diagram.
-The canonic labelling of the elements is provided by nauty, which is a programm in C for the calculation of graph automorphism groups \cite{MCKAY201494}.
+The canonic labelling of the elements is provided by nauty, which is a program in C for the calculation of graph automorphism groups \cite{MCKAY201494}.
 With this canonic labelling the poset can be portrayed canonically.
 A potential problem occurs, if $i = n - 1 - i$ holds.
 In this case, it is impossible to decide whether $P$ or $P^{-1}$ corresponds to
@@ -448,19 +448,19 @@ One of the two is then selected deterministically.
 
 Since canonification is inevitable for the backward search but takes up a large portion of the computing time, all trivial cases are treated manually and only the remaining cases are canonified by nauty.
 
-The manual cononification works as follows.
-First, the in- and outdegree is calculated for aeach nodes.
+The manual canonification works as follows.
+First, the in- and out degree is calculated for each nodes.
 Based on these values a hash value is assigned to each node.
 The hash also takes into account the topological structure of all adjacent nodes recursively upto a certain recursion depth limit.
 
-Then, the nodes are sorted according to their in- and outdegree and their hash value.
-If each degree and each hash value is unqiue the graph finally attained its unique normal form.
+Then, the nodes are sorted according to their in- and out degree and their hash value.
+If each degree and each hash value is unique the graph finally attained its unique normal form.
 For two nodes having identical attributes, it is attempted to swap them.
 If the representation remains unchanged, the poset is regarded as uniquely canonified, since both graphs map to the same representation.
 If the representations differ, the graph is treated as follows.
 Let there be $l$ pairs of nodes with the same attributes, respectively.
 The algorithm iterates over all possible permutations.
-For the first pair there are two possibilites: Either the nodes are swaped, or they remain unchanged.
+For the first pair there are two possibilities: Either the nodes are swapped, or they remain unchanged.
 Under the realistic assumption of $l$ being small, all possible $2^l$ possible permutations can be efficiently iterated.
 Finally, one permutation is selected deterministically based on its representation.
 
@@ -745,14 +745,14 @@ The first heuristic uses the number of compatible posets.
 We use the fact, that the number of comparisons needed to solve a poset is less than the base two logarithm of the number of compatible posets,
 to estimate if a poset is solvable.
 
-The second heuristic searches for two elements which have not beend compared yet.
+The second heuristic searches for two elements which have not been compared yet.
 One of these two elements is maximal and has at least two elements smaller than it,
 and the other element is minimal and has at least two elements greater than it.
 We then construct a new poset with a comparison added, where the minimal element is smaller than the maximal.
-The new poset is then searched for a solution using the forward seach described above.
+The new poset is then searched for a solution using the forward search described above.
 If the new poset is found to be solvable in the given number of comparisons, we estimate that the original poset is also solvable.
 If the new poset is not solvable, we estimate the original is not solvable either.
-This heuristic can be slightly improved by maximising the number of elements smaller than the maximal element and greater than the minimal element.
+This heuristic can be slightly improved by maximizing the number of elements smaller than the maximal element and greater than the minimal element.
 
 \subsubsection{Triangular Adjacency Matrix}
 Storing an adjacency matrix for a poset of size $n$ takes $n^2 - n$ bits, one for each possible relation.
