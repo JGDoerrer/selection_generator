@@ -199,7 +199,10 @@ The SELECT problem is thus embedded as $(n, i, \emptyset)$.
   A poset is \textbf{Reduced} if all of its elements have less than $i-1$ elements smaller than themselves and less than $n-1$ larger. Hence, all elements are still possible solutions.
 \end{definition}
 \begin{definition}[Canonified]
-  A poset \textbf{Canonified} if it matches the following conditions making it unique among all posets isomorphic to it.
+  A poset is \textbf{Canonified} if it matches the following conditions making it unique among all posets isomorphic to it:
+  \begin{itemize}
+    \item % TODO Absatz sec:backward:normal_form verlinken
+  \end{itemize}
 
   Some parts of this paper use a best effort
   approximation for this to increase speed, the results are then called \textbf{Pseudo Canonified}.
@@ -409,22 +412,20 @@ discovered in the previous iteration, as otherwise it would have to be solvable 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TODO: In Papern suche, ob die Rückwärtssuche wirklich komplett neues Gebiet ist
 
-% TODO: @Johanna: ab hier übersetzen :)
+\subsubsection{Normalform} \label{sec:backward:normal_form}
 
-\subsubsection{Normal Form} \label{sec:backward:normal_form}
-
-In contrast to the forward search, the backward search uses a unique canonicalization.
+In contrast to the forward search, the backward search uses a unique canonicalization. % TODO: 
 The canonicalization of the forward search is not unique for performance reasons.
 
 \subsubsection{Normalform}
-Note that the backward search requires a unique normal form. In case our custom canonification does not yiel a unique form, nauty provides the proper canonification.
+Note that the backward search requires a unique normal form. In case our custom canonification does not yield a unique form, nauty provides the proper canonification.
 In the following, the canonification process is explained.
 
 First, it is determined whether $i < n-1-i$ holds.
 If this does not hold true, $P$ is replaced by $P^{-1}$.
 According to lemma~\ref{lemma:inverse_poset} the poset's solvability remains unaltered.
 
-Finally, the poset's elements are aranged canonically. 
+Finally, the poset's elements are aranged canonically.
 As a means to this end, the poset is represented as a directed graph with respect to its Hasse diagram.
 The canonic labelling of the elements is provided by nauty, which is a programm in C for the calculation of graph automorphism groups \cite{MCKAY201494}.
 With this canonic labelling the poset can be portrayed canonically.
@@ -446,16 +447,16 @@ One of the two is then selected deterministically.
 
 Since canonification is inevitable for the backward search but takes up a large portion of the computing time, all trivial cases are treated manually and only the remaining cases are canonified by nauty.
 
-The manual cononification works as follows. 
-First, the in- and outdegree is calculated for aeach nodes. 
+The manual cononification works as follows.
+First, the in- and outdegree is calculated for aeach nodes.
 Based on these values a hash value is assigned to each node.
 The hash also takes into account the topological structure of all adjacent nodes recursively upto a certain recursion depth limit.
 
 Then, the nodes are sorted according to their in- and outdegree and their hash value.
 If each degree and each hash value is unqiue the graph finally attained its unique normal form.
 For two nodes having identical attributes, it is attempted to swap them.
-If the representation remains unchanged, the poset is regarded as uniquely canonified, since both graphs map to the same representation. 
-If the representations differ, the graph is treated as follows. 
+If the representation remains unchanged, the poset is regarded as uniquely canonified, since both graphs map to the same representation.
+If the representations differ, the graph is treated as follows.
 Let there be $l$ pairs of nodes with the same attributes, respectively.
 The algorithm iterates over all possible permutations.
 For the first pair there are two possibilites: Either the nodes are swaped, or they remain unchanged.
@@ -497,50 +498,50 @@ Im Folgenden berechnet die Rückwärtssuche für jedes Poset in der Menge $A_k$ 
 Die Menge aller Vorgänger bildet die Menge $A_{k + 1}$.
 Wenn das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element in $A_l$ vorhanden ist, werden genau $l$ Vergleiche benötigt, um das $i$-kleinste Element einer $n$-elementigen Liste zu bestimmen.
 
-\subsubsection{Vorgängerberechnung} \label{sec:backward:predecessor_calculation}
+\subsubsection{Predecessor calculation} \label{sec:backward:predecessor_calculation}
 
-\begin{definition}[Vorgänger] \label{definition:predecessor_calculation}
-  Poset $q$ ist Vorgänger von Poset $p$, wenn folgende Eigenschaften gelten:
+\begin{definition}[Predecessor] \label{definition:predecessor_calculation}
+  Poset $q$ is the predecessor of Poset $p$ if the following conditions hold:
   \begin{itemize}
-    \item $q$ ist reduziert und eindeutig kanonisiert.
-    \item $q$ wurde in keiner vorherigen Runde gefunden (da es sonst in weniger Vergleichen lösbar wäre).
-    \item Es existiert ein Vergleich $(i, j)$, durch dessen Hinzunahme in $q$ und anschließende Normalisierung wieder das Poset $p$ resultiert und durch Hinzunahme des umgekehrten Vergleichs $(j, i)$ und anschließende Normalisierung ein bereits gefundenes Poset resultiert.
+    \item poset $q$ is reduced and canonified
+    \item poset $q$ was not found in any previous round (otherwise it would be solvable in fewer comparisons)
+    \item There exists a comparison $(i, j)$ whose adding in $q$ and subsequent normalization results in the poset $p$ and adding the reverse comparison $(j, i)$ and subsequent normalization results in an already found poset.
   \end{itemize}
 \end{definition}
 
 \begin{lemma} \label{lemma:predecessor_calculation}
-  Wenn Poset $p$ in $k$ Vergleichen lösbar ist und $q$ ein Vorgänger von Poset $p$ ist, ist Poset $q$ in $k + 1$ Vergleichen lösbar
+  If poset $p$ is solvable in $k$ comparisons and $q$ is a predecessor of poset $p$, poset $q$ is solvable in $k + 1$ comparisons
 \end{lemma}
 
 \begin{proof} \label{proof:predecessor_calculation}
-  Da $q$ in keiner vorherigen Runde gefunden wurde, ist es gemäß Annahme nicht in weniger Vergleichen lösbar.
-  Da ein Vergleich $(i, j)$ existiert, durch dessen Hinzunahme und anschließende Normalisierung das Poset $p$ resultiert, kann $q$ durch die Hinzunahme eines Vergleichs erreicht werden.
-  Da $p$ in $k$ Vergleichen lösbar ist, ist somit $q$ in $k + 1$ Vergleichen lösbar.
-  Wenn der Vergleich umgekehrt eingefügt wird, befindet sich das resultierende Poset, gemäß Annahme, bereits im Cache.
-  Dadurch ist dieser Pfad in höchstens $k + 1$ Vergleichen lösbar.
+  Since $q$ was not found in any previous round, according to the assumption, it is not solvable in fewer comparisons.
+  By performing the addition of comparison $(i, j)$ followed by normalization, the poset $p$ is derived, consequently establishing the reachability of $q$.
+  As $p$ is solvable in $k$ comparisons, thus $q$ is solvable in $k + 1$ comparisons.
+  If the comparison is inserted in reverse, according to the assumption, the resulting poset is already in the cache.
+  Thus, this path is solvable in at most $k + 1$ comparisons.
 \end{proof}
 
-Da potenziell unendlich viele Vorgänger existieren, werden diese nur bis zu einer maximalen Grenze von $n_{\text{max}}$ Elementen berechnet.
-Die Berechnung eines Vorgängers für ein gegebenes Poset $p$ mit $n$ Elementen, bei dem das $i$-kleinste Element gesucht wird, erfolgt in drei Schritten:
+Since potentially infinitely many predecessors exist, only up to a maximum limit of $n_{\text{max}}$ elements are computed.
+The computation of a predecessor for a given poset $p = (n_p, i_p, R_p)$ proceeds in four steps:
 
 \begin{itemize}
   \item[1.]
-    Zunächst werden alle Posets mit $n$ Elementen gesucht, die durch das Einfügen eines Vergleichs, gefolgt von der Kanonisierung, wieder in Poset $p$ resultieren.
+    Firstly, we search for all posets with $n_p$ elements that result in poset $p$ after inserting a comparison followed by canonification.
 
-    Eine Schwierigkeit stellen die transitiven Vergleiche dar, da durch das Einfügen eines Vergleichs mehrere Vergleiche miteingefügt werden können.
+    A challenge arises from transitive comparisons, as the insertion of one comparison can result in the insertion of multiple transitive comparisons.
 
     \begin{figure}
       \centering
       \input{figures/tikz_problematic_case.tex}
-      \caption{Problematischer Fall mit transitiven Vergleichen}
+      \caption{Case in which further comparisons could be removed transitively by removing a comparison}
       \label{fig:backward_problematic}
     \end{figure}
 
-    Wie in Abbildung~\ref{fig:backward_problematic} veranschaulicht, sind alle drei Posets vollständig reduziert und kanonisiert.
-    Durch das Einfügen eines Vergleichs in Poset (2) oder in Poset (3) kann beide Male Poset (1) resultieren.
-    Das bedeutet, dass je nach aktuellem Cache Poset (2) und Poset (3) potentielle Vorgänger sind, obwohl beide Male der gleiche Vergleich eingefügt wird.
+    As illustrated in Figure~\ref{fig:backward_problematic}, all three posets are fully reduced and canonized.
+    Removing a comparison from Poset (1) can result in either Poset (2) or Poset (3).
+    This implies that depending on the current cache, both Poset (2) and Poset (3) are valid potential predecessors, even though the same comparison is removed each time.
 
-    Um dieses Problem zu lösen, werden alle potentiellen Vorgänger berechnet.
+    To solve this problem, all potential predecessors must be computed.
 
   \item[2.]
     Im nächsten Schritt werden alle Vorgänger berechnet, die $n + 1$ Elemente haben und durch Einfügen eines Vergleichs gefolgt von einer Kanonisierung erneut das Poset $p$ ergeben.
@@ -582,14 +583,16 @@ Obwohl dieser Ansatz dazu führt, dass die Rückwärtssuche mehrfach neu gestart
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\columnwidth]{figures/backward-search-tree.png}
-  \caption{Suchbaum für $n = 4, i = 1$, k gibt Anzahl Vergleiche}
+  \caption{Suchbaum für $n = 4, i = 1$, k gibt Anzahl Vergleiche. Die Rückwärtssuche startet bei dem leeren Poset in $k = 0$. \\
+    ganzer Pfeil: gibt direkt einen Vorgänger an
+    gestrichelter Pfeil: wenn der "umgedrehte" Vergleich eingefügt wird}
   \label{fig:backward-search-tree}
 \end{figure}
 
 \begin{figure}
   \centering
   \input{figures/tikz_posets_per_level.tex}
-  \caption{Number of comparisons required to solve the empty poset with the backward search for $n = 13$ depending on $i$}
+  \caption{Number of comparisons required to solve the empty poset with the backward search for $n = 14$ depending on $i$}
   \label{fig:backward-posets-per-level}
 \end{figure}
 
@@ -720,7 +723,7 @@ See Table~\ref{table:num-comparisons}.
   \end{tabular}
   \centering
   \label{tab:search_algorithms}
-  \caption{Comparison of the times for the forward and backward search (note: the forward search runs single threaded, in contrast to the reverse search which benefits greatly from hardware X)} % TODO: Verweis auf Hardware einfügen
+  \caption{Comparison of the times for the forward and backward search (note: the forward search runs single threaded, in contrast to the backward search which benefits greatly from parallelism)} % TODO: Verweis auf Hardware einfügen
 \end{table}
 
 
