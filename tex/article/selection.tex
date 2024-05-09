@@ -35,7 +35,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[english]{babel}
 \usepackage{pgfplots}
-
+\usepackage{hyperref}
 % Commands
 \newcommand\smallO{
   \mathchoice
@@ -765,8 +765,24 @@ It can also simplify some algorithms, for example calculating the number of comp
 \subsubsection{Multithreading}
 
 \section{Conclusion}
-We found a better solution hooray!
-These are points we'd like to take into account for further research
+Using computer search based on the work of Oksanen we were able to write our own
+version of a search program for selecting the $i$-th element of a list of $n$
+(see: \href{https://github.com/JGDoerrer/selection_generator}{Github}) not only
+confirming the found solutions of Oksanen for the problem but also improving
+some entries (e.g. $n=15, i=5$). Further we added some more numbers and
+therefore algorithms to the table for higher $n$ and $i$. As stated in the
+motivation before: the road is better than the inn. Along the way we learned a
+lot about the probem structure and complexity, improved our forward and backward
+search algorithms coming to a final conclusion that both are valid and have
+their strength an weaknesses as stated in (\ref{}). If you want to use the
+program to generate more optimal numbers and therefore algorithms one should
+have quite some time and a good hardware in form of a high count CPU and as much
+RAM as possible (see: \ref{} for our used hardware). Right now one should use
+the backward search due to the lower RAM footprint and scaling with the CPU
+count. If one is interested in continuing the journey the next steps would be to
+add multithreading to the forward search and add the possibility of a
+bidirectional search. Godspeed and all the best on your path.
+
 
 
 \appendices
