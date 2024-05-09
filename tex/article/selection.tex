@@ -218,8 +218,8 @@ The SELECT problem is thus embedded as $(n, i, \emptyset)$.
   the most expensive ones.
 \end{definition}
 
-\begin{definition}[Inverse poset] \label{definition:inverse_poset}
-  The inverse of a poset $P=(n, i, R)$ is the poset $P^{-1}=(U,R',n-1-i)$ with $R' = \{(u,v) \; \vert \; (v,u) \in R\}$.
+\begin{definition}[Dual Poset] \label{definition:inverse_poset}
+  The dual of a poset $P=(n, i, R)$ is the poset $P^{-1}=(n, n-1-i, R')$ with $R' = \{(u,v) \; \vert \; (v,u) \in R\}$.
 \end{definition}
 
 \begin{lemma}
@@ -246,7 +246,7 @@ By definition of the problem, we seek an
 element that is larger than $n-i$ elements and smaller than
 $i-1$ elements. 
 
-\begin{lemma}
+\begin{lemma}\label{lemma:partition}
   Solving a poset requires knowing the explicit elements
   making up these two sets.
 \end{lemma}
@@ -259,20 +259,56 @@ $i-1$ elements.
 \end{proof}
 
 \begin{definition}[Compatible Solution]
-  As such we can define a \textbf{Compatible Solution} $Q = (n, i, S), |S|=n-1$ of a poset $P=(n, i, R)$,
-  similar to the concept of linear extensions for
-  regular posets %[todo cite]
-  , to be solved, and $(a, b)\in S\implies (b, a)\notin R$.
+  As such we can define a \textbf{Compatible Solution} $Q = (n, i, S)$ of a poset $P=(n, i, R)$, to be solved and agreing with $P$, that is $(a, b)\in S\implies (b, a)\notin R$.
+
+  Furthermore, $Q$ has no comparisons other than the $n-1$ needed to prove 
+  the solution and the ones resulting from application of transitivity to the former.
 \end{definition}
 
-Let $P = (U, B, i)$ be a reduced poset, where elements which cannot be the solution are removed.
-Let $Q = (U, C, i)$ be a poset with an element $u \in U$, where $i$ elmenets are smaller than $u$ and $n-i-1$ elements are larger than $u$.
-Every comparison $(a,b) \in C$ in $Q$ compares an element to $u$, meaning either $a = u$ or $b = u$.
+With Lemma \ref{lemma:partition}, a solved poset has exactly one compatile solution.
 
-We call $Q$ compatible with $P$ if no comparison in $Q$ contradicts a comparison in $P$; meaning for all comparisons $(a,b) \in C$ it should hold that $(b,a) \not\in B$.
 Let $$\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$$ be the set of all posets compatible with $P$.
 
-We conjecture that a poset $P$ is always solvable in $\lceil\log_2(|\mathcal{C}(P)|)\rceil$ or less comparisons.
+\begin{lemma}\label{lemma:compatible_union}
+  For a Poset $P = (n, i, R)$ and $a, b$, $(a,b), (b,a)\notin R$
+  $\mathcal{C}(P) = \mathcal{C}(n, i, R\cup \{(a, b)\}) \cup \mathcal{C}(n, i, R\cup \{(b, a)\})$.
+\end{lemma}
+\begin{proof}
+  Let $Q = (n, i, S)\in \mathcal{C}(P)$. Then for all $c, d$ other than $a, b$ it must hold that $(c,d)\in S\implies (d,c)\notin R\cup \{(a, b)\}$ and $(c,d)\in S\implies (d,c)\notin R\cup \{(b, c)\}$.
+
+  So if $(a, b)\in S$ then $Q\in\mathcal{C}(n, i, R\cup \{(a, b)\})$,
+  if $(b, a)\in S$ then $Q\in\mathcal{C}(n, i, R\cup \{(b, a)\})$
+  and if $a, b$ are unordered in $Q$, it is in both.
+
+  The reverse also holds because $(c,d)\notin R\cup \{(a, b)\}\implies (c,d)\notin R$, same for $R\cup \{(b, a)\}$.
+\end{proof}
+
+\begin{theorem}
+  A poset $P=(n,i,R)$ cannot be solvable in less than $\lceil\log_2(|\mathcal{C}(P)|)\rceil$ comparisons in the worst case.
+\end{theorem}
+\begin{proof}
+  If $P$ is already solved, $|\mathcal{C}(P)|=1$, and $\log_2(1)=0$.
+
+  If not, we must make at least one more comparison $a, b$.
+
+  From Lemma \ref{lemma:compatible_union} we also know that 
+  $$|\mathcal{C}(P)| \leq |\mathcal{C}((n,i,R\cup \{(a, b)\}))| + |\mathcal{C}((n,i,R\cup \{(b, a)\}))|$$
+
+  Since this is a pessimistic measure, we must assume that the result of the comparison 
+  results in the one with more compatible solutions. Without loss
+  of generality we assume that to be $(a, b)$. Then
+
+  $$\frac{|\mathcal{C}(P)|}{2}\leq |\mathcal{C}((n,i,R\cup \{(a, b)\}))|$$
+
+  %Then by induction $(n,i,R\cup \{(a, b)\})$ cannot be solved in less than $\lceil\log_2(|\mathcal{C}((n,i,R\cup \{(a, b)\}))|)\rceil$ comparisons.
+
+  Repeated application of this over multiple comparisons results in
+  $\frac{|\mathcal{C}(P)|}{2^j}$
+  as the lower bound for the amount of compatible posets
+  after $j$ comparisons.
+
+  Since $\mathcal{C}(P)|\leq 2^j$ must be satisfied for the solution, $j\geq\log_2(|\mathcal{C}(P)|)$ 
+\end{proof}
 
 
 \subsection{Example}
