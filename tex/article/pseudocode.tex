@@ -90,77 +90,35 @@
 \begin{algorithm}
     \caption{Recursive search Algorithm}
     \begin{algorithmic}[1]
-        \Function{search\_rec}{poset, max\_comparisons, depth}
+        \Function{search\_rec}{poset, max\_comparisons}
 
         \If{$\text{poset.n()} = 1$}
-        \State \Return \text{Cost::Solved}(0)
+        \State \Return \text{Solved}(0)
+        \ElsIf{$\text{max\_comparisons} = 0$}
+        \State \Return \text{Minimum}(1)
         \EndIf
         \State
 
-        \If{$\text{max\_comparisons} = 0$}
-        \State \Return \text{Cost::Minimum}(1)
+        \If{poset is cached or prunable}
+        \State \Return \text{cache or prune result}
         \EndIf
         \State
 
-        \If{$\text{search\_cache}(\text{poset}) \neq \text{None}$} \Comment {Search if the Poset has been calculated already}
-
-        \Match $\text{search\_cache}(\text{poset})$
-        \Case \text{Cost::Solved}(\_)
-        \State \Return \text{Cost::Solved}(\_)
-        \EndCase
-
-        \Case \text{Cost::Minimum}(\text{min})
-        \If{$\text{min} > \text{max\_comparisons}$}
-        \State \Return \text{Cost::Minimum}(\text{min})
-        \EndIf
-        \EndCase
-        \EndMatch
-        \EndIf
-        \State
-
-        \If{$\text{estimate\_solvable}(\text{poset, max\_comparisons, depth}) = \text{Some(false)}$}
-        \State $result \gets \text{Cost::Minimum}(\text{max\_comparisons} + 1)$
-        \State $\text{insert\_cache}(\text{poset, result})$ \Comment {Insert the Poset into the cache}
-        \State \Return $\text{result}$
-        \EndIf
-        \State
-
-        \State $pairs \gets \text{poset.get\_comparison\_pairs()}$
-        \State $n\_pairs \gets \text{pairs.len()}$
-
-        \State $best\_comparison \gets (0, 0)$
         \State $current\_best \gets \text{max\_comparisons} + 1$
         \State
 
-        \For{$(first, second, i, j) \in \text{pairs}$}
+        \For{$(first, second) \in \text{comparison pairs}$}
 
-        \State $first\_result \gets \text{search\_rec}(\text{first, current\_best - 2, depth + 1})$
+        \State $first\_result \gets \text{search\_rec}(\text{first, current\_best - 2})$
 
-        \If{$\lnot \text{first\_result.is\_solved()} \lor \text{first\_result.value()} > \text{current\_best} - 2$}
-        \Continue
-        \EndIf
-        \State
+        \State $second\_result \gets \text{search\_rec}(\text{second, current\_best - 2})$
 
-        \State $second\_result \gets \text{search\_rec}(\text{second, current\_best - 2, depth + 1})$
-
-        \If{$\lnot \text{second\_result.is\_solved()} \lor \text{second\_result.value()} > \text{current\_best} - 2$}
-        \Continue
-        \EndIf
-
-        \State $best\_comparison \gets (\text{i, j})$
-        \State $current\_best \gets max(\text{first\_result.value(), second\_result.value()}) + 1$
+        \State $current\_best \gets max(\text{first\_result, second\_result}) + 1$
         \EndFor
         \State
 
-        \If{$\text{current\_best} \leq \text{max\_comparisons}$}
-        \State $\text{comparisons.insert}(\text{poset, best\_comparison})$
-        \State \Return \text{Cost::Solved}(\text{current\_best})
-        \Else
-        \State \Return \text{Cost::Minimum}(\text{max\_comparisons} + 1)
-        \EndIf
-
-        \State $\text{insert\_cache}(\text{poset, result})$ \Comment {Insert the Poset into the cache}
-        \State \Return $\text{result}$
+        \State $\text{insert\_cache}(\text{poset, current\_best})$ 
+        \State \Return $\text{current\_best}$
         \EndFunction
     \end{algorithmic}
 \end{algorithm}
@@ -170,11 +128,11 @@
 \begin{algorithm}
     \caption{Estimate Solvable Function}
     \begin{algorithmic}[1]
-        \Function{estimate\_solvable}{$\text{poset}$, $\text{max\_comparisons}$, $\text{depth}$}
+        \Function{estimate\_solvable}{$\text{poset}$, $\text{max\_comparisons}$}
         \State $compatible\_posets \gets \text{poset.num\_compatible\_posets()}$
 
         \If{$\text{compatible\_posets} = 0$ \textbf{or} $\text{max\_comparisons} < \log_2(\text{compatible\_posets})$}
-        \State \Return $\text{Some(false)}$
+        \State \Return $\text{false}$
         \EndIf
         \State
 
@@ -206,20 +164,13 @@
         \State
 
         \If{$\text{best\_count} > 0$}
-        \State $cost \gets \text{search\_rec}(\text{poset.with\_less}(\text{best}), \text{max\_comparisons}, \text{depth} + 1)$
+        \State $cost \gets \text{search\_rec}(\text{poset.with\_less}(\text{best}), \text{max\_comparisons})$
 
-        \Match{cost}
-        \Case{Cost::Solved(solved)}
-        \State \Return $\text{Some}(\text{solved} \leq \text{max\_comparisons})$
-        \EndCase
-        \Case{Cost::Minimum(\_)}
-        \State \Return $\text{Some(false)}$
-        \EndCase
-        \EndMatch
+        \State \Return $\text{cost} \le \text{max\_comparisons}$
         \EndIf
         \State
 
-        \State \Return $\text{None}$
+        \State \Return $\text{true}$
         \EndFunction
     \end{algorithmic}
 \end{algorithm}
