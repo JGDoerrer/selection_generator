@@ -287,7 +287,7 @@ Let $$\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$$ be the set of a
   The reverse also holds because $(c,d)\notin R\cup \{(a, b)\}\implies (c,d)\notin R$, same for $R\cup \{(b, a)\}$.
 \end{proof}
 
-\begin{theorem}
+\begin{theorem}\label{theorem:compatible_log}
   A poset $P=(n,i,R)$ cannot be solvable in less than $\lceil\log_2(|\mathcal{C}(P)|)\rceil$ comparisons in the worst case.
 \end{theorem}
 \begin{proof}
@@ -334,7 +334,7 @@ $n=5$.
 In this section we describe our three main approaches being the forward search, backward search and bidirectional search. Furthermore, we explain how we harness the notion of compatible posets with respect to all of the three search approaches.
 
 \subsection{Forward Search}\label{chapter:forward_search}
-Forward Search starts with an empty Poset, i.e. one with entirely unknown ordering of its elements,
+Forward Search starts with an empty Poset $(n,i,\emptyset)$,
 and recursively determines solvability of a given Poset within some bound by exhaustively searching
 the results of all possible comparisons to be made unless it is already solved or we determine that
 it cannot be solved within the alloted number of comparisons by some heuristic.
@@ -354,12 +354,17 @@ We can drastically speed up this exploration by caching previous results, even w
 based ejection policy. Since the search always imposes an upper bound for the number of comparisons
 to allow this also includes yet unsolved Posets, for which we note the currently known minimum.
 
-The minimax search algorithm also allows for cutting off unpromising branches. For this means, and inspired by the idea of $\alpha$-$\beta$-pruning, two strategies are applied.
-Firstly, we use a so called solvable-heuristic.
-The heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states 'unsolvable', the branch is pruned.
-Otherwise, the search continues regularly.
-Secondly we use a measure called \texttt{current\_best}.
-Each call of \texttt{search\_rec} gets a maximum numbers of comparisons. When searching the children of a node, the limit is the best (minimal) value found so far.
+\subsubsection{Pruning Decisions}
+The minimax search algorithm allows for cutting off unpromising branches. For this means, the following strategies are applied.
+
+\begin{enumerate}
+  \item[1.]
+    Use solvable-heuristic. A heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states 'unsolvable', the branch is pruned.
+    Otherwise, the search continues regularly.
+  \item[2.]
+    Use \texttt{current\_best}. Each call of \texttt{search\_rec} gets a maximum numbers of comparisons.
+    When searching the children of a node, the limit is the best (minimal) value found so far.
+\end{enumerate}
 
 It is optimal because of an inductive argument over the number of relative orders determined. An
 already solved Poset obviously takes no further comparisons to solve. Then, given an unsolved Poset
@@ -383,7 +388,7 @@ to find a solution for the original Poset if it exists within the bound.
 
 \subsubsection{Canonification}
 
-When caching the posets we have to check, whether two posets are isomorphic to each other.
+When caching the posets we have to check whether two posets are isomorphic to each other.
 We consider a poset isomorphic to another poset if we can relabel the elements of one poset to obtain the other poset.
 This problem is expensive to solve for every poset comparison.
 
@@ -392,6 +397,89 @@ All posets, that are isomorphic to each other should be transformed to the same 
 Computing the canonical form can be done using Nauty, but this takes a significant amount of time.
 Some performance tests show that it is faster to compute an almost canonical form, where some posets that are isomorphic to each other result in different canonified forms.
 As a result, some posets that are isomorphic occupy several cache entries, but canonifying a poset is much faster.
+
+\subsubsection{Heuristics}
+
+We used multiple heuristics to estimate if a poset is solvable in a given number of comparisons.
+These heuristics are used to reject posets that are not solvable in the given number of comparisons.
+Other than caching, no strategies to preemtively prove solvability within
+some bound were employed. This means that the following heuristics must
+only provably be not too pessimistic.
+
+The first heuristic uses the number of compatible solutions.
+We use the fact, proven in Theorem \ref{theorem:compatible_log}, that the $\log_2$ of 
+the number of compatible solutions is a lower bound for the cost of a poset.
+
+The calculation of this number first picks a solution element - since posets
+are always reduced in the forward search any element is valid - 
+and then counts the number of possible separations into greater and lesser elements, 
+summing up these counts over all solution elements.
+
+As an example, the empty poset $(n,i,\emptyset)$ has $n\cdot\binom{n-1}{i}$ compatible solutions because
+for each of the $n$ elements, all separations of the remaining $n-1$ elements
+are valid.
+
+%todo cite Oksanen
+
+The second heuristic attempts to reduce the size of the searched subtree by adding a
+'useful' comparison to eliminate elements faster. Explicitly, it searches for 
+unordered elements $i$ and $j$ such that $i$ has as many elements less than it as possible 
+and $j$ as many as possible greater and adds $i<j$ to the poset.
+If there is no $i$ with at least two elements less than it or no $j$ with
+at least 2 greater, the algorithm aborts the heuristic and resumes
+regular search.
+Otherwise, the new poset is then searched for a solution using the forward search described above
+without reducing the number of allowed comparisons.
+If the new poset is found to be solvable in the given number of comparisons, we estimate that the original poset is also solvable.
+If the new poset is not solvable, we estimate the original is not solvable either.
+This heuristic can be slightly improved by maximizing the number of elements smaller than the maximal element and greater than the minimal element.
+This is admissible because having a comparison added 'for free' does not make the
+poset harder to solve.
+
+\subsubsection{Triangular Adjacency Matrix}
+Storing an adjacency matrix for a poset of size $n$ takes $n^2 - n$ bits, one for each possible relation.
+The diagonal does not need to be stored, as an element can not be smaller than itself.
+
+By canonifying the poset, the elements can be sorted in a way such that each element is not smaller than any element before it.
+This property can be used to reduce the adjacency matrix to a triangular matrix, which can then be stored using $\frac{n^2 - n}{2}$ bits.
+It can also simplify some algorithms, for example calculating the number of compatible posets.
+
+\subsubsection{Multithreading}
+
+Since the forward search recursively explores posets, it is possible to
+treat subrees as separate tasks and run them on mutliple threads.
+We chose to give the thus far implicit search tree an explicit
+tree structure keeping track of the given poset for later caching,
+the current best result and number of open child tasks.
+
+Additionally, the tasks also save the second poset of the two
+outcomes of a comparison to avoid having to maintain separate
+MIN and MAX nodes. Once the first poset completes with a better result,
+the task replaces itself with that for the second poset and expands 
+again.
+
+Unexpanded tasks are pushed into a shared task heap ordered first by
+number of remaining comparisons to limit breadth-first expansion and
+thus size of the search tree, then by the number of compatible solutions.
+An observation from single threaded runs that completed quickly after 
+the first few posets of depth around $6$ were done also led us to 
+prevent multithreading above that depth by keeping the respective posets
+in a separate queue.
+
+While this resulted in good speedup for the early iterative deepening
+runs, it became worse as the search approached the actually required
+number of comparisons. For some this was even worse than single
+threaded search at a noticeably higher cache usage, leading us to
+ultimately abandon mutlithreading and calculate the final numbers
+for $n=15$ using a single core.
+
+We assume that the heap approach potentially buries promising paths
+from completely being searched, preventing propagation of the results 
+and thus the pruning exploitation of a found best from reducing 
+the search tree size so often in later runs that the increased
+workload overtakes the core utilization boost.
+
+See the git branch \textit{multi-threaded} for the last state. 
 
 \subsection{Backward Search} \label{sec:backward}
 
@@ -645,17 +733,10 @@ Dies ist sehr unvorteilhaft für eine bidirektionale Suche, da der Großteil des
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Pruning Decisions}
-The minimax search algorithm explained in chapter~\ref{chapter:forward_search} allows for cutting off unpromising branches. For this means, the following strategies are applied.
+\subsection{Used Soft- and Hardware}
 
-\begin{enumerate}
-  \item[1.]
-    Use solvable-heuristic. A heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states 'unsolvable', the branch is pruned.
-    Otherwise, the search continues regularly.
-  \item[2.]
-    Use \texttt{current\_best}. Each call of \texttt{search\_rec} gets a maximum numbers of comparisons.
-    When searching the children of a node, the limit is the best (minimal) value found so far.
-\end{enumerate}
+%todo lscpu, rustc -V, clang --version, nauty packaged
+%uname -a 
 
 \section{Results}
 
@@ -689,7 +770,7 @@ See Table~\ref{table:num-comparisons}.
 
 \begin{table}[htbp]
   \begin{tabular}{c|c|l|l}
-    \textbf{n} & \textbf{k} & \textbf{Forward Search } & \textbf{Backward Search } \\ \hline
+    \textbf{n} & \textbf{i} & \textbf{Forward Search } & \textbf{Backward Search } \\ \hline
     12         & 0          & 0.0s                     & 0.0s                      \\
     12         & 1          & 0.0s                     & 0.1s                      \\
     12         & 2          & 0.3s                     & 0.7s                      \\
@@ -735,32 +816,7 @@ See Table~\ref{table:num-comparisons}.
 
 \subsection{Algorithmic improvements}
 
-\subsubsection{Heuristics}
 
-We used multiple heuristics to estimate if a poset is solvable in a given number of comparisons.
-These heuristics are used to reject posets, that are not solvable in the given number of comparisons.
-This reduces the number of posets that need to be searched.
-
-The first heuristic uses the number of compatible posets.
-We use the fact, that the number of comparisons needed to solve a poset is less than the base two logarithm of the number of compatible posets,
-to estimate if a poset is solvable.
-
-The second heuristic searches for two elements which have not been compared yet.
-One of these two elements is maximal and has at least two elements smaller than it,
-and the other element is minimal and has at least two elements greater than it.
-We then construct a new poset with a comparison added, where the minimal element is smaller than the maximal.
-The new poset is then searched for a solution using the forward search described above.
-If the new poset is found to be solvable in the given number of comparisons, we estimate that the original poset is also solvable.
-If the new poset is not solvable, we estimate the original is not solvable either.
-This heuristic can be slightly improved by maximizing the number of elements smaller than the maximal element and greater than the minimal element.
-
-\subsubsection{Triangular Adjacency Matrix}
-Storing an adjacency matrix for a poset of size $n$ takes $n^2 - n$ bits, one for each possible relation.
-The diagonal does not need to be stored, as an element can not be smaller than itself.
-
-By canonifying the poset, the elements can be sorted in a way such that each element is not smaller than any element before it.
-This property can be used to reduce the adjacency matrix to a triangular matrix, which can then be stored using $\frac{n^2 - n}{2}$ bits.
-It can also simplify some algorithms, for example calculating the number of compatible posets.
 
 \subsubsection{Multithreading}
 
