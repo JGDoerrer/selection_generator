@@ -551,42 +551,36 @@ For the first pair there are two possibilities: Either the nodes are swapped, or
 Under the realistic assumption of $l$ being small, all possible $2^l$ possible permutations can be efficiently iterated.
 Finally, one permutation is selected deterministically based on its representation.
 
-Applying this canonification preprocessing reduces the cases requiring nauty drastically, as shown in table~\ref{table:nauty-ratio} for $n=13$.
+% ab hier fertig (0)
+Applying this canonification preprocessing reduces the cases requiring nauty drastically, as shown in Table~\ref{table:nauty-ratio}.
 
-It is particularly noteworthy that for higher $i$, the percentage of nauty calls declines.
-For small values of $i$, the high percentage of nauty is uncritical, as the result for small $i$ can be calculated quickly anyway.
 \begin{table}
-  \begin{tabular}{l|l}
-    $i$ & nauty-Ratio \\
-    \hline
-    $0$ & $0.000\%$   \\
-    $1$ & $30.205\%$  \\
-    $2$ & $6.797\%$   \\
-    $3$ & $1.530\%$   \\
-    $4$ & $0.469\%$   \\
-    $5$ & $0.188\%$   \\
-    $6$ & $0.116\%$
+  \begin{tabular}{c|cccccccc}
+    $n$ & \multicolumn{8}{c}{$i$}                                                         \\
+        & 0                       & 1      & 2     & 3     & 4     & 5     & 6     & 7    \\ \hline
+    13  & 0                       & 30.205 & 6.797 & 1.530 & 0.469 & 0.188 & 0.485        \\
+    14  & 0                       & 33.667 & 7.540 & 1.655 & 0.427 & 0.153 & 0.074        \\
+    15  & 0                       & 36.390 & 8.173 & 1.683 & 0.460 & 0.133 & 0.066 & tbd. \\ % TODO: add value for 15,7
   \end{tabular}
   \centering
-  \caption{Prozentuale Häufigkeit der Aufrufe von nauty zur Kanonisierung für $n = 13, i = 6$}
+  \caption{Percentage in which nauty was required for canonification for variable $n$ and $i$, lower is better}
   \label{table:nauty-ratio}
 \end{table}
 
+It is particularly noteworthy that for higher $i$, the percentage of nauty calls declines.
+For small values of $i$, the high percentage of nauty is uncritical, as the result for small $i$ can be calculated quickly anyway.
+
+
 \subsubsection{Algorithmus} \label{sec:backward:algorithm}
-% Schreibweise: $\text{P}^{n, i}$
-% select(n, i)
+The input parameters for the backward search are denoted by $n$ and $i$, like in the forward search.
+The backward search starts with the smallest solved poset $p_{\text{empty} (1, 0)} = (1, 0, \emptyset)$ and iteratively computes all posets solvable within $k = 1, 2, 3, \dots$ comparisons until the empty poset $p_{\text{empty} (n, i)} = (n, i, \emptyset)$ is encountered.
 
-Die Eingabe für die Rückwärtssuche sind die Parameter $n$ und $i$.
-Die Rückwärtssuche beginnt mit dem kleinsten gelösten Poset und berechnet iterativ alle Posets, die in $1, 2, 3, \dots$ Vergleichen gelöst werden können, bis das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element gefunden wird.
-Das kleinste gelöste Poset besteht aus einem Element und enthält keine Vergleiche.
-Das leere Poset besteht aus $n$ Elementen, wobei das $i$-kleinste Element gesucht wird, und beinhaltet keinen Vergleich.
-Allgemein sei $A_k$ die Menge aller Posets, die in $k$ Vergleichen lösbar sind.
-$A_0$ besteht nur aus dem kleinsten gelösten Poset.
-Im Folgenden berechnet die Rückwärtssuche für jedes Poset in der Menge $A_k$ die entsprechenden Vorgänger.
-Die Menge aller Vorgänger bildet die Menge $A_{k + 1}$.
-Wenn das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element in $A_l$ vorhanden ist, werden genau $l$ Vergleiche benötigt, um das $i$-kleinste Element einer $n$-elementigen Liste zu bestimmen.
+Let $A_k$ denote the set of all posets solvable in $k$ comparisons.
+For all $n$ and $i$, we have $A_0 = { (1, 0, \emptyset) }$.
 
-% ab hier fertig (0)
+The backward search begins with $A_0$ and iteratively computes, for each poset in the set $A_k$, the corresponding predecessors, which form the set $A_{k + 1}$.
+If $(n, i, \emptyset) \in A_l$, then $l$ comparisons are the lower bound to determine the $i$-th smallest element of an $n$-element list.
+
 \subsubsection{Predecessor calculation} \label{sec:backward:predecessor_calculation}
 
 \begin{definition}[Predecessor] \label{definition:predecessor_calculation}
@@ -594,7 +588,7 @@ Wenn das leere Poset mit $n$ Elementen und dem $i$-kleinsten gesuchten Element i
   \begin{itemize}
     \item poset $q$ is reduced and canonified
     \item poset $q$ was not found in any previous round (otherwise it would be solvable in fewer comparisons)
-    \item There exists a comparison $(i, j)$ whose adding in $q$ and subsequent normalization results in the poset $p$ and adding the reverse comparison $(j, i)$ and subsequent normalization results in an already found poset.
+    \item There exists a comparison $(i, j)$ whose adding in $q$ and subsequent normalization results in the poset $p$ and adding the reverse comparison $(j, i)$ and subsequent normalization results in an already found poset
   \end{itemize}
 \end{definition}
 
@@ -755,6 +749,10 @@ Dies ist sehr unvorteilhaft für eine bidirektionale Suche, da der Großteil des
 
 \subsection{Used Soft- and Hardware}
 
+Our results were facilitated by advancements in both hardware and software.
+For hardware, we employed two Intel Xeon CPUs, each equipped with 12 cores (24 threads), and a total of 768 GB of RAM. % das ist aus dem paper von florian
+It is noteworthy that, due to technical constraints, the forward search utilized only XX GB of RAM. % TODO: genau Zahl einfügen
+
 %todo lscpu, rustc -V, clang --version, nauty packaged
 %uname -a 
 
@@ -820,8 +818,8 @@ See Table~\ref{table:num-comparisons}.
     15         & 3          & 1m 14.8s                 & 13m 10.9s                 \\
     15         & 4          & 1h 17m 55.0s             & 45m 51.9s                 \\
     15         & 5          & 1d 16h 41m 26.0s         & 19h 30m 20.6s             \\
-    15         & 6          & 12d 13h 43m 26.9s        & tbd.                      \\
-    15         & 7          & 14d 1h 50m 45.3s         & tbd.                      \\
+    15         & 6          & 12d 13h 43m 26.9s        & 1d 5h 42m 51.5s           \\
+    15         & 7          & 14d 1h 50m 45.3s         & tbd.                      \\  % TODO: add value for 15,7
   \end{tabular}
   \centering
   \label{tab:search_algorithms}
