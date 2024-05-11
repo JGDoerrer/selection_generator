@@ -157,14 +157,14 @@ research on the exact number of comparisons required for selection, both in the 
 deterministic cases.
 
 It has been found that selecting the $i$-th element of $n$ requires at least
-$n+\min(i,n-i)-\mathcal{O}(1)$ comparisons, thus matching the average case of the Floyd-Rivest
+$n+\min(i,n-i)-\mathcal{O}(1)$ comparisons \todo{cite}, thus matching the average case of the Floyd-Rivest
 algorithm up to his $\smallO(n)$ term. For deterministic algorithms it has also been shown that
 \begin{eqnarray*}
   &\left (1 + H(i/n) \right ) \cdot n + \Omega(\sqrt n) \\
   &\text{with~} H(x) = x \cdot \log_2 \frac{1}{x} + (1-x) \log_2 \frac{1}{1-x}
 \end{eqnarray*}
 are required. An upper bound is been proposed by Blum, in the paper \textit{Time Bounds for
-  Selection}. It stated that no more than $5.430\dot{5} \cdot n$ comparisons are ever required.
+  Selection} \cite{Blum1972}. It stated that no more than $5.430\dot{5} \cdot n$ comparisons are ever required \todo{cite}.
 Therefore selection is for sure in a time complexity of $\mathcal{O}(n)$ for best and worst-case.
 
 \begin{lemma}
@@ -181,7 +181,7 @@ Therefore selection is for sure in a time complexity of $\mathcal{O}(n)$ for bes
 \subsection{Partial Order Sets}
 To dive deeper into these algorithms the concept of partial orders needs to be introduced. A partial
 order is an ordering relation
-$\leq$ on a set $P$ that satisfies reflexivity, anti symmetry, and transitivity.
+$\leq$ on a set $P$ that satisfies reflexivity, antisymmetry, and transitivity.
 
 \begin{definition}[Selection Poset]
   Given a set of elements $\Omega$ with $|\Omega| = n < \infty$ we write
@@ -689,7 +689,7 @@ Obwohl dieser Ansatz dazu führt, dass die Rückwärtssuche mehrfach neu gestart
 
 \begin{figure}
   \centering
-  \includegraphics[width=\columnwidth]{figures/backward-search-tree.png}
+  \includegraphics[width=\columnwidth]{figures/backward-searchtree.png}
   \caption{Search tree for $n = 4, i = 1$.
     Level $k$ contains all posets that can be solved in $k$ comparisons and could contribute to the solution with the parameters $n$ and $i$. \\
     A solid arrow marks a predecessor of a poset and a dashed arrow marks the resulting poset when the reversed comparison is inserted.}
@@ -875,7 +875,11 @@ Appendix two text goes here.
 \fi
 
 
-The authors would like to thank...
+The authors would like to express their appreciation to the FMI for hosting this research project. 
+Without the provision of their hardware the extensive computations leading to the attained results would be infeasible.
+Gratitude is extended to Armin Weiß for overseeing and grading this project. 
+Special thanks are due to Florian Stober whose dedicated supervision greatly enriched the discours in terms of methodology, implementation and documentation.
+The preceded work of Armin Weiß and Florian Stober \textit{Lower Bounds for Sorting 16,17 and 18} provided a profound guideline for the structure of our work.
 
 FMI
 Hardware
