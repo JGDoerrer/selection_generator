@@ -406,12 +406,12 @@ some bound were employed. This means that the following heuristics must
 only provably be not too pessimistic.
 
 The first heuristic uses the number of compatible solutions.
-We use the fact, proven in Theorem \ref{theorem:compatible_log}, that the $\log_2$ of 
+We use the fact, proven in Theorem \ref{theorem:compatible_log}, that the $\log_2$ of
 the number of compatible solutions is a lower bound for the cost of a poset.
 
 The calculation of this number first picks a solution element - since posets
-are always reduced in the forward search any element is valid - 
-and then counts the number of possible separations into greater and lesser elements, 
+are always reduced in the forward search any element is valid -
+and then counts the number of possible separations into greater and lesser elements,
 summing up these counts over all solution elements.
 
 As an example, the empty poset $(n,i,\emptyset)$ has $n\cdot\binom{n-1}{i}$ compatible solutions because
@@ -421,8 +421,8 @@ are valid.
 %todo cite Oksanen
 
 The second heuristic attempts to reduce the size of the searched subtree by adding a
-'useful' comparison to eliminate elements faster. Explicitly, it searches for 
-unordered elements $i$ and $j$ such that $i$ has as many elements less than it as possible 
+'useful' comparison to eliminate elements faster. Explicitly, it searches for
+unordered elements $i$ and $j$ such that $i$ has as many elements less than it as possible
 and $j$ as many as possible greater and adds $i<j$ to the poset.
 If there is no $i$ with at least two elements less than it or no $j$ with
 at least 2 greater, the algorithm aborts the heuristic and resumes
@@ -454,14 +454,14 @@ the current best result and number of open child tasks.
 Additionally, the tasks also save the second poset of the two
 outcomes of a comparison to avoid having to maintain separate
 MIN and MAX nodes. Once the first poset completes with a better result,
-the task replaces itself with that for the second poset and expands 
+the task replaces itself with that for the second poset and expands
 again.
 
 Unexpanded tasks are pushed into a shared task heap ordered first by
 number of remaining comparisons to limit breadth-first expansion and
 thus size of the search tree, then by the number of compatible solutions.
-An observation from single threaded runs that completed quickly after 
-the first few posets of depth around $6$ were done also led us to 
+An observation from single threaded runs that completed quickly after
+the first few posets of depth around $6$ were done also led us to
 prevent multithreading above that depth by keeping the respective posets
 in a separate queue.
 
@@ -473,12 +473,12 @@ ultimately abandon mutlithreading and calculate the final numbers
 for $n=15$ using a single core.
 
 We assume that the heap approach potentially buries promising paths
-from completely being searched, preventing propagation of the results 
-and thus the pruning exploitation of a found best from reducing 
+from completely being searched, preventing propagation of the results
+and thus the pruning exploitation of a found best from reducing
 the search tree size so often in later runs that the increased
 workload overtakes the core utilization boost.
 
-See the git branch \textit{multi-threaded} for the last state. 
+See the git branch \textit{multi-threaded} for the last state.
 
 \subsection{Backward Search} \label{sec:backward}
 
@@ -875,16 +875,11 @@ Appendix two text goes here.
 \fi
 
 
-The authors would like to express their appreciation to the FMI for hosting this research project. 
+The authors would like to express their appreciation to the FMI for hosting this research project.
 Without the provision of their hardware the extensive computations leading to the attained results would be infeasible.
-Gratitude is extended to Armin Weiß for overseeing and grading this project. 
+Gratitude is extended to Armin Weiß for overseeing and grading this project.
 Special thanks are due to Florian Stober whose dedicated supervision greatly enriched the discours in terms of methodology, implementation and documentation.
-The preceded work of Armin Weiß and Florian Stober \textit{Lower Bounds for Sorting 16,17 and 18} provided a profound guideline for the structure of our work.
-
-FMI
-Hardware
-Florian Stober
-Armin weiß
+The preceded work of Armin Weiß and Florian Stober \textit{Lower Bounds for Sorting 16, 17, and 18 Elements} \cite{stober2022lower} provided a profound guideline for the structure of our work.
 
 \ifCLASSOPTIONcaptionsoff
   \newpage
