@@ -221,11 +221,11 @@ The SELECT problem is thus embedded as $(n, i, \emptyset)$.
   the most expensive ones.
 \end{definition}
 
-\begin{definition}[Dual Poset] \label{definition:inverse_poset}
+\begin{definition}[Dual Poset] \label{definition:dual_poset}
   The dual of a poset $P=(n, i, R)$ is the poset $P^{-1}=(n, n-1-i, R')$ with $R' = \{(u,v) \; \vert \; (v,u) \in R\}$.
 \end{definition}
 
-\begin{lemma}
+\begin{lemma} \label{lemma:dual_poset_allowed}
   For a given poset $P = (n, i, R)$ $V(P) = V(P^{-1})$
 \end{lemma}
 
@@ -480,95 +480,24 @@ workload overtakes the core utilization boost.
 
 See the git branch \textit{multi-threaded} for the last state.
 
-\subsection{Backward Search} \label{sec:backward}
-
-Backward search starts with a solved poset, then repeatedly attempts to remove comparisons from its
-frontier posets such that the same poset with the opposite comparison result is also found within
-those already discovered.
-
-Thus, the number of iterations taken until a poset is added to the frontier equals the number of
-worst case comparisons needed to solve it, which means that the search terminates once the empty
-poset with the desired $n$ and $i$ is found.
-
-The argument for correctness is that the number of comparisons for which we have found all posets solvable within them equals the number of iterations of the search.
-If for a given poset and a comparison within it we have already discovered both results then their cost must be less than the current number of iterations. Hence, we can conclude that the poset is solvable within this number of comparisons.
-Since this condition did not hold true in any previous iteration, we can further infer that the cost must also be optimal.
-And if a poset is solvable within
-that number of comparisons it must have at least one comparison with a result among the Posets
-discovered in the previous iteration, as otherwise it would have to be solvable in less.
-
+% ab hier fertig (Julius): 0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TODO: In Papern suche, ob die Rückwärtssuche wirklich komplett neues Gebiet ist
+\subsection{Backward Search} \label{sec:backward}
 
-\subsubsection{Normalform} \label{sec:backward:normal_form}
+To develop the backward search, primarily the backward search from \cite{stober2022lower} was taken as orientation, since it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen \cite{Oksanen}.
 
-In contrast to the forward search, the backward search uses a unique canonicalization. % TODO: 
-The canonicalization of the forward search is not unique for performance reasons.
+The backward search starts with the solved poset and iteratively removes comparisons until the searched poset is found.
+It should be noted that if a comparison is removed from the poset $p = (n_p, i_p, R_p)$ resulting in $p' = (n_p, i_p, R_p \setminus (u, v))$, the reverse comparison should also return a correct result.
+This means that $q' = (n_p, i_p, R_p \setminus (u, v) \cup (v, u))$ has already been discovered in the search.
 
-\subsubsection{Normalform}
-Note that the backward search requires a unique normal form. In case our custom canonification does not yield a unique form, nauty provides the proper canonification.
-In the following, the canonification process is explained.
+Thus, the number of iterations taken until a poset is added to the frontier equals the number of worst case comparisons needed to solve it, which means that the search terminates once $(n, i, \emptyset)$ with the desired $n$ and $i$ is found.
 
-First, it is determined whether $i < n-1-i$ holds.
-If this does not hold true, $P$ is replaced by $P^{-1}$.
-According to lemma~\ref{lemma:inverse_poset} the poset's solvability remains unaltered.
-
-Finally, the poset's elements are arranged canonically.
-As a means to this end, the poset is represented as a directed graph with respect to its Hasse diagram.
-The canonic labelling of the elements is provided by nauty, which is a program in C for the calculation of graph automorphism groups \cite{MCKAY201494}.
-With this canonic labelling the poset can be portrayed canonically.
-A potential problem occurs, if $i = n - 1 - i$ holds.
-In this case, it is impossible to decide whether $P$ or $P^{-1}$ corresponds to
-to the canonical normal form based on the value of $i$.
-
-\begin{figure}
-  \input{figures/tikz_backward_canonify_problematic.tex}
-  \centering
-  \caption{Problematischer Fall}
-  \label{fig:backward_canonify_problematic}
-\end{figure}
-
-In the Hasse diagram in figure~\ref{fig:backward_canonify_problematic} the posets appear unidentical, despite them being each others inverse.
-To mitigate th
-In order to eliminate this ambiguity, the inverse is also calculated and canonicalized for each poset for which $i = n - 1 - i$ applies.
-One of the two is then selected deterministically.
-
-Since canonification is inevitable for the backward search but takes up a large portion of the computing time, all trivial cases are treated manually and only the remaining cases are canonified by nauty.
-
-The manual canonification works as follows.
-First, the in- and out degree is calculated for each nodes.
-Based on these values a hash value is assigned to each node.
-The hash also takes into account the topological structure of all adjacent nodes recursively upto a certain recursion depth limit.
-
-Then, the nodes are sorted according to their in- and out degree and their hash value.
-If each degree and each hash value is unique the graph finally attained its unique normal form.
-For two nodes having identical attributes, it is attempted to swap them.
-If the representation remains unchanged, the poset is regarded as uniquely canonified, since both graphs map to the same representation.
-If the representations differ, the graph is treated as follows.
-Let there be $l$ pairs of nodes with the same attributes, respectively.
-The algorithm iterates over all possible permutations.
-For the first pair there are two possibilities: Either the nodes are swapped, or they remain unchanged.
-Under the realistic assumption of $l$ being small, all possible $2^l$ possible permutations can be efficiently iterated.
-Finally, one permutation is selected deterministically based on its representation.
-
-% ab hier fertig (0)
-Applying this canonification preprocessing reduces the cases requiring nauty drastically, as shown in Table~\ref{table:nauty-ratio}.
-
-\begin{table}
-  \begin{tabular}{c|cccccccc}
-    $n$ & \multicolumn{8}{c}{$i$}                                                         \\
-        & 0                       & 1      & 2     & 3     & 4     & 5     & 6     & 7    \\ \hline
-    13  & 0                       & 30.205 & 6.797 & 1.530 & 0.469 & 0.188 & 0.485        \\
-    14  & 0                       & 33.667 & 7.540 & 1.655 & 0.427 & 0.153 & 0.074        \\
-    15  & 0                       & 36.390 & 8.173 & 1.683 & 0.460 & 0.133 & 0.066 & tbd. \\ % TODO: add value for 15,7
-  \end{tabular}
-  \centering
-  \caption{Percentage in which nauty was required for canonification for variable $n$ and $i$, lower is better}
-  \label{table:nauty-ratio}
-\end{table}
-
-It is particularly noteworthy that for higher $i$, the percentage of nauty calls declines.
-For small values of $i$, the high percentage of nauty is uncritical, as the result for small $i$ can be calculated quickly anyway.
+The argument for correctness is that the number of comparisons for which we have found all posets solvable within them equals the number of iterations of the search.
+If for a given poset and a comparison within it we have already discovered both results then their cost must be less than the current number of iterations.
+Hence, we can conclude that the poset is solvable within this number of comparisons.
+Since this condition did not hold true in any previous iteration, we can further infer that the cost must also be optimal.
+And if a poset is solvable within that number of comparisons it must have at least one comparison with a result among the Posets discovered in the previous iteration, as otherwise it would have to be solvable in less.
 
 
 \subsubsection{Algorithmus} \label{sec:backward:algorithm}
@@ -580,6 +509,7 @@ For all $n$ and $i$, we have $A_0 = { (1, 0, \emptyset) }$.
 
 The backward search begins with $A_0$ and iteratively computes, for each poset in the set $A_k$, the corresponding predecessors, which form the set $A_{k + 1}$.
 If $(n, i, \emptyset) \in A_l$, then $l$ comparisons are the lower bound to determine the $i$-th smallest element of an $n$-element list.
+
 
 \subsubsection{Predecessor calculation} \label{sec:backward:predecessor_calculation}
 
@@ -616,7 +546,7 @@ The computation of a predecessor for a given poset $p = (n_p, i_p, R_p)$ proceed
     \begin{figure}
       \centering
       \input{figures/tikz_problematic_case.tex}
-      \caption{Case in which further comparisons could be removed transitively by removing a comparison}
+      \caption{case in which further comparisons could be removed transitively by removing a comparison}
       \label{fig:backward_problematic}
     \end{figure}
 
@@ -629,7 +559,7 @@ The computation of a predecessor for a given poset $p = (n_p, i_p, R_p)$ proceed
   \item[2.]
     In the next step, all predecessors with $n + 1$ elements are calculated and, by inserting a comparison followed by a canonification, should result in the poset $p$, so that one element is dropped during the reduction.
 
-    As the new element is smaller or larger than the $i$-smallest element being searched for, the $(i + 1)$-smallest or the $i$-smallest element is searched in these predecessors. Since the poset $p$ is canonified, $i \leq n - 1 - i$ applies to $p$. However, by canonifing a poset with $n + 1$ elements and the $(i + 1)$-smallest element searched for, it may be necessary to form the inverse poset, whereby the $(n + 1) - (i + 1) - 1 = n - i + 1$-th element is searched for.
+    As the new element is smaller or larger than the $i$-smallest element being searched for, the $(i + 1)$-smallest or the $i$-smallest element is searched in these predecessors. Since the poset $p$ is canonified, $i \leq n - 1 - i$ applies to $p$. However, by canonifying a poset with $n + 1$ elements and the $(i + 1)$-smallest element searched for, it may be necessary to form the dual poset, whereby the $(n + 1) - (i + 1) - 1 = n - i + 1$-th element is searched for.
 
     Construct poset $q$ as follows:
     To achieve this, insert a new element into poset $p$ and add arbitrary comparisons between the new element and the existing elements.
@@ -656,30 +586,20 @@ The computation of a predecessor for a given poset $p = (n_p, i_p, R_p)$ proceed
 
     As proofen in Lemma~\ref{lemma:remove_only_last_element_edge}, it suffices to compare the new element solely with the existing ones.
 
-    Subsequently, the posets from the first and second steps are merged into a set, ensuring the canonicalization of all posets.
+    Subsequently, the posets from the first and second steps are merged into a set, ensuring the canonification of all posets.
 
   \item[3.]
     In the third step, new elements are iteratively inserted, followed by new comparisons for each previously found element, until the upper limit on elements, $n_{\text{max}}$, is reached.
     This upper limit $n_{\text{max}}$ also prevents the reuse of cache values from a backward search traversal for subsequent iterations.
     When inserting a new element, it is important to note that it may no longer be the $i$-th smallest, but rather the $(i + 1)$-th smallest element being searched, similar to the second step, and thus cannot be directly reduced.
-    Additionally, by adding the comparison $u < v$, as in the first and second steps, followed by subsequent reduction and canonicalization, the resulting poset $p$ should be obtained anew.
+    Additionally, by adding the comparison $u < v$, as in the first and second steps, followed by subsequent reduction and canonification, the resulting poset $p$ should be obtained anew.
 
   \item[4.]
-    % bis hier fertig (0)
-
-    Im letzten Schritt wird für jeden Vorgänger die minimale Anzahl an Vergleichen berechnet, die noch entfernt werden müssen, bis das leere Poset erreicht ist.
-    Diese Anzahl entspricht den Kanten im zugehörigen Hasse-Diagramm.
-    Anhand der bekannten theoretischen oberen Schranken können alle Posets verworfen werden, die zu viele Vergleiche enthalten, da diese zu keinem leeren Poset in den verbleibenden Vergleichen führen können und somit auch in der Vorwärtssuche nicht betrachtet werden können.
+    In the last step, the minimum number of comparisons that still need to be removed until the empty poset is reached is calculated for each predecessor.
+    This number corresponds to the edges in the corresponding Hasse diagram.
+    Based on the known theoretical upper bounds, all posets that contain too many comparisons can be discarded, as these cannot lead to an empty poset in the remaining comparisons and therefore cannot be considered in the forward search.
+    As no more than one comparison can be removed in one step, these posets can be discarded.
 \end{itemize}
-
-% \begin{lemma}
-%   Sei $p = (n_p, i_p, R_p)$ ein reduziertes Poset. Sei $q = (n_q, i_q, R_q)$ ein reduziertes Poset das man aus $p$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält. Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen, außer $u$ und $v$. Dann gilt für alle $V' \subseteq V$:
-%   Das Poset $p' = (n_{p'}, i_{p'}, R_{p'})$ mit $p' = p \setminus V'$ (entferne alle Elemente aus $V'$) ist reduziert und durch hinzufügen des Vergleich $u < v$ und anschließendem Reduzieren erhält man $q$ aus $p'$.
-% \end{lemma}
-
-Da die theoretischen oberen Schranken in der Praxis zu hoch sind, verwendet das Programm einen iterative deepening-Ansatz.
-Dieser beginnt mit einer oberen Grenze, die der theoretischen unteren Schranke entspricht, und erhöht diese Grenze iterativ, bis schließlich eine Lösung gefunden wird.
-Obwohl dieser Ansatz dazu führt, dass die Rückwärtssuche mehrfach neu gestartet wird, da keine Ergebnisse aus vorherigen Runden übernommen werden können, kann dadurch der Suchraum erheblich eingeschränkt werden.
 
 \begin{figure}
   \centering
@@ -690,14 +610,95 @@ Obwohl dieser Ansatz dazu führt, dass die Rückwärtssuche mehrfach neu gestart
   \label{fig:backward-search-tree}
 \end{figure}
 
-% TODO: hier kommt ein Text hin, der \ref{backward-search-tree} beschreibt
+Figure~\ref{fig:backward-search-tree} shows an example for $n = 4, i = 1$ of which posets the backward search searches.
+
+\subsubsection{Optimization}
+
+As the theoretical upper bounds are too high in practice, the program uses an iterative deepening approach.
+It starts with an upper bound that corresponds to the theoretical lower bound and increases this bound iteratively until a solution is finally found.
+As it is not possible to save which posets are lost due to the guessed upper bound without considerable effort, the backward search is restarted several times.
+Although results from previous rounds are not used, the search space can be considerably reduced and the program can be made more efficient.
 
 \begin{figure}
   \centering
   \input{figures/tikz_posets_per_level.tex}
-  \caption{Number of comparisons required to solve the empty poset with the backward search for $n = 14$ depending on $i$}
+  \caption{Logscaled number of posets generated by the backward search for $n = 14$ depending on the number of comparisons for various $i$}
   \label{fig:backward-posets-per-level}
 \end{figure}
+
+Figure~\ref{fig:backward-posets-per-level} shows the number of backward search posets for different values of $i$.
+It is noticeable that the highest number of posets is searched for all $i$ when there are $8$ to $9$ comparisons left, with a slight tendency towards more comparisons for larger $i$.
+
+\subsubsection{Normalform} \label{sec:backward:normal_form}
+Note that the backward search requires a unique normal form in comparison to the pseudo canonified form of the forward search.
+In case our custom canonification does not yield a unique form, nauty provides the proper canonification.
+In the following, the canonification process is explained:
+
+First, it is determined whether $i < n - 1 - i$ holds.
+If this does not hold true, the poset is replaced by its dual.
+According to Lemma~\ref{lemma:dual_poset_allowed} the posets solvability remains unaltered.
+
+Finally, the posets elements are arranged canonically.
+For this purpose, the poset is represented as a directed graph with respect to its Hasse diagram.
+The canonic labelling of the elements is provided by nauty, which is a program in \texttt{C} for the calculation of graph automorphism groups \cite[Practical Graph Isomorphism]{MCKAY201494}.
+With this canonic labelling the poset can be represented canonically.
+
+A potential problem occurs, if $i = n - 1 - i$ holds.
+In this case, it is impossible to decide whether $p$ or $p^{-1}$ corresponds to to the canonical normal form based on the value of $i$.
+
+\begin{figure}
+  \input{figures/tikz_backward_canonify_problematic.tex}
+  \centering
+  \caption{Problematic case that cannot be distinguished by Nauty, since the two posets are not isomorphic to each other. However, according to Lemma~\ref{lemma:dual_poset_allowed} they can be transformed into each other.}
+  \label{fig:backward_canonify_problematic}
+\end{figure}
+
+In the Hasse diagram in Figure~\ref{fig:backward_canonify_problematic} the posets appear different, despite them being each others duals.
+In order to eliminate this ambiguity, the dual poset is also calculated and canonified for each poset for which $i = n - 1 - i$ applies.
+One of the two is then selected deterministically.
+
+Since canonification is inevitable for the backward search but takes up a large portion of the computing time, all trivial cases are treated manually and only the remaining cases are canonified by nauty.
+
+The manual canonification works as follows.
+First, the in- and out degree is calculated for each node.
+Based on these values a hash value is assigned to each node.
+The hash also takes into account the topological structure of all adjacent nodes recursively up to a certain recursion depth limit.
+
+Then, the nodes are sorted according to their hash value.
+If each hash value is unique the graph finally attains its unique normal form.
+For two nodes having identical attributes, it is attempted to swap them.
+If the internal representation remains unchanged, the poset is regarded as uniquely canonified, since both graphs map to the same internal representation.
+If the internal representations differ, the graph is treated as follows.
+Let there be $l$ pairs of nodes with the same attributes, respectively.
+The algorithm iterates over all possible permutations.
+For the first pair there are two possibilities: Either the nodes are swapped, or they remain unchanged.
+Under the realistic assumption of $l$ being small, all possible $2^l$ possible permutations can be efficiently iterated.
+With the aim of obtaining values for $n = 15$, it follows that there are at most $7$ pairs, and thus always $l \leq 7$
+Finally, one permutation is selected deterministically based on its internal representation.
+
+Applying this canonification preprocessing reduces the cases requiring nauty drastically, as shown in Table~\ref{table:nauty-ratio}.
+
+\begin{table}
+  \begin{tabular}{c|cccccccc}
+    $n$ & \multicolumn{8}{c}{$i$}                                                         \\
+        & 0                       & 1      & 2     & 3     & 4     & 5     & 6     & 7    \\ \hline
+    13  & 0                       & 30.205 & 6.797 & 1.530 & 0.469 & 0.188 & 0.485        \\
+    14  & 0                       & 33.667 & 7.540 & 1.655 & 0.427 & 0.153 & 0.074        \\
+    15  & 0                       & 36.390 & 8.173 & 1.683 & 0.460 & 0.133 & 0.066 & tbd. \\ % TODO: add value for 15,7
+  \end{tabular}
+  \centering
+  \caption{Percentage in which nauty was required for canonification for variable $n$ and $i$, lower is better}
+  \label{table:nauty-ratio}
+\end{table}
+
+It is particularly noteworthy that for higher $i$, the percentage of nauty calls declines.
+For small values of $i$, the high percentage of nauty is uncritical, as the result for small $i$ can be calculated quickly anyway.
+% bis hier fertig (Julius): 0
+
+% \begin{lemma}
+%   Sei $p = (n_p, i_p, R_p)$ ein reduziertes Poset. Sei $q = (n_q, i_q, R_q)$ ein reduziertes Poset das man aus $p$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält. Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen, außer $u$ und $v$. Dann gilt für alle $V' \subseteq V$:
+%   Das Poset $p' = (n_{p'}, i_{p'}, R_{p'})$ mit $p' = p \setminus V'$ (entferne alle Elemente aus $V'$) ist reduziert und durch hinzufügen des Vergleich $u < v$ und anschließendem Reduzieren erhält man $q$ aus $p'$.
+% \end{lemma}
 
 \subsubsection{Parallelisierung} \label{sec:backward:parallelisation}
 Die Rückwärtssuche kann effizient parallelisiert werden, indem die Berechnung der Vorgänger parallel durchgeführt wird.
