@@ -6,16 +6,16 @@
       enlarge x limits = .1,%x-Achse erweitern
       x axis line style = {-},%kein Pfeil
       bar width=3pt,
-      ylabel={Anzahl Posets},
-      xlabel={Anzahl Vergleiche},
+      ylabel={number of posets},
+      xlabel={number of comparisons},
       % legend cell align=left,
       % legend pos=outer north east,
-      legend style={at={(0.5,-0.2)},anchor=north}, % draw=none
+      % legend style={at={(0.5,-0.2)},anchor=north}, % draw=none
     ]
-    \addlegendentry{forward search}
+    % \addlegendentry{forward search}
     \addplot[fill=blue,shift={(1pt, 0)}] table {
         x y
-        0  0
+        0  1
         1  4
         2  57
         3  552
@@ -40,7 +40,7 @@
         22 2
         23 1
       };
-    \addlegendentry{backward search}
+    % \addlegendentry{backward search}
     \addplot[fill=red,shift={(-1pt, 0)}] table {
         x y
         23 1
@@ -70,3 +70,5 @@
       };
   \end{axis}
 \end{tikzpicture}
+
+Treff: 11
