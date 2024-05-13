@@ -14,6 +14,7 @@ use crate::{
     cache::Cache,
     canonified_poset::CanonifiedPoset,
     constants::{LOWER_BOUNDS, UPPER_BOUNDS},
+    normal_poset::NormalPoset,
     poset::Poset,
     utils::format_duration,
 };
@@ -117,6 +118,8 @@ impl<'a> Search<'a> {
         &mut self,
         backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
     ) -> u8 {
+        const PAIR_WISE_OPTIMIZATION: bool = false;
+
         let start = Instant::now();
 
         let min = LOWER_BOUNDS[self.n as usize][self.i as usize];
@@ -125,23 +128,35 @@ impl<'a> Search<'a> {
         let mut result = max as u8;
 
         for current in min.. {
-            let current = current as u8;
+            let mut poset = NormalPoset::new(self.n, self.i);
+            let mut comparisons_done = 0u8;
+            if PAIR_WISE_OPTIMIZATION {
+                println!("Attention: searching with pairwise-optimisation");
+                for k in (0..self.n - 1).step_by(2) {
+                    comparisons_done += 1;
+                    poset.add_and_close(k, k + 1);
+                }
+            }
+
+            let current = current as u8 - comparisons_done;
             self.current_max = current;
             self.analytics.set_max_depth(current / 2);
 
             let search_result = self.search_rec(
                 backward_search_state,
-                CanonifiedPoset::new(self.n, self.i),
+                poset.canonified(),
                 current,
                 0,
             );
             result = match search_result {
-                Cost::Solved(solved) => solved,
+                Cost::Solved(solved) => solved + comparisons_done,
                 Cost::Minimum(min) => {
                     self.analytics.multiprogress.clear().unwrap();
                     println!(
                         "n: {}, i: {} needs at least {} comparisons",
-                        self.n, self.i, min
+                        self.n,
+                        self.i,
+                        min + comparisons_done
                     );
                     println!("{}", format_duration(start));
 
