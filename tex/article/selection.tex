@@ -665,11 +665,11 @@ Applying this canonification preprocessing reduces the cases requiring nauty dra
 
 \begin{table}
   \begin{tabular}{c|cccccccc}
-    $n$ & \multicolumn{8}{c}{$i$}                                                         \\
-        & 0                       & 1      & 2     & 3     & 4     & 5     & 6     & 7    \\ \hline
-    13  & 0                       & 30.205 & 6.797 & 1.530 & 0.469 & 0.188 & 0.485        \\
-    14  & 0                       & 33.667 & 7.540 & 1.655 & 0.427 & 0.153 & 0.074        \\
-    15  & 0                       & 36.390 & 8.173 & 1.683 & 0.460 & 0.133 & 0.066 & tbd. \\ % TODO: add value for 15,7
+    $n$ & \multicolumn{8}{c}{$i$}                                                          \\
+        & 0                       & 1      & 2     & 3     & 4     & 5     & 6     & 7     \\ \hline
+    13  & 0                       & 30.205 & 6.797 & 1.530 & 0.469 & 0.188 & 0.485         \\
+    14  & 0                       & 33.667 & 7.540 & 1.655 & 0.427 & 0.153 & 0.074         \\
+    15  & 0                       & 36.390 & 8.173 & 1.683 & 0.460 & 0.133 & 0.066 & 0.042 \\
   \end{tabular}
   \centering
   \caption{Percentage in which nauty was required for canonification for variable $n$ and $i$, lower is better}
@@ -836,14 +836,14 @@ See Table~\ref{table:num-comparisons}.
     15         & 4          & 1h 17m 55.0s             & 45m 51.9s                 \\
     15         & 5          & 1d 16h 41m 26.0s         & 19h 30m 20.6s             \\
     15         & 6          & 12d 13h 43m 26.9s        & 1d 5h 42m 51.5s           \\
-    15         & 7          & 14d 1h 50m 45.3s         & tbd.                      \\  % TODO: add value for 15,7
+    15         & 7          & 14d 1h 50m 45.3s         & 3d 8h 8m 32.6s            \\
   \end{tabular}
   \centering
-  \label{tab:search_algorithms}
   \caption{Comparison of the times for the forward and backward search (note: the forward search runs single threaded, in contrast to the backward search which benefits greatly from parallelism)}
+  \label{table:search_algorithms}
 \end{table}
 
-See Table~\ref{tab:search_algorithms}.
+See Table~\ref{table:search_algorithms}.
 
 \subsection{Search evaluation}
 
