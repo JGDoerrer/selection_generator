@@ -65,7 +65,7 @@
 
 \title{Finding Lower Bounds for the Number of Comparison in Selection Algorithms}
 
-\author{Josua Dörrer, Konrad Gendle, Johanna Hofmann, Julius von Smercek, Andreas Steding% <-this %
+\author{Julius von Smercek, Josua Dörrer, Konrad Gendle, Andreas Steding, Johanna Hofmann% <-this %
   \IEEEcompsocitemizethanks{\IEEEcompsocthanksitem Institut für Formale Methoden der
     Informatik (FMI)\protect\\
     Universität Stuttgart
@@ -843,16 +843,20 @@ See Table~\ref{table:num-comparisons}.
   \caption{Comparison of the times for the forward and backward search (note: the forward search runs single threaded, in contrast to the backward search which benefits greatly from parallelism)}
 \end{table}
 
+See Table~\ref{tab:search_algorithms}.
 
 \subsection{Search evaluation}
+
 \subsubsection{Backward search}
 \subsubsection{bidirectional search}
 \subsubsection{forward search}
+
 
 \subsection{Algorithmic improvements}
 
 
 \subsubsection{Multithreading}
+
 
 \section{Conclusion}
 Using computer search based on the work of Oksanen we were able to write our own
@@ -873,7 +877,7 @@ Right now one should use
 the backward search due to the lower RAM footprint and scaling with the CPU
 count. If one is interested in continuing the journey the next steps would be to
 add multithreading to the forward search and add the possibility of a
-bidirectional search. Godspeed and all the best on your path.
+bidirectional search.
 
 
 \subsection{Used Soft- and Hardware} \label{sec:hardware}
