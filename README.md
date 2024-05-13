@@ -1,92 +1,9 @@
-# Selecting the `i'th largest of n` elements
-
-| n  | k | forward search (single threaded) | backward search (multi threaded) | bidirection search (alt) |
-| -  | - | -                | -            | -          |
-| 12 | 0 | 0.0s             | 0.0s         | ?          |
-| 12 | 1 | 0.0s             | 0.1s         | ?          |
-| 12 | 2 | 0.3s             | 0.7s         | ?          |
-| 12 | 3 | 3.5s             | 1.5s         | ?          |
-| 12 | 4 | 59.1s            | 10.0s        | ?          |
-| 12 | 5 | 3m 11.0s         | 42.9s        | ?          |
-| -  | - | -                | -            | -          |
-| 13 | 0 | 0.0s             | 0.0s         | ?          |
-| 13 | 1 | 0.0s             | 0.5s         | ?          |
-| 13 | 2 | 0.4s             | 1.5s         | ?          |
-| 13 | 3 | 13.8s            | 16.4s        | ?          |
-| 13 | 4 | 5m 35.8s         | 1m 42.2s     | ?          |
-| 13 | 5 | 35m 14.0s        | 8m 47.4s     | ?          |
-| 13 | 6 | 1h 24m 51.8s     | 18m 34.7s    | ?          |
-| -  | - | -                | -            | -          |
-| 14 | 0 | 0.0s             | 0.0s         | ?          |
-| 14 | 1 | 0.0s             | 1.7s         | ?          |
-| 14 | 2 | 0.4s             | 5.8s         | ?          |
-| 14 | 3 | 22.5s            | 45.7s        | ?          |
-| 14 | 4 | 19m 36.8s        | 15m 58.6s    | ?          |
-| 14 | 5 | 3h 53m 26.4s     | 1h 43m 18.2s | ?          |
-| 14 | 6 | 18h 57m 26.1s    | 6h 58m 36.1s | ?          |
-| -  | - | -                | -            | -          |
-| 15 | 0 | 0.0s             | 0.0s         | ?          |
-| 15 | 1 | 0.0s             | 4.0s         | ?          |
-| 15 | 2 | 0.6s             | 23.9s        | ?          |
-| 15 | 3 | 1m 14.8s         | 13m 16.4s    | ?          |
-| 15 | 4 | 1h 17m 55.0s     | 47m 5.7s     | ?          |
-| 15 | 5 | 1d 16h 41m 26.0s | ?            | ?          |
-
-(alles Stand 26.04.2024; Hardware: alles Plankton)
-
-## Table of Contents
+# Finding Lower Bounds for the Number of Comparison in Selection Algorithms
 
 ## Introduction
 
-The following introduction was copied from [1]. Our motivation was to confirm the values in the
-table, find optimal algorithms for values where only a lower bound exists and add some values
-for `n=16`.
+This research project aims to find worst case optimal comparison algorithms for selecting the `i`-th smallest of `n` elements of a set for `n` up to `15` with computer search.
 
-This page gives algorithms for finding the `i'th largest of 'n` elements with the fewest possible
-comparisons.
-
-The problem has been widely studied in literature. **Knuth**[2] gives a brief history of the problem and
-some known upper and lower bounds. Optimal algorithms are known for any `n' when i` is one or two,
-but for example for finding the median (i = n/2), there is a significant performance gap from the
-best known algorithm `(approximately 2.97 n + o(n) comparisons)` to the tightest known minimum
-`(2 n - o(n))`.
-
-Many other special cases are also known, such as the ones given in the table below. Many of these
-were previously found by **Gasarch, Kelly and Pugh**[3] who introduced computer searching to find the
-optimal selection algorithms. The additional results presented in the table above have been
-found by **my independent implementation**[4], but it probably shares many characteristics with Gasarch's.
-
-Numbers marked with one asterisk are new lower bounds. Numbers marked with two asterisks improve
-previously known algorithms. Since I found no previous studies of `V(14,3)` and `V(15,3)` in the
-literature, I have marked it with a question mark.
-
-Click the number to get the optimal selection algorithm. If an optimal algorithm is not known,
-I've given the tightest known lower bound and the best known algorithm.
-
-| V(n,i) | i = 1        | i = 2        | i = 3          | i = 4            | i = 5            | i = 6            | i = 7                    | i = 8  |
-| ------ | ------------ | ------------ | -------------- | ---------------- | ---------------- | ---------------- | ------------------------ | ------ |
-| n = 2  | [1](V_2_1)   |              |                |                  |                  |                  |                          |        |
-| n = 3  | [2](V_3_1)   | [3](V_3_2)   |                |                  |                  |                  |                          |        |
-| n = 4  | [3](V_4_1)   | [4](V_4_2)   |                |                  |                  |                  |                          |        |
-| n = 5  | [4](V_5_1)   | [6](V_5_2)   | [6](V_5_3)     |                  |                  |                  |                          |        |
-| n = 6  | [5](V_6_1)   | [7](V_6_2)   | [8](V_6_3)     |                  |                  |                  |                          |        |
-| n = 7  | [6](V_7_1)   | [8](V_7_2)   | [10](V_7_3)    | [10](V_7_4)      |                  |                  |                          |        |
-| n = 8  | [7](V_8_1)   | [9](V_8_2)   | [11](V_8_3)    | [12](V_8_4)      |                  |                  |                          |        |
-| n = 9  | [8](V_9_1)   | [11](V_9_2)  | [12](V_9_3)    | [14](V_9_4)      | [14](V_9_5)      |                  |                          |        |
-| n = 10 | [9](V_10_1)  | [12](V_10_2) | [14](V_10_3)   | [15](V_10_4)     | [16](V_10_5)     |                  |                          |        |
-| n = 11 | [10](V_11_1) | [13](V_11_2) | [15](V_11_3)   | [17](V_11_4)     | [18](V_11_5)\*   | [18](V_11_6)\*\* |                          |        |
-| n = 12 | [11](V_12_1) | [14](V_12_2) | [17](V_12_3)   | [18](V_12_4)\*\* | [19](V_12_5)\*\* | [20](V_12_6)\*\* |                          |        |
-| n = 13 | [12](V_13_1) | [15](V_13_2) | [18](V_13_3)\* | [20](V_13_4)\*   | [21](V_13_5)\*\* | [22](V_13_6)\*\* | [23](V_13_7)\*           |        |
-| n = 14 | [13](V_14_1) | [16](V_14_2) | [19](V_14_3)?  | [21](V_14_4)\*   | [23](V_14_5)\*   | [24](V_14_6)\*\* | 24\*(..[25](V_14_7)\*\*) |        |
-| n = 15 | [14](V_15_1) | [17](V_15_2) | [20](V_15_3)?  | [23](V_15_4)\*   | [25](V_15_5)\*   | 25\*(..26)       | 23..28                   | 24..28 |
-
-## Improved known optimal compares
-
-| V(n,i) | i = 1        | i = 2        | i = 3         | i = 4          | i = 5              | i = 6            | i = 7                    | i = 8  |
-| ------ | ------------ | ------------ | ------------- | -------------- | ------------------ | ---------------- | ------------------------ | ------ |
-| n = 14 | [13](V_14_1) | [16](V_14_2) | [19](V_14_3)? | [21](V_14_4)\* | [23](V_14_5)\*     | [24](V_14_6)\*\* | 24\*(..[25](V_14_7)\*\*) |        |
-| n = 15 | [14](V_15_1) | [17](V_15_2) | [20](V_15_3)? | [23](V_15_4)\* | [**24**](V_15_5)\* | 25\*(..26)       | 23..28                   | 24..28 |
-| n = 16 | [14](V_16_1) | [17](V_16_2) | [20](V_16_3)  | [23](V_16_4)   | [25](V_16_5)       | 25\*(..26)       | 23..28                   | 24..28 |
 
 ## Requirements
 
@@ -105,6 +22,7 @@ $ pacman -Q clang
 clang 16.0.6-1
 ```
 
+
 ## Quick start
 
 Having all required packages installed, starting a calculation on your own is straight forward.
@@ -121,17 +39,70 @@ For more details please read
 ./target/release/selection_generator --help
 ```
 
-## Calculation times
 
-One can find the calculation times in the `times*.txt` files. The times were generated using the hardware listed in the []
+## Results
+
+The minimum amount of comparisons needed to select the `i + 1`-th smallest of `n`
+
+| `n` \ `i` | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  |
+| -         | -  | -  | -  | -  | -  | -  | -  | -  |
+| 1         | 0  |    |    |    |    |    |    |    |
+| 2         | 1  |    |    |    |    |    |    |    |
+| 3         | 2  | 3  |    |    |    |    |    |    |
+| 4         | 3  | 4  |    |    |    |    |    |    |
+| 5         | 4  | 6  | 6  |    |    |    |    |    |
+| 6         | 5  | 7  | 8  |    |    |    |    |    |
+| 7         | 6  | 8  | 10 | 10 |    |    |    |    |
+| 8         | 7  | 9  | 11 | 12 |    |    |    |    |
+| 9         | 8  | 11 | 12 | 14 | 14 |    |    |    |
+| 10        | 9  | 12 | 14 | 15 | 16 |    |    |    |
+| 11        | 10 | 13 | 15 | 17 | 18 | 18 |    |    |
+| 12        | 11 | 14 | 17 | 18 | 19 | 20 |    |    |
+| 13        | 12 | 15 | 18 | 20 | 21 | 22 | 23 |    |
+| 14        | 13 | 16 | 19 | 21 | 23 | 24 | 25 |    |
+| 15        | 14 | 17 | 20 | 23 | 24 | 26 | 26 | 27 |
+
+Comparison of the times for the forward and backward search (note: the forward search runs single threaded, in contrast to the backward search which benefits greatly from parallelism; the forward search was started with 500gb RAM)
+
+| `n` | `i` | forward search   | backward search |
+| -   | -   | -                | -               |
+| 12  | 0   | 0.0s             | 0.0s            |
+| 12  | 1   | 0.0s             | 0.1s            |
+| 12  | 2   | 0.4s             | 0.7s            |
+| 12  | 3   | 3.5s             | 1.6s            |
+| 12  | 4   | 36.1s            | 8.4s            |
+| 12  | 5   | 1m 29.9s         | 42.0s           |
+| -   | -   | -                | -               |
+| 13  | 0   | 0.0s             | 0.0s            |
+| 13  | 1   | 0.0s             | 0.5s            |
+| 13  | 2   | 0.8s             | 1.5s            |
+| 13  | 3   | 13.8s            | 16.1s           |
+| 13  | 4   | 3m 41.9s         | 1m 40.2s        |
+| 13  | 5   | 17m 9.9s         | 8m 34.7s        |
+| 13  | 6   | 59m 19.8s        | 18m 4.8s        |
+| -   | -   | -                | -               |
+| 14  | 0   | 0.0s             | 0.0s            |
+| 14  | 1   | 0.0s             | 1.5s            |
+| 14  | 2   | 1.4s             | 5.9s            |
+| 14  | 3   | 35.9s            | 46.9s           |
+| 14  | 4   | 17m 27.2s        | 15m 32.5s       |
+| 14  | 5   | tbd.             | 1h 39m 59.6s    |
+| 14  | 6   | tbd.             | 6h 26m 30.8s    |
+| -   | -   | -                | -               |
+| 15  | 0   | tbd.             | 0.0s            |
+| 15  | 1   | tbd.             | 4.0s            |
+| 15  | 2   | tbd.             | 25.9s           |
+| 15  | 3   | tbd.             | 13m 10.9s       |
+| 15  | 4   | tbd.             | 45m 51.9s       |
+| 15  | 5   | tbd.             | 19h 30m 20.6s   |
+| 15  | 6   | tbd.             | 1d 5h 42m 51.5s |
+| 15  | 7   | tbd.             | 3d 8h 8m 32.6s  |
+
 
 ## Hardware used
 
-The hardware used to calculate these results was
+For hardware, we employed two Intel Xeon CPUs, each equipped with 12 cores (24 threads), and a total of 768 GB of RAM.
 
-```shell
-<TBD>
-```
 
 ## References
 
