@@ -731,7 +731,8 @@ See Table~\ref{table:num-comparisons}.
   \label{table:search_algorithms}
   \centering
   \begin{tabular}{c|c|l|l|l}
-    \textbf{n} & \textbf{i} & \textbf{Forward Search}  & \textbf{Backward Search} & \textbf{Oksanen} \\ \hline
+    \textbf{n} & \textbf{i} & \textbf{Forward Search}  & \textbf{Backward Search} & \textbf{Oksanen} \\
+    \hline
     12         & 0          & 0.0s                     & 0.0s                     & 0.0s             \\
     12         & 1          & 0.0s                     & 0.1s                     & 0.0s             \\
     12         & 2          & 0.4s                     & 0.7s                     & 0.1s             \\
@@ -762,7 +763,7 @@ See Table~\ref{table:num-comparisons}.
     15         & 4          & 1h 12m 9.6s              & 45m 51.9s                & tbd.             \\
     15         & 5          & 1d 16h 41m 26.0s (tbd.)  & 19h 30m 20.6s            & tbd.             \\
     15         & 6          & 12d 13h 43m 26.9s (tbd.) & 1d 5h 42m 51.5s          & tbd.             \\
-    15         & 7          & 14d 1h 50m 45.3s (tbd.)  & 3d 8h 8m 32.6s           & tbd.             \\
+    15         & 7          & 14d 1h 50m 45.3s         & 3d 8h 8m 32.6s           & tbd.             \\
     % TODO: add values
   \end{tabular}
 \end{table}
@@ -770,6 +771,46 @@ See Table~\ref{table:num-comparisons}.
 See Table~\ref{table:search_algorithms}.
 
 Furthermore, Oksanen's claim that `pair-forming algorithms', in which the first comparison of any singleton with another singleton is performed, does not lead to suboptimal results, since for $n = 12$ and $i = 4$ a non-optimal result follows under this assumption.
+
+% TODO: und hier noch a sätzchen, dass werte von oksanen auch noch nicht optimal
+
+\begin{table}[!t]
+  \renewcommand{\arraystretch}{1.2}
+  \caption{Number of posets stored in the cache after the corresponding search (note: the fewer entries stored in the cache, the less RAM is needed by the corresponding search)}
+  \label{table:cache_entries}
+  \centering
+  \begin{tabular}{c|c|r|r}
+    \textbf{n} & \textbf{i} & \textbf{Forward Search} & \textbf{Backward Search} \\
+    \hline
+    13         & 0          & $12$                    & $13$                     \\
+    13         & 1          & $329$                   & $245$                    \\
+    13         & 2          & $9.7 \cdot 10^3$        & $10.9 \cdot 10^3$        \\
+    13         & 3          & $199.7 \cdot 10^3$      & $276.9 \cdot 10^3$       \\
+    13         & 4          & $3.7 \cdot 10^6$        & $2.2 \cdot 10^6$         \\
+    13         & 5          & $18.1 \cdot 10^6$       & $9.7 \cdot 10^6$         \\
+    13         & 6          & $67.6 \cdot 10^6$       & $14.5 \cdot 10^6$        \\
+    \hline
+    14         & 0          & $13$                    & $14$                     \\
+    14         & 1          & $442$                   & $319$                    \\
+    14         & 2          & $15.2 \cdot 10^3$       & $19.6 \cdot 10^3$        \\
+    14         & 3          & $438.0 \cdot 10^3$      & $644.2 \cdot 10^3$       \\
+    14         & 4          & $14.1 \cdot 10^6$       & $13.9 \cdot 10^6$        \\
+    14         & 5          & $149.5 \cdot 10^6$      & $84.1 \cdot 10^6$        \\
+    14         & 6          & $925.3 \cdot 10^6$      & $263.3 \cdot 10^6$       \\
+    \hline
+    15         & 0          & $14$                    & $15$                     \\
+    15         & 1          & $741$                   & $407$                    \\
+    15         & 2          & $23.6 \cdot 10^3$       & $34.9 \cdot 10^3$        \\
+    15         & 3          & $1.3 \cdot 10^6$        & $3.1 \cdot 10^6$         \\
+    15         & 4          & $53.0 \cdot 10^6$       & $40.0 \cdot 10^6$        \\
+    15         & 5          & tbd. $\cdot 10^6$       & $729.7 \cdot 10^6$       \\
+    15         & 6          & tbd. $\cdot 10^9$       & $1.3 \cdot 10^9$         \\
+    15         & 7          & $15.7 \cdot 10^9$       & $2.2 \cdot 10^9$         \\
+    % TODO: add values
+  \end{tabular}
+\end{table}
+
+See Table~\ref{table:cache_entries}.
 
 \subsection{Search evaluation}
 
@@ -785,7 +826,7 @@ Furthermore, Oksanen's claim that `pair-forming algorithms', in which the first 
 
 
 \section{Conclusion}
-Using computer search based on the work of Oksanen we were able to write our own version of a search program for selecting the $i$-th element of a list of $n$ elements (see: \href{https://github.com/JGDoerrer/selection_generator}{Github}) and not only confirming the found solutions of Oksanen for the problem but also improving some entries (e.g. $n = 15, i = 5$).
+Using computer search based on the work of Oksanen we were able to write our own version of a search program for selecting the $i$-th element of a list of $n$ elements (see: \href{https://github.com/JGDoerrer/selection_generator}{Github}) and not only confirming the found solutions of Oksanen for the problem but also improving some entries (e.g. $n = 15, i = 4$).
 Further we added some more numbers and therefore algorithms to the table for higher $n$ and $i$.
 As stated in the motivation before: the road is better than the inn.
 Along the way we learned a lot about the problem structure and complexity, improved our forward and backward search algorithms coming to a final conclusion that both are valid and have their strength an weaknesses as stated in (\ref{}).
