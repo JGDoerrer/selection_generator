@@ -87,13 +87,13 @@ Comparison of the times for the forward and backward search (note: the forward s
 | 14  | 3   | 35.9s            | 46.9s           |
 | 14  | 4   | 17m 27.2s        | 15m 32.5s       |
 | 14  | 5   | 2h 39m 49.5s     | 1h 39m 59.6s    |
-| 14  | 6   | tbd.             | 6h 26m 30.8s    |
+| 14  | 6   | 14h 39m 41.5s    | 6h 26m 30.8s    |
 | -   | -   | -                | -               |
-| 15  | 0   | tbd.             | 0.0s            |
-| 15  | 1   | tbd.             | 4.0s            |
-| 15  | 2   | tbd.             | 25.9s           |
-| 15  | 3   | tbd.             | 13m 10.9s       |
-| 15  | 4   | tbd.             | 45m 51.9s       |
+| 15  | 0   | 0.0s             | 0.0s            |
+| 15  | 1   | 0.1s             | 4.0s            |
+| 15  | 2   | 2.8s             | 25.9s           |
+| 15  | 3   | 2m 23.7s         | 13m 10.9s       |
+| 15  | 4   | 1h 12m 9.6s      | 45m 51.9s       |
 | 15  | 5   | tbd.             | 19h 30m 20.6s   |
 | 15  | 6   | tbd.             | 1d 5h 42m 51.5s |
 | 15  | 7   | tbd.             | 3d 8h 8m 32.6s  |

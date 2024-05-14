@@ -1,0 +1,258 @@
+limit=1, n=12, i=4: no comparisons done
+limit=18, n=8, i=4: a>d,a>h,b>f,c>e,c>f,e>h,f>g
+limit=18, n=10, i=4: a>i,a>j,b>f,b>g,c>d,c>e,c>h,e>i,f>j,g>h
+limit=18, n=9, i=4: a>f,a>g,b>d,b>g,b>i,c>e,c>f,e>h,e>i
+limit=18, n=10, i=4: b>e,b>g,b>j,c>d,c>f,c>h,c>i,f>j,g>h,g>i
+limit=18, n=11, i=4: a>f,a>g,a>h,a>i,a>j,b>e,b>f,b>g,b>h,c>d,c>f,c>g,c>h,c>k,d>j,e>i,e>k
+limit=18, n=10, i=4: a>f,b>h,b>i,b>j,c>d,c>e,c>g,c>h,g>i,g>j
+limit=18, n=12, i=4: a>g,b>e,b>g,b>l,c>d,c>f,e>i,f>h,f>j,f>l,j>k
+limit=18, n=9, i=4: c>g,c>i,d>e,d>f,d>h,f>i,g>h
+limit=18, n=8, i=4: a>f,b>f,c>g,c>h,d>e,d>g,d>h
+limit=18, n=11, i=4: a>j,b>f,b>i,c>g,c>i,c>j,d>e,d>i,d>j,d>k,f>h,g>k
+limit=18, n=10, i=4: a>d,b>g,b>i,b>j,c>e,c>g,d>f,e>i,e>j,g>h
+limit=18, n=10, i=4: a>g,a>j,b>e,c>d,c>g,c>i,e>f,e>i,e>j,g>h
+limit=18, n=10, i=4: a>e,a>i,a>j,b>c,b>d,b>f,d>g,e>h,f>i,f>j
+limit=18, n=9, i=4: a>c,b>d,c>e,d>f,d>g,f>i,g>h
+limit=18, n=12, i=4: a>k,b>d,b>e,b>j,b>k,c>f,c>g,c>j,c>k,f>i,g>h,j>l
+limit=18, n=11, i=4: a>g,b>i,c>h,c>i,d>e,d>f,d>i,d>j,d>k,h>j,h>k
+limit=18, n=10, i=4: a>j,b>d,b>f,b>i,b>j,c>e,c>f,c>j,e>g,e>h,e>i
+limit=18, n=10, i=4: a>i,b>i,c>j,d>e,d>i,e>f,e>j,f>g,f>h
+limit=18, n=10, i=4: a>e,b>j,c>h,d>f,d>h,f>g,f>j,h>i
+limit=18, n=11, i=4: a>e,b>d,b>g,b>k,c>f,c>g,f>h,f>i,f>j,f>k
+limit=18, n=11, i=4: a>h,b>k,c>h,c>i,c>j,c>k,d>e,d>f,d>g,d>i,d>k,g>j
+limit=18, n=10, i=4: a>d,a>f,b>f,b>h,b>i,b>j,c>e,e>g,e>h,e>i,e>j
+limit=18, n=11, i=4: b>f,b>g,b>h,b>i,c>d,c>e,c>g,c>j,c>k,d>i,e>h,f>j,f>k
+limit=18, n=11, i=3: a>e,b>g,c>d,c>f,f>h,f>i,g>j,g>k
+limit=18, n=9, i=4: a>e,a>f,a>g,b>d,b>e,c>f,c>g,c>h,c>i,d>h,d>i
+limit=18, n=11, i=4: b>f,b>g,b>i,c>d,c>e,c>g,c>j,c>k,e>h,e>i,f>j,f>k
+limit=18, n=12, i=4: b>k,c>f,c>i,c>k,c>l,d>e,d>g,d>h,d>i,d>k,g>j,h>l
+limit=18, n=10, i=4: b>j,c>f,c>g,c>h,d>e,d>f,d>g,d>h,d>j,e>i
+limit=18, n=12, i=4: a>j,b>i,c>f,c>h,c>j,d>e,d>g,d>h,d>i,g>k,g>l
+limit=18, n=12, i=4: b>f,c>e,d>g,d>h,g>i,g>j,h>k,k>l
+limit=18, n=10, i=4: b>g,c>f,c>h,d>e,d>f,d>g,d>h,h>i,h>j
+limit=18, n=11, i=4: a>k,b>d,b>h,b>i,c>e,c>j,d>g,d>j,e>f,e>h,e>i,e>k
+limit=18, n=10, i=4: a>g,b>i,c>f,c>g,c>i,c>j,d>e,d>f,d>i,e>h,e>j
+limit=18, n=10, i=4: a>j,b>i,c>h,d>e,d>f,d>g,e>j,f>i,g>h
+limit=18, n=12, i=4: a>f,a>g,a>k,a>l,b>c,b>d,b>e,b>i,b>j,c>h,d>l,e>k,f>j,g>i
+limit=18, n=11, i=4: c>f,c>g,d>e,d>h,d>j,d>k,f>k,g>j,h>i
+limit=18, n=9, i=4: b>d,b>g,c>e,c>f,c>h,e>i,f>i,g>h
+limit=18, n=11, i=4: c>h,d>j,d>k,e>i,e>j,e>k,f>g,f>i,f>j,f>k
+limit=18, n=10, i=4: a>h,b>h,b>i,b>j,c>f,d>e,d>h,e>j,f>g,f>i
+limit=18, n=11, i=4: a>g,a>k,b>e,b>g,b>h,b>i,c>d,c>f,c>j,e>j,f>h,f>i,f>k
+limit=18, n=12, i=4: a>d,b>c,b>e,b>f,d>j,e>k,e>l,f>g,f>h,f>i
+limit=18, n=11, i=4: a>e,b>d,b>j,b>k,c>f,e>h,f>g,f>j,f>k,h>i
+limit=18, n=12, i=4: a>e,a>f,a>j,b>f,b>k,b>l,c>d,c>e,d>g,d>j,d>k,d>l,f>h,g>i
+limit=18, n=12, i=4: a>e,a>i,b>d,b>g,b>i,c>g,c>i,c>j,c>k,c>l,d>l,e>f,e>j,e>k,g>h
+limit=18, n=11, i=4: a>g,a>j,a>k,b>d,b>e,b>h,b>i,c>f,c>g,e>j,f>h,f>i,f>k
+limit=18, n=12, i=4: c>f,c>h,c>i,d>e,d>g,d>h,d>i,d>l,f>l,g>j,j>k
+limit=18, n=12, i=4: c>h,d>f,d>i,d>j,d>l,e>g,e>h,e>i,e>j,g>l,j>k
+limit=18, n=12, i=4: b>i,c>l,d>g,d>h,d>l,e>f,e>g,e>h,e>i,e>l,f>j,j>k
+limit=18, n=12, i=4: b>j,c>i,c>k,d>e,d>f,d>g,d>h,k>l
+limit=18, n=12, i=4: b>e,b>f,c>d,c>f,c>j,c>k,c>l,d>g,e>j,e>k,e>l,f>h,g>i
+limit=18, n=11, i=4: a>c,a>d,a>k,b>e,c>h,d>f,d>h,e>g,e>k,g>i,g>j
+limit=18, n=11, i=4: a>f,b>h,b>j,b>k,c>f,c>h,c>i,d>e,d>h,e>g,e>i,e>j,e>k
+limit=18, n=11, i=4: c>g,c>h,c>j,c>k,d>e,d>f,d>i,i>j,i>k
+limit=18, n=11, i=4: a>c,a>f,b>d,b>e,b>f,c>j,d>i,d>k,e>g,e>h,e>k
+limit=18, n=12, i=4: a>j,b>e,b>f,b>k,b>l,c>d,c>g,c>j,c>k,c>l,g>h,g>i
+limit=18, n=12, i=4: b>g,b>h,b>i,c>f,c>h,c>i,c>j,d>e,d>h,d>i,d>k,d>l,f>l,g>j,g>k
+limit=18, n=10, i=4: d>e,d>f,e>j,f>g,f>h,f>j,h>i
+limit=18, n=12, i=4: a>e,b>d,b>k,b>l,c>f,c>j,d>j,e>k,e>l,f>g,f>h,h>i
+limit=18, n=12, i=4: d>k,e>l,f>j,f>l,g>h,g>i,g>k,g>l
+limit=18, n=10, i=4: c>j,d>e,d>f,d>g,d>h,f>i,g>i,h>j
+limit=18, n=12, i=4: a>c,a>f,b>d,b>e,b>l,d>i,e>g,e>i,f>h,f>l,g>j,h>k
+limit=18, n=11, i=4: b>k,c>i,c>j,d>e,d>f,d>g,d>h,d>i,d>j,h>k
+limit=18, n=12, i=4: b>e,b>h,b>i,b>j,b>k,c>d,c>f,c>l,e>l,f>g,f>h,f>i,f>j,f>k
+# hash_table_size = 892857142
+# n_solved = 31717
+# n_unsolved = 22568
+# n_hits = 3516829
+# n_misses = 1413249
+# avg_priority = 899.372
+# avg_cost = 7.283
+limit=18, n=10, i=4: c>j,d>h,e>i,e>j,f>g,f>h,f>i
+limit=18, n=11, i=4: b>f,c>d,c>e,c>i,c>j,c>k,e>g,f>i,f>j,f>k,g>h
+limit=18, n=12, i=4: b>e,b>f,b>g,b>l,c>d,c>f,c>g,c>j,c>k,d>i,d>l,e>h,e>j,e>k
+limit=18, n=12, i=4: a>g,b>f,b>k,c>d,c>e,c>l,d>i,e>h,f>l,g>j,g>k
+limit=18, n=11, i=3: c>d,c>e,c>f,c>g,c>h,h>i,h>j,h>k
+# cost = 19
+# n_nodes = 69789
+# version = 1.6
+# time = 59.180
+# hash_table_size = 892857142
+# n_solved = 33985
+# n_unsolved = 24024
+# n_hits = 3783915
+# n_misses = 1497707
+# avg_priority = 910.208
+# avg_cost = 7.373
+
+# n=12, i=4, a?b: no comparisons done
+find_1(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_2(c,d,e,f,g,h,i,j,k,l,a,b)
+  else find_2(c,d,e,f,g,h,i,j,k,l,b,a)
+# n=12, i=4, a?b: k>l
+find_2(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_3(c,d,e,f,g,h,i,j,a,k,l,b)
+  else find_3(c,d,e,f,g,h,i,j,b,k,l,a)
+# n=12, i=4, a?b: i>l,j>k
+find_3(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_4(c,d,e,f,g,h,a,i,j,k,l,b)
+  else find_4(c,d,e,f,g,h,b,i,j,k,l,a)
+# n=12, i=4, a?b: g>l,h>k,i>j
+find_4(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_5(c,d,e,f,a,g,h,i,j,k,l,b)
+  else find_5(c,d,e,f,b,g,h,i,j,k,l,a)
+# n=12, i=4, a?b: e>l,f>k,g>j,h>i
+find_5(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_6(c,d,a,e,f,g,h,i,j,k,l,b)
+  else find_6(c,d,b,e,f,g,h,i,j,k,l,a)
+# n=12, i=4, a?b: c>l,d>k,e>j,f>i,g>h
+find_6(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_7(a,c,d,e,f,g,h,i,j,k,l,b)
+  else find_7(b,c,d,e,f,g,h,i,j,k,l,a)
+# n=12, i=4, a?b: a>l,b>k,c>j,d>i,e>h,f>g
+find_7(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_8(c,d,e,f,a,l,g,h,i,j,b,k)
+  else find_8(c,d,e,f,b,k,g,h,i,j,a,l)
+# n=12, i=4, a?b: a>j,b>i,c>h,d>g,e>f,e>k,k>l
+find_8(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_9(c,d,a,e,f,j,g,h,k,b,l,i)
+  else find_9(c,d,b,e,f,i,g,h,k,a,l,j)
+# n=12, i=4, a?b: a>h,b>g,c>f,c>j,d>e,d>i,i>k,j>l
+find_9(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_10(a,c,d,e,f,h,i,j,b,k,l,g)
+  else find_10(b,c,d,e,f,g,i,j,a,k,l,h)
+# n=12, i=4, a?b: a>f,a>i,b>e,b>h,c>d,c>g,g>j,h>k,i>l
+find_10(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_11(c,a,f,d,i,g,b,e,l,j,h,k)
+  else find_11(c,b,e,d,h,g,a,f,k,j,i,l)
+# n=12, i=4, a?b: a>d,a>f,b>c,b>e,b>g,e>i,f>j,g>h,g>k,k>l
+find_11(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_12(d,f,b,c,j,e,g,h,k,i)
+  else find_13(c,e,a,g,h,d,i,k,f,l,j)
+# n=11, i=3, c?d: b>g,c>f,c>i,d>e,d>h,h>j,i>k
+find_13(a,b,c,d,e,f,g,h,i,j,k) =
+  if c > d
+  then find_12(a,b,c,f,g,i,d,h,e,k)
+  else find_12(a,b,d,e,g,h,c,f,i,j)
+# n=10, i=3, a?d: b>e,c>d,c>f,c>g,f>j,g>h,g>i
+find_12(a,b,c,d,e,f,g,h,i,j) =
+  if a > d
+  then find_14(b,a,c,e,f,g,d,h,i,j)
+  else find_15(b,c,e,d,f,g,h,i,j,a)
+# n=10, i=3, a?d: a>c,b>d,b>e,b>f,d>j,e>i,f>g,f>h
+find_15(a,b,c,d,e,f,g,h,i,j) =
+  if a > d
+  then find_16(a,b,c,e,f,d,g,h,i)
+  else find_17(e,d,f,g,h,a,j,i)
+# n=8, i=2, a?b: a>h,b>f,b>g,c>d,c>e
+find_17(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_18(a,c,d,e,b,h)
+  else find_19(c,b,a,f,g,d,e)
+# n=7, i=2, a?b: a>f,a>g,b>c,b>d,b>e
+find_19(a,b,c,d,e,f,g) =
+  if a > b
+  then find_20(b,f,g)
+  else find_21(a,c,d,e)
+# n=4, i=1, a?c: no comparisons done
+find_21(a,b,c,d) =
+  if a > c
+  then find_20(a,b,d)
+  else find_20(b,c,d)
+# n=3, i=1, b?c: no comparisons done
+find_20(a,b,c) =
+  if b > c
+  then find_22(a,b)
+  else find_22(a,c)
+# n=2, i=1, a?b: no comparisons done
+find_22(a,b) =
+  if a > b
+  then a
+  else b
+# n=6, i=2, a?c: a>e,a>f,b>c,b>d
+find_18(a,b,c,d,e,f) =
+  if a > c
+  then find_23(b,a,e,f,d)
+  else find_22(c,d)
+# n=5, i=2, a?b: a>e,b>c,b>d
+find_23(a,b,c,d,e) =
+  if a > b
+  then find_22(b,e)
+  else find_20(a,c,d)
+# n=9, i=3, a?e: a>c,a>f,b>d,b>e,b>f,d>i,e>g,e>h
+find_16(a,b,c,d,e,f,g,h,i) =
+  if a > e
+  then find_24(a,b,c,d,e,f,i)
+  else find_25(d,e,a,g,h,i)
+# n=6, i=2, a?b: a>f,b>c,b>d,b>e
+find_25(a,b,c,d,e,f) =
+  if a > b
+  then find_22(b,f)
+  else find_21(a,c,d,e)
+# n=7, i=3, c?d: a>c,a>e,a>f,b>d,b>e,b>f,d>g
+find_24(a,b,c,d,e,f,g) =
+  if c > d
+  then find_26(c,b,e,f)
+  else find_23(d,a,e,f,g)
+# n=4, i=2, a?b: b>c,b>d
+find_26(a,b,c,d) =
+  if a > b
+  then b
+  else find_20(a,c,d)
+# n=10, i=3, b?f: a>d,b>g,c>e,c>f,c>g,e>j,f>h,f>i
+find_14(a,b,c,d,e,f,g,h,i,j) =
+  if b > f
+  then find_27(a,b,c,d,e,f,g,j)
+  else find_28(a,c,d,e,f,b,h,i,j)
+# n=9, i=3, a?d: a>c,b>d,b>e,d>i,e>f,e>g,e>h
+find_28(a,b,c,d,e,f,g,h,i) =
+  if a > d
+  then find_29(a,b,c,e,d,f,g,h)
+  else find_19(d,e,f,g,h,a,i)
+# n=8, i=3, a?d: a>c,a>e,b>d,b>e,d>f,d>g,d>h
+find_29(a,b,c,d,e,f,g,h) =
+  if a > d
+  then find_26(c,b,d,e)
+  else find_21(a,f,g,h)
+# n=8, i=3, a?b: a>d,b>f,b>g,c>e,c>f,c>g,e>h
+find_27(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_30(a,c,b,d,e,h)
+  else find_31(b,c,e,a,h,d,f,g)
+# n=8, i=3, c?d: a>d,a>g,a>h,b>c,b>g,b>h,c>e,d>f
+find_31(a,b,c,d,e,f,g,h) =
+  if c > d
+  then find_23(c,a,g,h,e)
+  else find_23(d,b,g,h,f)
+# n=6, i=3, c?e: a>c,a>d,b>e,e>f
+find_30(a,b,c,d,e,f) =
+  if c > e
+  then find_32(b,c,d)
+  else find_33(a,b,d,e,f)
+# n=5, i=3, a?d: a>c,b>d,d>e
+find_33(a,b,c,d,e) =
+  if a > d
+  then find_34(c,b,d)
+  else find_22(a,e)
+# n=3, i=2, a?b: b>c
+find_34(a,b,c) =
+  if a > b
+  then b
+  else find_22(a,c)
+# n=3, i=2, a?b: no comparisons done
+find_32(a,b,c) =
+  if a > b
+  then find_34(c,a,b)
+  else find_34(c,b,a)

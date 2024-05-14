@@ -1,0 +1,30 @@
+
+Branch: main
+SHA: 7892ddb
+
+Thread(s) per core: 2
+Core(s) per socket: 12
+CPU max MHz: 2900.0000
+CPU min MHz: 1200.0000
+
+Current time: 2024-05-14 10:15:02
+===============
+Cache entries: 0
+Maximum cache entries: 20833333332
+n: 15, i: 3 needs at least 23 comparisons
+Duration: 0d 0h 2m 22.997803s
+
+Congratulations. A solution was found!
+
+n: 15, i: 3
+Comparisons: 23
+
+Cache entries: 1337761
+Cache size: 0.030 Gigabyte
+Cache hits: 25405925
+Cache misses: 1337761
+Cache replaced: 0
+
+Posets searched: 676533
+Duration: 0d 0h 2m 23.72287s
+
