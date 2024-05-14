@@ -69,13 +69,13 @@
     Universität Stuttgart
   }}
 
-\markboth{Bachelor-Forschungsprojekt}%
+\markboth{Bachelor research project}%
 {Submission}
 
 \IEEEtitleabstractindextext{%
   \begin{abstract}
     This research project aims to find worst case optimal comparison algorithms for selecting the
-    i-th smallest of n elements of a set for n up to 15 with computer search.
+    $i$-th smallest of $n$ elements of a set for $n$ up to $15$ with computer search.
   \end{abstract}
 
   \begin{IEEEkeywords}
@@ -95,7 +95,8 @@
   \label{sec:motivation}
 } \IEEEPARstart{T}{he} problem of selecting the $i$-th smallest element in a list of $n$ elements is a well known problem in computer science and called \textit{selection}.
 Explicitly, we concern ourselves with optimal worst-case selection of a single element from a set of initially unordered unique others, measuring the cost as number of comparisons made.
-A first approach to solve this can be achieved by sorting the list at first and selecting the $i$-th element. However, this approach has a time complexity of $\mathcal{O}(n \cdot \log n)$.
+A first approach to solve this can be achieved by sorting the list at first and selecting the $i$-th element.
+However, this approach has a time complexity of $\mathcal{O}(n \cdot \log n)$.
 Putting more thought into this problem one can find algorithms like the median of medians (Schöning~\cite{Schoening1993}) or PICK (Blum~\cite{Blum1972}) and reduce the time complexity to $\mathcal{O}(n)$.
 Optimal algorithms are known for any $n$ when $i$ is either one or two, but there is a significant performance gap finding the median $i = \nicefrac{n}{2}$ from the best known algorithm with a time complexity of $2.97 \cdot n + \smallO(n)$ to the tightest known minimum of $2 \cdot n - \smallO(n)$.
 
@@ -230,7 +231,7 @@ By definition of the problem, we seek an element that is larger than $n-i$ eleme
 
 With Lemma~\ref{lemma:partition}, a solved poset has exactly one compatible solution.
 
-Let $$\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$$ be the set of all posets compatible with $P$.
+Let $\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$ be the set of all posets compatible with $P$.
 
 \begin{lemma}\label{lemma:compatible_union}
   For a poset $P = (n, i, R)$ and $a, b$, $(a, b), (b, a)\notin R$ it holds $\mathcal{C}(P) = \mathcal{C}(n, i, R\cup \{(a, b)\}) \cup \mathcal{C}(n, i, R\cup \{(b, a)\})$.
@@ -266,7 +267,7 @@ Let $$\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$$ be the set of a
 
   Repeated application of this over multiple comparisons results in $\frac{|\mathcal{C}(P)|}{2^j}$ as the lower bound for the amount of compatible posets after $j$ comparisons.
 
-  Since $\mathcal{C}(P)|\leq 2^j$ must be satisfied for the solution, $j\geq\log_2(|\mathcal{C}(P)|)$
+  Since $|\mathcal{C}(P)|\leq 2^j$ must be satisfied for the solution, $j\geq\log_2(|\mathcal{C}(P)|)$
 \end{proof}
 
 
@@ -278,7 +279,7 @@ Let $$\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$$ be the set of a
   \label{fig:median_of_5}
 \end{figure}
 A good visual example is finding the median $i=2$ in a list of $n = 5$ elements.
-Figure~\ref{fig:median_of_5}illustrate the search of the median using Hasse diagrams.
+Figure~\ref{fig:median_of_5} illustrate the search of the median using Hasse diagrams.
 Each step shows the comparisons to be performed next as a yellow line.
 A Hasse diagram of the order of relation found so far (smaller=lower, larger=higher) is shown as the blue lines.
 The red circles have already found to be greater than three others and disqualified.
@@ -398,9 +399,6 @@ We assume that the heap approach potentially buries promising paths from complet
 
 See the git branch \textit{multi-threaded} for the last state.
 
-% ab hier fertig (Julius): 0
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% TODO: In Papern suche, ob die Rückwärtssuche wirklich komplett neues Gebiet ist
 \subsection{Backward Search} \label{sec:backward}
 
 \subsubsection{Idea}
@@ -436,7 +434,7 @@ If $(n, i, \emptyset) \in A_l$, then $l$ comparisons are the lower bound to dete
 \begin{definition}[Predecessor] \label{definition:predecessor_calculation}
   Poset $q$ is the predecessor of poset $p$ if the following conditions hold:
   \begin{itemize}
-    \item poset $q$ is reduced and canonified
+    \item poset $q$ is normalised
     \item poset $q$ was not found in any previous round (otherwise it would be solvable in fewer comparisons)
     \item There exists a comparison $(i, j)$ whose adding in $q$ and subsequent normalization results in the poset $p$ and adding the reverse comparison $(j, i)$ and subsequent normalization results in an already found poset
   \end{itemize}
@@ -455,6 +453,7 @@ If $(n, i, \emptyset) \in A_l$, then $l$ comparisons are the lower bound to dete
 \end{proof}
 
 Since potentially infinitely many predecessors exist, only up to a maximum limit of $n_{\text{max}}$ elements are computed.
+This is possible because a predecessor always has fewer or the same number of elements.
 The computation of a predecessor for a given poset $p = (n_p, i_p, R_p)$ proceeds in four steps:
 
 \begin{itemize}
@@ -470,7 +469,7 @@ The computation of a predecessor for a given poset $p = (n_p, i_p, R_p)$ proceed
       \label{fig:backward_problematic}
     \end{figure}
 
-    As illustrated in Figure~\ref{fig:backward_problematic}, all three posets are fully reduced and canonized.
+    As illustrated in Figure~\ref{fig:backward_problematic}, all three posets are fully reduced and canonified.
     Removing a comparison from poset (1) can result in either poset (2) or poset (3).
     This implies that depending on the current cache, both poset (2) and poset (3) are valid potential predecessors, even though the same comparison is removed each time.
 
@@ -547,7 +546,7 @@ The canonic labelling of the elements is provided by nauty, which is a program i
 With this canonic labelling the poset can be represented canonically.
 
 A potential problem occurs, if $i = n - 1 - i$ holds.
-In this case, it is impossible to decide whether $p$ or $p^{-1}$ corresponds to to the canonical normal form based on the value of $i$.
+In this case, it is impossible to decide whether $p$ or $p^{-1}$ corresponds to to the canonical form based on the value of $i$.
 
 \begin{figure}[!b]
   \centering
@@ -685,20 +684,28 @@ For these reasons, the bidirectional search is slower than the pure forward sear
 
 Nevertheless, bidirectional search has great potential that can be exploited through further research.
 
-% bis hier fertig (Julius): 0
-
 % TODO: lemma einbauen
 % \begin{lemma}
-%   Sei $p = (n_p, i_p, R_p)$ ein reduziertes poset. Sei $q = (n_q, i_q, R_q)$ ein reduziertes poset das man aus $p$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält. Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen, außer $u$ und $v$. Dann gilt für alle $V' \subseteq V$:
+%   Sei $p = (n_p, i_p, R_p)$ ein reduziertes poset.
+%   Sei $q = (n_q, i_q, R_q)$ ein reduziertes poset das man aus $p$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält.
+%   Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen, außer $u$ und $v$.
+%   Dann gilt für alle $V' \subseteq V$:
 %   Das poset $p' = (n_{p'}, i_{p'}, R_{p'})$ mit $p' = p \setminus V'$ (entferne alle Elemente aus $V'$) ist reduziert und durch hinzufügen des Vergleich $u < v$ und anschließendem Reduzieren erhält man $q$ aus $p'$.
 % \end{lemma}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{proof}
+%   1. Zu zeigen: p' ist reduziert:
+%     für $V' = \emptyset$ trivial
+%     sei $V' = {x}$: 
+
+%   2. Zu zeigen: hinzunahem von $u < v$ & reduzieren => Q
+
+% \end{proof}
 
 \section{Results}
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
-  \caption{The minimum amount of comparisons needed to select the $i+1$-th smallest of $n$}
+  \caption{The minimum amount of comparisons needed to select the $i$-th smallest of $n$ elements.}
   \label{table:num-comparisons}
   \centering
   \begin{tabular}{c|cccccccc}
@@ -772,7 +779,8 @@ See Table~\ref{table:num-comparisons}.
 
 See Table~\ref{table:search_algorithms}.
 
-Furthermore, Oksanen's claim that `pair-forming algorithms', in which the first comparison of any singleton with another singleton is performed, does not lead to suboptimal results, since for $n = 12$ and $i = 4$ a non-optimal result follows under this assumption.
+Furthermore, we can disprove Gasarch's \cite{Gasarch1996} conjecture that “pair-forming algorithms”, in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
+For $n = 12$ and $i = 4$, this assumption gives a bound of 20 comparisons, which does not correspond to the optimal bound of 19 comparisons.
 
 % TODO: und hier noch a sätzchen, dass werte von oksanen auch noch nicht optimal
 
@@ -831,7 +839,7 @@ See Table~\ref{table:cache_entries}.
 Using computer search based on the work of Oksanen we were able to write our own version of a search program for selecting the $i$-th element of a list of $n$ elements (see: \href{https://github.com/JGDoerrer/selection_generator}{Github}) and not only confirming the found solutions of Oksanen for the problem but also improving some entries (e.g. $n = 15, i = 4$).
 Further we added some more numbers and therefore algorithms to the table for higher $n$ and $i$.
 As stated in the motivation before: the road is better than the inn.
-Along the way we learned a lot about the problem structure and complexity, improved our forward and backward search algorithms coming to a final conclusion that both are valid and have their strength an weaknesses as stated in (\ref{}).
+Along the way we learned a lot about the problem structure and complexity, improved our forward and backward search algorithms coming to a final conclusion that both are valid and have their strength an weaknesses as stated in (\ref{}). % TODO: ref fehlt
 If you want to use the program to generate more optimal numbers and therefore algorithms one should have quite some time and a good hardware in form of a high count CPU and as much RAM as possible (see: \ref{sec:hardware} for our used hardware).
 It is noteworthy that, due to technical constraints, the forward search utilized only 500gb of RAM. % TODO: genau zahlen
 Right now one should use the backward search due to the lower RAM footprint and scaling with the CPU count.
@@ -859,7 +867,7 @@ The latest version of our software can be found on github (\url{https://github.c
 The authors would like to express their appreciation to the FMI for hosting this research project.
 Without the provision of their hardware the extensive computations leading to the attained results would be infeasible.
 Gratitude is extended to Armin Weiß for overseeing and grading this project.
-Special thanks are due to Florian Stober whose dedicated supervision greatly enriched the discours in terms of methodology, implementation and documentation.
+Special thanks are due to Florian Stober whose dedicated supervision greatly enriched the discourse in terms of methodology, implementation and documentation.
 The preceded work of Armin Weiß and Florian Stober \textit{Lower Bounds for Sorting 16, 17, and 18 Elements} \cite{stober2022lower} provided a profound guideline for the structure of our work.
 
 \ifCLASSOPTIONcaptionsoff
