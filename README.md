@@ -94,9 +94,9 @@ Comparison of the times for the forward and backward search (note: the forward s
 | 15  | 2   | 2.8s             | 25.9s           |
 | 15  | 3   | 2m 23.7s         | 13m 10.9s       |
 | 15  | 4   | 1h 12m 9.6s      | 45m 51.9s       |
-| 15  | 5   | tbd.             | 19h 30m 20.6s   |
-| 15  | 6   | tbd.             | 1d 5h 42m 51.5s |
-| 15  | 7   | tbd.             | 3d 8h 8m 32.6s  |
+| 15  | 5   | 1d 8h 37m        | 19h 30m 20.6s   |
+| 15  | 6   | 12d 13h 43m      | 1d 5h 42m 51.5s |
+| 15  | 7   | 14d 1h 51m       | 3d 8h 8m 32.6s  |
 
 
 ## Hardware used

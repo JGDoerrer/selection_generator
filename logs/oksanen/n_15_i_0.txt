@@ -1,0 +1,83 @@
+limit=1, n=15, i=1: no comparisons done
+# cost = 14
+# n_nodes = 27
+# version = 1.6
+# time = 0.010
+# hash_table_size = 694444444
+# n_solved = 14
+# n_unsolved = 0
+# n_hits = 26
+# n_misses = 42
+# avg_priority = 9.429
+# avg_cost = 7.500
+
+# n=15, i=1, a?b: no comparisons done
+find_1(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_2(a,c,d,e,f,g,h,i,j,k,l,m,n,o)
+  else find_2(b,c,d,e,f,g,h,i,j,k,l,m,n,o)
+# n=14, i=1, a?b: no comparisons done
+find_2(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if a > b
+  then find_3(a,c,d,e,f,g,h,i,j,k,l,m,n)
+  else find_3(b,c,d,e,f,g,h,i,j,k,l,m,n)
+# n=13, i=1, a?b: no comparisons done
+find_3(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_4(a,c,d,e,f,g,h,i,j,k,l,m)
+  else find_4(b,c,d,e,f,g,h,i,j,k,l,m)
+# n=12, i=1, a?b: no comparisons done
+find_4(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_5(a,c,d,e,f,g,h,i,j,k,l)
+  else find_5(b,c,d,e,f,g,h,i,j,k,l)
+# n=11, i=1, a?b: no comparisons done
+find_5(a,b,c,d,e,f,g,h,i,j,k) =
+  if a > b
+  then find_6(a,c,d,e,f,g,h,i,j,k)
+  else find_6(b,c,d,e,f,g,h,i,j,k)
+# n=10, i=1, a?b: no comparisons done
+find_6(a,b,c,d,e,f,g,h,i,j) =
+  if a > b
+  then find_7(a,c,d,e,f,g,h,i,j)
+  else find_7(b,c,d,e,f,g,h,i,j)
+# n=9, i=1, a?b: no comparisons done
+find_7(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_8(a,c,d,e,f,g,h,i)
+  else find_8(b,c,d,e,f,g,h,i)
+# n=8, i=1, a?b: no comparisons done
+find_8(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_9(a,c,d,e,f,g,h)
+  else find_9(b,c,d,e,f,g,h)
+# n=7, i=1, a?b: no comparisons done
+find_9(a,b,c,d,e,f,g) =
+  if a > b
+  then find_10(a,c,d,e,f,g)
+  else find_10(b,c,d,e,f,g)
+# n=6, i=1, a?b: no comparisons done
+find_10(a,b,c,d,e,f) =
+  if a > b
+  then find_11(a,c,d,e,f)
+  else find_11(b,c,d,e,f)
+# n=5, i=1, a?b: no comparisons done
+find_11(a,b,c,d,e) =
+  if a > b
+  then find_12(a,c,d,e)
+  else find_12(b,c,d,e)
+# n=4, i=1, a?b: no comparisons done
+find_12(a,b,c,d) =
+  if a > b
+  then find_13(a,c,d)
+  else find_13(b,c,d)
+# n=3, i=1, a?b: no comparisons done
+find_13(a,b,c) =
+  if a > b
+  then find_14(a,c)
+  else find_14(b,c)
+# n=2, i=1, a?b: no comparisons done
+find_14(a,b) =
+  if a > b
+  then a
+  else b

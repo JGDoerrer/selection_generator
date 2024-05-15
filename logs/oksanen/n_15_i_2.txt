@@ -1,0 +1,211 @@
+limit=1, n=15, i=3: no comparisons done
+limit=13, n=13, i=3: e>m,f>j,g>i,h>k,h>m,k>l
+limit=18, n=13, i=3: d>h,e>g,f>i,f>j,f>k,k>l,k>m
+limit=19, n=13, i=3: b>f,c>i,d>e,d>g,d>h,d>i,g>l,g>m,h>j,h>k
+# cost = 20
+# n_nodes = 4031
+# version = 1.6
+# time = 1.430
+# hash_table_size = 694444444
+# n_solved = 619
+# n_unsolved = 1187
+# n_hits = 150147
+# n_misses = 160408
+# avg_priority = 157.267
+# avg_cost = 7.153
+
+# n=15, i=3, a?b: no comparisons done
+find_1(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_2(c,d,e,f,g,h,i,j,k,l,m,n,o,a,b)
+  else find_2(c,d,e,f,g,h,i,j,k,l,m,n,o,b,a)
+# n=15, i=3, a?b: n>o
+find_2(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_3(c,d,e,f,g,h,i,j,k,l,m,a,n,o,b)
+  else find_3(c,d,e,f,g,h,i,j,k,l,m,b,n,o,a)
+# n=15, i=3, a?b: l>o,m>n
+find_3(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_4(c,d,e,f,g,h,i,j,k,a,l,m,n,o,b)
+  else find_4(c,d,e,f,g,h,i,j,k,b,l,m,n,o,a)
+# n=15, i=3, a?b: j>o,k>n,l>m
+find_4(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_5(c,d,e,f,g,h,i,a,j,k,l,m,n,o,b)
+  else find_5(c,d,e,f,g,h,i,b,j,k,l,m,n,o,a)
+# n=15, i=3, a?b: h>o,i>n,j>m,k>l
+find_5(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_6(c,d,e,f,g,a,h,i,j,k,l,m,n,o,b)
+  else find_6(c,d,e,f,g,b,h,i,j,k,l,m,n,o,a)
+# n=15, i=3, a?b: f>o,g>n,h>m,i>l,j>k
+find_6(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_7(c,d,e,a,f,g,h,i,j,k,l,m,n,o,b)
+  else find_7(c,d,e,b,f,g,h,i,j,k,l,m,n,o,a)
+# n=15, i=3, a?b: d>o,e>n,f>m,g>l,h>k,i>j
+find_7(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_8(c,a,d,e,f,g,h,i,j,k,l,m,n,o,b)
+  else find_8(c,b,d,e,f,g,h,i,j,k,l,m,n,o,a)
+# n=15, i=3, a?b: b>o,c>n,d>m,e>l,f>k,g>j,h>i
+find_8(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_9(c,d,e,f,g,h,a,i,j,k,l,m,n,b,o)
+  else find_10(c,d,e,f,g,h,b,i,j,k,l,m,n,a,o)
+# n=15, i=3, a?b: a>m,b>l,c>k,d>j,e>i,f>h,g>n,g>o
+find_10(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_11(c,d,e,f,g,a,h,i,j,k,n,o,m,b,l)
+  else find_11(c,d,e,f,g,b,h,i,j,k,n,o,l,a,m)
+# n=15, i=3, a?b: a>j,b>i,c>h,d>g,e>k,e>l,f>m,f>n,n>o
+find_11(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_12(c,d,e,a,f,h,m,j,g,l,k,n,b,o,i)
+  else find_12(c,d,e,b,f,h,m,i,g,l,k,n,a,o,j)
+# n=15, i=3, a?b: a>f,b>i,c>j,c>k,d>h,d>m,e>g,e>l,l>n,m>o
+find_12(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_13(c,a,d,e,g,h,f,j,k,b,l,m,i,n,o)
+  else find_13(c,b,d,e,g,h,i,j,k,a,l,m,f,n,o)
+# n=15, i=3, a?b: a>h,a>i,b>g,b>j,c>f,c>l,d>e,d>k,j>m,k>n,l>o
+find_13(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_14(c,d,a,e,f,h,i,k,l,b,n,o,g,j)
+  else find_15(c,d,b,e,f,g,k,l,j,a,m,h,i,n,o)
+# n=15, i=3, a?b: a>e,a>h,b>d,b>g,c>f,c>i,c>j,g>n,h>o,i>k,j>l,j>m
+find_15(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_16(a,c,f,e,i,h,j,b,l,m,k,d,g,o)
+  else find_16(b,c,f,d,i,g,j,a,l,m,k,h,e,n)
+# n=14, i=3, a?b: a>d,a>f,a>h,b>c,b>e,b>g,e>k,f>n,g>i,g>j,h>l,h>m
+find_16(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if a > b
+  then find_17(d,f,h,b,c,g,e,n,m,l)
+  else find_17(c,e,g,a,f,d,h,k,j,i)
+# n=10, i=2, a?b: b>h,c>i,c>j,d>e,d>f,d>g
+find_17(a,b,c,d,e,f,g,h,i,j) =
+  if a > b
+  then find_18(a,c,d,e,f,g,b,j,i)
+  else find_19(b,c,d,e,f,g,i,j,a,h)
+# n=10, i=2, a?b: a>i,a>j,b>g,b>h,c>d,c>e,c>f
+find_19(a,b,c,d,e,f,g,h,i,j) =
+  if a > b
+  then find_20(a,c,d,e,f,b,i,j)
+  else find_20(b,c,d,e,f,a,g,h)
+# n=8, i=2, a?b: a>f,a>g,a>h,b>c,b>d,b>e
+find_20(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_21(b,f,g,h)
+  else find_21(a,c,d,e)
+# n=4, i=1, a?b: no comparisons done
+find_21(a,b,c,d) =
+  if a > b
+  then find_22(a,c,d)
+  else find_22(b,c,d)
+# n=3, i=1, a?b: no comparisons done
+find_22(a,b,c) =
+  if a > b
+  then find_23(a,c)
+  else find_23(b,c)
+# n=2, i=1, a?b: no comparisons done
+find_23(a,b) =
+  if a > b
+  then a
+  else b
+# n=9, i=2, a?b: a>g,b>h,b>i,c>d,c>e,c>f
+find_18(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_24(a,c,d,e,f,b,g)
+  else find_20(b,c,d,e,f,a,h,i)
+# n=7, i=2, a?b: a>f,a>g,b>c,b>d,b>e
+find_24(a,b,c,d,e,f,g) =
+  if a > b
+  then find_22(b,f,g)
+  else find_21(a,c,d,e)
+# n=14, i=3, a?b: a>e,a>i,b>d,b>h,c>f,c>g,c>j,h>k,i>l,j>m,j>n
+find_14(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if a > b
+  then find_25(c,a,e,f,g,i,j,b,m,n,d,h,l)
+  else find_25(c,b,d,f,g,h,j,a,m,n,i,e,k)
+# n=13, i=3, a?b: a>d,a>e,a>g,b>c,b>f,b>h,f>m,g>i,g>j,h>k,h>l
+find_25(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_26(d,e,g,b,f,c,h,i,j)
+  else find_17(c,f,h,a,d,g,e,m,l,k)
+# n=9, i=2, a?b: c>h,c>i,d>e,d>f,d>g
+find_26(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_18(a,c,d,e,f,g,b,i,h)
+  else find_18(b,c,d,e,f,g,a,i,h)
+# n=15, i=3, a?b: a>m,b>l,c>k,d>j,e>i,f>h,g>n,n>o
+find_9(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_27(c,d,e,f,g,a,h,i,j,k,m,b,n,l,o)
+  else find_27(c,d,e,f,g,b,h,i,j,k,l,a,n,m,o)
+# n=15, i=3, a?b: a>j,b>i,c>h,d>g,e>m,f>k,f>l,l>n,m>o
+find_27(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_28(c,d,e,a,f,h,k,j,g,m,l,b,o,n,i)
+  else find_28(c,d,e,b,f,h,k,i,g,m,l,a,o,n,j)
+# n=15, i=3, a?b: a>f,b>i,c>j,d>h,d>l,e>g,e>k,j>m,k>n,l>o
+find_28(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_29(c,a,d,e,g,h,f,j,k,l,b,m,n,o,i)
+  else find_29(c,b,d,e,g,h,i,j,k,l,a,m,n,o,f)
+# n=15, i=3, a?b: a>h,b>g,b>k,c>f,c>j,d>e,d>i,h>l,i>m,j>n,k>o
+find_29(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_30(c,d,a,e,f,i,j,h,b,l,k,g,m,n)
+  else find_31(c,d,b,e,f,g,a,k,i,j,m,n,o,h)
+# n=14, i=3, a?b: a>e,a>j,b>d,b>i,c>f,c>g,c>h,g>n,h>m,i>k,j>l
+find_31(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if a > b
+  then find_32(c,a,e,f,j,h,g,b,i,d,l,m,n)
+  else find_32(c,b,d,f,i,h,g,a,e,j,k,m,n)
+# n=13, i=3, a?b: a>d,a>f,a>g,b>c,b>e,b>h,e>k,f>l,g>m,h>i,h>j
+find_32(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_33(d,f,g,b,c,e,h,m,l)
+  else find_17(c,e,h,a,f,g,d,k,j,i)
+# n=9, i=2, a?b: b>i,c>h,d>e,d>f,d>g
+find_33(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_34(a,c,d,e,f,g,b,h)
+  else find_18(c,b,d,e,f,g,h,i,a)
+# n=8, i=2, a?b: a>g,b>h,c>d,c>e,c>f
+find_34(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_24(a,c,d,e,f,b,g)
+  else find_24(b,c,d,e,f,a,h)
+# n=14, i=3, a?b: a>e,a>g,b>d,b>f,c>h,c>i,f>m,g>n,h>j,i>k,i>l
+find_30(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if a > b
+  then find_35(c,a,e,g,h,b,i,f,d,j,n,k,l)
+  else find_35(c,b,d,f,h,a,i,e,g,j,m,k,l)
+# n=13, i=3, a?b: a>e,a>g,b>c,b>d,b>f,d>k,e>j,f>h,f>i,g>l,g>m
+find_35(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_18(e,g,b,c,f,d,j,m,l)
+  else find_36(c,d,a,f,k,i,h,g,e)
+# n=9, i=2, a?b: b>e,c>h,c>i,d>f,d>g
+find_36(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_37(a,c,d,b,g,f,i,h)
+  else find_38(b,c,d,f,g,h,i,a,e)
+# n=9, i=2, a?b: a>h,a>i,b>f,b>g,c>d,c>e
+find_38(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_24(c,a,b,h,i,d,e)
+  else find_24(c,b,a,f,g,d,e)
+# n=8, i=2, a?b: a>d,b>g,b>h,c>e,c>f
+find_37(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_39(a,c,e,f,b,d)
+  else find_24(c,b,a,g,h,e,f)
+# n=6, i=2, a?b: a>e,a>f,b>c,b>d
+find_39(a,b,c,d,e,f) =
+  if a > b
+  then find_22(b,e,f)
+  else find_22(a,c,d)

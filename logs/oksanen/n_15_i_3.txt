@@ -1,0 +1,2916 @@
+limit=1, n=15, i=4: no comparisons done
+limit=9, n=15, i=4: g>i,g>l,h>j,h>k,j>n,k>m,l>o
+limit=10, n=14, i=4: e>j,f>j,g>h,g>i,h>l,i>k,k>m,l>n
+limit=10, n=14, i=4: g>l,h>j,i>k,i>l,k>m,m>n
+limit=11, n=14, i=4: d>h,e>k,f>g,f>i,f>k,i>j,i>l,k>m,l>n
+limit=11, n=13, i=4: d>g,e>k,e>l,f>h,f>i,f>k,i>j,i>l,k>m
+limit=12, n=14, i=4: b>f,c>e,d>g,d>h,g>j,h>i,h>k,h>l,k>n,l>m
+limit=12, n=13, i=4: c>j,d>g,e>j,e>l,e>m,f>h,f>i,h>k,i>l,i>m
+limit=12, n=13, i=4: a>g,b>j,c>k,d>k,e>j,f>h,f>i,i>l,l>m
+limit=12, n=14, i=4: h>j,h>m,h>n,i>k,i>l,j>l,k>m,k>n
+limit=13, n=13, i=4: c>e,d>f,d>g,d>h,f>i,g>k,h>j,h>k,j>l,j>m
+limit=13, n=13, i=4: b>h,c>h,d>m,e>f,e>g,f>m,g>i,g>j,i>l,j>k
+limit=13, n=13, i=4: a>f,b>e,c>g,c>j,c>l,c>m,d>h,d>i,d>j,h>l,i>k,i>m
+limit=13, n=14, i=4: d>g,e>h,e>k,f>i,f>k,f>l,h>l,i>j,k>m,k>n
+limit=14, n=13, i=4: a>g,b>f,c>e,d>h,d>i,h>j,i>k,i>l,i>m
+limit=14, n=14, i=4: c>h,d>g,e>i,e>j,e>n,f>k,f>l,k>m,l>n
+limit=14, n=13, i=4: b>f,c>m,d>m,e>g,e>m,g>h,g>i,h>l,i>j,i>k
+limit=14, n=14, i=4: g>j,h>l,i>k,i>l,l>m,l>n
+limit=15, n=13, i=4: a>e,b>d,c>f,c>g,f>h,f>k,g>i,g>k,h>j,i>l,i>m
+limit=15, n=13, i=4: a>f,b>m,c>k,d>j,e>g,e>h,e>i,g>m,h>l,i>j,i>k,i>l
+limit=15, n=13, i=4: e>f,e>g,e>h,g>m,h>i,h>j,h>m,i>l,j>k
+limit=15, n=14, i=4: f>n,g>n,h>m,i>k,j>l,j>n,l>m
+limit=16, n=14, i=4: a>g,b>f,c>e,d>h,d>i,h>j,i>k,i>l,l>m,l>n
+limit=16, n=13, i=4: d>g,e>k,e>l,e>m,f>h,f>i,h>k,i>j,i>l,i>m
+limit=16, n=14, i=4: d>n,e>g,f>h,f>i,h>k,h>n,i>j,i>l,l>m
+limit=16, n=13, i=4: g>h,g>i,g>j,i>k,j>l,l>m
+limit=17, n=13, i=4: a>e,b>d,c>f,c>g,f>i,g>h,g>j,g>k,j>m,k>l
+limit=17, n=14, i=4: d>j,e>i,f>h,g>k,g>l,l>m,l>n
+limit=17, n=14, i=4: f>h,g>i,g>j,i>k,j>l,l>m,l>n
+limit=18, n=13, i=4: a>i,b>h,c>g,d>f,e>j,e>k,k>l,l>m
+limit=18, n=9, i=3: a>e,b>d,b>g,b>h,c>f,c>g,c>h,f>i
+limit=18, n=7, i=4: b>f,c>g,d>e,d>f,e>g
+limit=18, n=13, i=4: d>e,d>f,e>g,e>j,f>h,f>i,f>k,j>l,k>m
+limit=18, n=13, i=4: e>m,f>m,g>h,g>m,h>i,h>j,i>l,j>k
+limit=19, n=11, i=4: a>e,b>g,b>h,b>i,c>d,c>f,c>j,c>k,f>h,f>i,g>j,g>k
+limit=19, n=14, i=4: a>j,b>i,c>h,d>g,e>l,e>n,f>k,f>l,k>n,l>m
+limit=19, n=9, i=3: a>f,a>g,a>h,b>c,b>d,b>e,b>g,b>h,f>i
+limit=19, n=9, i=4: a>d,a>h,b>c,b>e,d>f,e>g,e>h,g>i
+limit=19, n=13, i=4: a>e,b>i,c>h,c>i,c>l,c>m,d>f,d>g,d>i,d>j,d>k,f>m,g>l,h>j,h>k
+limit=19, n=12, i=4: a>h,b>d,b>f,b>h,c>e,c>h,c>i,c>j,c>l,d>l,e>g,f>i,f>j,g>k
+limit=19, n=12, i=4: b>e,c>f,c>j,c>k,d>g,f>h,g>i,g>j,g>k,i>l
+limit=19, n=10, i=4: a>f,b>h,c>h,c>i,c>j,d>e,d>g,g>i,g>j
+limit=19, n=9, i=3: a>f,b>e,c>g,c>h,c>i,d>e,d>f,d>g,d>h,d>i
+limit=19, n=9, i=4: b>g,c>e,c>f,c>g,d>e,d>f,d>g,f>h,f>i
+limit=19, n=14, i=4: e>j,f>l,g>l,g>n,h>i,h>k,k>n,l>m
+limit=20, n=9, i=4: a>e,a>g,a>h,b>f,b>h,c>d,c>g,c>h,c>i,f>i
+limit=20, n=13, i=4: a>d,b>g,b>l,b>m,c>e,c>f,c>i,c>j,e>h,f>l,f>m,g>i,g>j,h>k
+limit=20, n=12, i=4: a>g,b>i,c>h,c>i,c>j,c>k,d>e,d>f,d>g,d>h,d>i,f>j,f>k,h>l
+limit=20, n=13, i=4: a>k,b>j,c>i,d>e,d>f,d>i,d>j,d>k,f>g,f>h,f>l,l>m
+limit=20, n=9, i=4: a>f,b>h,c>g,c>h,d>e,d>h,d>i,g>i
+limit=20, n=10, i=4: a>g,b>f,b>i,c>d,c>e,c>g,c>j,d>h,e>i,f>j
+limit=20, n=13, i=4: a>d,b>f,b>g,b>h,c>e,c>f,c>g,e>h,f>l,f>m,g>i,g>j,g>k
+limit=20, n=11, i=4: a>d,a>e,a>f,b>c,b>g,b>i,b>j,f>i,f>j,g>h,h>k
+limit=20, n=13, i=4: a>e,b>g,b>h,b>i,b>m,c>d,c>f,c>i,c>j,c>k,f>m,g>k,h>j,i>l
+limit=20, n=10, i=4: a>e,b>c,b>d,d>i,e>f,e>g,e>h,i>j
+limit=20, n=12, i=4: a>j,b>e,b>f,b>j,c>d,c>g,c>j,c>k,e>h,f>k,g>i,i>l
+limit=20, n=9, i=4: a>f,b>f,b>i,c>d,c>e,d>h,e>g,e>i
+limit=20, n=9, i=4: b>e,b>h,c>g,c>h,c>i,d>f,d>g,d>h,f>i
+limit=20, n=12, i=4: a>e,b>h,c>f,c>h,d>g,d>j,f>j,g>i,i>k,i>l
+limit=20, n=12, i=4: a>f,a>j,b>g,b>i,c>d,c>e,c>k,d>j,e>i,f>k,g>h,h>l
+limit=20, n=13, i=4: b>j,c>i,d>m,e>m,f>l,g>h,g>k,g>m,k>l
+limit=20, n=10, i=4: c>g,c>h,d>e,d>f,d>h,h>i,h>j
+limit=20, n=13, i=4: a>e,a>g,b>c,b>d,b>g,b>j,d>i,e>f,e>h,e>j,g>k,h>l,i>m
+limit=20, n=11, i=4: b>e,c>d,c>f,c>i,e>i,f>g,f>h,h>j,h>k
+# hash_table_size = 694444444
+# n_solved = 10109
+# n_unsolved = 19124
+# n_hits = 2381025
+# n_misses = 2861075
+# avg_priority = 436.138
+# avg_cost = 6.268
+limit=20, n=12, i=4: a>d,a>e,a>j,b>c,b>f,b>k,c>h,d>k,e>i,f>g,f>j,i>l
+limit=20, n=11, i=4: a>k,b>d,b>h,b>i,c>e,c>j,d>g,d>j,e>f,e>h,e>i,e>k
+limit=20, n=9, i=3: b>h,b>i,c>e,c>f,c>g,d>e,d>f,d>g,d>h,d>i
+limit=20, n=12, i=4: c>f,c>g,c>h,c>i,d>e,d>g,d>h,d>j,e>i,f>j,g>l,h>k
+limit=20, n=10, i=4: c>g,d>e,d>f,f>h,g>i,i>j
+limit=20, n=12, i=4: a>j,b>i,c>f,c>h,c>i,c>j,d>e,d>i,d>j,d>k,d>l,e>g,e>h,f>k,f>l
+limit=20, n=12, i=4: b>j,c>e,c>j,d>f,d>j,e>h,f>g,f>i,i>k,i>l
+limit=20, n=12, i=4: a>f,a>g,a>h,b>g,b>i,b>j,b>k,b>l,c>d,c>e,c>g,d>j,e>h,e>i,f>k,f>l
+limit=20, n=11, i=3: c>k,d>g,e>h,e>i,e>j,f>h,f>i,f>j,f>k
+limit=20, n=13, i=4: b>d,b>h,c>e,c>h,c>i,c>j,d>i,d>j,e>f,e>g,g>k,h>l,h>m
+limit=20, n=12, i=3: b>j,c>e,c>g,c>h,d>f,d>g,d>h,d>j,e>i,f>k,f>l
+limit=20, n=11, i=4: a>f,b>f,b>g,b>h,b>i,b>k,c>d,c>e,c>g,d>k,e>h,e>i,g>j
+limit=20, n=12, i=4: a>d,b>f,b>h,b>i,c>e,c>f,c>k,d>k,e>g,e>h,e>i,f>l,g>j
+limit=20, n=12, i=4: a>e,b>i,c>i,c>j,c>k,d>f,d>g,d>i,f>h,g>j,g>k,h>l
+limit=20, n=13, i=4: a>f,b>e,c>i,c>j,c>k,d>g,d>h,d>j,d>m,h>k,i>m,j>l
+limit=20, n=13, i=4: a>d,a>e,b>f,b>j,b>k,c>g,c>l,e>h,f>l,g>i,g>j,g>k,i>m
+limit=20, n=11, i=4: b>e,c>f,d>g,d>h,d>i,d>j,d>k,e>k,f>g,f>h,f>i,f>j
+limit=20, n=11, i=4: b>f,b>g,c>d,c>e,c>g,c>k,f>k,g>h,g>i,g>j
+limit=20, n=10, i=4: a>f,a>j,b>e,b>f,b>h,b>i,c>d,c>e,d>g,d>h,d>i,d>j
+limit=20, n=10, i=4: a>f,b>e,c>i,c>j,d>g,g>h,g>i,g>j
+limit=20, n=12, i=4: a>d,a>f,a>i,b>g,c>e,c>g,c>h,e>i,f>h,g>j,g>k,g>l
+limit=20, n=14, i=4: e>j,f>i,g>l,g>n,h>k,h>l,k>n,l>m
+limit=20, n=13, i=4: d>h,e>i,e>j,f>g,f>h,f>i,f>j,i>m,j>k,j>l
+limit=20, n=13, i=4: e>g,f>h,f>m,g>m,h>i,h>j,j>k,j>l
+limit=20, n=12, i=4: e>i,f>h,g>i,g>j,g>k,g>l,h>j,h>k,h>l
+limit=20, n=13, i=4: j>m,k>l,k>m
+limit=21, n=11, i=4: a>e,a>i,b>d,b>i,b>j,b>k,c>f,c>g,c>i,f>h,g>j,g>k
+limit=21, n=12, i=4: a>f,a>h,b>e,b>h,b>k,b>l,c>d,c>g,c>j,f>i,f>j,g>k,g>l
+limit=21, n=11, i=4: a>f,b>d,b>e,b>k,c>g,c>h,g>j,h>i,h>k
+limit=21, n=12, i=4: a>e,a>f,a>g,a>h,b>c,b>d,b>g,b>h,b>k,f>k,g>l,h>i,h>j
+limit=21, n=9, i=3: c>g,d>f,e>h,h>i
+limit=21, n=13, i=4: a>g,b>j,c>e,c>h,c>j,d>f,d>g,d>h,d>j,d>k,e>k,f>i,h>l,i>m
+limit=21, n=12, i=4: a>d,a>f,b>c,b>e,e>g,e>i,f>h,f>j,i>k,j>l
+limit=21, n=13, i=4: a>g,b>d,b>g,b>i,b>j,c>e,c>f,c>i,e>j,f>h,h>m,i>k,i>l
+limit=21, n=13, i=4: a>d,b>k,c>e,c>f,c>g,e>j,f>i,f>l,g>h,g>k,g>l,j>m
+limit=21, n=11, i=4: a>h,a>i,b>f,b>g,c>e,c>g,c>h,c>i,d>g,d>h,d>i,d>j,d>k,e>j,f>k
+limit=21, n=11, i=4: a>g,a>h,b>i,b>k,c>d,c>e,c>f,h>k,i>j
+limit=21, n=13, i=4: a>e,b>g,b>j,b>k,c>d,c>f,c>h,c>l,f>k,g>l,h>i,h>j,i>m
+limit=21, n=12, i=4: a>f,b>d,b>e,b>j,b>l,c>g,c>h,f>l,g>k,h>i,h>j,h>k
+limit=21, n=11, i=4: a>e,a>f,a>h,a>i,b>c,b>d,b>h,b>i,b>j,b>k,d>g,e>j,f>k
+limit=21, n=12, i=4: a>d,a>j,b>g,b>i,c>e,c>f,c>g,e>j,f>h,f>i,g>k,h>l
+limit=21, n=12, i=4: a>i,a>k,b>e,b>g,b>j,c>d,c>f,c>i,e>h,f>j,g>k,i>l
+limit=21, n=14, i=4: a>d,b>n,c>e,c>f,c>g,e>h,f>m,g>i,g>j,g>m,g>n,i>l,j>k
+limit=21, n=11, i=4: a>e,b>d,b>g,b>h,c>f,c>g,c>h,f>i,i>j,i>k
+limit=21, n=12, i=4: a>d,a>i,a>j,b>i,b>j,b>k,c>e,c>f,c>i,c>j,e>h,f>g,f>k,h>l
+limit=21, n=12, i=4: a>k,b>e,b>f,b>j,c>d,c>g,f>h,g>i,g>j,g>k,i>l
+limit=21, n=14, i=4: a>f,b>e,c>g,c>j,c>n,d>h,d>i,d>j,h>n,i>k,j>l,k>m
+limit=21, n=9, i=4: a>e,a>g,b>h,b>i,c>h,c>i,d>f,d>g,d>i
+limit=21, n=9, i=3: a>g,b>c,b>d,b>e,b>f,g>h,g>i
+limit=21, n=14, i=4: a>g,b>d,b>e,b>i,b>j,b>k,c>f,c>g,c>i,c>j,c>m,c>n,d>n,e>m,f>h,f>k,j>l
+limit=21, n=11, i=4: a>g,b>f,b>h,b>k,c>d,c>e,c>h,c>j,e>i,f>j,g>k
+limit=21, n=13, i=4: a>i,a>j,a>k,b>d,b>e,b>k,c>f,c>i,c>k,d>h,e>g,f>j,i>l,i>m
+limit=21, n=12, i=4: a>e,b>c,b>d,b>f,b>k,e>h,e>k,f>g,f>i,h>j,i>l
+limit=21, n=10, i=4: a>j,b>f,b>g,c>d,c>e,c>g,c>i,e>h,f>i,f>j
+limit=21, n=13, i=4: a>e,b>l,c>l,d>f,d>l,f>g,f>h,f>i,h>m,i>j,i>k
+limit=21, n=12, i=4: a>d,a>e,b>f,b>k,c>g,c>j,c>l,e>l,f>j,g>h,g>i,g>k
+limit=21, n=14, i=4: a>e,b>h,c>d,c>f,c>g,c>h,f>k,g>i,g>j,g>k,i>n,j>l,j>m
+limit=21, n=12, i=4: b>d,b>j,b>k,c>e,c>f,c>g,e>k,f>j,g>h,g>i,i>l
+limit=21, n=14, i=4: a>f,b>e,c>k,c>l,c>m,d>g,d>h,d>k,d>l,g>m,h>i,h>j,l>n
+limit=21, n=12, i=4: a>k,b>d,b>i,c>e,c>f,c>j,d>j,e>g,e>k,f>h,f>i,h>l
+limit=21, n=13, i=4: b>j,c>i,c>j,c>k,c>l,c>m,d>e,d>f,d>g,d>i,d>j,e>m,f>l,g>h,g>k
+limit=21, n=12, i=4: a>d,a>i,b>i,b>j,b>k,c>e,c>f,c>i,e>h,f>g,f>j,f>k,h>l
+limit=21, n=12, i=4: b>e,b>g,b>j,c>d,c>f,c>k,c>l,e>l,f>h,f>j,g>i,g>k
+limit=21, n=10, i=4: b>d,b>e,b>j,c>f,f>g,f>h,f>i,f>j
+# hash_table_size = 694444444
+# n_solved = 43784
+# n_unsolved = 36514
+# n_hits = 6849348
+# n_misses = 5416618
+# avg_priority = 880.496
+# avg_cost = 7.047
+limit=21, n=12, i=4: a>l,b>f,b>h,b>i,c>d,c>e,c>g,c>i,c>j,c>k,g>l,h>j,h>k
+limit=21, n=13, i=4: b>d,b>g,b>h,b>j,b>l,c>e,c>g,c>h,c>j,e>f,e>i,e>l,i>m,j>k
+limit=21, n=13, i=4: a>f,b>g,b>j,b>k,b>l,c>d,c>e,c>h,g>i,h>j,h>k,h>l,i>m
+limit=21, n=11, i=4: a>h,b>f,b>g,c>d,c>e,c>h,c>i,c>j,c>k,f>i,g>j,g>k
+limit=21, n=14, i=4: a>f,a>h,b>e,b>i,b>j,b>l,c>d,c>g,c>i,c>j,g>l,h>k,j>m,k>n
+limit=21, n=12, i=4: b>f,b>j,c>g,c>j,d>e,d>h,d>j,d>k,g>k,h>i,i>l
+limit=21, n=14, i=4: a>j,b>l,c>h,c>i,c>k,c>l,d>e,d>f,d>g,d>j,d>l,d>m,d>n,g>k,h>n,i>m
+limit=21, n=11, i=4: a>i,b>k,c>f,c>i,c>j,d>e,d>g,d>i,g>h,g>j,g>k
+limit=21, n=13, i=4: b>g,c>l,d>e,d>f,d>h,d>i,d>l,h>m,i>j,i>k,i>m
+limit=21, n=11, i=4: a>i,b>d,b>g,b>h,c>e,e>f,e>g,e>h,e>i,f>j,f>k
+limit=21, n=12, i=4: a>h,a>i,a>j,a>k,a>l,b>e,b>f,b>h,c>d,c>g,c>h,d>f,d>i,d>j,e>g,e>k,e>l
+limit=21, n=13, i=4: a>f,a>i,b>e,b>i,b>j,b>k,c>d,c>g,c>i,c>l,c>m,d>h,e>l,f>m,g>j,g>k
+limit=21, n=12, i=3: a>e,b>h,c>d,c>f,c>g,c>h,f>k,f>l,g>i,g>j
+limit=21, n=15, i=4: a>l,b>g,b>l,b>m,c>d,c>e,c>f,c>l,e>m,f>h,f>j,g>i,g>k,j>n,k>o
+limit=21, n=13, i=4: c>e,d>f,d>g,d>h,h>i,h>j,h>k,j>m,k>l
+limit=21, n=14, i=4: b>e,b>h,b>i,b>j,b>k,c>d,c>f,c>g,c>h,c>i,f>k,g>j,h>n,i>l,i>m
+limit=21, n=13, i=4: b>g,b>j,b>k,c>d,c>e,c>f,c>l,c>m,d>i,e>k,f>j,g>h,g>l,g>m
+limit=21, n=14, i=4: a>d,a>f,b>c,b>e,b>f,c>g,d>j,e>h,e>i,h>l,i>k,j>m,j>n
+limit=21, n=11, i=4: b>g,b>j,b>k,c>f,c>g,d>e,d>g,d>h,d>i,e>j,e>k,f>h,f>i
+limit=21, n=11, i=4: a>e,b>i,c>i,c>j,d>f,d>g,f>h,g>j,i>k
+limit=21, n=12, i=4: a>c,a>f,a>l,b>d,b>e,b>g,d>l,e>k,f>i,f>j,g>h,g>k
+limit=21, n=12, i=4: a>e,a>f,b>c,b>d,b>f,b>l,c>k,d>g,d>h,d>k,e>i,e>j,e>l
+limit=21, n=13, i=4: a>i,b>d,b>g,b>k,c>e,c>f,c>i,e>h,f>k,g>j,i>l,j>m
+limit=21, n=14, i=4: a>e,a>j,b>g,b>j,b>l,c>d,c>f,c>j,c>k,c>m,d>l,e>m,f>i,g>h,g>k,i>n
+limit=21, n=11, i=4: a>f,b>i,c>e,c>h,d>f,d>h,d>i,e>g,h>j,i>k
+limit=21, n=13, i=4: a>f,a>m,b>d,b>e,b>m,c>g,c>m,g>h,g>i,g>j,i>l,j>k
+limit=21, n=10, i=4: a>e,a>i,b>h,c>f,c>i,d>h,d>i,f>g,h>j
+limit=21, n=12, i=4: a>l,b>f,b>g,c>d,c>e,c>k,d>j,e>i,f>l,g>h,g>k
+limit=21, n=14, i=4: a>d,b>e,b>i,c>f,c>i,d>h,e>k,f>g,f>j,i>l,j>m,k>n
+limit=21, n=12, i=4: a>f,b>i,c>l,d>k,e>g,e>h,e>i,h>j,h>k,h>l
+limit=21, n=13, i=4: a>f,a>g,a>l,a>m,b>d,b>f,b>g,b>h,c>e,c>g,c>i,c>j,d>i,d>j,e>h,e>l,e>m,f>k
+limit=21, n=12, i=4: a>i,b>j,c>j,d>e,d>f,d>i,e>g,e>h,f>k,k>l
+limit=21, n=12, i=4: b>g,c>h,c>i,c>j,d>e,d>f,d>g,d>h,d>i,d>j,i>l,j>k
+limit=21, n=11, i=4: a>e,b>g,c>d,c>g,e>f,g>h,g>i,g>j,g>k
+limit=21, n=13, i=4: a>g,a>k,b>f,b>i,c>d,c>e,c>i,c>j,c>l,e>k,f>l,g>h,g>j,i>m
+limit=21, n=13, i=4: a>e,b>g,c>h,c>i,d>f,d>l,d>m,f>j,g>k,h>m,i>l
+limit=21, n=12, i=4: a>h,b>f,b>j,c>e,c>g,d>h,d>i,d>k,f>k,g>i,g>j,h>l
+limit=21, n=13, i=4: a>g,b>e,b>m,c>d,c>f,c>g,d>m,e>i,e>j,f>h,f>k,k>l
+limit=21, n=12, i=4: a>i,b>i,c>l,d>e,d>f,d>i,e>j,e>k,e>l,f>g,f>j,f>k,g>h
+limit=21, n=12, i=4: a>f,b>g,c>e,c>k,d>h,d>j,f>k,g>j,h>i,i>l
+limit=21, n=14, i=4: a>g,b>k,b>l,c>e,c>f,c>h,d>i,d>k,h>l,i>j,j>m,k>n
+limit=21, n=12, i=4: a>d,a>e,a>l,b>c,b>f,b>k,c>i,d>j,e>k,f>g,f>h,f>l
+limit=21, n=13, i=4: a>d,a>j,a>k,a>l,b>c,b>e,b>i,c>f,c>g,d>h,d>i,e>j,e>k,e>l,h>m
+limit=21, n=12, i=4: a>f,b>d,b>g,c>e,c>g,c>l,d>l,e>h,e>i,f>j,j>k
+limit=21, n=11, i=4: a>i,b>e,c>d,c>j,d>f,d>g,d>i,e>h,e>j,h>k
+limit=21, n=14, i=4: a>e,a>m,b>f,b>g,c>d,c>h,c>l,d>i,e>j,f>m,g>l,h>k,k>n
+limit=21, n=13, i=4: b>g,c>f,d>l,e>h,e>i,e>j,j>k,j>l,k>m
+limit=21, n=13, i=4: a>e,a>f,b>i,c>h,c>l,d>g,d>k,d>m,g>l,h>k,i>j,i>m
+limit=21, n=12, i=4: b>h,c>k,d>e,d>f,d>g,d>h,f>k,g>i,g>j,j>l
+limit=21, n=12, i=4: a>e,a>l,b>h,b>i,b>j,b>k,c>d,c>f,d>j,e>k,f>g,f>h,f>i,f>l
+limit=21, n=11, i=4: b>i,c>e,c>i,d>f,d>g,d>i,f>j,g>h,g>j,h>k
+limit=21, n=11, i=4: a>g,b>g,c>j,d>e,d>f,e>i,f>h,f>j,i>k
+limit=21, n=10, i=4: b>h,c>h,d>i,e>f,e>g,e>i,i>j
+limit=21, n=11, i=4: b>g,c>f,c>k,d>h,e>h,g>k,h>i,h>j
+limit=21, n=14, i=4: a>j,b>j,c>d,c>e,c>f,c>g,d>m,e>i,f>h,g>k,g>l,g>m,l>n
+limit=21, n=10, i=3: a>f,b>c,b>d,b>e,b>g,g>h,g>i,g>j
+limit=21, n=13, i=4: a>e,b>d,b>f,b>i,b>j,b>k,b>l,c>g,c>m,f>m,g>h,g>i,g>j,g>k,g>l
+limit=21, n=11, i=4: a>d,a>j,a>k,b>f,b>g,b>h,b>i,c>e,c>f,e>g,e>h,e>i,e>j,e>k
+limit=21, n=12, i=4: a>d,b>e,b>f,b>g,c>e,c>f,c>g,f>l,g>h,g>i,g>j,g>k
+limit=21, n=13, i=4: a>i,b>i,c>h,d>e,d>f,d>h,f>g,f>j,j>k,j>l,j>m
+limit=21, n=12, i=4: a>g,a>j,b>g,b>j,c>d,c>e,c>j,d>k,e>f,e>k,f>l,g>h,g>i
+limit=21, n=13, i=4: b>e,b>f,b>i,b>j,b>k,c>d,c>g,c>l,c>m,e>m,f>l,g>h,g>i,g>j,g>k
+limit=21, n=12, i=4: b>d,b>e,b>f,b>k,b>l,c>g,c>h,c>i,g>j,h>l,i>k
+limit=21, n=13, i=4: a>e,b>g,b>i,b>j,b>k,b>l,c>d,c>f,c>h,c>m,f>l,g>m,h>i,h>j,h>k
+# hash_table_size = 694444444
+# n_solved = 82289
+# n_unsolved = 52351
+# n_hits = 12461265
+# n_misses = 8298372
+# avg_priority = 1071.259
+# avg_cost = 7.319
+limit=21, n=11, i=3: b>e,b>f,b>g,c>d,c>e,c>f,c>g,d>h,d>i,d>j,d>k
+limit=21, n=11, i=4: b>g,b>j,b>k,c>e,c>g,c>j,d>f,d>j,e>i,f>h,f>k
+limit=21, n=14, i=4: a>c,a>j,b>d,c>f,c>h,d>e,d>g,d>i,d>j,g>n,h>m,i>k,i>l
+limit=21, n=14, i=4: b>f,c>i,d>e,d>g,d>h,d>i,g>j,h>k,j>n,k>l,k>m
+limit=21, n=13, i=4: a>f,a>h,a>l,b>d,b>e,b>k,b>m,c>g,c>h,e>j,f>m,g>i,g>k,g>l
+limit=21, n=13, i=4: b>k,c>f,c>k,c>l,c>m,d>e,d>g,d>h,d>k,g>j,h>i,h>l,h>m
+limit=21, n=13, i=4: a>d,b>i,b>j,b>k,c>e,c>f,c>i,d>h,e>l,f>g,f>j,f>k,f>l,i>m
+limit=21, n=11, i=4: a>i,b>f,b>h,c>i,c>j,c>k,d>e,d>g,d>i,g>j,h>k
+limit=21, n=12, i=4: a>e,a>h,b>h,b>i,b>j,b>k,c>d,c>f,c>h,d>l,e>g,e>k,f>i,f>j,f>l
+limit=21, n=12, i=4: b>d,b>g,b>h,b>i,b>j,b>l,c>e,c>f,c>g,c>h,e>l,f>i,f>j,h>k
+limit=21, n=12, i=4: a>h,b>i,b>j,c>d,c>e,c>f,c>g,c>l,i>l,j>k
+limit=21, n=13, i=4: c>g,d>e,d>f,d>g,e>h,f>i,h>m,i>j,i>k,i>l
+limit=21, n=13, i=4: b>e,c>h,c>i,c>m,d>f,d>g,d>i,d>k,d>l,f>j,g>m,h>k,h>l
+limit=21, n=12, i=4: b>i,b>l,c>e,c>i,c>j,c>k,d>f,d>g,d>i,e>h,f>k,g>j,g>l
+limit=21, n=13, i=4: c>m,d>h,e>g,f>i,f>j,j>k,j>l,j>m
+limit=21, n=11, i=4: b>j,c>i,d>e,e>f,e>g,e>h,e>i,e>j,h>k
+limit=21, n=11, i=4: c>h,d>g,d>j,e>f,e>j,h>i,j>k
+limit=21, n=13, i=4: a>g,a>h,b>d,b>e,b>j,c>f,c>i,c>k,c>l,d>l,e>k,f>j,g>m,h>i,h>m
+limit=21, n=14, i=4: b>d,b>i,b>k,b>l,b>m,b>n,c>e,c>f,c>g,c>h,c>i,e>n,f>m,g>l,h>k,i>j
+limit=21, n=14, i=4: b>g,c>j,d>i,e>j,e>k,f>h,f>i,f>k,h>l,k>m,l>n
+limit=21, n=13, i=4: b>i,c>h,d>g,d>h,d>i,d>k,d>l,d>m,e>f,e>g,e>h,e>i,f>k,f>l,f>m,g>j
+limit=21, n=14, i=4: a>g,a>m,b>e,b>f,b>i,b>j,c>d,c>h,c>l,c>n,d>k,e>m,f>l,g>n,h>i,h>j,h>k
+limit=21, n=11, i=4: a>h,a>j,b>f,b>g,c>d,c>e,c>h,e>i,f>k,g>j,g>k
+limit=21, n=13, i=4: a>h,a>k,b>e,b>f,c>d,c>f,c>h,c>j,d>g,d>k,e>i,e>j,h>l,i>m
+limit=21, n=12, i=4: a>e,b>d,b>h,c>f,c>h,f>g,f>i,h>j,i>k,i>l
+limit=21, n=12, i=4: a>g,b>h,c>f,c>g,c>j,d>e,d>f,d>h,e>i,e>j,h>k,i>l
+limit=21, n=13, i=4: a>e,b>d,b>k,b>l,c>f,c>g,d>i,e>j,f>l,f>m,g>h,g>k,g>m
+limit=21, n=13, i=4: c>f,d>e,d>g,d>h,g>i,h>j,i>m,j>k,j>l
+limit=21, n=13, i=4: c>g,c>m,d>e,d>f,d>j,d>k,e>m,f>i,g>h,g>j,g>k,i>l
+limit=21, n=15, i=4: a>e,b>f,b>j,b>k,c>d,c>g,c>h,c>j,c>k,f>i,g>l,h>m,l>n,m>o
+limit=21, n=15, i=4: b>h,c>d,c>e,c>f,c>g,e>i,f>k,g>j,h>l,j>m,k>n,l>o
+limit=21, n=12, i=4: b>g,c>f,d>e,d>g,d>k,e>h,e>i,f>j,f>k,j>l
+limit=21, n=13, i=4: a>h,a>k,b>d,b>f,b>h,c>e,c>g,c>j,e>k,f>j,g>i,h>l,i>m
+limit=21, n=12, i=4: a>k,b>h,c>f,c>k,d>g,d>l,e>i,e>k,h>j,i>l
+limit=21, n=13, i=4: b>e,b>l,c>g,c>k,d>f,d>h,d>m,e>j,f>l,g>m,h>i,h>k
+limit=21, n=12, i=4: b>k,c>k,d>e,d>f,d>g,e>l,f>j,g>h,g>i
+limit=21, n=12, i=4: a>d,a>e,b>k,b>l,c>f,c>g,f>k,f>l,g>h,g>i,i>j
+limit=21, n=13, i=4: a>e,a>g,a>l,b>d,b>g,b>j,c>f,c>k,d>l,e>k,f>h,f>i,f>j,i>m
+limit=21, n=15, i=4: b>e,b>j,b>k,c>d,c>j,c>k,d>f,d>h,e>g,e>i,h>o,i>n,j>m,k>l
+limit=21, n=12, i=4: a>h,b>h,b>j,c>e,c>f,c>i,d>g,d>k,d>l,e>l,f>k,g>i,g>j
+limit=21, n=12, i=4: a>i,a>j,a>k,a>l,b>d,b>e,c>f,c>h,d>l,e>h,e>k,f>g,f>i,f>j
+limit=21, n=12, i=4: a>h,a>l,b>f,b>h,c>e,c>i,c>j,d>g,d>h,d>k,e>l,f>k,g>i,g>j
+limit=21, n=13, i=4: a>d,b>e,b>l,c>f,c>m,d>i,e>g,e>h,e>m,f>j,f>l,j>k
+limit=21, n=14, i=4: a>d,a>m,b>f,b>g,b>n,c>e,c>h,c>k,c>l,d>j,e>m,f>l,g>k,h>i,h>n
+limit=21, n=11, i=4: a>f,b>d,b>f,b>k,c>e,c>i,c>j,d>i,d>j,e>g,e>h,e>k
+limit=21, n=12, i=4: a>j,b>e,c>d,c>j,d>f,d>g,e>h,e>i,i>l,j>k
+limit=21, n=12, i=4: b>e,b>f,b>g,b>j,c>d,c>f,c>h,c>i,d>g,d>j,e>h,e>i,f>k,f>l
+limit=21, n=14, i=4: a>c,a>d,b>e,b>f,d>g,e>l,f>h,f>i,f>l,h>m,h>n,i>j,i>k
+limit=21, n=13, i=4: c>l,d>e,d>f,d>g,e>m,f>i,f>j,f>l,g>h,g>i,g>j,g>m,h>k
+limit=21, n=13, i=4: a>g,a>h,b>d,b>e,b>h,b>j,c>f,c>k,c>l,c>m,e>k,f>i,f>j,g>l,g>m
+limit=21, n=13, i=4: a>d,a>h,b>f,b>m,c>e,c>h,c>i,c>j,e>m,f>g,f>i,f>j,h>k,h>l
+limit=21, n=13, i=4: a>e,b>d,b>j,b>k,b>m,c>f,c>g,c>l,e>l,f>i,f>m,g>h,g>j,g>k
+limit=21, n=13, i=4: a>g,a>k,b>f,b>h,b>i,c>d,c>e,c>h,c>j,e>i,f>k,g>j,h>l,h>m
+limit=21, n=11, i=4: a>e,a>g,b>i,b>k,c>g,c>i,c>j,d>f,d>i,f>h,f>j,f>k
+limit=21, n=12, i=4: a>g,a>j,a>k,b>d,b>e,b>h,c>f,c>g,c>h,c>i,e>i,f>j,f>k,h>l
+limit=21, n=13, i=3: d>k,e>i,f>h,g>j,g>k,j>l,j>m
+limit=21, n=14, i=4: a>m,b>h,b>j,b>l,c>d,c>e,c>f,c>g,c>j,c>k,f>m,g>l,h>i,h>k,j>n
+limit=21, n=13, i=4: c>i,d>h,d>i,d>j,d>k,e>f,e>g,e>l,e>m,g>j,g>k,h>l,h>m
+limit=21, n=13, i=4: c>m,d>l,e>f,e>g,e>h,g>k,h>i,h>k,h>l,h>m,i>j
+limit=21, n=12, i=4: b>f,b>h,c>f,c>h,c>j,d>e,e>g,e>i,e>j,h>k,i>l
+limit=21, n=11, i=4: b>h,c>h,c>k,d>f,d>i,e>g,e>j,f>j,g>i,g>k
+limit=21, n=14, i=4: d>j,e>i,f>g,f>i,f>j,g>h,g>k,g>l,k>n,l>m
+limit=21, n=14, i=4: a>e,a>j,a>n,b>c,b>d,c>f,c>j,d>i,d>n,e>g,e>h,g>m,h>l,i>k
+limit=21, n=13, i=4: b>g,c>h,c>k,c>l,d>e,d>f,d>h,d>m,e>l,f>k,g>m,h>i,h>j
+# hash_table_size = 694444444
+# n_solved = 127764
+# n_unsolved = 63244
+# n_hits = 19441747
+# n_misses = 11182305
+# avg_priority = 1214.089
+# avg_cost = 7.540
+limit=21, n=13, i=4: b>m,c>l,d>e,d>f,d>g,d>h,e>m,f>l,g>k,h>i,h>j
+limit=21, n=15, i=4: b>f,c>j,d>i,e>g,e>h,e>i,e>j,h>k,h>l,h>m,l>o,m>n
+limit=21, n=15, i=4: b>g,c>f,d>k,d>l,d>m,d>n,e>h,e>i,e>j,e>l,e>o,i>n,j>m,k>o
+limit=21, n=15, i=4: b>e,c>d,c>f,c>g,c>h,f>i,g>l,h>j,h>k,j>n,k>m,l>o
+limit=21, n=11, i=4: a>h,b>i,c>f,c>g,d>e,d>h,d>j,d>k,e>i,f>k,g>j
+limit=21, n=15, i=4: a>f,b>e,b>h,b>k,b>n,c>d,c>g,c>i,c>k,c>m,g>n,h>m,i>j,i>l,l>o
+limit=21, n=13, i=4: b>f,c>e,c>k,c>l,c>m,d>g,d>h,f>j,g>i,g>k,h>l,h>m
+limit=21, n=11, i=4: b>g,b>j,c>g,c>k,d>e,d>f,e>i,e>j,f>h,f>k
+limit=21, n=13, i=4: b>g,b>j,c>g,c>j,c>k,c>l,d>e,d>f,d>j,e>h,e>l,f>i,f>k,i>m
+limit=21, n=14, i=4: a>f,a>k,b>d,b>e,b>i,b>l,c>g,c>i,f>l,g>h,g>k,h>j,i>m,i>n
+limit=21, n=15, i=4: a>d,b>c,b>e,c>i,c>k,d>h,d>j,e>f,e>g,e>l,j>n,k>o,l>m
+limit=21, n=12, i=4: a>j,a>l,b>d,b>j,b>k,c>e,c>f,c>j,d>l,e>g,e>h,f>i,f>k
+limit=21, n=14, i=4: b>m,c>l,d>k,e>j,f>n,g>n,h>i,h>n
+limit=21, n=13, i=4: a>m,b>i,c>h,d>e,d>f,e>m,f>g,f>h,f>i,g>j,g>k,g>l
+limit=21, n=14, i=4: a>d,b>c,b>e,c>j,c>k,d>g,d>h,e>f,e>i,e>j,e>k,h>n,i>l,i>m
+limit=21, n=13, i=4: b>d,b>e,b>i,b>j,b>k,b>l,c>f,c>g,c>m,e>m,f>h,f>l,g>i,g>j,g>k
+limit=21, n=11, i=4: b>h,c>g,c>i,d>f,d>i,e>g,e>h,e>i,e>j,f>j,h>k
+limit=21, n=12, i=4: a>g,b>h,c>g,c>i,d>e,d>f,d>h,f>i,g>l,h>j,h>k
+limit=21, n=11, i=4: b>d,b>e,b>h,b>i,b>j,b>k,c>f,c>g,c>h,c>i,g>j,g>k
+limit=21, n=12, i=4: b>f,b>h,b>j,c>e,c>h,c>j,c>k,d>g,d>j,g>i,g>k,i>l
+limit=21, n=14, i=4: b>j,c>h,c>l,c>m,d>e,d>f,d>g,d>i,d>j,d>l,i>k,i>m,l>n
+limit=21, n=13, i=4: b>e,c>d,c>f,c>g,e>i,f>k,g>h,g>j,g>k,j>l,j>m
+limit=21, n=13, i=4: d>j,e>f,e>g,e>h,e>j,h>i,h>k,k>l,k>m
+limit=21, n=13, i=4: a>f,a>h,a>m,b>e,b>f,c>d,c>h,c>i,c>j,c>k,d>g,e>i,e>j,e>k,e>m,h>l
+limit=21, n=12, i=4: b>h,b>k,b>l,c>e,c>f,d>g,d>h,d>j,e>j,f>l,g>i,g>k
+limit=21, n=13, i=4: b>h,c>g,c>k,c>l,d>e,d>f,d>j,d>m,f>l,g>m,h>i,h>j,h>k
+limit=21, n=11, i=4: a>g,b>k,c>e,c>g,c>k,d>f,d>k,f>h,f>i,f>j
+limit=21, n=10, i=3: d>g,d>h,d>i,d>j,e>f,e>g,e>h,e>i,e>j
+limit=21, n=12, i=4: d>g,d>j,d>k,d>l,e>f,e>h,e>i,e>j,h>l,i>k
+limit=21, n=13, i=4: c>m,d>f,e>g,e>h,e>i,g>l,h>k,i>j,i>m
+limit=21, n=14, i=4: a>i,b>d,b>e,b>f,b>m,b>n,c>g,c>i,c>j,c>k,c>l,d>l,e>k,f>j,g>h,g>m,g>n
+limit=21, n=14, i=4: c>h,d>g,e>j,e>m,f>i,f>j,i>k,i>l,i>m,l>n
+limit=21, n=11, i=4: a>k,b>d,b>f,b>i,b>j,c>e,c>g,f>h,g>i,g>j,g>k
+limit=21, n=13, i=4: a>d,b>f,c>e,c>g,c>h,c>m,e>k,f>m,g>j,g>l,h>i,h>l
+limit=21, n=13, i=4: a>k,b>m,c>m,d>l,e>f,e>g,e>h,e>k,e>m,g>i,h>j,h>l
+limit=21, n=11, i=4: a>h,b>h,b>k,c>f,c>i,c>j,d>e,d>g,d>h,g>i,g>j,g>k
+limit=21, n=12, i=4: a>e,b>g,c>g,c>i,d>f,d>j,e>j,f>h,f>i,g>k,h>l
+limit=21, n=13, i=4: c>j,c>m,d>f,d>j,d>k,e>g,e>h,g>i,h>k,h>m,j>l
+limit=21, n=13, i=4: a>f,b>d,b>k,b>l,c>e,c>g,e>h,f>i,g>j,g>k,g>l,j>m
+limit=21, n=14, i=4: a>e,a>h,a>j,b>c,b>d,b>h,b>j,d>f,d>g,e>i,i>n,j>k,j>l,j>m
+limit=21, n=14, i=4: b>e,b>j,c>d,c>f,c>j,d>g,e>h,f>i,i>n,j>k,j>l,j>m
+limit=21, n=12, i=4: c>g,c>j,d>f,d>i,d>l,e>h,e>i,g>l,h>j,i>k
+limit=21, n=11, i=4: c>k,d>i,d>k,e>f,e>g,e>h,e>j,e>k,i>j
+limit=21, n=11, i=4: c>k,d>j,e>i,f>g,f>h,h>i,h>j,h>k
+limit=21, n=10, i=4: d>f,e>g,e>h,g>j,h>i
+limit=21, n=13, i=4: a>e,a>g,a>l,b>d,b>h,b>i,b>j,c>f,c>g,c>k,c>m,d>k,e>m,f>h,f>i,f>j,f>l
+limit=21, n=11, i=4: a>e,b>g,c>f,d>g,d>h,d>i,d>j,d>k,f>h,f>i,f>j,f>k
+limit=21, n=12, i=4: b>e,c>k,d>f,d>g,d>h,f>l,g>i,g>j,h>k,h>l
+limit=21, n=14, i=4: a>g,b>f,c>e,d>h,d>i,h>n,i>j,i>n,j>k,j>l,j>m
+limit=21, n=12, i=4: c>h,d>l,e>f,e>g,e>h,f>i,f>j,f>k,g>i,g>j,g>k,g>l
+limit=21, n=12, i=4: b>l,c>g,d>h,d>j,e>f,e>i,e>k,f>j,g>k,h>i,h>l
+limit=21, n=13, i=4: c>f,d>i,d>m,e>g,e>h,e>l,f>m,g>k,h>j,i>l
+limit=21, n=13, i=4: a>e,a>k,b>d,b>j,b>l,c>f,c>g,d>i,e>l,f>k,f>m,g>h,g>j,g>m
+limit=21, n=12, i=4: a>c,a>e,a>f,b>d,b>g,b>k,d>l,e>j,f>j,f>k,g>h,g>i,g>l
+limit=21, n=13, i=4: a>e,a>l,a>m,b>d,b>f,b>j,b>k,c>g,c>h,f>l,g>i,g>m,h>j,h>k
+limit=21, n=12, i=4: a>l,b>l,c>e,c>h,c>i,c>j,c>k,d>f,d>g,d>l,f>j,f>k,g>h,g>i
+limit=21, n=13, i=4: a>j,b>h,c>g,c>l,d>f,d>j,d>k,e>i,e>m,h>m,i>k,i>l
+limit=21, n=14, i=4: a>f,b>e,b>l,b>m,c>g,c>i,c>k,d>h,d>j,d>n,e>n,f>k,g>j,g>m,h>i,h>l
+limit=21, n=14, i=4: a>e,a>m,b>i,b>n,c>i,c>j,c>k,d>f,d>g,e>h,f>k,f>m,g>j,g>n,i>l
+limit=21, n=13, i=4: a>g,a>k,b>d,b>g,b>i,b>j,b>m,c>e,c>f,c>l,d>l,e>h,e>m,f>i,f>j,f>k
+limit=21, n=13, i=4: a>f,a>j,b>d,b>k,b>l,b>m,c>e,c>g,e>h,e>j,f>i,f>m,g>k,g>l
+limit=21, n=13, i=4: a>f,a>l,b>d,b>h,b>i,b>j,b>k,c>e,c>g,e>l,e>m,f>j,f>k,g>h,g>i,g>m
+limit=21, n=14, i=4: a>h,b>g,b>k,c>d,c>e,c>f,c>m,c>n,f>i,g>m,g>n,h>j,h>k,j>l
+limit=21, n=12, i=4: a>k,a>l,b>g,b>i,c>d,c>e,c>f,c>j,e>h,f>i,f>k,g>j,g>l
+# hash_table_size = 694444444
+# n_solved = 168648
+# n_unsolved = 78199
+# n_hits = 27026615
+# n_misses = 14555716
+# avg_priority = 1271.192
+# avg_cost = 7.698
+limit=21, n=13, i=4: a>f,a>i,b>g,b>h,b>j,b>k,c>d,c>e,c>h,c>l,c>m,d>k,e>j,f>l,g>i,g>m
+limit=21, n=14, i=4: a>e,a>k,a>l,b>d,b>g,c>f,c>i,c>j,c>m,e>m,f>h,f>k,g>i,g>j,g>l,h>n
+limit=21, n=14, i=4: a>f,b>e,c>i,c>l,c>m,c>n,d>g,d>h,d>j,d>k,g>l,h>m,h>n,i>j,i>k
+limit=21, n=12, i=4: a>g,a>h,a>l,b>g,b>h,b>k,c>f,c>j,d>e,d>h,d>i,e>j,e>k,f>i,f>l
+limit=21, n=14, i=4: a>e,a>i,a>j,a>k,a>l,a>n,b>c,b>d,b>f,b>g,b>m,d>n,e>h,e>m,f>k,f>l,g>i,g>j
+limit=21, n=14, i=4: a>e,a>f,a>g,a>i,a>j,b>c,b>d,b>h,b>k,b>l,b>m,b>n,e>l,f>k,g>m,g>n,h>i,h>j
+limit=21, n=14, i=4: a>e,a>i,a>l,a>m,b>f,b>i,b>j,b>k,c>d,c>g,c>i,c>n,d>k,e>n,f>h,f>m,g>j,g>l
+limit=21, n=13, i=4: a>e,a>k,b>j,c>j,d>f,d>g,f>k,g>h,g>i,j>l,j>m
+limit=21, n=12, i=4: b>h,c>e,c>g,c>j,d>f,d>h,d>i,f>j,g>i,h>k,h>l
+limit=21, n=13, i=4: a>d,a>m,b>f,b>g,b>h,b>i,b>l,c>e,c>f,c>g,c>k,d>k,d>l,e>h,e>i,e>m,g>j
+limit=21, n=13, i=4: a>h,b>h,c>e,c>i,d>f,d>i,d>k,e>k,f>g,h>j,i>l,i>m
+limit=21, n=14, i=4: c>h,d>i,d>n,e>f,e>g,e>k,e>l,g>n,h>l,i>j,i>k,j>m
+limit=21, n=13, i=4: a>f,b>g,b>j,b>k,c>d,c>e,c>g,c>i,e>h,f>i,f>j,f>k,g>l,h>m
+limit=21, n=14, i=4: a>f,a>k,a>l,b>d,b>e,b>m,c>g,c>i,c>j,d>j,e>i,f>m,g>h,g>k,g>l,h>n
+limit=21, n=12, i=4: b>h,c>e,c>h,c>k,c>l,d>f,d>g,f>k,g>i,g>j,g>l
+limit=21, n=14, i=4: a>e,b>h,b>l,c>g,c>k,c>n,d>f,d>i,d>m,f>j,g>m,h>n,i>k,i>l
+limit=21, n=12, i=4: a>i,b>f,c>g,c>h,d>e,d>f,d>g,e>h,e>i,f>l,g>j,g>k
+limit=21, n=12, i=4: c>h,c>j,c>k,d>g,d>h,e>f,e>l,f>j,f>k,g>i,g>l
+limit=21, n=13, i=4: e>g,e>m,f>h,g>i,h>j,h>m,i>k,j>l
+limit=21, n=10, i=4: a>f,b>j,c>j,d>g,e>g,e>j,g>h,g>i
+limit=21, n=13, i=4: b>g,c>g,d>e,d>f,e>k,e>l,f>h,f>i,f>j,f>l,k>m
+limit=21, n=13, i=4: a>f,a>g,a>k,a>m,b>e,b>g,b>l,c>d,c>f,c>g,c>h,c>i,c>j,d>l,d>m,e>h,e>i,e>j,e>k
+limit=21, n=12, i=4: b>d,b>e,c>f,e>k,f>g,f>h,f>i,f>j,k>l
+limit=21, n=13, i=4: a>e,b>g,b>j,b>k,b>l,b>m,c>d,c>f,c>g,f>h,f>i,f>j,f>k,f>l,f>m
+limit=21, n=13, i=4: b>k,c>l,d>m,e>f,e>g,e>h,e>i,e>j,e>k,i>l,j>m
+limit=21, n=14, i=4: c>j,c>m,d>e,d>f,d>j,f>g,f>h,f>i,f>k,f>m,j>l,k>n
+limit=21, n=14, i=4: b>e,c>h,c>m,d>f,d>g,d>h,f>m,g>i,g>j,g>k,g>l,l>n
+limit=21, n=12, i=4: a>e,a>l,b>i,b>j,b>k,c>d,c>f,d>l,e>k,f>g,f>h,f>i,f>j
+limit=21, n=14, i=4: c>k,d>m,e>l,e>n,f>g,f>h,f>i,f>j,f>k,f>l,i>m,j>n
+limit=21, n=11, i=4: a>c,a>d,a>f,a>h,a>i,b>e,b>f,e>g,e>h,e>i,g>j,g>k
+limit=21, n=14, i=4: a>d,a>e,a>f,a>g,a>n,b>c,b>h,b>k,g>k,h>i,h>j,h>n,i>m,j>l
+limit=21, n=13, i=4: c>l,d>i,d>j,d>l,e>f,e>g,e>h,e>j,e>k,e>l,i>k,j>m
+limit=21, n=12, i=4: a>h,a>i,b>f,b>k,b>l,c>e,c>h,c>i,c>j,d>g,d>i,g>j,g>k,g>l
+limit=21, n=12, i=4: a>i,a>j,b>h,b>i,b>j,b>l,c>f,c>h,c>k,d>e,d>h,d>i,d>j,e>k,f>g,f>l
+limit=21, n=13, i=4: b>e,c>f,c>k,c>l,d>g,d>h,f>j,g>m,h>i,h>k,h>l,h>m
+limit=21, n=13, i=4: a>g,b>e,b>g,b>h,b>i,b>j,b>k,c>d,c>f,c>l,d>m,e>l,f>h,f>i,f>j,f>k,f>m
+limit=21, n=13, i=4: c>f,c>m,d>e,d>g,e>k,f>i,g>h,g>j,g>k,g>m,j>l
+limit=21, n=14, i=4: c>l,d>n,e>g,f>h,f>i,h>m,i>j,i>k,i>l,i>m,i>n
+limit=21, n=11, i=4: a>k,b>i,c>e,c>j,d>f,e>k,f>g,f>h,f>i,f>j
+limit=21, n=11, i=4: a>g,a>h,b>f,b>g,b>h,c>f,c>i,c>j,c>k,d>e,d>h,e>i,e>j,e>k
+limit=21, n=12, i=4: d>e,d>f,d>g,d>h,f>k,f>l,g>i,g>j,h>i,h>j,h>k,h>l
+limit=21, n=12, i=4: c>g,c>k,d>f,d>j,d>l,e>h,g>l,h>i,h>j,h>k
+limit=21, n=11, i=4: a>g,a>k,b>g,b>j,c>d,c>e,c>f,e>i,f>h,f>i,f>j,f>k
+limit=21, n=13, i=4: e>i,e>j,e>l,e>m,f>g,f>h,f>i,f>j,h>l,h>m,j>k
+limit=21, n=13, i=4: a>f,a>h,b>f,b>h,b>i,b>j,b>l,b>m,c>d,c>e,c>h,d>l,d>m,e>g,e>i,e>j,g>k
+limit=21, n=14, i=4: d>e,d>f,d>g,e>i,e>n,f>h,f>m,g>j,g>m,g>n,j>k,j>l
+limit=21, n=14, i=4: a>d,a>f,a>j,b>e,b>k,b>l,c>g,c>n,e>h,f>n,g>i,g>j,g>k,g>l,i>m
+limit=21, n=13, i=4: a>f,a>j,a>m,b>d,b>f,b>j,b>l,c>e,c>j,c>k,d>i,d>k,e>g,e>h,e>l,e>m
+limit=21, n=12, i=4: b>f,c>d,c>e,c>i,c>j,c>k,c>l,e>g,e>h,f>i,f>j,f>k,f>l
+limit=21, n=15, i=4: c>j,d>h,d>j,d>k,e>f,e>g,e>i,e>k,h>l,i>m,l>n,m>o
+limit=21, n=15, i=4: d>n,e>j,f>i,g>h,g>k,g>l,k>n,l>m,m>o
+limit=21, n=11, i=4: b>i,c>i,d>k,e>k,f>g,f>h,f>k,g>j,h>j
+limit=21, n=13, i=3: b>l,c>i,c>k,d>e,d>f,d>g,d>h,d>j,d>k,d>l,j>m
+limit=21, n=13, i=4: c>h,c>i,c>l,c>m,d>e,d>f,d>h,e>g,e>i,e>k,f>k,f>l,f>m,h>j
+limit=21, n=11, i=4: d>j,e>h,f>g,f>j,f>k,h>i,h>k
+limit=21, n=13, i=4: b>d,b>e,c>f,c>l,e>l,f>g,f>h,f>i,f>j,f>k,k>m
+limit=21, n=15, i=4: b>f,c>d,c>e,c>g,c>h,g>i,h>j,h>k,h>l,j>o,k>n,l>m
+limit=21, n=15, i=4: a>h,b>g,b>i,b>j,b>n,b>o,c>d,c>e,c>f,c>h,c>i,c>j,c>k,e>o,f>n,g>k,i>m,j>l
+limit=21, n=14, i=4: d>e,d>f,d>g,f>h,g>i,g>j,g>k,i>n,j>m,k>l
+limit=21, n=15, i=4: a>h,b>g,b>h,b>i,b>j,b>k,b>o,c>d,c>e,c>f,c>i,c>j,c>l,e>k,f>o,g>l,i>n,j>m
+limit=21, n=14, i=4: b>h,c>k,c>m,c>n,d>e,d>f,d>g,d>i,d>j,d>k,i>n,j>m,k>l
+limit=21, n=14, i=4: a>d,a>k,b>h,b>j,b>l,c>e,c>f,c>h,d>l,e>j,e>k,f>g,f>i,h>m,i>n
+limit=21, n=14, i=4: d>e,d>f,d>g,f>j,g>h,g>i,i>k,i>l,j>m,j>n
+limit=21, n=15, i=4: c>e,d>f,d>g,f>k,f>l,g>h,g>i,g>j,j>o,k>n,l>m
+# hash_table_size = 694444444
+# n_solved = 206708
+# n_unsolved = 94241
+# n_hits = 34559309
+# n_misses = 17618836
+# avg_priority = 1299.242
+# avg_cost = 7.808
+limit=21, n=13, i=4: a>d,a>j,b>e,b>k,b>l,c>f,c>h,c>i,c>m,d>m,e>g,e>h,e>i,f>j,f>k,f>l
+limit=21, n=13, i=4: b>e,b>f,b>g,b>h,b>i,c>d,c>f,c>g,c>j,c>k,c>l,c>m,d>h,d>i,e>j,e>k,e>l,e>m
+limit=21, n=11, i=3: a>j,a>k,b>c,b>d,b>e,b>f,b>g,b>h,b>i,b>k
+limit=21, n=14, i=4: f>n,g>i,g>l,g>m,g>n,h>j,h>k,h>n,k>l,k>m
+limit=21, n=13, i=4: c>f,d>e,d>g,d>h,f>j,g>i,g>l,h>k,h>l,k>m
+limit=21, n=14, i=4: b>e,c>d,c>f,f>g,f>h,f>i,f>j,f>k,f>l,l>m,l>n
+limit=21, n=14, i=4: e>l,f>g,f>h,f>i,i>j,i>k,i>l,j>n,k>m
+limit=21, n=14, i=4: d>j,d>k,d>l,d>m,e>f,e>g,e>h,e>j,f>i,g>m,h>k,h>l,j>n
+limit=21, n=14, i=4: b>i,c>i,d>n,e>f,e>g,e>h,g>k,h>j,h>n,j>l,k>m
+limit=21, n=13, i=4: c>j,c>l,c>m,d>e,d>f,d>j,e>g,f>h,f>i,f>l,f>m,j>k
+limit=21, n=12, i=4: c>g,d>f,d>l,e>h,e>i,e>j,e>k,k>l
+limit=21, n=13, i=4: c>e,c>f,c>j,c>k,c>l,c>m,d>g,d>h,g>m,h>i,h>j,h>k,h>l
+limit=21, n=14, i=4: e>h,f>k,f>l,g>i,g>k,g>l,i>j,k>n,l>m
+limit=21, n=14, i=4: e>k,f>h,f>k,g>i,g>k,g>n,h>n,i>j,j>l,j>m
+limit=21, n=13, i=4: b>d,b>l,c>e,c>f,e>g,e>l,e>m,f>h,f>i,f>m,h>k,i>j
+limit=21, n=12, i=4: d>g,e>h,f>g,f>h,h>i,h>j,h>k,h>l
+limit=21, n=12, i=4: a>e,a>f,b>i,b>j,b>k,b>l,c>d,c>g,g>h,g>i,g>j,g>k,g>l
+limit=21, n=12, i=4: a>e,b>g,b>l,c>h,c>i,c>j,d>f,d>g,e>l,f>h,f>i,f>j,g>k
+limit=21, n=13, i=4: a>d,a>i,a>j,a>m,b>e,b>i,b>k,b>l,c>f,c>g,c>i,f>m,g>h,g>j,g>k,g>l
+limit=21, n=13, i=4: a>h,a>i,a>k,b>d,b>e,b>h,b>l,b>m,c>f,c>g,f>i,g>k,g>l,g>m,h>j
+limit=21, n=14, i=4: a>d,b>g,c>e,c>f,c>g,e>j,e>k,f>h,f>i,f>l,l>m,l>n
+limit=21, n=13, i=4: a>i,b>i,c>k,d>e,d>f,d>g,d>h,f>j,g>l,g>m,h>j,h>k,h>l,h>m
+limit=21, n=12, i=4: c>g,c>i,c>k,d>e,d>f,d>g,e>i,e>l,f>h,f>k,f>l,h>j
+limit=21, n=13, i=4: a>g,b>g,b>i,b>j,b>k,b>l,c>d,c>e,d>l,e>f,e>h,e>i,e>j,e>k,h>m
+limit=21, n=13, i=4: e>j,f>h,f>m,g>i,g>k,g>l,j>l,k>m
+limit=21, n=13, i=4: b>j,c>k,d>e,d>f,d>g,d>h,d>j,e>k,f>m,g>l,h>i,h>l,h>m
+limit=21, n=14, i=4: a>c,a>e,a>g,b>d,b>g,b>i,b>j,b>k,b>l,b>m,d>h,e>f,e>i,e>j,e>k,e>l,e>m,h>n
+limit=21, n=13, i=4: a>d,a>k,b>e,b>j,c>f,e>k,f>g,f>h,f>i,f>j,i>l,i>m
+limit=21, n=13, i=4: b>g,b>l,c>f,c>h,c>i,c>j,d>e,d>f,d>g,e>h,e>i,e>j,e>l,f>m,g>k
+limit=21, n=13, i=4: d>i,e>k,f>i,f>l,f>m,g>h,g>k,h>j,h>l,h>m
+limit=21, n=13, i=4: a>d,a>i,a>j,a>m,b>e,b>h,c>f,c>k,c>l,e>k,e>l,e>m,f>g,f>h,f>i,f>j
+limit=21, n=12, i=4: a>e,a>f,b>g,c>i,d>i,g>h,i>j,i>k,i>l
+limit=21, n=12, i=4: a>h,b>h,b>k,c>e,c>i,c>j,d>f,d>h,f>g,f>i,f>j,f>k,g>l
+limit=21, n=12, i=4: a>l,b>e,b>g,c>g,c>i,c>j,c>k,d>f,f>h,f>i,f>j,f>k,f>l
+limit=21, n=15, i=4: d>f,e>g,e>h,e>i,e>j,e>k,j>m,k>l,l>n,m>o
+limit=21, n=13, i=4: a>d,a>e,a>h,a>j,a>k,b>g,b>h,c>f,c>l,c>m,f>j,f>k,g>i,g>l,g>m
+limit=21, n=13, i=4: a>d,a>l,b>f,c>e,c>k,c>m,d>k,e>g,e>h,e>l,f>i,f>j,f>m
+limit=21, n=13, i=4: g>k,g>l,h>i,h>j,h>l,h>m,k>m
+limit=21, n=14, i=4: a>d,b>e,c>f,d>j,e>h,e>i,f>g,f>k,f>l,k>n,l>m
+limit=21, n=14, i=4: b>e,c>k,d>f,d>g,f>i,f>l,f>m,g>h,g>j,g>k,g>l,g>m,j>n
+limit=21, n=15, i=4: d>o,e>f,e>g,e>h,g>o,h>i,h>j,h>k,i>n,j>m,k>l
+limit=21, n=12, i=4: c>h,d>i,e>f,e>g,e>i,i>j,i>k,i>l
+limit=21, n=11, i=4: a>c,b>d,b>e,c>f,d>i,d>j,d>k,e>g,e>h,e>k
+limit=21, n=13, i=4: f>j,g>h,g>i,g>k,g>l,g>m,j>k,j>l,j>m
+limit=21, n=12, i=4: b>d,c>e,c>f,e>h,e>i,e>j,f>g,f>i,f>j,g>l,h>k
+limit=21, n=14, i=4: e>n,f>g,f>h,f>i,f>j,f>k,i>m,j>l,k>n
+limit=21, n=14, i=4: d>k,d>m,e>m,e>n,f>g,f>h,f>i,f>j,f>l,l>n
+limit=21, n=13, i=4: a>m,b>f,c>d,c>e,c>j,c>k,c>l,e>g,e>h,e>m,f>i,f>j,f>k,f>l
+limit=21, n=14, i=4: g>m,h>m,h>n,i>j,i>k,j>n,k>l
+limit=21, n=11, i=4: b>e,c>h,d>h,e>f,e>g,h>i,h>j,h>k
+limit=21, n=13, i=4: a>e,a>f,a>h,a>i,a>j,a>k,a>l,a>m,b>c,b>d,b>g,b>h,b>i,g>j,g>k,g>l,g>m
+limit=21, n=15, i=4: d>f,e>g,e>h,e>i,g>o,h>j,h>k,i>l,i>o,k>n,l>m
+limit=21, n=13, i=4: a>e,b>g,c>d,c>f,c>k,d>l,e>k,f>h,f>l,g>i,g>j,j>m
+limit=21, n=13, i=4: g>m,h>i,i>j,i>k,i>l,i>m
+limit=22, n=15, i=4: a>e,a>f,b>c,b>d,b>g,b>l,d>m,e>l,f>i,f>k,g>h,g>j,g>m,j>n,k>o
+limit=22, n=11, i=4: a>e,a>i,a>k,b>f,b>h,b>i,c>d,c>g,c>h,f>j,g>k
+limit=22, n=13, i=4: a>c,a>f,a>g,a>k,a>l,b>d,b>e,b>g,b>m,d>j,d>l,e>i,e>k,f>h,f>m
+limit=22, n=12, i=4: a>f,a>k,b>d,b>e,b>l,c>g,c>h,c>k,g>j,h>i,h>l
+limit=22, n=14, i=4: a>d,a>e,a>j,b>c,b>f,b>j,e>h,f>g,f>i,i>n,j>k,j>l,j>m
+limit=22, n=12, i=4: a>f,a>j,a>k,b>d,b>e,b>i,b>j,c>g,c>i,c>j,g>h,g>k,i>l
+limit=22, n=13, i=4: a>h,a>i,a>j,a>m,b>d,b>e,b>h,b>i,c>f,c>h,c>i,e>j,f>g,f>m,g>k,g>l
+limit=22, n=10, i=4: a>h,a>j,b>g,b>h,b>j,c>d,c>e,c>f,c>i,c>j,g>i
+limit=22, n=13, i=4: a>e,a>i,a>m,b>f,b>h,b>i,c>d,c>g,c>j,c>k,c>l,f>l,g>m,h>j,h>k
+limit=22, n=13, i=4: a>g,a>j,a>k,a>m,b>e,b>g,b>h,b>i,c>d,c>f,c>g,c>l,e>l,e>m,f>h,f>i,f>j,f>k
+# hash_table_size = 694444444
+# n_solved = 242854
+# n_unsolved = 109573
+# n_hits = 42248014
+# n_misses = 20718077
+# avg_priority = 1327.891
+# avg_cost = 7.933
+limit=22, n=14, i=4: a>f,a>h,a>i,b>e,b>g,b>h,b>i,b>l,c>d,c>g,c>h,c>i,c>m,c>n,e>n,f>l,f>m,g>j,g>k
+limit=22, n=13, i=4: a>e,a>h,a>i,b>f,b>i,b>j,b>k,c>d,c>g,c>h,c>i,c>m,f>m,g>j,g>k,h>l
+limit=22, n=14, i=4: a>c,a>d,a>g,a>h,a>j,a>l,b>e,b>g,b>h,b>j,b>k,d>k,e>f,e>i,e>l,i>n,j>m
+limit=22, n=15, i=4: a>d,b>h,b>i,b>j,b>o,c>e,c>f,c>h,c>i,c>j,e>g,f>k,f>l,f>o,k>n,l>m
+limit=22, n=14, i=4: a>g,b>e,b>f,b>n,c>d,c>h,g>i,h>j,h>k,h>n,j>m,k>l
+limit=22, n=12, i=4: a>d,a>j,a>l,b>c,b>e,b>f,b>j,d>i,e>l,f>g,f>h,j>k
+limit=22, n=12, i=4: a>j,a>k,b>e,b>j,b>k,c>d,c>f,c>k,f>g,f>h,f>i,j>l
+limit=22, n=13, i=4: a>f,a>i,a>l,b>g,b>h,b>i,b>m,c>d,c>e,c>h,c>i,c>j,c>k,e>l,f>m,g>j,g>k
+limit=22, n=13, i=4: a>h,a>j,b>d,b>f,b>h,c>e,c>f,e>g,e>i,e>j,h>k,i>l,i>m
+limit=22, n=12, i=4: a>g,b>i,c>h,c>j,d>e,d>f,d>g,d>h,d>i,d>j,j>k,j>l
+limit=22, n=12, i=4: a>f,a>i,a>j,b>h,b>j,b>l,c>g,c>i,d>e,d>h,d>i,d>j,d>k,g>k,g>l
+limit=22, n=14, i=4: a>n,b>f,b>g,b>h,b>i,b>n,c>d,c>e,c>g,c>h,c>i,c>l,c>m,c>n,f>l,f>m,h>k,i>j
+limit=22, n=15, i=4: a>g,b>f,c>l,d>i,d>j,e>h,e>k,e>l,j>m,k>n,k>o
+limit=22, n=12, i=4: a>k,b>f,b>h,b>k,b>l,c>d,c>e,c>g,c>j,c>k,g>l,h>i,h>j
+limit=22, n=14, i=4: a>h,a>i,a>m,b>d,b>e,b>h,b>i,b>j,b>k,c>f,c>h,c>i,c>n,e>n,f>g,f>j,f>k,f>m,g>l
+limit=22, n=15, i=4: a>f,b>g,b>n,c>d,c>e,c>h,c>i,c>j,c>n,h>m,i>l,j>k,n>o
+limit=22, n=13, i=4: a>g,b>e,b>f,b>i,b>j,c>d,c>h,c>i,c>j,h>k,j>m,k>l
+limit=22, n=12, i=4: a>f,a>i,a>j,a>k,b>d,b>f,b>i,b>j,c>e,c>i,c>j,d>k,e>g,e>h,h>l
+limit=22, n=14, i=4: a>l,b>f,b>g,b>l,c>d,c>e,c>h,c>l,c>m,e>i,f>j,g>m,h>k,k>n
+limit=22, n=13, i=4: a>g,b>k,c>f,c>i,c>j,c>k,c>l,d>e,d>h,d>i,d>j,d>k,h>l,j>m
+limit=22, n=13, i=4: a>h,a>i,b>d,b>f,b>h,b>i,b>k,b>l,c>e,c>f,c>h,c>i,e>g,e>k,e>l,f>j,g>m
+limit=22, n=13, i=4: a>e,a>g,a>k,b>h,b>k,c>d,c>f,c>k,c>l,c>m,f>i,g>m,h>j,h>l
+limit=22, n=14, i=4: a>c,a>d,a>i,a>j,a>k,a>m,b>e,b>f,b>i,d>g,e>m,f>h,f>j,f>k,h>l,i>n
+limit=22, n=14, i=4: a>n,b>m,c>g,c>h,c>m,c>n,d>e,d>f,d>i,d>j,d>k,d>l,d>m,d>n,f>h,g>i,g>j,g>k,g>l
+limit=22, n=14, i=4: a>f,b>k,c>f,c>h,c>i,c>j,c>k,d>e,d>h,d>i,d>j,d>k,e>g,h>n,i>m,j>l
+limit=22, n=15, i=4: a>g,b>d,b>f,b>i,b>j,b>k,c>e,c>g,c>i,c>j,c>k,c>l,e>h,f>l,j>o,k>m,k>n
+limit=22, n=15, i=4: a>e,a>j,a>m,b>d,b>f,b>j,b>k,c>g,c>j,c>l,e>i,f>l,f>m,g>h,g>k,h>n,i>o
+limit=22, n=15, i=4: a>d,a>i,b>c,b>e,b>i,c>g,c>h,d>l,e>f,e>j,e>k,j>n,k>m,l>o
+limit=22, n=14, i=4: a>d,a>e,a>g,a>h,b>c,b>g,b>h,b>i,b>j,b>k,b>n,c>f,d>n,e>i,e>j,e>k,h>l,h>m
+limit=22, n=13, i=4: a>d,b>h,b>j,b>k,b>m,c>e,c>f,c>g,c>h,e>m,f>i,g>j,g>k,i>l
+limit=22, n=13, i=4: a>j,b>k,c>g,c>h,c>i,c>j,c>k,c>l,c>m,d>e,d>g,d>h,d>i,d>j,d>k,e>f,e>l,e>m
+limit=22, n=14, i=4: a>g,a>l,a>m,b>d,b>e,c>f,c>g,c>k,e>i,e>k,e>m,f>h,f>j,f>l,j>n
+limit=22, n=14, i=3: a>k,b>j,c>d,c>e,c>f,c>g,c>j,c>k,e>i,f>h,g>l,g>m,g>n
+limit=22, n=15, i=4: a>d,a>g,b>f,b>i,b>m,c>e,c>i,c>k,c>l,e>m,f>j,g>h,g>k,g>l,i>o,j>n
+limit=22, n=12, i=4: a>g,a>i,a>j,b>f,b>g,c>e,c>i,c>j,d>i,d>j,d>k,d>l,e>h,f>k,f>l
+limit=22, n=12, i=4: a>e,a>i,b>g,b>h,b>i,c>h,c>j,c>k,c>l,d>f,d>g,d>h,d>i,f>j,f>k,f>l
+limit=22, n=13, i=4: a>i,a>j,b>e,b>g,b>k,c>h,c>j,d>f,d>i,d>l,d>m,g>m,h>k,h>l
+limit=22, n=13, i=4: a>i,a>j,a>k,a>l,b>d,b>i,b>j,b>k,c>e,c>i,c>j,c>k,d>g,d>l,e>f,e>h,h>m
+limit=22, n=14, i=4: a>e,a>g,a>l,b>f,b>h,c>d,c>h,c>i,c>j,c>k,f>i,f>l,g>j,g>k,h>m,h>n
+limit=22, n=14, i=4: a>e,a>h,b>d,b>f,c>g,c>h,f>j,g>i,g>k,j>n,k>l,k>m
+limit=22, n=14, i=4: a>e,a>g,a>i,b>f,b>i,c>d,c>g,c>i,c>j,f>h,f>j,g>k,g>l,h>m,h>n
+limit=22, n=13, i=4: a>e,b>d,b>h,c>f,c>h,f>g,f>i,h>j,h>k,i>l,i>m
+limit=22, n=13, i=4: a>f,a>m,b>d,b>j,b>k,b>m,c>e,c>f,c>m,d>g,d>h,e>i,e>j,e>k,i>l
+limit=22, n=11, i=4: a>f,a>g,a>h,b>g,b>h,b>j,b>k,c>d,c>e,c>f,d>j,e>i,e>k
+limit=22, n=14, i=4: a>l,b>e,b>j,b>l,c>d,c>f,c>j,c>l,c>m,d>h,e>i,e>m,f>g,f>k,k>n
+limit=22, n=11, i=4: a>k,b>j,b>k,c>e,c>h,c>j,d>f,d>g,d>j,d>k,h>i
+limit=22, n=15, i=4: a>e,b>h,b>i,c>d,c>f,c>g,c>i,f>m,g>j,g>k,h>l,h>n,n>o
+limit=22, n=13, i=4: a>d,b>g,b>h,b>i,b>j,b>k,c>e,c>f,c>h,c>l,c>m,e>k,f>i,f>j,g>l,g>m
+limit=22, n=14, i=4: a>g,a>j,b>f,b>g,b>j,c>d,c>e,c>j,c>k,c>l,d>i,e>h,f>k,f>l,h>m,i>n
+limit=22, n=13, i=4: a>d,a>e,a>j,b>g,b>i,b>k,b>l,c>f,c>g,c>i,e>h,e>l,f>j,f>k,i>m
+limit=22, n=12, i=4: a>k,b>g,b>h,b>i,c>h,c>i,c>j,c>l,d>e,d>f,d>h,d>i,e>k,f>l,g>j
+limit=22, n=11, i=4: a>k,b>e,b>j,b>k,c>d,c>f,c>k,f>g,f>h,f>i,f>j
+limit=22, n=12, i=4: a>f,a>j,b>i,b>j,b>l,c>e,c>i,c>j,c>k,d>g,d>h,d>i,g>k,h>l
+limit=22, n=13, i=4: a>e,b>j,b>l,c>g,c>j,c>k,d>f,d>h,d>j,f>k,g>l,h>i,i>m
+limit=22, n=11, i=4: a>e,b>h,b>i,c>f,c>g,c>i,d>f,d>g,d>h,d>i,g>j,h>k
+limit=22, n=11, i=4: a>i,b>d,b>e,b>h,c>f,c>h,c>i,f>g,f>j,j>k
+limit=22, n=13, i=4: a>g,b>f,b>k,b>l,c>e,c>k,c>m,d>h,d>i,d>k,h>m,i>j,i>l
+limit=22, n=12, i=4: a>g,a>j,b>i,b>k,c>e,c>h,c>j,d>f,d>i,d>j,h>k,i>l
+limit=22, n=14, i=4: a>e,a>h,b>f,b>g,b>k,b>l,c>d,c>i,c>m,c>n,f>j,g>m,h>n,i>k,i>l
+limit=22, n=14, i=4: a>f,a>h,a>i,a>j,b>e,b>g,b>h,b>i,c>d,c>h,c>i,c>k,c>l,c>m,c>n,d>j,e>k,f>n,g>l,g>m
+limit=22, n=14, i=4: a>f,b>e,b>h,b>l,c>d,c>g,c>h,e>i,f>k,g>j,g>l,j>m,k>n
+limit=22, n=12, i=4: a>h,a>i,a>l,b>h,b>i,b>l,c>d,c>e,c>l,e>f,e>g,h>k,i>j
+limit=22, n=14, i=4: a>e,a>f,a>i,b>g,b>h,b>i,c>d,c>i,c>j,c>k,c>l,c>m,c>n,d>h,e>n,f>m,g>j,g>k,g>l
+limit=22, n=13, i=4: a>e,a>m,b>i,b>j,b>m,c>g,c>i,c>j,d>f,d>i,d>j,d>k,d>l,d>m,f>h,g>k,g>l
+# hash_table_size = 694444444
+# n_solved = 290125
+# n_unsolved = 119600
+# n_hits = 52102000
+# n_misses = 24567139
+# avg_priority = 1392.759
+# avg_cost = 7.932
+limit=22, n=15, i=4: a>g,b>f,c>k,d>j,d>k,d>n,e>h,e>i,e>j,h>n,i>l,i>m,m>o
+limit=22, n=14, i=4: a>e,b>d,b>f,c>g,f>k,g>h,g>i,g>j,j>l,k>m,k>n
+limit=22, n=13, i=4: a>k,b>j,c>e,c>g,c>j,c>k,c>m,d>f,d>g,d>j,d>k,f>h,f>m,g>l,h>i
+limit=22, n=12, i=4: a>d,a>e,b>f,b>g,c>h,c>i,c>l,f>l,g>j,h>k,i>k
+limit=22, n=13, i=4: a>e,a>h,b>f,b>h,c>d,c>g,f>l,g>i,g>j,g>k,l>m
+limit=22, n=12, i=4: a>e,b>l,c>d,c>f,f>g,f>h,f>i,f>l,h>k,i>j
+limit=22, n=12, i=4: a>d,a>f,a>h,b>g,b>h,b>i,b>j,b>l,c>e,c>f,c>g,c>h,d>l,e>i,e>j,g>k
+limit=22, n=14, i=4: a>f,b>n,c>i,c>n,d>e,d>g,d>h,d>i,d>n,g>k,h>j,j>l,k>m
+limit=22, n=10, i=4: a>h,b>g,b>j,c>e,c>h,c>j,d>f,d>g,d>j,f>i
+limit=22, n=11, i=4: a>i,b>f,b>h,c>e,c>g,c>i,d>g,d>h,d>i,d>j,d>k,e>j,f>k
+limit=22, n=14, i=4: a>g,b>h,c>i,d>i,d>j,d>k,e>f,e>h,e>j,e>k,j>n,k>l,k>m
+limit=22, n=12, i=4: a>g,a>k,b>g,b>i,b>j,c>d,c>e,c>f,c>i,e>j,f>h,f>k,i>l
+limit=22, n=14, i=4: a>g,a>k,b>f,b>g,b>k,c>d,c>e,c>k,c>l,c>m,d>h,e>j,f>i,f>l,f>m,j>n
+limit=22, n=12, i=4: a>f,a>h,a>i,b>f,b>g,b>h,b>j,c>g,c>i,c>k,c>l,d>e,d>g,d>h,d>i,e>j,e>k,e>l
+limit=22, n=14, i=4: a>g,b>i,c>k,d>h,d>j,d>k,e>f,e>h,e>i,e>j,e>k,j>l,j>m,j>n
+limit=22, n=14, i=4: a>c,a>e,a>l,a>m,a>n,b>d,b>f,b>j,b>k,c>i,d>l,d>m,e>j,e>k,f>g,f>h,f>n
+limit=22, n=14, i=4: a>d,a>i,a>m,a>n,b>e,b>f,b>i,c>g,c>i,c>j,c>k,c>l,e>l,f>j,f>k,g>h,g>m,g>n
+limit=22, n=14, i=4: a>d,b>f,b>n,c>e,c>f,e>g,e>h,e>n,f>i,g>l,g>m,h>j,h>k
+limit=22, n=11, i=4: a>g,a>j,b>i,b>j,c>g,c>i,c>j,c>k,d>e,d>f,d>i,f>h,f>k
+limit=22, n=12, i=4: a>g,b>j,b>l,c>e,c>j,c>k,d>f,d>g,d>j,e>l,f>h,f>i,f>k
+limit=22, n=14, i=4: a>e,a>f,b>g,b>j,c>i,d>h,d>j,h>k,i>l,k>m,l>n
+limit=22, n=13, i=4: a>j,b>e,c>g,c>h,c>j,c>m,d>f,d>h,d>j,d>k,d>l,e>i,f>m,g>k,g>l
+limit=22, n=11, i=4: a>i,b>e,b>i,c>g,c>h,d>f,d>h,d>k,f>j,g>k
+limit=22, n=13, i=4: a>e,b>g,b>i,c>g,c>h,d>f,d>h,d>i,f>j,h>l,i>m,j>k
+limit=22, n=13, i=4: a>h,b>k,c>e,c>k,c>l,c>m,d>f,d>g,d>h,d>k,e>j,f>m,g>i,g>l
+limit=22, n=13, i=4: a>h,b>h,c>m,d>m,e>f,e>g,e>m,g>i,g>j,g>k,k>l
+limit=22, n=14, i=4: a>i,b>i,c>d,c>e,c>f,c>g,d>n,e>l,f>j,f>n,g>h,g>k,g>l,k>m
+limit=22, n=11, i=4: a>h,a>i,b>e,b>g,b>i,c>f,c>h,d>g,d>i,d>j,d>k,f>j,f>k
+limit=22, n=13, i=4: a>j,a>k,b>e,b>j,c>d,c>f,c>j,d>h,e>k,f>g,f>i,i>l,i>m
+limit=22, n=13, i=4: a>i,a>k,b>h,b>i,c>f,c>g,d>e,d>l,d>m,e>j,f>m,g>l,h>k
+limit=22, n=12, i=4: a>e,b>l,c>d,c>f,c>g,c>h,f>k,g>l,h>i,h>j
+limit=22, n=11, i=4: a>j,b>i,c>e,d>f,d>g,d>h,e>h,f>k,g>i,g>j,g>k
+limit=22, n=13, i=4: a>g,a>j,a>k,b>e,b>g,b>j,c>d,c>f,c>j,d>h,d>l,e>i,f>k,f>l,i>m
+limit=22, n=12, i=4: a>e,a>g,b>g,b>h,b>i,c>f,c>h,c>i,d>e,d>f,d>h,d>i,e>k,f>l,g>j
+limit=22, n=13, i=4: a>i,b>i,b>j,c>e,c>f,c>j,c>k,d>g,d>j,d>l,f>l,g>h,g>k,i>m
+limit=22, n=13, i=4: a>g,b>g,c>j,d>e,d>f,f>h,f>i,f>j,h>m,i>k,i>l
+limit=22, n=12, i=4: a>h,b>g,b>i,c>g,c>h,c>i,d>e,d>f,f>j,i>k,j>l
+limit=22, n=11, i=4: b>h,b>i,b>j,c>f,c>g,c>h,d>e,d>f,d>g,d>h,e>i,e>j,g>k
+limit=22, n=14, i=4: a>f,a>n,b>e,b>h,b>l,b>n,c>d,c>g,c>m,c>n,d>i,e>j,f>k,g>l,h>m
+limit=22, n=13, i=4: a>f,b>d,b>l,c>e,c>g,c>l,e>j,f>k,g>h,g>i,l>m
+limit=22, n=13, i=4: a>f,a>k,b>h,b>k,c>e,c>j,c>l,d>g,d>j,d>k,g>i,h>l,j>m
+limit=22, n=14, i=4: a>d,a>g,b>f,b>m,b>n,c>e,c>h,c>i,e>l,f>k,g>j,h>n,i>m
+limit=22, n=14, i=4: a>h,b>e,b>h,b>m,c>d,c>f,c>g,d>j,e>k,f>m,g>i,g>l,l>n
+limit=22, n=14, i=4: a>d,a>j,b>j,b>k,b>l,c>e,c>f,c>j,e>i,e>l,f>g,f>h,f>k,h>m,i>n
+limit=22, n=13, i=4: a>e,a>f,a>j,b>g,b>i,b>j,c>h,c>i,c>j,d>h,d>i,d>k,d>l,f>k,g>l,h>m
+limit=22, n=14, i=4: b>e,c>i,c>m,c>n,d>f,d>g,d>h,d>i,f>n,g>m,h>j,h>k,k>l
+limit=22, n=12, i=4: a>k,b>f,c>d,c>e,c>j,d>h,e>g,f>i,f>j,f>k,i>l
+limit=22, n=13, i=4: a>m,b>d,b>e,b>h,b>i,b>k,b>l,b>m,c>f,c>g,c>h,c>i,c>m,f>k,g>j,g>l
+limit=22, n=15, i=4: a>f,b>e,b>j,b>k,b>m,c>d,c>g,c>h,c>j,c>k,g>m,h>i,h>l,k>n,l>o
+limit=22, n=12, i=4: a>e,b>f,b>g,b>h,c>d,c>g,c>h,c>j,c>k,c>l,e>i,f>j,f>k,f>l
+limit=22, n=14, i=4: a>l,b>e,b>m,b>n,c>d,c>f,c>i,d>l,e>i,f>g,f>h,f>m,f>n,g>k,h>j
+limit=22, n=13, i=4: a>e,b>d,b>g,b>j,c>f,c>g,c>i,d>i,e>j,f>h,h>k,h>l,h>m
+limit=22, n=12, i=4: a>d,a>h,a>k,b>g,c>e,c>f,c>h,c>j,e>l,f>i,f>l,g>j,g>k
+limit=22, n=13, i=4: a>h,b>f,b>h,b>j,c>d,c>e,c>g,c>k,e>l,f>k,g>i,g>j,g>l,i>m
+limit=22, n=13, i=4: a>g,a>m,b>h,b>j,c>i,c>m,d>e,d>f,d>k,d>l,d>m,i>l,j>k
+limit=22, n=12, i=4: a>d,a>h,a>l,b>g,b>h,b>j,b>k,c>e,c>f,c>g,e>i,e>l,f>j,f>k
+limit=22, n=14, i=4: a>c,a>d,a>g,a>i,a>j,a>k,b>e,b>g,b>i,b>j,e>f,e>h,e>k,h>l,i>n,j>m
+limit=22, n=13, i=4: b>g,b>k,c>f,c>k,c>l,c>m,d>e,d>h,d>i,d>k,h>m,i>j,i>l
+limit=22, n=13, i=4: a>c,a>h,a>i,a>j,a>l,a>m,b>d,b>e,b>f,b>h,c>g,d>j,e>i,f>l,f>m,h>k
+limit=22, n=13, i=4: a>e,a>h,b>g,b>h,b>j,c>d,c>f,c>g,f>i,f>j,g>k,h>l,i>m
+limit=22, n=12, i=4: a>h,b>h,b>i,c>e,c>i,c>j,c>k,d>f,d>g,d>i,f>l,g>j,g>k,g>l
+limit=22, n=14, i=4: a>c,a>d,a>k,b>e,b>f,b>g,d>i,e>k,f>l,f>m,g>h,g>j,g>l,g>m,j>n
+limit=22, n=15, i=4: b>f,b>g,b>l,c>d,c>e,c>h,c>l,c>n,e>j,f>k,g>n,h>i,h>m,m>o
+limit=22, n=13, i=4: a>e,a>i,a>j,a>m,b>d,b>i,b>k,b>l,c>f,c>g,c>h,c>i,f>l,g>j,h>k,h>m
+# hash_table_size = 694444444
+# n_solved = 339359
+# n_unsolved = 126105
+# n_hits = 61790209
+# n_misses = 27938705
+# avg_priority = 1454.507
+# avg_cost = 7.985
+limit=22, n=13, i=4: a>f,a>k,b>e,b>i,b>l,b>m,c>d,c>g,c>h,c>j,g>m,h>l,i>j,i>k
+limit=22, n=14, i=4: a>e,a>h,a>j,a>l,b>c,b>d,b>h,b>k,c>j,d>f,d>g,d>l,e>i,e>k,i>m,i>n
+limit=22, n=14, i=4: a>g,b>d,b>e,c>f,c>g,c>n,d>n,e>i,e>j,f>h,f>k,k>l,k>m
+limit=22, n=13, i=4: a>d,a>j,a>k,b>j,b>k,b>l,b>m,c>e,c>f,c>j,c>k,d>i,e>l,f>g,f>h,f>m
+limit=22, n=13, i=4: b>h,c>e,c>h,d>f,d>g,f>i,g>j,j>k,j>l,j>m
+limit=22, n=14, i=4: a>g,b>f,b>g,b>i,c>d,c>e,c>i,d>h,e>j,f>k,i>l,j>m,k>n
+limit=22, n=11, i=4: a>i,b>f,b>g,c>d,c>e,c>h,c>i,h>j,j>k
+limit=22, n=14, i=4: a>h,b>f,b>m,c>d,c>e,c>g,c>h,c>l,e>m,f>j,f>l,g>i,g>k,k>n
+limit=22, n=13, i=4: a>l,b>e,b>k,c>d,c>f,c>g,e>j,f>l,f>m,g>h,g>i,g>k,g>m
+limit=22, n=14, i=4: a>e,b>i,c>h,d>f,d>g,g>j,h>k,h>l,i>m,i>n
+limit=22, n=13, i=4: a>f,a>g,a>m,b>h,b>k,c>i,c>m,d>e,d>j,d>l,d>m,h>l,i>j,i>k
+limit=22, n=12, i=4: a>i,a>j,b>f,b>g,b>h,b>j,c>d,c>e,c>j,c>k,c>l,i>k,i>l
+limit=22, n=14, i=4: a>e,a>l,b>f,b>h,c>d,c>g,c>h,c>k,c>m,e>m,f>i,f>k,g>j,g>l,j>n
+limit=22, n=12, i=4: a>f,b>j,c>e,c>h,c>k,d>g,d>h,d>j,g>i,g>k,j>l
+limit=22, n=14, i=4: b>i,c>j,d>g,d>j,d>k,d>l,d>m,e>f,e>h,e>i,e>j,e>n,g>n,h>k,h>l,h>m
+limit=22, n=13, i=4: a>k,b>f,b>k,c>g,c>k,d>e,d>h,d>l,g>l,h>i,h>j,j>m
+limit=22, n=11, i=4: a>e,b>h,b>i,c>h,c>i,c>k,d>f,d>g,d>h,d>i,f>j,g>j,g>k
+limit=22, n=14, i=4: a>c,a>f,a>n,b>d,b>e,b>g,d>n,e>h,e>i,f>j,f>k,g>l,l>m
+limit=22, n=12, i=4: a>i,b>g,b>i,b>k,c>f,c>h,c>i,d>e,d>g,d>h,d>j,e>k,f>j,h>l
+limit=22, n=12, i=4: a>j,b>i,b>j,c>e,c>g,c>i,c>j,c>k,d>f,d>g,d>i,f>h,f>k,h>l
+limit=22, n=13, i=4: b>f,b>j,c>h,c>j,c>k,d>e,d>g,d>h,d>j,d>l,f>l,g>i,g>k,i>m
+limit=22, n=14, i=4: c>j,d>e,d>f,d>g,d>h,d>j,f>l,g>l,g>n,h>i,h>k,h>n,k>m
+limit=22, n=13, i=4: a>d,a>e,a>h,a>k,b>f,b>h,b>k,c>g,c>k,c>m,f>m,g>i,g>j,j>l
+limit=22, n=13, i=4: a>e,a>g,a>k,b>c,b>d,b>f,b>g,d>k,e>h,e>i,f>j,j>l,j>m
+limit=22, n=12, i=4: b>d,b>f,b>g,c>e,c>f,c>g,c>j,d>j,e>h,e>i,h>l,i>k
+limit=22, n=14, i=4: a>f,a>k,b>h,b>k,c>g,c>j,c>k,d>e,d>j,d>l,d>m,g>m,h>i,h>l,j>n
+limit=22, n=14, i=4: a>g,a>j,a>l,a>m,b>d,b>h,b>j,b>k,c>e,c>f,c>j,c>n,e>k,f>m,g>n,h>i,h>l
+limit=22, n=13, i=3: a>e,b>d,c>f,c>g,c>h,c>i,f>m,g>l,h>k,i>j
+limit=22, n=11, i=4: a>g,b>f,b>i,c>d,c>e,c>g,c>i,c>j,e>h,f>j,i>k
+limit=22, n=14, i=4: a>c,a>e,a>f,b>d,b>g,d>h,e>j,f>i,g>k,g>l,k>n,l>m
+limit=22, n=11, i=4: a>i,b>k,c>i,c>j,c>k,d>e,d>f,d>j,d>k,e>h,f>g
+limit=22, n=15, i=4: b>h,c>m,d>e,d>f,d>g,d>h,e>j,f>l,g>i,g>k,g>m,k>n,l>o
+limit=22, n=11, i=4: a>h,a>i,b>f,b>g,b>i,c>f,c>g,c>j,c>k,d>e,d>h,d>i,e>j,e>k
+limit=22, n=13, i=4: a>g,a>j,b>e,b>k,c>i,c>j,c>l,d>f,d>g,d>i,d>j,e>l,f>h,f>k,i>m
+limit=22, n=13, i=4: b>f,b>i,c>i,c>j,c>k,c>l,d>e,d>g,d>i,d>m,e>h,f>m,g>j,g>k,g>l
+limit=22, n=14, i=4: a>f,b>j,c>n,d>m,e>g,e>h,e>i,e>j,h>l,h>m,i>k,i>n
+limit=22, n=13, i=4: a>d,a>e,b>g,b>i,b>j,b>k,b>l,c>f,c>g,c>m,d>l,e>k,e>m,f>h,f>i,f>j
+limit=22, n=12, i=4: a>g,b>h,b>i,b>j,b>k,c>f,c>h,c>i,c>j,d>e,d>h,d>i,d>j,d>l,f>l,g>k
+limit=22, n=14, i=4: a>f,a>h,b>d,b>e,b>h,c>g,e>i,f>j,g>k,g>l,k>n,l>m
+limit=22, n=13, i=4: a>g,b>i,b>j,c>e,c>f,c>j,d>i,d>j,d>k,d>l,f>k,g>h,g>l,i>m
+limit=22, n=10, i=4: a>j,b>i,c>e,c>f,c>g,d>h,h>i,h>j
+limit=22, n=13, i=4: a>j,b>d,b>i,c>e,c>f,c>i,e>h,e>m,f>g,f>j,f>m,i>k,i>l
+limit=22, n=13, i=4: a>g,a>j,b>e,b>i,b>m,c>i,c>k,c>l,d>f,d>h,d>i,f>l,g>m,h>j,h>k
+limit=22, n=14, i=4: a>l,b>n,c>e,c>f,c>g,c>l,c>n,d>h,d>l,d>m,d>n,g>m,h>i,i>j,i>k
+limit=22, n=11, i=4: a>f,b>e,b>j,c>g,c>h,c>j,c>k,d>g,d>h,d>i,d>j,e>i,f>k
+limit=22, n=14, i=4: b>g,c>f,d>m,e>h,e>i,e>j,i>k,i>m,j>l,l>n
+limit=22, n=13, i=4: b>f,c>h,d>e,d>g,d>l,d>m,g>i,g>j,h>k,h>l,h>m
+limit=22, n=12, i=4: a>j,a>k,a>l,b>j,b>k,b>l,c>f,c>l,d>e,d>g,d>h,d>i,d>j,d>k,f>g,f>h,f>i
+limit=22, n=14, i=4: a>f,a>g,a>l,b>i,b>n,c>j,d>e,d>h,d>m,h>l,i>k,j>m,j>n
+limit=22, n=14, i=4: a>k,b>h,b>k,b>m,c>e,c>i,c>k,d>f,d>g,d>l,d>n,g>m,h>n,i>j,i>l
+limit=22, n=13, i=4: b>h,b>m,c>g,c>h,c>m,d>e,d>f,d>m,f>i,f>j,g>k,g>l
+limit=22, n=12, i=4: a>g,a>j,b>h,b>j,c>e,c>g,c>k,c>l,d>f,d>h,d>j,e>i,f>k,f>l
+limit=22, n=12, i=4: b>j,b>l,c>e,c>f,c>l,d>g,d>l,g>h,g>i,g>j,i>k
+limit=22, n=14, i=4: a>e,b>n,c>h,c>n,d>f,d>g,d>k,d>l,d>m,d>n,f>j,g>i,h>k,h>l,h>m
+limit=22, n=14, i=4: b>e,c>j,c>l,c>m,c>n,d>f,d>g,d>j,f>m,f>n,g>h,g>i,g>l,j>k
+limit=22, n=14, i=4: a>g,b>e,b>f,b>n,c>h,c>n,d>i,d>l,d>n,g>l,h>j,i>k,k>m
+limit=22, n=12, i=4: a>g,a>i,b>f,b>i,c>d,c>e,c>g,c>j,e>h,f>j,i>k,i>l
+limit=22, n=13, i=4: a>g,b>h,c>e,c>f,c>j,c>m,d>i,d>j,h>l,i>k,i>m
+limit=22, n=12, i=4: a>k,b>k,c>e,c>g,c>k,d>f,d>g,f>h,f>i,f>j,j>l
+limit=22, n=14, i=4: b>e,c>g,c>h,d>f,d>k,d>l,d>m,f>j,g>i,g>k,h>l,h>m,j>n
+limit=22, n=12, i=4: b>h,b>i,c>e,c>f,c>l,d>g,d>h,d>i,f>j,g>k,g>l
+limit=22, n=14, i=4: a>d,a>e,a>j,b>f,b>k,b>n,c>g,c>l,c>m,d>i,e>n,f>l,f>m,g>h,g>j,g>k
+limit=22, n=14, i=4: b>g,c>l,d>e,d>f,d>g,e>j,e>m,e>n,f>h,f>i,f>l,f>m,f>n,j>k
+limit=22, n=13, i=4: a>i,b>h,c>g,c>l,c>m,d>f,d>l,d>m,e>j,e>k,e>l,e>m,h>j,i>k
+# hash_table_size = 694444444
+# n_solved = 391764
+# n_unsolved = 131351
+# n_hits = 72215628
+# n_misses = 31163743
+# avg_priority = 1506.741
+# avg_cost = 8.051
+limit=22, n=14, i=4: a>f,b>m,c>l,d>k,e>g,e>h,g>j,h>i,h>j,h>k,h>l,h>m,i>n
+limit=22, n=13, i=4: a>i,b>m,c>l,d>k,e>h,e>i,e>j,e>k,e>l,e>m,f>g,f>h,f>k,f>l,f>m,g>j
+limit=22, n=12, i=4: a>f,b>e,b>i,c>i,c>j,d>g,d>i,f>j,g>h,h>k,h>l
+limit=22, n=13, i=4: a>f,b>e,b>l,c>h,c>i,d>g,d>i,d>k,g>j,h>k,h>l,j>m
+limit=22, n=13, i=4: a>f,b>j,c>g,d>i,d>j,e>h,e>i,e>l,g>l,h>k,k>m
+limit=22, n=12, i=4: b>g,b>j,c>g,c>j,d>e,d>f,e>h,f>i,i>l,j>k
+limit=22, n=14, i=4: a>h,b>i,b>k,c>g,c>j,d>e,d>f,d>l,d>m,d>n,h>n,i>l,j>k,j>m
+limit=22, n=14, i=4: a>i,b>g,b>m,b>n,c>e,c>j,d>f,d>h,d>l,h>m,i>n,j>k,j>l
+limit=22, n=14, i=4: a>g,a>j,b>h,b>k,c>e,c>l,c>n,d>f,d>i,d>m,f>l,g>n,h>m,i>j,i>k
+limit=22, n=14, i=4: a>d,a>e,b>g,c>f,c>h,f>n,g>i,g>l,h>j,h>k,h>n,l>m
+limit=22, n=14, i=4: a>e,a>h,b>g,b>l,b>m,c>d,c>f,c>i,c>n,f>j,g>k,h>n,i>l,i>m
+limit=22, n=13, i=4: a>c,a>e,a>g,a>h,b>d,b>f,b>h,b>j,e>l,f>i,g>j,g>l,h>k,i>m
+limit=22, n=14, i=4: a>g,b>f,c>e,c>l,c>m,d>h,d>l,f>j,g>k,h>i,h>m,l>n
+limit=22, n=14, i=4: a>d,a>g,a>m,b>c,b>e,b>f,e>m,e>n,f>h,f>i,f>n,g>j,j>k,j>l
+limit=22, n=14, i=4: a>d,b>c,b>l,c>e,c>f,c>h,d>g,d>i,d>l,h>j,h>k,i>m,i>n
+limit=22, n=14, i=4: a>g,a>h,a>k,b>e,b>h,b>l,b>m,b>n,c>d,c>f,c>h,c>i,c>j,e>k,f>l,f>m,g>i,g>j,g>n
+limit=22, n=14, i=4: a>f,b>d,b>e,b>i,b>j,b>k,c>g,c>l,c>m,e>l,f>m,g>h,g>i,g>j,g>k,h>n
+limit=22, n=14, i=4: a>e,a>m,b>d,b>l,b>m,b>n,c>f,c>g,c>m,f>l,g>h,g>i,g>j,g>n,j>k
+limit=22, n=15, i=4: a>n,b>f,b>i,b>j,b>n,c>d,c>e,c>i,c>j,c>n,c>o,e>h,f>g,f>o,h>k,i>m,j>l
+limit=22, n=15, i=4: a>g,b>d,b>e,b>j,b>l,c>f,c>g,c>j,c>l,e>i,f>h,f>k,k>o,l>m,l>n
+limit=22, n=14, i=4: a>f,b>g,b>h,b>i,c>d,c>e,c>h,c>i,c>l,c>m,g>l,g>m,h>n,i>j,i>k
+limit=22, n=11, i=4: a>h,a>k,b>g,b>h,b>j,c>d,c>e,c>f,c>g,f>i,f>j,f>k
+limit=22, n=15, i=4: a>e,a>h,b>g,b>m,b>o,c>d,c>f,c>k,c>l,e>m,f>i,f>o,g>j,h>k,h>l,j>n
+limit=22, n=13, i=4: a>i,b>e,b>f,b>h,c>d,c>g,c>k,c>l,c>m,g>j,h>k,i>l,i>m
+limit=22, n=14, i=4: a>c,a>d,a>l,a>m,b>e,b>f,b>g,b>n,d>n,e>h,e>i,f>k,f>m,g>j,g>l
+limit=22, n=14, i=4: a>k,b>i,b>j,b>k,b>m,b>n,c>d,c>e,c>f,c>i,c>j,d>l,e>n,f>g,f>h,f>m
+limit=22, n=14, i=3: a>l,b>h,b>j,b>k,c>f,c>g,c>i,d>e,d>i,d>j,d>k,d>l,g>m,h>n
+limit=22, n=13, i=4: a>i,a>k,b>d,b>g,b>i,c>e,c>g,c>i,c>j,d>j,d>k,e>f,e>h,g>l,h>m
+limit=22, n=14, i=4: a>d,a>f,b>e,b>g,c>g,c>h,c>i,c>j,c>k,c>l,d>j,e>h,e>i,f>k,f>l,g>m,g>n
+limit=22, n=12, i=3: b>h,c>g,c>i,d>j,d>k,e>f,e>i,e>j,e>k,h>l
+limit=22, n=14, i=4: a>e,b>h,b>k,b>l,c>f,c>h,c>k,d>g,d>k,d>m,f>m,g>i,g>j,g>l,j>n
+limit=22, n=13, i=4: a>i,a>j,b>e,b>g,b>m,c>g,c>i,c>j,c>k,c>l,d>f,d>i,d>j,e>l,f>h,f>k,f>m
+limit=22, n=13, i=4: a>g,a>k,b>d,b>e,b>j,c>f,c>g,e>h,f>i,f>j,f>k,i>l,i>m
+limit=22, n=14, i=4: a>g,a>l,b>d,b>f,b>i,b>j,c>e,c>f,c>g,d>h,e>i,e>j,e>l,f>k,g>n,h>m
+limit=22, n=13, i=4: a>e,b>d,b>j,b>k,b>l,c>f,c>m,d>i,e>g,e>h,e>m,f>j,f>k,f>l
+limit=22, n=14, i=4: a>e,a>j,a>k,a>l,b>c,b>d,b>f,b>m,c>g,d>i,e>h,e>m,f>j,f>k,f>l,i>n
+limit=22, n=14, i=4: a>e,b>f,c>d,c>g,c>i,c>j,c>n,e>n,f>i,f>j,g>h,h>k,h>l,h>m
+limit=22, n=14, i=4: a>c,a>d,a>h,a>i,a>j,a>l,b>e,b>f,b>m,b>n,c>n,d>m,e>g,e>k,e>l,f>h,f>i,f>j,f>k
+limit=22, n=14, i=4: a>d,a>j,a>m,a>n,b>f,b>j,b>k,b>l,c>e,c>g,c>j,e>i,f>n,g>h,g>k,g>l,g>m
+limit=22, n=14, i=4: a>e,b>d,b>k,b>l,b>m,c>f,c>g,f>i,f>m,g>h,g>j,g>k,g>l,j>n
+limit=22, n=14, i=4: a>c,a>k,b>d,b>e,b>k,c>f,d>i,d>j,e>g,e>h,k>l,k>m,k>n
+limit=22, n=13, i=4: a>f,a>g,a>h,b>e,b>g,b>h,b>i,c>d,c>f,c>g,c>h,c>j,c>k,c>l,d>i,e>j,e>k,e>l,f>m
+limit=22, n=13, i=4: a>h,a>l,a>m,b>c,b>d,b>e,b>f,b>g,b>k,f>l,g>j,g>m,h>i,h>k
+limit=22, n=14, i=4: a>d,a>k,a>l,a>m,b>e,b>g,b>i,b>j,c>f,c>g,c>n,d>n,e>h,e>m,f>i,f>j,f>k,f>l
+limit=22, n=14, i=4: a>d,a>h,a>i,b>f,b>h,b>i,b>n,c>e,c>f,c>h,c>i,c>m,d>m,e>g,e>n,f>l,g>j,g>k
+limit=22, n=14, i=4: a>d,a>j,a>n,b>g,b>l,c>e,c>f,c>j,c>k,e>n,f>l,g>h,g>i,g>k,j>m
+limit=22, n=15, i=4: a>c,a>f,b>d,b>e,b>o,d>k,e>i,f>g,f>h,f>j,f>o,i>l,j>m,k>n
+limit=22, n=13, i=4: a>j,a>k,a>l,b>e,b>h,b>i,c>d,c>f,e>l,f>g,f>h,f>i,f>j,f>k,g>m
+limit=22, n=14, i=4: a>f,b>i,c>e,c>i,d>g,g>h,g>j,j>k,j>l,j>m,j>n
+limit=22, n=13, i=4: a>d,a>m,b>h,b>i,b>j,b>k,b>l,c>e,c>f,d>l,e>k,e>m,f>g,f>h,f>i,f>j
+limit=22, n=13, i=4: a>e,b>f,b>g,b>h,c>i,c>j,d>i,d>j,i>m,j>k,j>l
+limit=22, n=12, i=4: a>h,b>e,b>g,c>f,c>h,d>g,d>h,d>i,d>j,f>i,f>j,g>k,g>l
+limit=22, n=13, i=4: a>g,a>i,a>l,b>e,b>g,b>i,b>j,b>k,c>d,c>e,c>i,d>f,d>h,d>j,d>k,d>l,h>m
+limit=22, n=13, i=4: a>e,a>j,a>l,b>i,b>k,b>m,c>f,c>g,d>h,d>i,f>l,g>m,h>j,h>k
+limit=22, n=13, i=4: a>f,a>h,b>g,c>h,c>i,c>m,d>e,d>i,d>j,d>k,g>j,g>k,g>m,i>l
+limit=22, n=13, i=4: a>l,b>i,b>l,b>m,c>f,c>j,c>m,d>e,d>i,d>l,d>m,e>j,f>g,f>h,i>k
+limit=22, n=13, i=4: a>m,b>e,b>k,b>l,c>h,c>k,d>f,d>g,d>k,f>i,g>m,h>j,h>l
+limit=22, n=14, i=4: a>f,a>n,b>e,b>g,b>m,c>d,c>g,c>i,c>j,c>k,d>m,d>n,e>j,e>k,f>h,f>i,h>l
+limit=22, n=14, i=4: a>g,b>l,c>k,d>m,e>m,f>h,f>i,f>j,f>k,f>l,i>n,j>n
+limit=22, n=15, i=4: a>d,b>f,b>k,c>e,c>g,c>l,e>h,f>i,f>l,g>j,g>k,i>o,j>m,j>n
+limit=22, n=13, i=4: a>g,a>i,a>k,a>l,b>e,b>g,b>i,c>d,c>f,c>i,c>j,d>m,e>j,e>l,f>h,f>k,f>m
+limit=22, n=14, i=4: a>g,a>i,a>m,b>f,b>h,b>k,c>d,c>e,c>i,c>l,c>n,e>k,f>l,g>n,h>j,h>m
+limit=22, n=14, i=4: a>c,a>d,a>f,a>m,b>e,b>g,e>j,f>h,f>i,g>k,g>l,g>m,l>n
+limit=22, n=11, i=4: a>h,a>i,b>c,b>d,b>e,b>f,b>g,b>k,i>j,i>k
+# hash_table_size = 694444444
+# n_solved = 445794
+# n_unsolved = 137314
+# n_hits = 84099428
+# n_misses = 34627441
+# avg_priority = 1517.732
+# avg_cost = 8.087
+limit=22, n=13, i=4: a>d,a>g,a>j,b>j,b>k,b>l,c>e,c>f,c>g,e>i,e>l,f>h,f>k,j>m
+limit=22, n=13, i=4: b>g,c>i,c>j,c>k,c>m,d>e,d>f,d>h,d>j,d>k,d>l,h>m,i>l
+limit=22, n=13, i=4: a>j,a>m,b>e,b>j,b>k,b>l,c>d,c>f,c>g,c>j,e>i,f>h,f>k,g>l,g>m
+limit=22, n=13, i=4: a>j,b>f,b>i,c>h,c>i,c>j,d>e,d>h,d>i,d>j,d>k,e>g,f>k,h>l,h>m
+limit=22, n=13, i=4: b>f,b>k,b>l,c>e,c>i,c>j,d>g,d>i,g>h,g>j,g>k,g>l,i>m
+limit=22, n=13, i=4: a>k,b>g,b>j,b>l,b>m,c>e,c>g,c>k,c>m,d>f,d>k,d>m,e>l,f>h,f>i,f>j
+limit=22, n=13, i=4: a>k,b>e,b>f,b>i,b>j,b>l,b>m,c>d,c>g,c>h,c>i,c>j,c>k,g>m,h>l
+limit=22, n=11, i=4: a>h,b>d,b>g,c>e,c>f,c>g,c>h,e>k,f>i,f>j,f>k
+limit=22, n=14, i=4: a>e,a>f,a>n,b>h,b>l,c>d,c>g,c>i,g>j,h>k,i>l,i>n,k>m
+limit=22, n=13, i=4: a>e,b>g,b>i,c>f,c>h,c>k,d>h,d>i,d>l,d>m,e>j,f>m,g>k,g>l
+limit=22, n=12, i=4: a>g,a>i,b>e,b>h,b>i,c>g,c>i,c>j,c>k,d>f,d>h,f>j,f>k,h>l
+limit=22, n=14, i=4: a>i,b>e,b>i,c>g,c>l,c>m,d>f,d>i,d>j,d>k,e>h,f>l,f>m,g>j,g>k,h>n
+limit=22, n=13, i=4: a>f,a>g,b>j,b>m,c>e,c>h,d>i,d>j,h>m,i>k,i>l
+limit=22, n=14, i=4: a>i,a>j,a>l,b>e,b>i,b>j,c>d,c>f,c>j,c>k,d>h,e>k,f>g,f>l,i>m,i>n
+limit=22, n=12, i=4: b>f,b>h,b>k,c>g,c>k,d>e,d>h,d>k,d>l,f>j,g>i,g>l
+limit=22, n=13, i=4: a>i,a>j,a>k,a>l,a>m,b>d,b>e,b>f,b>m,c>g,c>m,f>l,g>h,g>i,g>j,g>k
+limit=22, n=12, i=4: a>h,a>l,b>d,b>f,b>g,c>e,c>g,c>h,c>j,c>k,e>i,e>l,f>j,f>k
+limit=22, n=13, i=3: a>e,a>f,b>i,b>j,c>h,d>g,d>i,d>j,g>k,h>l,h>m
+limit=22, n=14, i=4: a>g,b>h,b>k,b>m,c>d,c>e,c>f,c>i,c>k,c>n,h>n,i>j,i>m,k>l
+limit=22, n=12, i=4: a>g,a>j,b>g,b>i,b>j,c>f,c>i,c>j,c>k,d>e,d>f,d>i,e>h,e>k,h>l
+limit=22, n=13, i=4: b>g,c>k,c>m,d>e,d>f,d>k,f>h,f>i,g>j,g>m,k>l
+limit=22, n=13, i=4: a>f,a>l,b>i,b>j,c>g,c>h,d>e,d>i,d>j,d>k,g>l,h>k,j>m
+limit=22, n=12, i=4: b>g,c>f,d>j,d>k,e>h,e>i,e>k,k>l
+limit=22, n=14, i=4: a>h,a>j,b>f,b>j,b>n,c>i,d>e,d>g,d>m,g>k,h>l,i>m,i>n
+limit=22, n=13, i=4: b>h,b>l,c>e,c>h,c>i,c>j,c>k,d>f,d>g,d>h,d>m,e>m,f>i,f>l,g>j,g>k
+limit=22, n=14, i=4: a>f,a>g,b>h,b>n,c>e,c>k,c>n,d>i,d>n,h>k,i>j,j>l,j>m
+limit=22, n=14, i=4: a>e,a>i,a>k,a>l,b>g,b>i,b>j,b>m,c>d,c>f,c>h,c>i,c>n,f>m,g>n,h>j,h>k,h>l
+limit=22, n=13, i=4: a>f,a>i,a>k,b>d,b>h,b>i,b>j,c>e,c>f,c>h,c>i,e>g,e>j,e>k,h>l,h>m
+limit=22, n=15, i=4: b>g,c>f,d>o,e>h,e>i,h>m,i>j,i>k,i>l,i>o,m>n
+limit=22, n=13, i=4: a>i,a>m,b>g,b>h,c>d,c>e,c>f,c>l,g>l,h>m,i>j,i>k
+limit=22, n=14, i=4: a>e,a>j,a>k,b>d,b>f,b>i,c>g,c>l,c>m,c>n,e>n,f>l,f>m,g>h,g>i,g>j,g>k
+limit=22, n=13, i=4: b>f,c>k,c>l,d>e,d>g,d>h,d>i,g>l,h>k,i>j,j>m
+limit=22, n=14, i=4: a>h,b>i,b>l,c>e,c>f,c>k,d>g,d>k,d>n,g>l,h>n,i>j,k>m
+limit=22, n=13, i=4: a>f,a>m,b>e,b>m,c>g,c>k,c>l,d>h,d>m,g>i,h>j,h>k,h>l
+limit=22, n=13, i=4: a>d,a>h,b>f,b>h,c>e,c>g,c>j,e>k,f>j,g>i,g>k,i>l,i>m
+limit=22, n=14, i=4: a>d,a>g,b>e,c>f,c>g,e>h,e>i,f>j,i>n,j>k,j>l,j>m
+limit=22, n=14, i=4: a>j,b>f,b>j,b>m,c>g,c>j,c>k,c>l,d>e,d>h,d>n,f>i,g>n,h>k,h>l,h>m
+limit=22, n=13, i=4: a>g,a>l,a>m,b>d,b>e,c>f,c>g,d>m,e>k,e>l,f>h,f>i,f>j
+limit=22, n=12, i=4: a>h,a>k,b>g,b>j,b>l,c>f,c>h,d>e,d>g,d>h,d>i,e>j,e>k,f>i,f>l
+limit=22, n=13, i=4: a>e,b>d,b>h,b>i,c>f,e>i,f>g,f>h,g>j,g>k,g>l,g>m
+limit=22, n=14, i=4: a>c,a>g,a>j,a>k,a>m,a>n,b>d,b>e,b>g,b>h,c>f,c>h,d>l,d>m,d>n,e>j,e>k,e>l,g>i
+limit=22, n=14, i=4: a>d,a>e,a>l,a>m,b>h,b>n,c>f,c>g,c>k,f>i,g>m,g>n,h>j,h>k,h>l
+limit=22, n=13, i=4: a>f,b>e,c>h,c>i,c>j,c>k,c>l,c>m,d>g,g>h,g>i,g>j,g>k,g>l,g>m
+limit=22, n=14, i=4: a>j,a>k,b>e,b>k,c>d,c>j,c>k,c>n,d>i,e>f,e>g,e>h,e>n,i>m,j>l
+limit=22, n=14, i=4: a>e,b>f,b>i,b>m,c>i,c>j,c>k,c>l,c>n,d>g,d>i,f>n,g>h,g>j,g>k,g>l,g>m
+limit=22, n=14, i=4: b>e,b>i,b>k,b>l,c>h,c>i,d>f,d>g,d>m,d>n,f>l,g>k,h>j,h>m,h>n
+limit=22, n=13, i=4: a>g,b>f,b>g,b>i,c>e,c>h,c>i,d>h,d>i,d>j,f>j,g>m,h>k,h>l
+limit=22, n=14, i=4: a>g,a>j,a>k,b>e,b>g,b>n,c>d,c>f,d>n,e>i,f>h,f>j,f>k,h>m,i>l
+limit=22, n=13, i=4: a>e,a>f,b>d,b>g,c>g,c>k,c>l,e>l,e>m,f>k,f>m,g>h,g>i,g>j
+limit=22, n=14, i=4: a>d,a>f,a>k,b>e,b>j,b>l,b>m,c>g,c>j,f>i,f>m,g>h,g>k,g>l,j>n
+limit=22, n=13, i=4: a>i,b>f,b>l,b>m,c>g,c>h,c>i,d>e,d>h,d>i,d>j,d>k,e>l,f>k,g>j,g>m
+limit=22, n=13, i=4: a>h,a>i,b>f,b>g,b>m,c>e,c>g,c>h,c>i,d>f,d>g,d>h,d>i,d>j,d>k,e>j,e>k,e>m,f>l
+limit=22, n=10, i=4: b>g,b>h,c>f,c>h,c>j,d>e,d>f,d>g,e>i,e>j
+limit=22, n=13, i=4: a>e,a>g,b>f,b>i,b>l,c>i,c>j,c>k,c>m,d>h,d>i,g>m,h>j,h>k,h>l
+limit=22, n=13, i=4: a>e,b>i,b>l,c>g,d>f,d>i,d>j,d>k,f>l,g>h,g>j,g>k,i>m
+limit=22, n=13, i=4: a>e,b>f,b>h,c>g,c>h,c>i,c>l,d>g,d>h,d>j,d>k,e>l,f>i,f>j,f>k,g>m
+limit=22, n=13, i=4: a>m,b>h,b>i,b>l,c>e,c>h,c>i,c>j,c>k,d>f,d>h,d>i,e>m,f>g,f>j,f>k,f>l
+limit=22, n=13, i=4: a>f,a>g,b>h,b>i,c>e,c>j,d>i,d>j,d>m,h>m,j>k,j>l
+limit=22, n=12, i=4: a>g,a>i,b>h,b>i,c>h,c>i,c>j,c>k,c>l,d>e,d>f,d>g,f>j,f>k,f>l
+limit=22, n=14, i=4: a>e,a>g,a>i,b>f,b>i,b>m,b>n,c>d,c>g,c>i,c>j,c>k,c>l,d>n,e>l,e>m,f>h,f>j,f>k
+limit=22, n=14, i=4: a>n,b>g,b>j,c>e,c>f,c>j,c>k,d>h,d>j,d>l,d>m,f>l,g>m,h>i,h>k,h>n
+limit=22, n=13, i=4: a>d,a>i,a>j,b>g,b>k,b>l,c>e,c>f,c>g,e>h,e>i,f>j,f>k,f>l,h>m
+limit=22, n=14, i=4: b>i,c>l,d>n,e>m,e>n,f>g,f>h,f>j,f>l,f>n,j>k,j>m
+limit=22, n=12, i=4: a>g,a>k,b>j,b>k,c>f,c>i,c>k,d>i,d>j,d>l,e>h,e>i,e>j,h>l
+# hash_table_size = 694444444
+# n_solved = 501674
+# n_unsolved = 141188
+# n_hits = 96073600
+# n_misses = 37710087
+# avg_priority = 1548.641
+# avg_cost = 8.112
+limit=22, n=13, i=4: a>d,a>g,a>j,a>k,b>f,b>g,b>i,c>e,c>f,c>i,d>h,e>j,e>k,i>l,i>m
+limit=22, n=13, i=4: a>f,a>h,a>j,b>g,b>i,b>j,c>h,c>i,c>j,c>k,c>l,d>e,d>g,d>h,d>i,e>k,f>l,g>m
+limit=22, n=14, i=4: a>e,a>f,a>k,b>d,b>g,b>k,b>m,b>n,c>h,c>k,g>i,h>j,h>m,h>n,j>l
+limit=22, n=9, i=4: b>h,b>i,c>f,c>g,c>h,d>e,d>f,d>g,e>i
+limit=22, n=12, i=4: a>j,b>d,b>f,b>h,c>e,c>f,c>h,d>i,e>g,e>j,h>k,i>l
+limit=22, n=14, i=4: a>k,b>k,c>m,d>e,d>f,d>g,f>j,f>l,g>h,g>i,g>m,l>n
+limit=22, n=15, i=4: a>k,b>d,b>f,c>e,c>f,d>g,d>i,d>k,e>h,e>j,h>n,i>o,j>l,j>m
+limit=22, n=13, i=4: a>i,b>h,b>i,c>h,c>j,c>k,c>l,d>e,d>f,d>h,d>i,e>l,f>g,f>j,f>k,g>m
+limit=22, n=13, i=4: a>j,b>i,c>i,c>j,c>k,d>e,d>i,d>j,e>f,e>g,e>h,e>k,h>l,h>m
+limit=22, n=14, i=4: a>h,b>g,c>f,d>l,e>i,e>l,i>j,i>k,l>m,l>n
+limit=22, n=13, i=4: a>h,a>i,b>g,b>k,c>f,c>h,c>i,d>e,d>g,d>i,d>j,e>k,f>j,g>l,h>m
+limit=22, n=14, i=4: a>g,a>h,b>i,b>k,c>f,c>h,d>e,d>g,d>i,e>k,f>j,h>l,i>m,j>n
+limit=22, n=13, i=4: b>m,c>f,c>l,d>e,d>g,f>h,f>i,f>j,g>k,g>l,g>m
+limit=22, n=12, i=4: a>l,b>i,b>l,c>g,c>l,d>e,d>f,d>i,d>j,g>h,g>j,i>k
+limit=22, n=14, i=4: a>f,a>i,b>h,b>i,b>l,c>g,c>k,c>m,d>e,d>h,d>i,d>j,e>k,f>m,g>j,g>l,h>n
+limit=22, n=14, i=4: a>g,a>i,a>l,b>e,b>i,b>m,c>d,c>f,c>g,c>i,c>j,c>k,d>m,e>j,e>k,f>h,f>l,h>n
+limit=22, n=15, i=4: a>g,b>o,c>n,d>k,e>i,e>k,f>h,f>n,f>o,h>j,i>l,i>m
+limit=22, n=14, i=4: a>f,a>n,b>e,b>g,b>j,c>h,c>j,c>k,d>i,d>j,d>l,d>m,g>l,h>m,i>k,i>n
+limit=22, n=14, i=4: a>c,a>e,a>i,b>d,b>f,b>i,b>l,c>l,d>j,d>n,e>k,f>g,f>h,f>n,k>m
+limit=22, n=15, i=4: a>d,a>f,a>j,a>k,b>g,b>j,b>l,b>m,b>o,c>e,c>h,c>j,c>n,d>i,e>m,f>o,g>n,h>k,h>l
+limit=22, n=13, i=4: a>f,b>e,b>m,c>g,c>i,d>h,d>i,f>l,g>m,h>j,h>k
+limit=22, n=15, i=4: a>e,a>h,a>m,b>f,b>h,b>l,b>n,c>d,c>g,c>k,d>l,e>n,f>k,f>m,g>i,g>j,j>o
+limit=22, n=15, i=4: a>d,b>f,b>i,b>j,b>k,c>e,c>i,c>j,c>k,c>l,e>h,f>g,f>l,i>o,j>n,k>m
+limit=22, n=12, i=4: a>f,b>i,b>l,c>g,c>h,d>e,d>h,d>i,d>j,d>k,f>l,g>j,g>k
+limit=22, n=13, i=4: a>g,a>i,b>f,b>i,c>h,c>j,c>k,c>l,d>e,d>g,d>h,d>i,e>j,f>k,f>l,h>m
+limit=22, n=14, i=4: a>i,b>g,b>h,b>j,c>e,c>g,c>j,d>h,d>i,d>j,d>k,e>f,e>k,g>l,h>m,i>n
+limit=22, n=14, i=4: a>e,a>j,a>m,b>d,b>g,b>j,b>k,b>l,c>f,c>g,c>j,d>m,e>l,f>h,f>i,f>k,i>n
+limit=22, n=13, i=4: a>h,b>d,b>f,b>g,c>f,c>g,c>h,d>e,f>m,g>l,h>i,h>j,h>k
+limit=22, n=12, i=4: a>i,b>i,b>l,c>g,c>h,c>k,d>e,d>f,d>h,e>j,f>k,g>l
+limit=22, n=14, i=4: a>i,a>k,a>l,a>m,b>d,b>f,b>g,c>e,c>g,c>i,c>j,d>h,e>k,e>l,f>j,f>m,i>n
+limit=22, n=14, i=4: a>e,a>h,b>f,b>g,b>k,c>d,c>g,c>h,c>j,c>l,d>k,e>l,f>i,f>j,h>m,i>n
+limit=22, n=14, i=4: a>f,a>j,a>k,a>l,b>e,b>i,b>k,c>d,c>i,c>k,d>l,e>j,f>g,f>h,i>m,i>n
+limit=22, n=14, i=4: a>d,a>e,a>h,a>j,b>g,b>h,b>j,b>k,c>f,c>j,c>l,c>m,c>n,e>n,f>i,f>k,g>l,g>m
+limit=22, n=12, i=4: a>g,b>g,b>k,c>e,d>f,d>j,e>j,e>k,f>h,f>i,i>l
+limit=22, n=13, i=4: b>i,c>h,c>j,d>f,d>i,d>j,d>l,e>g,e>j,e>k,e>m,f>k,g>l,h>m
+limit=22, n=13, i=4: a>g,a>i,a>j,b>d,b>e,b>f,c>e,c>f,c>g,c>h,d>h,d>i,d>j,f>k,g>l,g>m
+limit=22, n=12, i=4: c>h,c>i,d>e,d>h,d>i,e>f,e>g,h>j,i>k,i>l
+limit=22, n=13, i=4: a>g,a>j,a>k,b>e,b>k,b>l,c>d,c>f,c>g,c>k,d>m,e>h,e>i,f>j,f>l,f>m
+limit=22, n=14, i=4: a>d,a>h,a>j,b>e,b>k,b>l,b>m,b>n,c>f,c>g,c>i,f>j,f>l,g>k,g>m,h>i,h>n
+limit=22, n=15, i=4: a>f,b>g,c>d,c>e,c>l,c>m,d>h,e>j,f>k,g>i,g>l,g>m,j>o,k>n
+limit=22, n=15, i=4: a>h,a>l,b>e,b>g,b>l,b>n,b>o,c>d,c>f,c>k,c>l,c>m,f>o,g>k,h>i,h>j,h>m,h>n
+limit=22, n=14, i=4: a>d,a>e,a>g,a>h,a>j,a>m,b>c,b>f,b>g,b>h,b>j,f>i,f>m,i>n,j>k,j>l
+limit=22, n=14, i=4: a>g,b>d,b>e,b>i,b>j,b>k,b>l,b>m,c>f,c>g,c>i,c>n,e>n,f>h,f>j,f>k,f>l,f>m
+limit=22, n=14, i=4: a>d,a>g,a>k,a>l,a>m,a>n,b>f,b>g,c>e,c>g,c>h,c>i,c>j,e>m,e>n,f>h,f>i,f>j,f>k,f>l
+limit=22, n=14, i=4: a>f,a>k,a>l,a>m,b>e,b>g,c>d,c>h,c>j,g>i,g>j,h>k,h>l,h>m,i>n
+limit=22, n=14, i=4: a>c,a>h,a>i,a>j,a>k,a>l,a>m,a>n,b>d,b>e,b>h,b>i,b>j,c>g,d>n,e>f,e>k,e>l,e>m
+limit=22, n=15, i=4: a>e,b>d,b>i,b>j,b>k,c>f,c>g,c>i,c>j,f>h,g>k,j>l,j>m,j>n,j>o
+limit=22, n=14, i=4: a>f,a>n,b>g,b>h,c>d,c>e,c>h,c>m,e>n,f>k,g>i,g>j,g>m,k>l
+limit=22, n=14, i=4: a>h,b>d,b>e,b>h,b>i,b>j,b>k,b>n,c>f,c>g,c>h,c>m,e>m,f>l,f>n,g>i,g>j,g>k,g>l
+limit=22, n=14, i=4: a>d,a>e,a>m,a>n,b>c,b>f,e>i,e>j,f>g,f>h,f>k,f>m,f>n,k>l
+limit=22, n=14, i=4: a>e,a>f,b>d,b>h,b>i,c>f,c>h,c>j,e>g,e>i,e>j,h>k,h>l,h>m,h>n
+limit=22, n=15, i=4: a>e,b>l,c>h,c>i,c>j,c>l,c>m,c>n,c>o,d>f,d>h,d>i,d>j,d>l,f>g,f>m,f>n,f>o,j>k
+limit=22, n=15, i=4: a>e,a>i,b>d,b>i,b>j,b>k,b>l,c>f,c>i,c>o,d>o,e>h,f>g,f>j,f>k,f>l,g>n,h>m
+limit=22, n=14, i=4: a>e,a>f,a>h,b>d,b>i,b>j,b>k,b>l,b>m,c>g,c>h,f>m,g>i,g>j,g>k,g>l,h>n
+limit=22, n=14, i=4: a>d,a>f,a>i,b>i,b>j,b>k,b>l,c>e,c>f,c>m,d>m,e>g,e>h,e>j,e>k,e>l,i>n
+limit=22, n=13, i=3: c>m,d>h,e>g,f>i,f>j,f>k,f>l,f>m
+limit=22, n=14, i=4: a>k,b>e,b>j,c>f,c>j,d>g,d>j,e>h,f>k,g>i,i>l,i>m,i>n
+limit=22, n=14, i=4: a>d,b>l,c>e,c>f,c>g,e>k,f>l,f>m,f>n,g>h,g>i,g>j,g>k,g>m,g>n
+limit=22, n=14, i=4: b>i,c>h,d>h,d>i,d>j,d>k,d>l,d>m,d>n,e>f,e>g,e>h,e>i,f>j,g>k,g>l,g>m,g>n
+limit=22, n=14, i=4: a>f,b>j,c>g,d>i,d>k,e>h,e>k,k>l,k>m,k>n
+limit=22, n=14, i=3: a>k,b>j,c>d,c>e,c>f,c>g,c>h,c>i,c>j,c>k,h>n,i>l,i>m
+limit=22, n=14, i=4: b>j,c>i,d>e,d>f,d>i,d>j,f>g,f>h,f>k,k>l,k>m,k>n
+limit=22, n=14, i=4: b>k,c>m,d>n,e>l,e>n,f>g,f>h,f>i,f>j,f>m,f>n
+limit=22, n=13, i=4: a>e,a>h,b>f,c>h,c>j,d>g,f>j,g>i,i>k,i>l,i>m
+# hash_table_size = 694444444
+# n_solved = 551198
+# n_unsolved = 150595
+# n_hits = 107905061
+# n_misses = 40766342
+# avg_priority = 1554.147
+# avg_cost = 8.115
+limit=22, n=14, i=4: a>h,a>l,a>m,b>f,b>j,b>k,c>d,c>e,c>h,c>i,d>k,e>g,e>j,f>i,f>l,f>m,h>n
+limit=22, n=14, i=4: a>f,a>h,a>n,b>e,b>f,b>g,c>d,c>g,c>h,c>i,c>j,e>i,e>j,e>n,g>m,h>k,h>l
+limit=22, n=14, i=4: a>e,a>f,a>g,a>k,a>l,a>m,b>c,b>d,b>h,b>i,h>l,h>m,i>j,i>k,j>n
+limit=22, n=13, i=4: b>l,c>e,c>f,c>g,c>l,d>h,d>i,d>l,h>j,i>k,k>m
+limit=22, n=14, i=4: b>j,c>f,c>g,c>i,c>l,d>e,d>h,d>i,d>j,d>l,h>k,l>m,l>n
+limit=22, n=14, i=4: a>l,b>h,b>i,b>l,c>e,c>h,c>i,c>k,c>l,d>f,d>h,d>i,d>j,e>j,f>g,f>k,g>m,g>n
+limit=22, n=12, i=4: a>i,b>f,b>g,b>i,c>f,c>g,c>l,d>e,d>i,e>h,e>l,h>j,h>k
+limit=22, n=14, i=4: b>l,c>j,c>l,c>m,c>n,d>e,d>f,d>g,d>j,d>l,f>k,f>n,g>h,g>i,g>m
+limit=22, n=14, i=4: a>f,b>e,b>g,b>l,c>d,c>g,c>k,d>i,e>j,f>h,f>k,f>l,i>m,j>n
+limit=22, n=14, i=4: a>e,a>h,a>k,a>l,b>c,b>d,b>f,b>h,b>i,b>j,d>n,e>g,e>i,e>j,f>k,f>l,f>n,h>m
+limit=22, n=15, i=4: a>g,b>d,b>h,b>i,b>j,b>k,b>l,b>n,b>o,c>e,c>f,c>g,c>h,c>i,e>n,e>o,f>j,f>k,f>l,i>m
+limit=22, n=14, i=4: a>f,b>e,b>k,b>l,b>m,b>n,c>d,c>g,c>h,c>k,g>j,g>n,h>i,h>l,h>m
+limit=22, n=13, i=4: a>d,a>f,a>i,a>k,b>h,b>i,b>j,c>e,c>f,c>h,c>i,e>g,e>j,e>k,h>l,h>m
+limit=22, n=14, i=4: a>d,a>k,b>j,b>k,b>l,b>m,b>n,c>e,c>k,d>h,d>i,d>j,e>f,e>g,e>l,e>m,e>n
+limit=22, n=14, i=4: a>h,a>l,b>e,b>f,b>g,b>m,b>n,c>d,c>i,c>j,c>k,g>j,h>k,i>l,i>m,i>n
+limit=22, n=15, i=4: a>f,b>h,c>h,c>i,c>j,c>k,d>e,d>g,d>i,d>j,g>k,i>o,j>l,j>m,j>n
+limit=22, n=14, i=4: a>f,a>i,a>j,a>l,b>g,b>i,b>m,b>n,c>d,c>e,c>h,c>i,c>k,f>k,g>l,h>j,h>m,h>n
+limit=22, n=13, i=4: a>i,b>g,b>i,c>e,c>j,c>k,c>l,d>f,d>g,d>i,d>m,e>h,e>m,f>j,f>k,f>l
+limit=22, n=13, i=4: a>i,b>g,b>h,b>j,b>k,b>l,c>f,c>g,c>h,d>e,d>g,d>h,d>m,e>i,e>j,f>k,f>l,f>m
+limit=22, n=14, i=4: a>i,b>i,c>d,c>e,d>j,e>f,e>g,e>h,e>k,k>l,k>m,k>n
+limit=22, n=14, i=4: a>e,a>f,b>c,b>d,b>f,c>j,d>g,d>h,d>i,e>k,e>l,k>n,l>m
+limit=22, n=13, i=4: a>g,a>h,a>l,b>h,b>j,b>m,c>e,c>g,c>j,c>k,d>f,d>j,e>i,f>k,f>l,f>m
+limit=22, n=14, i=4: a>l,b>e,b>l,b>m,c>f,c>m,c>n,d>g,d>l,d>m,e>k,f>j,g>h,g>i,g>n
+limit=22, n=15, i=4: a>f,b>o,c>n,d>h,d>i,d>j,d>n,d>o,e>g,e>h,e>i,e>n,e>o,g>j,i>k,i>l,i>m
+limit=22, n=14, i=4: b>d,c>e,c>f,e>m,e>n,f>g,f>h,f>i,f>m,f>n,i>j,i>k,i>l
+limit=22, n=14, i=4: b>d,b>g,b>h,c>e,c>f,c>h,c>k,c>l,c>m,c>n,e>j,f>i,g>k,g>l,g>m,g>n
+limit=22, n=12, i=4: a>i,a>l,b>f,b>h,b>k,c>f,c>h,c>i,c>j,d>e,d>h,d>i,e>g,e>j,e>k,e>l
+limit=22, n=14, i=4: a>f,a>n,b>d,b>k,b>l,c>e,c>g,e>n,f>l,g>h,g>i,g>j,g>k,j>m
+limit=22, n=14, i=4: a>g,a>m,a>n,b>e,b>i,b>j,b>k,c>d,c>f,c>g,d>k,e>h,f>i,f>j,f>m,f>n,h>l
+limit=22, n=14, i=4: a>k,b>l,c>g,c>i,c>j,c>k,c>m,c>n,d>e,d>f,d>h,d>i,d>j,d>k,g>l,h>m,h>n
+limit=22, n=13, i=4: b>k,c>k,d>e,d>f,d>g,d>k,e>m,f>l,g>h,g>i,g>j,g>l,g>m
+limit=22, n=13, i=4: a>g,a>h,a>m,b>d,b>e,b>m,c>f,c>i,c>m,i>j,j>k,j>l
+limit=22, n=14, i=4: a>k,b>j,c>f,c>g,c>i,c>k,d>e,d>h,d>i,d>j,g>l,h>m,m>n
+limit=22, n=14, i=4: a>e,a>f,b>i,b>k,c>h,c>j,c>k,d>g,d>i,d>k,d>l,d>m,d>n,g>j,h>l,h>m,h>n
+limit=22, n=14, i=4: a>l,b>f,c>d,c>e,c>k,e>g,e>i,e>l,f>h,f>j,f>k,i>m,j>n
+limit=22, n=12, i=4: a>j,a>k,a>l,b>d,c>e,c>i,d>i,d>k,d>l,e>f,e>g,e>h,e>j
+limit=22, n=14, i=4: a>j,b>g,b>i,c>f,c>i,c>j,d>e,d>g,d>i,d>j,d>k,d>l,d>m,e>h,f>k,f>l,f>m,h>n
+limit=22, n=15, i=4: a>f,b>e,c>g,c>h,c>j,d>i,d>j,h>k,i>l,l>m,l>n,l>o
+limit=22, n=13, i=4: a>e,a>i,b>f,b>g,b>j,c>h,c>i,c>k,d>f,d>g,d>h,d>i,e>j,e>k,g>l,h>m
+limit=22, n=12, i=4: a>i,a>k,b>d,b>g,c>e,c>f,c>i,e>j,f>j,g>h,g>k,i>l
+limit=22, n=14, i=4: a>h,b>g,b>h,b>m,b>n,c>f,c>g,c>h,c>l,d>e,d>g,d>i,d>j,d>k,e>l,e>m,e>n,f>i,f>j,f>k
+limit=22, n=14, i=4: a>d,a>l,a>m,b>f,c>e,c>i,c>j,c>k,d>k,e>l,e>m,f>g,f>h,f>i,f>j,h>n
+limit=22, n=13, i=4: a>f,b>h,b>m,c>d,c>e,c>h,c>i,f>g,f>i,f>m,h>j,h>k,h>l
+limit=22, n=14, i=4: a>l,b>g,c>e,c>f,c>l,d>h,d>l,f>i,g>j,h>k,k>m,k>n
+limit=22, n=14, i=4: b>l,c>f,c>g,d>h,d>k,e>i,g>k,h>l,i>j,j>m,j>n
+limit=22, n=15, i=4: a>k,b>e,b>j,b>k,b>l,b>m,b>n,b>o,c>d,c>f,c>g,c>h,c>j,c>k,f>i,g>o,h>l,h>m,h>n
+limit=22, n=14, i=4: a>g,b>g,b>h,b>i,b>j,b>k,b>l,b>m,b>n,c>d,c>e,c>f,c>h,c>i,e>j,e>k,f>l,f>m,f>n
+limit=22, n=13, i=4: a>f,b>e,b>m,c>h,c>i,d>g,d>i,d>k,d>l,g>m,h>j,h>k,h>l
+limit=22, n=14, i=4: a>h,b>k,c>i,c>j,c>k,d>e,d>f,d>g,d>j,d>k,j>l,j>m,j>n
+limit=22, n=14, i=4: a>f,a>g,a>n,b>d,b>f,b>g,c>e,d>i,e>h,e>j,e>n,j>k,j>l,j>m
+limit=22, n=13, i=4: a>g,b>d,b>g,b>k,c>e,c>f,c>l,d>l,e>j,f>h,f>i,f>k,j>m
+limit=22, n=13, i=4: a>h,a>m,b>d,b>g,b>h,b>i,b>j,c>e,c>g,c>h,d>f,e>i,e>j,e>m,g>k,g>l
+limit=22, n=13, i=4: a>h,a>i,b>e,b>h,b>i,c>f,c>h,d>i,d>j,d>k,d>l,d>m,e>g,e>m,f>j,f>k,f>l
+limit=22, n=12, i=4: a>k,b>i,b>j,c>e,d>f,d>h,e>h,e>j,e>k,f>g,f>i,g>l
+limit=22, n=14, i=4: a>f,a>l,a>m,b>d,b>e,b>g,b>n,c>h,g>i,h>j,h>l,h>m,h>n,j>k
+limit=22, n=14, i=4: a>g,a>l,a>m,a>n,b>d,b>e,b>g,b>h,b>i,b>j,c>f,c>g,c>k,e>k,f>h,f>i,f>j,f>l,f>m,f>n
+limit=22, n=13, i=4: a>e,a>m,b>g,b>h,b>l,b>m,c>g,c>h,c>i,c>j,c>k,d>f,d>g,d>h,d>m,f>i,f>j,f>k,f>l
+limit=22, n=11, i=4: a>k,b>k,c>h,c>i,d>g,d>i,e>f,e>h,e>j,e>k,g>j
+limit=22, n=13, i=4: a>f,a>i,b>g,c>e,c>h,c>i,d>g,d>h,d>i,g>m,h>j,h>k,h>l
+limit=22, n=14, i=4: a>f,b>e,b>i,b>j,b>k,c>d,c>g,c>l,f>l,g>h,g>i,g>j,g>k,h>m,h>n
+limit=22, n=15, i=4: b>h,c>g,d>f,e>i,i>j,i>k,i>l,i>m,i>n,n>o
+limit=22, n=13, i=4: a>f,b>e,c>i,c>l,c>m,d>g,d>h,d>l,d>m,h>j,i>k
+limit=22, n=14, i=4: b>g,c>m,d>n,e>h,e>i,f>j,f>k,f>l,f>m,f>n
+limit=22, n=14, i=4: a>d,a>g,b>e,b>g,c>f,d>j,e>h,e>i,f>k,k>l,k>m,k>n
+# hash_table_size = 694444444
+# n_solved = 593816
+# n_unsolved = 164534
+# n_hits = 119055603
+# n_misses = 44193958
+# avg_priority = 1543.752
+# avg_cost = 8.108
+limit=22, n=15, i=4: a>n,b>i,b>m,c>d,c>e,c>f,c>g,c>h,c>m,c>n,c>o,g>k,h>j,i>l,i>o
+limit=22, n=15, i=4: a>g,b>f,c>n,d>l,d>m,e>h,e>i,e>j,e>k,e>l,e>m,e>n,k>o
+limit=22, n=15, i=4: a>d,a>g,a>j,a>k,a>l,b>c,b>e,b>g,c>l,d>f,d>h,e>i,e>j,e>k,h>o,i>m,i>n
+limit=22, n=14, i=4: a>f,a>i,a>j,a>k,b>d,b>f,b>i,c>e,c>i,c>l,c>m,d>l,d>m,e>g,e>h,e>j,e>k,h>n
+limit=22, n=15, i=4: b>f,c>j,c>k,c>l,c>m,d>e,d>g,d>h,d>i,d>j,g>m,h>l,i>k,j>n,j>o
+limit=22, n=14, i=4: a>f,a>j,a>k,a>l,b>c,b>d,b>e,b>j,b>k,e>g,e>l,f>h,f>i,k>m,k>n
+limit=22, n=14, i=4: b>f,c>e,c>i,c>j,c>k,c>l,c>m,d>g,d>i,d>j,d>k,g>h,g>l,g>m,k>n
+limit=22, n=15, i=4: b>g,c>i,d>f,d>k,d>l,e>h,e>i,e>k,e>l,h>j,k>o,l>m,l>n
+limit=22, n=14, i=4: a>g,b>n,c>e,c>f,c>i,c>j,c>l,c>m,c>n,d>h,d>i,d>j,d>n,h>k,h>l,h>m
+limit=22, n=14, i=4: a>j,b>f,b>g,b>m,c>e,c>h,c>l,d>i,d>j,d>n,h>n,i>k,i>l,i>m
+limit=22, n=13, i=4: a>f,a>g,a>h,b>c,b>d,b>e,b>h,b>i,b>j,b>k,b>l,g>i,g>j,g>k,g>l,h>m
+limit=22, n=13, i=4: b>g,c>h,c>i,d>e,d>f,d>h,d>i,i>j,i>k,i>l,i>m
+limit=22, n=15, i=4: b>h,c>l,d>i,d>j,d>l,d>n,e>f,e>g,e>k,k>m,k>n,m>o
+limit=22, n=12, i=4: a>g,b>i,c>h,d>e,d>f,d>i,d>j,d>k,d>l,h>j,h>k,h>l
+limit=22, n=13, i=4: a>i,b>e,b>g,b>i,c>f,c>m,d>g,d>i,d>j,d>k,d>l,e>h,e>m,f>j,f>k,f>l
+limit=22, n=14, i=4: b>h,c>m,d>i,d>n,e>f,e>g,e>j,e>m,e>n,j>k,j>l
+limit=22, n=14, i=4: c>f,d>e,d>g,g>h,g>i,g>j,i>m,i>n,j>k,j>l
+limit=22, n=13, i=4: a>e,a>h,b>i,b>j,c>g,c>i,c>j,c>m,d>f,d>h,d>i,d>j,d>k,d>l,f>m,g>k,g>l
+limit=22, n=14, i=4: a>e,a>g,a>m,b>d,b>j,b>n,c>f,c>g,c>j,d>m,e>n,f>h,f>i,j>k,j>l
+limit=22, n=13, i=4: a>h,a>i,b>f,b>l,c>h,c>i,c>j,c>k,c>m,d>e,d>g,d>i,e>k,f>m,g>j,g>l
+limit=22, n=15, i=4: a>g,a>n,b>h,b>i,b>j,c>d,c>e,c>f,c>k,c>n,j>l,k>m,n>o
+limit=22, n=13, i=4: b>e,b>i,b>j,b>k,c>i,c>j,c>l,c>m,d>f,d>g,d>i,d>j,f>k,g>h,g>l,g>m
+limit=22, n=14, i=4: a>e,a>g,a>n,b>f,c>d,c>g,c>i,c>j,c>k,c>l,c>m,d>h,e>m,f>i,f>j,f>k,f>l,f>n
+limit=22, n=15, i=4: a>n,b>f,b>h,b>i,b>n,c>d,c>e,c>g,c>h,c>i,c>n,c>o,f>o,g>j,g>k,j>m,k>l
+limit=22, n=15, i=4: c>o,d>f,d>i,d>j,d>o,e>g,e>i,e>j,e>o,f>k,g>h,g>l,k>m,l>n
+limit=22, n=13, i=4: b>i,c>g,c>i,c>j,c>k,c>l,d>e,d>f,d>g,e>h,e>j,f>k,f>l,i>m
+limit=22, n=13, i=4: a>i,b>e,b>m,c>g,c>j,c>k,d>f,d>h,d>i,d>l,f>m,g>l,h>j,h>k
+limit=22, n=14, i=4: c>e,c>k,c>l,c>m,c>n,d>f,d>g,d>h,d>i,g>n,h>m,i>j,i>k,i>l
+limit=22, n=14, i=4: b>h,c>f,c>i,c>l,d>j,d>l,e>g,e>l,e>m,e>n,i>k,j>m,j>n
+limit=22, n=15, i=4: a>f,a>k,b>d,b>e,b>j,c>g,c>l,c>m,c>n,d>h,e>l,f>m,f>n,g>i,g>j,g>k,i>o
+limit=22, n=13, i=4: a>m,b>g,c>f,c>h,c>k,c>m,d>e,d>h,d>l,d>m,e>k,f>l,g>i,i>j
+limit=22, n=12, i=4: c>i,c>j,c>k,c>l,d>f,d>i,d>j,d>k,e>g,e>i,e>j,e>k,f>l,g>h
+limit=22, n=14, i=4: b>e,b>f,b>m,c>g,c>m,d>h,d>m,d>n,g>n,h>i,h>j,j>k,j>l
+limit=22, n=13, i=4: a>f,b>e,b>h,b>j,c>i,c>j,d>h,d>i,d>j,f>g,h>m,i>k,i>l
+limit=22, n=14, i=4: b>h,c>i,c>j,c>k,d>e,d>f,d>g,d>l,k>m,l>n
+limit=22, n=13, i=4: b>g,b>k,b>l,b>m,c>d,c>e,c>f,c>h,c>i,c>j,h>m,i>l,j>k
+limit=22, n=15, i=4: a>g,a>o,b>f,b>h,b>o,c>d,c>e,c>m,c>n,c>o,d>j,e>i,f>m,g>n,h>k,k>l
+limit=22, n=14, i=4: c>h,d>g,e>l,e>m,f>i,f>j,f>k,f>m,f>n,l>n
+limit=22, n=14, i=4: c>e,d>f,d>g,d>h,f>m,g>k,g>m,h>i,h>j,h>l,l>n
+limit=22, n=12, i=4: a>k,b>l,c>g,d>e,d>f,d>g,f>k,f>l,g>h,g>i,g>j
+limit=22, n=14, i=4: a>d,a>e,a>h,b>g,c>f,c>h,c>m,c>n,e>n,f>k,g>i,g>j,g>m,k>l
+limit=22, n=13, i=4: a>d,a>f,a>g,b>e,c>f,c>g,c>j,c>k,c>l,c>m,d>h,d>j,e>i,e>k,e>l,e>m
+limit=22, n=14, i=4: b>f,b>h,c>e,c>h,c>m,d>g,g>i,g>j,g>m,h>n,i>l,j>k
+limit=22, n=13, i=4: b>e,c>g,c>h,c>i,c>m,d>f,d>h,d>i,d>j,d>k,d>l,f>m,g>j,g>k,g>l
+limit=22, n=14, i=4: a>c,a>d,a>e,b>f,b>g,b>n,e>n,f>h,f>i,g>j,g>k,j>m,k>l
+limit=22, n=14, i=4: a>g,b>f,b>j,c>i,c>n,d>e,d>h,d>j,d>m,g>l,h>n,i>k,i>m
+limit=22, n=15, i=4: a>d,a>h,a>n,a>o,b>i,b>k,b>l,b>m,c>e,c>f,c>g,e>n,f>l,g>k,h>m,i>j,i>o
+limit=22, n=14, i=4: a>g,a>n,b>d,b>f,b>h,c>e,c>h,c>i,c>j,c>l,c>m,e>n,f>i,f>j,g>l,g>m,h>k
+limit=22, n=15, i=4: b>f,b>i,b>j,b>k,c>d,c>e,c>i,c>j,c>l,c>m,d>k,e>g,e>h,f>l,f>m,i>o,j>n
+limit=22, n=14, i=4: a>f,a>k,b>i,b>m,c>d,c>e,c>g,c>i,d>h,e>k,f>m,g>j,i>l,j>n
+limit=22, n=13, i=4: a>g,b>f,b>g,b>j,c>d,c>e,c>j,c>l,c>m,d>i,e>h,f>l,f>m,j>k
+limit=22, n=13, i=4: a>f,a>g,a>k,b>d,b>g,b>i,c>e,c>i,c>j,e>k,f>h,f>j,i>l,i>m
+limit=22, n=13, i=4: a>g,a>j,a>k,b>d,b>g,b>h,b>i,c>e,c>f,c>g,e>l,e>m,f>h,f>i,f>j,f>k,f>l,f>m
+limit=22, n=15, i=4: a>f,a>h,a>l,a>m,a>n,a>o,b>c,b>d,b>e,b>h,b>i,c>l,d>o,e>m,e>n,f>g,f>i,h>j,h>k
+limit=22, n=14, i=4: b>g,b>k,b>n,c>d,c>e,c>f,c>l,c>m,d>j,e>n,f>k,g>h,g>i,g>l,g>m
+limit=22, n=14, i=4: a>i,b>f,b>m,c>h,c>i,c>j,c>k,d>e,d>g,d>i,d>l,d>n,f>n,g>j,g>k,h>l,h>m
+limit=22, n=15, i=4: a>h,b>g,b>h,b>i,b>j,b>k,c>d,c>e,c>f,c>i,c>j,c>k,c>n,g>n,j>o,k>l,k>m
+limit=22, n=15, i=4: c>e,c>g,c>j,c>l,c>m,c>o,d>f,d>h,d>i,d>j,d>n,g>n,h>o,i>l,i>m,j>k
+limit=22, n=14, i=4: b>d,c>e,c>f,c>g,e>l,f>i,f>k,f>l,g>h,g>j,g>k,j>m,j>n
+limit=22, n=13, i=4: b>i,c>f,c>h,c>i,c>k,c>l,d>e,d>g,d>h,d>m,e>j,f>m,g>k,g>l
+limit=22, n=15, i=4: a>f,a>j,a>k,a>m,b>c,b>d,b>e,b>j,b>l,c>m,d>i,e>g,e>k,f>h,f>l,i>o,j>n
+limit=22, n=15, i=4: c>m,d>e,d>f,d>g,e>m,f>n,g>h,g>i,g>j,g>n,i>o,j>k,j>l
+limit=22, n=14, i=4: b>d,b>h,b>k,b>l,b>n,c>e,c>f,c>g,c>h,e>l,f>k,g>i,g>n,h>m,i>j
+limit=22, n=13, i=4: a>d,a>h,b>h,b>j,c>e,e>f,e>g,e>i,e>j,i>k,i>l,i>m
+# hash_table_size = 694444444
+# n_solved = 636008
+# n_unsolved = 177951
+# n_hits = 129988185
+# n_misses = 48284679
+# avg_priority = 1530.191
+# avg_cost = 8.138
+limit=22, n=14, i=4: a>e,b>h,c>g,c>j,c>l,d>f,d>j,d>k,d>m,f>l,g>k,h>i,h>m,j>n
+limit=22, n=14, i=4: a>j,a>n,b>d,b>j,b>l,b>m,c>e,c>f,d>n,e>h,e>i,f>g,f>l,f>m,j>k
+limit=22, n=13, i=4: a>e,b>g,b>k,b>l,b>m,c>d,c>f,c>g,c>j,e>j,e>l,e>m,f>h,f>i,f>k
+limit=22, n=15, i=4: c>f,d>i,d>j,d>o,e>g,e>h,e>j,e>l,e>m,e>n,h>o,i>l,i>m,i>n,j>k
+limit=22, n=14, i=4: a>f,a>j,b>e,b>j,c>h,c>n,d>g,d>i,d>m,h>m,i>k,i>l,i>n
+limit=22, n=15, i=4: c>g,c>j,d>f,d>j,e>h,e>i,h>m,i>k,i>l,l>n,m>o
+limit=22, n=12, i=4: b>h,b>k,c>h,c>i,c>j,c>l,d>e,d>f,d>g,e>j,f>i,g>k,g>l
+limit=22, n=13, i=4: a>h,b>i,b>k,b>l,c>h,c>i,c>j,d>e,d>f,d>i,e>g,f>j,f>k,f>l,h>m
+limit=22, n=14, i=4: a>g,a>l,b>f,b>g,b>l,b>n,c>d,c>e,c>l,c>m,d>h,d>i,e>k,e>n,f>j,f>m
+limit=22, n=13, i=4: a>g,a>m,b>g,b>k,b>m,c>f,c>k,d>e,d>k,d>l,d>m,e>h,e>i,f>j,f>l
+limit=22, n=13, i=4: a>g,a>h,a>k,a>l,b>e,b>j,b>m,c>d,c>f,c>g,c>h,d>j,e>i,e>l,f>k,f>m
+limit=22, n=14, i=4: b>f,b>g,c>d,c>e,c>g,d>k,e>i,e>j,f>h,f>l,l>m,l>n
+limit=22, n=14, i=4: a>f,a>h,b>i,b>j,c>h,c>j,c>k,d>e,d>i,d>j,e>g,f>k,h>n,i>l,i>m
+limit=22, n=12, i=4: a>h,b>j,b>l,c>e,c>g,c>j,d>f,d>h,d>j,d>k,f>i,g>k,g>l
+limit=22, n=15, i=4: a>e,a>i,a>k,b>d,b>g,b>k,b>m,c>f,c>i,c>k,c>l,f>h,f>m,g>j,g>l,i>n,j>o
+limit=22, n=10, i=4: c>j,d>g,d>h,d>i,d>j,e>f,e>g,e>h,e>i,e>j
+limit=22, n=14, i=4: c>j,d>l,e>g,e>h,e>k,e>l,e>m,e>n,f>i,f>j,f>k,f>l,i>m,i>n
+limit=22, n=13, i=4: b>l,c>h,d>g,d>l,e>f,e>i,e>l,h>j,i>k,k>m
+limit=22, n=12, i=4: b>k,c>f,d>e,d>g,d>j,f>j,f>k,g>h,g>i,i>l
+limit=22, n=14, i=4: c>i,d>g,d>h,d>i,e>f,e>g,e>h,f>j,h>n,i>k,j>l,j>m
+limit=22, n=14, i=4: a>i,b>e,b>n,c>f,c>i,c>j,c>k,d>g,d>i,d>l,d>m,e>h,f>l,f>m,g>j,g>k,g>n
+limit=22, n=15, i=4: a>e,a>k,a>m,b>d,b>g,b>k,c>f,c>k,c>l,c>n,e>n,f>h,f>j,g>i,g>l,g>m,j>o
+limit=22, n=14, i=4: a>d,b>e,b>h,b>i,b>j,b>k,c>f,c>h,c>l,c>m,e>l,e>m,f>g,f>i,f>j,f>k,h>n
+limit=22, n=14, i=4: b>f,b>k,c>g,c>i,c>k,d>e,d>i,d>k,d>l,e>h,f>l,g>j,i>m,j>n
+limit=22, n=14, i=4: b>g,b>l,c>e,c>f,c>i,d>h,d>i,d>m,f>j,g>m,h>k,h>l,k>n
+limit=22, n=14, i=4: a>f,b>i,b>j,c>g,c>j,c>k,d>e,d>i,d>j,f>k,g>h,h>n,i>l,i>m
+limit=22, n=13, i=4: a>f,b>g,b>h,c>f,c>h,c>j,d>e,d>g,e>i,e>j,g>k,h>l,i>m
+limit=22, n=14, i=4: a>d,a>l,a>m,b>f,b>g,c>e,c>g,c>j,c>k,c>n,d>n,e>h,e>l,e>m,f>i,f>j,f>k
+limit=22, n=15, i=4: b>e,b>k,b>l,c>f,c>k,c>l,c>m,d>g,d>k,d>l,d>n,e>m,f>i,f>n,g>h,g>j,j>o
+limit=22, n=13, i=4: a>e,a>j,b>h,b>l,b>m,c>f,c>j,c>k,d>g,d>h,d>j,f>m,g>i,g>k,g>l
+limit=22, n=13, i=4: a>f,b>i,b>l,c>h,c>i,c>k,d>e,d>g,d>h,d>m,f>m,g>j,g>k,g>l
+limit=22, n=13, i=4: a>h,a>i,b>h,b>i,b>m,c>e,c>j,c>k,d>f,d>h,d>i,e>m,f>g,f>j,f>k,g>l
+limit=22, n=13, i=4: b>g,b>h,b>i,c>f,c>i,c>k,c>m,d>e,d>h,d>j,d>l,e>m,f>l,g>j,g>k
+limit=22, n=14, i=4: a>e,a>f,a>g,b>d,b>i,c>f,c>g,c>i,c>n,d>n,e>h,h>m,i>j,i>k,i>l
+limit=22, n=15, i=4: a>g,b>e,b>h,b>k,c>d,c>f,c>h,f>j,g>i,g>k,h>l,i>o,j>m,j>n
+limit=22, n=12, i=4: a>j,b>i,c>j,c>k,d>f,d>h,e>g,e>j,e>l,h>k,i>l
+limit=22, n=13, i=4: a>g,b>e,b>i,b>m,c>i,c>j,c>k,c>l,d>f,d>h,f>l,g>m,h>j,h>k
+limit=22, n=14, i=4: a>k,b>j,c>f,c>h,c>i,c>j,c>k,c>n,d>e,d>g,d>i,d>j,d>k,d>m,g>n,h>m,i>l
+limit=22, n=13, i=4: a>m,b>j,c>f,c>g,c>j,c>m,d>e,d>h,d>j,d>m,h>i,i>k,i>l
+limit=22, n=14, i=4: a>d,a>l,a>m,b>f,b>h,b>k,c>e,c>g,c>h,e>k,f>i,f>m,g>j,g>l,j>n
+limit=22, n=13, i=4: a>f,a>h,a>i,a>l,b>g,b>i,b>m,c>d,c>e,c>h,c>j,c>k,e>l,f>m,g>j,g>k
+limit=22, n=12, i=4: a>h,a>k,a>l,b>g,b>j,b>l,c>g,c>h,c>i,c>l,d>e,d>f,e>i,f>j,f>k
+limit=22, n=14, i=4: a>e,a>k,b>d,b>g,b>h,b>l,c>f,c>g,c>h,c>j,d>j,e>l,f>i,f>k,h>m,i>n
+limit=22, n=14, i=4: a>h,b>i,c>e,c>f,c>k,d>g,d>h,d>i,d>l,f>l,g>j,g>k,i>m,j>n
+limit=22, n=15, i=4: b>e,c>m,d>f,d>g,d>h,f>l,g>l,h>i,h>j,h>m,i>k,j>n,j>o
+limit=22, n=14, i=4: a>f,b>h,b>j,c>e,c>l,d>g,d>h,d>k,e>k,f>l,g>i,g>j,i>m,i>n
+limit=22, n=13, i=4: a>f,a>l,b>d,b>e,b>k,c>g,d>m,e>m,f>k,g>h,g>i,g>l,i>j
+limit=22, n=12, i=4: b>k,c>g,c>h,d>e,d>f,d>h,f>j,g>i,g>k,j>l
+limit=22, n=14, i=4: a>h,b>i,c>f,c>g,c>l,d>e,d>j,d>k,d>m,d>n,f>n,g>m,h>l,i>j,i>k
+limit=22, n=13, i=4: b>e,c>k,c>l,c>m,d>f,d>g,e>j,f>i,f>m,g>h,g>k,g>l
+limit=22, n=14, i=4: a>k,b>g,c>f,c>k,c>m,d>i,d>n,e>h,e>k,e>l,g>j,h>n,i>l,i>m
+limit=22, n=13, i=4: a>g,a>j,a>k,a>l,b>d,b>g,b>i,c>e,c>f,d>h,d>l,e>i,e>m,f>j,f>k,f>m
+limit=22, n=14, i=4: a>k,b>f,b>k,c>e,c>g,d>h,d>k,g>i,h>j,j>l,j>m,j>n
+limit=22, n=13, i=4: a>l,b>e,b>m,c>h,c>k,d>f,d>g,d>j,f>k,g>i,g>l,h>j,h>m
+limit=22, n=14, i=4: a>e,a>i,b>f,b>i,c>g,c>l,d>h,d>m,f>j,g>m,h>k,h>l,k>n
+limit=22, n=13, i=4: a>k,b>f,b>k,c>e,c>j,c>k,d>g,d>h,g>l,g>m,h>i,h>j,h>l,h>m
+limit=22, n=14, i=4: a>d,a>g,b>e,b>j,b>k,b>l,c>f,c>h,f>j,g>k,g>l,h>i,i>m,i>n
+limit=22, n=13, i=4: a>j,a>m,b>h,c>e,c>j,c>k,c>l,d>f,d>g,d>j,f>i,g>m,h>k,h>l
+limit=22, n=14, i=4: a>g,b>m,c>h,d>f,d>m,e>i,e>m,h>k,i>j,i>l,l>n
+limit=22, n=12, i=4: a>f,b>g,b>h,b>l,c>g,c>h,c>i,d>e,d>i,d>j,e>l,f>j,i>k
+limit=22, n=13, i=4: a>g,b>f,b>l,c>i,c>j,d>h,d>j,e>i,e>j,e>k,h>k,h>l,i>m
+limit=22, n=12, i=4: a>h,b>g,b>h,c>e,c>f,c>h,d>f,d>g,f>i,f>j,g>k,g>l
+limit=22, n=13, i=4: a>g,a>i,a>j,b>i,b>j,b>m,c>e,c>j,c>k,c>l,d>f,d>g,d>i,f>h,f>k,f>l,f>m
+limit=22, n=15, i=4: b>h,c>g,d>o,e>n,e>o,f>i,f>j,f>n,f>o,i>m,j>k,j>l
+# hash_table_size = 694444444
+# n_solved = 690990
+# n_unsolved = 182905
+# n_hits = 142141847
+# n_misses = 51772622
+# avg_priority = 1542.114
+# avg_cost = 8.182
+limit=22, n=13, i=4: a>f,b>i,b>l,b>m,c>e,c>h,d>g,d>i,d>k,g>j,g>l,h>k,h>m
+limit=22, n=14, i=4: b>f,c>l,d>h,d>l,d>m,d>n,e>g,e>i,e>l,g>j,h>k,i>m,i>n
+limit=22, n=14, i=4: b>n,c>e,c>l,c>m,c>n,d>f,d>n,e>g,e>h,f>i,f>l,f>m,i>j,i>k
+limit=22, n=15, i=4: b>h,c>k,d>i,e>f,e>g,e>j,e>k,e>o,i>n,i>o,j>l,j>m
+limit=22, n=14, i=4: a>d,a>k,a>l,a>m,b>f,b>g,c>e,c>h,c>n,e>k,f>n,g>i,g>j,h>l,h>m
+limit=22, n=14, i=4: a>f,a>h,b>d,b>e,b>i,b>j,c>g,c>h,c>k,c>l,c>n,d>n,e>l,f>k,g>i,g>j,h>m
+limit=22, n=13, i=4: a>e,a>g,b>f,c>g,c>h,d>h,d>i,d>j,f>i,f>j,g>m,h>k,h>l
+limit=22, n=15, i=4: b>d,c>e,c>f,e>g,e>h,f>i,f>j,h>k,i>n,i>o,j>l,j>m
+limit=22, n=14, i=4: b>h,b>k,c>f,c>m,c>n,d>e,d>g,d>l,e>j,f>l,g>i,g>k,h>m,h>n
+limit=22, n=15, i=4: c>m,d>e,d>f,d>g,e>i,f>h,f>m,g>j,h>o,i>n,j>k,j>l
+limit=22, n=13, i=4: a>d,b>f,c>e,c>g,c>l,c>m,e>k,f>l,f>m,g>h,g>i,g>j
+limit=22, n=14, i=4: a>f,b>d,b>e,b>m,b>n,c>g,c>h,g>m,g>n,h>i,h>j,j>k,j>l
+limit=22, n=14, i=4: a>e,b>d,b>i,c>f,c>g,c>j,c>k,d>j,e>k,f>l,f>m,g>h,g>i,g>l,g>m,h>n
+limit=22, n=13, i=4: a>g,b>h,b>i,c>h,c>i,c>j,c>k,c>m,d>e,d>f,d>g,d>h,d>i,e>m,f>j,f>k,g>l
+limit=22, n=14, i=4: a>j,a>k,b>d,b>j,b>k,c>e,c>j,c>k,d>g,e>f,e>h,e>i,h>l,i>m,i>n
+limit=22, n=14, i=4: a>d,a>g,b>i,b>j,b>k,b>l,b>m,c>e,c>f,c>n,d>n,e>h,e>i,f>j,f>k,g>l,g>m
+limit=22, n=12, i=4: a>h,b>h,c>i,c>k,c>l,d>f,d>k,d>l,e>g,e>k,e>l,g>i,h>j
+limit=22, n=13, i=4: a>h,a>m,b>g,b>h,c>g,c>i,c>j,c>k,d>e,d>f,d>h,e>i,e>m,f>j,f>k,g>l
+limit=22, n=14, i=4: a>d,a>j,b>c,b>e,b>f,b>g,c>n,d>i,e>h,e>k,f>l,f>m,g>j,g>k,g>l,g>m,g>n
+limit=22, n=12, i=4: b>f,c>g,c>i,d>f,d>h,d>i,e>g,e>h,e>i,g>l,h>j,h>k
+limit=22, n=14, i=4: a>m,b>g,c>f,c>m,c>n,d>e,d>h,d>m,e>l,f>k,g>n,h>i,h>j
+limit=22, n=14, i=4: b>n,c>e,c>h,d>f,d>g,f>k,g>i,g>j,h>l,h>n,l>m
+limit=22, n=13, i=4: a>j,b>h,b>k,b>l,c>f,c>h,c>j,d>e,d>g,d>j,f>i,g>k,g>l,i>m
+limit=22, n=15, i=4: c>h,d>g,d>k,e>f,e>h,e>k,f>i,g>j,i>o,j>l,k>m,k>n
+limit=22, n=14, i=4: a>e,a>g,a>i,b>f,b>i,b>j,b>k,b>l,c>d,c>h,c>m,c>n,f>n,g>m,h>j,h>k,h>l
+limit=22, n=14, i=4: b>h,b>i,b>j,b>k,c>f,c>h,c>i,c>l,c>m,c>n,d>e,d>g,d>h,d>i,e>l,f>k,g>j,g>m,g>n
+limit=22, n=14, i=4: a>g,a>j,a>l,a>m,b>d,b>e,b>g,b>j,c>f,c>j,c>k,e>h,e>k,f>i,f>l,f>m,i>n
+limit=22, n=14, i=4: c>n,d>m,e>i,f>m,f>n,g>h,g>j,g>m,g>n,j>k,j>l
+limit=22, n=14, i=4: b>g,c>f,c>n,d>e,d>h,d>i,g>n,h>k,i>j,j>l,k>m
+limit=22, n=15, i=4: a>f,a>l,b>g,b>m,c>i,c>l,d>e,d>h,d>l,d>n,g>n,h>j,h>m,i>k,k>o
+limit=22, n=13, i=4: a>e,a>i,b>f,b>g,c>h,c>i,c>j,d>g,d>h,d>i,f>j,g>m,h>k,h>l
+limit=22, n=11, i=4: b>h,c>g,c>k,d>e,d>f,d>g,d>h,e>j,f>i,f>k
+limit=22, n=13, i=4: a>d,a>h,a>i,b>f,b>g,c>e,c>f,c>g,c>m,d>m,e>h,e>i,g>j,g>k,g>l
+limit=22, n=13, i=4: a>h,a>i,a>l,b>d,c>e,c>m,d>f,d>l,d>m,e>g,e>h,e>i,g>j,g>k
+limit=22, n=15, i=4: c>m,d>k,e>j,f>i,g>l,g>n,h>m,h>n,n>o
+limit=22, n=13, i=4: b>h,c>h,d>e,d>f,d>g,f>j,g>i,h>m,i>k,j>l
+limit=22, n=12, i=4: a>j,b>i,c>i,d>j,e>f,e>g,g>h,i>l,j>k
+limit=22, n=13, i=4: a>m,b>i,b>j,b>l,c>g,d>e,d>f,e>l,f>i,f>j,g>h,g>m,h>k
+limit=22, n=14, i=4: a>k,b>k,c>g,c>k,d>h,d>j,d>l,e>f,e>j,e>m,f>i,g>l,h>m,j>n
+limit=22, n=13, i=4: b>l,c>k,d>k,e>m,f>g,f>h,f>l,g>j,h>i,h>m
+limit=22, n=14, i=4: a>j,b>f,c>g,d>e,d>j,d>l,e>h,f>k,g>i,g>l,j>m,k>n
+limit=22, n=14, i=4: a>i,a>m,b>g,b>i,c>e,c>f,c>k,d>h,d>l,f>l,g>m,h>j,h>k,j>n
+limit=22, n=13, i=4: a>i,a>j,b>g,b>j,b>l,c>e,c>g,c>j,d>f,d>i,d>k,e>k,f>h,f>l,i>m
+limit=22, n=13, i=4: a>k,b>j,c>f,c>m,d>e,d>g,e>m,f>h,g>i,g>j,g>k,i>l
+limit=22, n=13, i=4: a>h,a>j,b>g,b>j,c>h,c>j,c>l,c>m,d>e,d>f,d>k,e>i,f>l,g>k,g>m
+limit=22, n=15, i=4: a>g,b>f,c>m,d>i,d>m,e>h,e>j,j>k,j>l,l>n,m>o
+limit=22, n=12, i=4: a>i,b>i,c>j,c>k,c>l,d>h,d>l,e>f,e>g,e>l,g>j,h>k
+limit=22, n=12, i=4: b>f,b>i,c>j,c>l,d>i,d>j,d>k,e>g,e>h,e>j,g>k,h>l
+limit=22, n=14, i=4: a>i,b>h,b>i,b>k,b>l,b>m,c>e,c>h,c>i,c>j,d>f,d>h,e>g,f>j,f>k,f>l,f>m,g>n
+limit=22, n=14, i=4: a>g,b>g,b>i,c>e,c>i,c>j,c>k,c>l,d>f,d>i,f>h,f>j,f>k,f>l,h>m,h>n
+limit=22, n=15, i=4: a>j,b>j,c>o,d>k,e>f,e>j,f>g,f>h,f>i,f>k,f>o,g>n,h>m,i>l
+limit=22, n=12, i=4: a>e,a>i,b>i,b>l,c>f,c>h,c>k,d>g,d>h,f>j,g>k,g>l
+limit=22, n=12, i=4: b>k,c>e,c>f,c>g,d>h,d>k,d>l,g>l,h>i,h>j
+limit=22, n=13, i=4: a>g,b>e,b>k,c>g,c>j,c>m,d>f,d>j,e>h,e>i,f>k,f>m,j>l
+limit=22, n=13, i=4: a>f,a>h,b>h,b>m,c>d,c>e,c>f,d>g,d>m,e>i,e>j,i>l,j>k
+limit=22, n=12, i=4: a>k,b>k,c>l,d>l,e>f,e>g,e>h,e>l,h>i,h>j
+limit=22, n=14, i=4: b>g,c>i,c>l,d>h,d>n,e>f,e>j,e>m,h>m,i>n,j>k,j>l
+limit=22, n=13, i=4: c>f,c>j,c>m,d>h,d>m,e>g,e>j,e>k,e>l,e>m,g>i,h>k,h>l
+limit=22, n=12, i=4: a>i,b>i,c>g,c>h,d>g,d>h,d>k,e>f,f>j,f>k,j>l
+limit=22, n=13, i=4: a>m,b>m,c>h,c>l,d>g,d>l,e>f,e>i,e>l,e>m,i>j,j>k
+limit=22, n=11, i=4: a>f,a>i,b>j,b>k,c>j,c>k,d>h,d>i,e>g,e>i,e>j,e>k,g>h
+limit=22, n=13, i=4: a>i,a>j,b>f,b>i,b>j,c>i,c>j,c>l,c>m,d>e,d>g,e>m,f>l,g>h,h>k
+limit=22, n=12, i=4: a>j,b>j,c>l,d>e,d>f,d>g,d>h,d>j,e>l,f>i,g>k,h>k
+limit=22, n=12, i=4: c>j,d>i,e>j,e>k,e>l,f>g,f>h,h>k,i>l
+# hash_table_size = 694444444
+# n_solved = 744690
+# n_unsolved = 188389
+# n_hits = 153609190
+# n_misses = 54963365
+# avg_priority = 1554.907
+# avg_cost = 8.231
+limit=22, n=14, i=4: a>k,b>e,b>j,c>f,c>i,d>g,d>l,f>l,g>h,g>i,g>j,g>k,h>m,h>n
+limit=22, n=14, i=4: b>j,c>h,d>f,d>l,e>g,e>j,f>i,g>l,h>k,j>m,k>n
+limit=22, n=12, i=4: a>f,b>h,b>j,c>g,c>i,c>j,d>i,d>j,d>k,e>g,e>h,e>i,f>k,h>l
+limit=22, n=12, i=4: a>h,b>i,b>j,c>h,c>i,c>j,d>g,d>k,e>f,e>l,f>k,g>l
+limit=22, n=13, i=4: a>i,a>k,b>g,b>k,c>e,c>f,c>i,c>k,d>h,d>l,g>l,h>j,j>m
+limit=22, n=13, i=4: b>j,c>i,d>h,e>m,f>l,g>k,k>l,k>m
+limit=22, n=13, i=4: a>j,b>l,c>m,d>m,e>f,e>g,e>h,e>i,e>j,e>l,e>m,i>k
+limit=22, n=15, i=4: a>f,b>f,b>i,b>j,b>k,c>d,c>e,c>i,c>j,c>k,e>g,e>h,i>m,j>l,k>n,k>o
+limit=22, n=14, i=4: a>i,a>l,b>e,b>i,b>l,b>n,c>f,c>g,c>l,c>m,d>h,d>i,d>j,d>k,f>k,g>j,h>m,h>n
+limit=22, n=14, i=4: a>d,a>g,a>h,b>h,b>i,b>j,c>e,c>g,c>i,e>f,e>j,g>n,h>m,i>k,i>l
+limit=22, n=12, i=4: a>f,a>l,b>e,b>l,c>j,c>k,c>l,d>g,d>h,d>i,h>k,i>j
+limit=22, n=14, i=4: a>e,a>f,b>g,b>l,c>j,c>k,d>j,d>k,f>l,g>h,g>i,j>n,k>m
+limit=22, n=14, i=4: a>j,b>e,b>i,c>h,c>j,d>f,d>g,d>m,d>n,f>l,g>k,h>m,i>n
+limit=22, n=14, i=4: a>i,a>j,b>g,b>h,c>e,c>j,c>m,d>f,d>i,d>k,d>l,f>m,g>l,h>k,j>n
+limit=22, n=14, i=4: a>e,a>j,b>i,b>l,b>m,c>h,c>k,c>l,d>f,d>g,d>l,d>n,f>k,g>m,h>n,i>j
+limit=22, n=13, i=4: a>e,a>j,b>g,b>j,b>k,c>d,c>f,c>h,c>j,c>l,e>i,f>m,g>l,h>k,h>m
+limit=22, n=15, i=4: a>i,b>f,b>j,b>n,c>h,c>m,c>o,d>e,d>g,d>j,e>k,f>l,g>m,h>n,i>o
+limit=22, n=13, i=4: a>f,a>i,a>l,b>g,b>i,b>j,c>d,c>e,c>h,c>k,e>m,f>k,g>l,h>j,h>m
+limit=22, n=14, i=4: a>d,a>e,b>c,b>f,b>m,c>l,d>n,e>g,e>h,e>m,e>n,f>i,f>l,i>j,i>k
+limit=22, n=14, i=4: a>j,b>e,b>j,c>g,c>k,d>f,d>k,f>h,g>i,j>n,k>l,k>m
+limit=22, n=13, i=4: a>d,a>k,b>f,b>g,b>l,c>e,c>f,c>g,d>l,e>h,e>i,e>j,e>k,j>m
+limit=22, n=13, i=4: a>f,a>i,a>j,b>h,b>i,b>k,b>m,c>d,c>e,c>g,c>h,c>i,c>l,e>m,f>l,g>j,g>k
+limit=22, n=12, i=4: a>j,b>f,b>j,c>g,c>i,d>h,d>i,e>h,e>i,e>j,h>k,h>l
+limit=22, n=11, i=4: b>g,c>g,c>j,d>i,d>j,e>h,e>i,f>h,f>i,f>j,h>k
+limit=22, n=14, i=4: b>j,c>l,d>h,d>i,e>f,e>g,e>l,e>m,i>k,j>m,l>n
+limit=22, n=15, i=4: b>g,c>h,c>k,c>m,c>n,d>e,d>f,d>i,d>j,i>n,j>m,k>l,l>o
+limit=22, n=15, i=4: a>d,a>e,a>f,a>h,b>c,b>g,b>h,b>k,b>l,b>m,c>j,d>m,e>l,f>k,g>i,g>j,h>n,i>o
+limit=22, n=15, i=4: c>e,c>f,c>k,c>n,d>g,d>h,d>k,d>l,e>i,f>l,g>n,h>j,j>m,k>o
+limit=22, n=12, i=4: b>g,b>l,c>e,c>g,d>f,e>l,f>h,f>i,f>j,j>k
+limit=22, n=14, i=4: e>g,e>j,e>k,f>h,f>i,f>j,f>k,f>n,g>n,h>m,i>l
+limit=22, n=13, i=4: c>h,c>i,c>k,c>l,c>m,d>e,d>f,d>g,d>h,d>i,e>j,f>k,g>l,g>m
+limit=22, n=13, i=4: a>d,a>i,a>j,b>h,b>m,c>e,c>f,c>h,e>m,f>g,f>i,f>j,h>k,h>l
+limit=22, n=13, i=4: a>f,b>d,b>j,b>k,c>e,c>g,c>h,c>l,e>k,f>l,g>i,g>m,h>j,h>m
+limit=22, n=14, i=4: d>j,e>k,f>h,f>j,f>l,f>n,g>i,g>k,g>l,i>n,l>m
+limit=22, n=12, i=4: a>h,b>g,b>i,c>f,d>g,d>i,d>k,e>h,e>i,e>j,f>j,f>k,h>l
+limit=22, n=14, i=4: b>j,c>g,c>i,c>l,d>h,d>i,d>j,e>f,e>h,e>i,e>j,e>k,f>l,g>k,h>m,h>n
+limit=22, n=13, i=4: a>h,b>h,b>k,b>l,c>e,c>i,c>j,d>f,d>g,d>i,f>j,g>k,g>l,i>m
+limit=22, n=15, i=4: a>g,b>l,b>n,c>h,c>i,d>e,d>f,d>l,d>m,f>j,g>k,h>m,i>n,l>o
+limit=22, n=14, i=4: a>h,a>j,a>n,b>g,b>k,b>l,c>d,c>e,c>f,c>h,d>j,e>l,f>k,g>i,g>n,i>m
+limit=22, n=12, i=4: b>j,c>g,c>i,d>f,d>j,e>g,e>i,e>j,e>k,f>h,f>k,i>l
+limit=22, n=13, i=4: b>e,c>k,c>m,d>f,d>g,d>h,d>k,f>j,g>i,h>m,k>l
+limit=22, n=13, i=4: c>j,c>l,d>i,e>f,e>g,e>h,e>j,h>l,i>k,k>m
+limit=22, n=13, i=4: a>g,a>l,b>l,b>m,c>i,c>l,d>e,d>f,d>h,h>m,i>j,j>k
+limit=22, n=13, i=4: a>g,a>i,b>e,b>j,b>k,c>g,c>i,c>l,c>m,d>f,d>i,e>m,f>h,f>j,f>k,f>l
+limit=22, n=14, i=4: a>i,b>e,b>n,c>i,c>l,c>n,d>f,d>n,e>j,f>g,f>h,f>k,f>l,k>m
+limit=22, n=14, i=4: b>e,b>f,b>l,b>m,c>g,c>k,c>m,d>h,d>m,g>l,h>i,h>j,h>k,j>n
+limit=22, n=12, i=4: b>j,b>l,c>j,c>l,d>i,d>k,d>l,e>f,e>i,f>g,f>h,f>k
+limit=22, n=14, i=4: b>j,b>k,c>f,c>j,d>e,d>g,d>j,d>n,f>n,g>h,g>i,g>k,h>m,i>l
+limit=22, n=13, i=4: a>i,b>e,b>i,b>l,c>h,d>f,d>g,d>k,f>m,g>j,g>m,h>k,h>l
+limit=22, n=14, i=4: a>g,b>f,b>m,c>i,c>n,d>e,d>h,d>l,g>n,h>j,h>m,i>k,i>l
+limit=22, n=14, i=4: a>g,a>j,a>l,b>e,b>g,b>i,c>d,c>f,c>k,d>l,e>k,f>h,f>i,f>j,h>m,h>n
+limit=22, n=15, i=4: a>f,a>k,b>e,b>k,b>l,b>n,c>g,c>h,c>k,d>i,d>m,g>n,h>m,i>j,i>l,j>o
+limit=22, n=12, i=4: b>l,c>g,c>k,d>i,e>f,e>h,e>j,h>l,i>j,i>k
+limit=22, n=13, i=4: a>m,b>e,b>f,b>l,c>g,d>h,d>k,g>i,g>k,h>j,h>l,h>m
+limit=22, n=14, i=4: a>g,a>j,a>k,a>l,b>f,b>j,c>d,c>e,c>g,c>j,d>m,e>h,e>k,e>m,f>i,f>l,i>n
+limit=22, n=13, i=4: b>m,c>e,c>h,d>f,d>h,f>g,f>m,h>i,h>j,h>k,h>l
+limit=22, n=15, i=4: b>d,b>f,c>e,c>g,d>i,e>j,f>h,f>k,g>l,k>o,l>m,l>n
+limit=22, n=14, i=4: a>f,a>m,b>g,c>d,c>e,c>j,c>k,c>l,c>n,d>i,e>h,f>n,g>j,g>k,g>l,g>m
+limit=22, n=14, i=4: b>h,b>i,c>g,c>i,c>l,d>e,d>f,d>m,e>j,f>l,g>m,h>k,k>n
+limit=22, n=11, i=4: b>g,c>h,c>j,d>h,d>i,e>f,e>g,e>i,f>j,i>k
+limit=22, n=14, i=4: c>n,d>e,d>f,d>g,d>h,d>i,f>m,g>n,h>k,h>l,i>j,i>k,i>l,i>m
+limit=22, n=12, i=4: b>h,c>h,c>i,c>j,c>k,d>e,d>f,d>g,d>i,f>k,g>j,i>l
+limit=22, n=13, i=4: a>f,a>j,b>g,b>m,c>i,c>j,d>i,d>k,d>l,e>h,e>i,e>j,h>k,h>l,h>m
+limit=22, n=15, i=4: b>d,b>e,b>m,c>f,c>g,f>k,f>m,g>h,g>i,g>j,i>o,j>n,k>l
+# hash_table_size = 694444444
+# n_solved = 798112
+# n_unsolved = 193257
+# n_hits = 165418016
+# n_misses = 58526580
+# avg_priority = 1565.462
+# avg_cost = 8.289
+limit=22, n=12, i=4: a>g,b>j,c>g,c>h,c>i,c>j,d>h,d>i,d>k,d>l,e>f,e>h,e>i,e>j,f>k,f>l
+limit=22, n=15, i=4: a>e,a>g,a>o,b>f,b>h,b>k,c>j,c>n,d>i,d>l,d>m,g>m,h>n,i>o,j>k,j>l
+limit=22, n=13, i=4: a>m,b>f,b>h,c>e,c>g,d>i,d>l,g>k,h>l,i>j,i>m
+limit=22, n=14, i=4: a>f,a>m,b>d,b>g,b>l,c>e,c>h,c>j,c>k,d>i,e>n,f>l,g>j,g>k,h>m,h>n
+limit=22, n=14, i=4: a>j,b>i,c>h,d>g,e>f,e>j,e>l,e>m,e>n,f>k,g>l,h>m,i>n
+limit=22, n=12, i=4: c>h,d>g,d>k,e>i,e>j,f>i,f>j,h>k,j>l
+limit=22, n=14, i=4: a>f,b>g,b>h,c>j,d>j,e>i,i>k,j>l,k>m,k>n
+limit=22, n=15, i=4: a>d,a>h,a>o,b>e,b>k,b>l,b>m,c>f,c>g,e>o,f>j,g>i,g>k,h>l,h>m,j>n
+limit=22, n=13, i=4: a>g,a>h,b>i,b>k,c>d,c>e,c>f,c>l,g>m,h>k,h>m,i>j,i>l
+limit=22, n=15, i=4: a>g,a>h,a>m,b>d,b>e,b>h,b>l,b>o,c>f,c>h,c>i,c>j,c>k,c>n,d>k,e>i,e>j,f>m,f>o,g>l,g>n
+limit=22, n=13, i=4: a>e,b>c,b>d,b>f,b>k,e>g,e>k,f>h,f>i,f>j,j>l,j>m
+limit=22, n=15, i=4: a>f,a>j,a>n,b>e,b>h,b>j,b>m,c>d,c>g,c>j,c>k,c>l,c>o,e>i,f>o,g>m,g>n,h>k,h>l
+limit=22, n=14, i=4: a>e,a>k,a>m,a>n,b>d,b>g,b>i,b>j,c>f,c>h,c>l,f>m,g>l,g>n,h>i,h>j,h>k
+limit=22, n=14, i=4: a>f,a>m,a>n,b>d,b>e,b>i,b>j,c>g,c>k,c>l,e>m,e>n,f>k,f>l,g>h,g>i,g>j
+limit=22, n=15, i=4: a>f,a>l,b>g,b>m,b>o,c>i,c>l,d>e,d>h,d>l,d>n,g>k,h>j,h>m,i>n,i>o
+limit=22, n=14, i=4: a>f,a>h,b>g,b>j,c>e,c>i,c>j,d>h,d>i,d>j,d>k,d>l,g>k,g>l,i>m,i>n
+limit=22, n=15, i=4: a>d,a>e,a>o,b>g,b>k,b>l,c>f,c>h,c>n,e>n,f>i,f>o,g>j,h>k,h>l,j>m
+limit=22, n=15, i=4: a>g,a>j,a>k,b>d,b>e,b>f,c>h,c>l,c>m,c>n,c>o,d>i,e>n,f>o,g>l,g>m,h>j,h>k
+limit=22, n=14, i=4: a>f,a>k,b>d,b>e,b>l,c>g,c>j,c>m,c>n,e>j,e>k,f>m,f>n,g>h,g>i,g>l
+limit=22, n=15, i=4: a>d,a>e,a>j,a>k,a>l,b>f,b>j,b>k,b>o,c>g,c>j,c>k,c>n,e>n,f>i,g>h,g>l,g>o,i>m
+limit=22, n=14, i=4: a>d,a>e,a>m,a>n,b>h,c>f,c>g,c>l,f>j,g>i,g>j,h>l,h>m,h>n,i>k
+limit=22, n=14, i=4: a>g,b>f,b>l,b>m,c>e,c>j,c>k,c>n,d>h,d>i,h>n,i>j,i>k,i>l,i>m
+limit=22, n=14, i=4: a>e,a>m,a>n,b>g,c>d,c>f,c>h,c>i,c>j,c>k,c>l,e>l,f>m,f>n,g>h,g>i,g>j,g>k
+limit=22, n=15, i=4: a>g,a>h,a>m,a>n,a>o,b>d,b>e,b>g,b>h,b>i,c>f,c>h,c>j,c>k,e>j,e>k,f>i,f>m,f>n,f>o,g>l
+limit=22, n=14, i=4: a>i,a>j,a>k,a>l,a>m,b>d,b>k,b>l,b>n,c>e,c>k,c>l,d>h,d>m,e>f,e>g,e>i,e>j,e>n
+limit=22, n=14, i=3: a>i,b>g,b>j,c>e,c>f,c>l,c>m,d>h,d>j,d>l,d>m,h>k,i>n
+limit=22, n=14, i=4: a>f,a>j,a>k,a>l,a>m,b>d,b>f,b>j,b>k,c>e,c>j,c>k,c>n,d>i,d>n,e>g,e>h,e>l,e>m
+limit=22, n=15, i=4: a>g,a>j,b>e,b>j,b>k,b>l,b>m,c>d,c>f,c>g,c>j,c>n,e>i,e>n,f>h,f>k,f>l,f>m,i>o
+limit=22, n=14, i=4: a>f,a>k,a>l,a>m,b>d,b>g,b>h,b>i,c>e,c>f,c>n,d>m,d>n,e>g,e>h,e>i,e>k,e>l,f>j
+limit=22, n=13, i=4: a>k,a>l,a>m,b>e,b>f,c>d,c>g,c>i,c>j,e>j,f>h,f>i,g>k,g>l,g>m
+limit=22, n=14, i=4: a>c,a>e,a>k,a>l,b>d,b>f,d>i,e>j,f>g,f>h,f>k,f>l,j>m,j>n
+limit=22, n=14, i=4: a>d,a>h,a>i,a>j,a>k,a>l,a>n,b>c,b>e,b>m,c>n,d>g,d>m,e>f,e>h,e>i,e>j,e>k,e>l
+limit=22, n=15, i=4: a>e,a>f,b>c,b>d,b>k,b>l,b>m,c>g,c>h,d>j,e>k,e>n,f>i,f>l,f>m,f>n,j>o
+limit=22, n=15, i=4: a>e,a>l,a>m,a>n,b>d,b>g,c>f,c>h,f>j,g>k,h>i,h>l,h>m,h>n,k>o
+limit=22, n=15, i=4: a>c,a>d,a>i,a>j,a>k,a>n,a>o,b>e,b>f,b>m,d>m,e>n,e>o,f>g,f>h,f>i,f>j,f>k,h>l
+limit=22, n=15, i=4: a>f,a>n,b>g,b>m,c>d,c>e,c>h,c>o,f>o,g>k,h>i,h>j,h>m,h>n,k>l
+limit=22, n=14, i=4: a>i,a>j,b>d,b>e,b>j,b>k,b>l,c>f,c>i,c>j,e>h,f>g,f>k,f>l,i>m,i>n
+limit=22, n=13, i=4: c>j,c>k,c>l,d>f,d>j,d>k,d>l,e>g,e>h,e>i,e>k,e>l,j>m
+limit=22, n=14, i=4: a>e,a>h,a>l,b>h,b>i,b>j,b>m,b>n,c>d,c>f,c>g,c>h,c>k,e>k,f>m,f>n,g>i,g>j,g>l
+limit=22, n=15, i=4: a>e,a>k,a>o,b>d,b>k,b>l,b>m,b>n,c>f,c>g,c>k,d>i,e>j,f>m,f>n,g>h,g>l,g>o
+limit=22, n=15, i=4: a>c,a>h,a>k,b>d,b>e,b>h,c>g,c>i,d>f,d>k,d>l,e>j,e>l,i>o,j>m,j>n
+limit=22, n=14, i=4: a>d,a>e,a>i,a>n,b>g,b>h,b>k,b>m,c>f,c>h,c>j,c>l,d>j,e>m,f>i,f>k,g>l,g>n
+limit=22, n=15, i=4: a>d,a>e,a>j,a>k,a>l,b>c,b>f,b>j,b>n,b>o,c>h,d>o,e>i,e>n,f>g,f>k,f>l,j>m
+limit=22, n=14, i=4: a>c,a>e,a>h,b>d,b>f,b>h,b>i,d>m,e>i,f>g,f>m,g>n,h>j,h>k,h>l
+limit=22, n=14, i=4: a>e,a>g,b>d,b>i,b>k,b>l,c>f,c>i,c>j,e>n,f>h,f>k,g>j,g>l,g>n,i>m
+limit=22, n=13, i=4: a>f,b>e,c>g,c>k,c>l,c>m,d>h,d>i,h>j,i>k,i>l,i>m
+limit=22, n=15, i=4: a>c,a>e,b>d,b>f,c>j,c>k,d>m,e>l,f>g,f>h,f>i,l>n,m>o
+limit=22, n=14, i=4: b>e,b>l,b>m,b>n,c>g,c>i,c>j,c>k,d>f,d>h,f>n,g>l,h>i,h>j,h>k,h>m
+limit=22, n=14, i=4: a>g,a>j,b>e,b>i,b>n,c>g,c>i,c>j,c>k,c>l,d>f,d>i,d>j,d>m,e>m,f>h,f>k,f>l,f>n
+limit=22, n=14, i=4: a>g,a>h,b>e,b>g,b>i,b>j,b>k,c>d,c>f,c>h,c>l,e>l,f>i,f>j,f>k,h>m,h>n
+limit=22, n=14, i=4: a>g,a>k,b>g,b>j,c>d,c>e,d>f,e>h,e>j,e>k,g>i,h>l,h>m,h>n
+limit=22, n=15, i=4: b>f,b>i,b>j,b>l,c>d,c>e,c>i,c>j,c>k,d>g,e>l,f>h,f>k,j>m,j>n,j>o
+limit=22, n=13, i=4: a>i,b>g,b>j,c>g,c>j,c>k,c>l,d>e,d>f,d>i,d>j,f>h,f>k,f>l,i>m
+limit=22, n=15, i=4: a>c,a>e,a>j,a>k,a>l,a>m,a>o,b>d,b>f,b>g,b>n,d>o,e>n,f>i,f>l,f>m,g>h,g>j,g>k
+limit=22, n=15, i=4: a>e,a>n,a>o,b>c,b>d,b>i,b>j,c>f,c>o,d>h,d>n,e>g,e>i,e>j,g>m,h>k,h>l
+limit=22, n=15, i=4: a>f,b>d,b>j,b>k,b>l,c>e,c>f,c>j,c>k,c>l,e>g,e>h,e>i,k>o,l>m,l>n
+limit=22, n=15, i=4: a>d,a>e,b>c,b>f,d>j,e>k,e>l,f>g,f>h,f>i,f>m,m>n,m>o
+limit=22, n=14, i=4: a>d,a>e,b>g,b>h,b>i,c>g,c>h,c>j,d>j,e>f,e>i,g>n,h>k,h>l,h>m
+limit=22, n=13, i=4: a>h,a>i,b>f,b>i,c>g,c>h,c>i,c>m,d>e,d>g,d>h,d>j,d>k,e>m,f>j,f>k,g>l
+limit=22, n=15, i=4: b>h,c>e,c>f,c>i,c>j,c>k,c>l,d>g,d>h,d>i,d>m,d>n,d>o,e>o,f>m,f>n,g>j,g>k,g>l
+limit=22, n=14, i=4: a>f,a>i,a>k,a>l,b>d,b>i,c>e,c>f,c>i,c>j,d>j,d>k,d>l,e>g,e>h,h>m,h>n
+limit=22, n=14, i=4: b>d,b>e,b>l,b>m,c>f,c>j,c>k,c>n,d>i,d>n,e>j,e>k,f>g,f>h,f>l,f>m
+limit=22, n=15, i=4: a>c,a>h,a>i,a>j,a>k,b>d,b>e,b>h,c>f,d>j,d>k,e>g,e>i,g>l,h>m,h>n,h>o
+limit=22, n=13, i=4: a>f,a>j,a>m,b>e,b>g,b>k,b>l,c>d,c>f,c>g,c>h,c>i,d>j,d>k,d>l,e>h,e>i,e>m
+# hash_table_size = 694444444
+# n_solved = 853849
+# n_unsolved = 198440
+# n_hits = 179946179
+# n_misses = 61760045
+# avg_priority = 1541.347
+# avg_cost = 8.297
+limit=22, n=15, i=4: a>g,a>j,a>k,b>d,b>f,b>i,b>m,b>o,c>e,c>h,c>l,c>n,e>m,f>n,g>l,g>o,h>i,h>j,h>k
+limit=22, n=14, i=4: a>k,a>m,a>n,b>e,b>l,b>m,b>n,c>d,c>f,c>m,c>n,d>i,e>j,e>k,f>g,f>h,f>l
+limit=22, n=14, i=4: a>i,a>l,a>n,b>d,b>e,c>f,c>i,c>j,c>k,d>n,e>j,e>k,f>g,f>h,f>l,i>m
+limit=22, n=14, i=4: a>i,b>g,b>i,b>m,c>f,c>h,d>e,d>i,d>j,d>k,d>l,d>n,f>m,g>n,h>j,h>k,h>l
+limit=22, n=14, i=4: a>f,b>e,b>i,b>j,b>k,c>h,c>i,c>m,d>g,d>h,g>j,g>k,g>m,h>l,i>n
+limit=22, n=13, i=4: a>j,a>k,a>l,a>m,b>g,b>j,c>d,c>e,c>f,c>j,f>h,f>i,g>k,g>l,g>m
+limit=22, n=14, i=4: a>j,b>d,b>f,b>k,c>e,c>g,c>j,c>l,e>i,f>l,g>h,g>k,j>m,j>n
+limit=22, n=15, i=4: a>e,a>j,a>m,a>n,a>o,b>d,b>g,b>j,b>k,b>l,c>f,c>h,c>j,f>m,g>i,g>n,h>k,h>l,h>o
+limit=22, n=15, i=4: a>e,b>g,b>k,b>l,b>m,b>o,c>d,c>f,c>h,c>k,c>n,f>o,g>j,g>n,h>i,h>l,h>m
+limit=22, n=15, i=4: a>f,a>h,a>l,b>e,b>f,b>k,c>d,c>h,c>j,d>g,d>k,d>l,e>i,e>j,h>m,i>n,i>o
+limit=22, n=14, i=4: a>f,a>k,a>n,b>g,b>i,c>d,c>e,c>h,c>l,c>m,g>l,h>k,i>j,i>m,i>n
+limit=22, n=15, i=4: a>g,a>m,a>o,b>e,b>f,b>l,c>d,c>h,c>n,d>j,e>k,f>o,g>n,h>i,h>l,h>m
+limit=22, n=15, i=4: a>e,a>j,a>k,a>l,b>d,b>j,b>k,b>m,b>n,b>o,c>f,c>g,c>j,c>k,d>h,e>i,f>m,g>l,g>n,g>o
+limit=22, n=14, i=4: a>e,b>j,c>d,c>f,c>j,c>k,d>i,e>k,f>g,f>h,j>l,j>m,j>n
+limit=22, n=15, i=4: a>c,a>d,a>j,b>e,b>j,d>h,e>f,e>g,e>i,h>n,i>o,j>k,j>l,j>m
+limit=22, n=13, i=4: a>f,a>j,a>l,b>c,b>d,b>e,b>m,d>k,d>l,e>j,e>k,f>g,f>h,f>i,f>m
+limit=22, n=14, i=4: a>n,b>f,b>i,b>l,c>e,c>i,c>j,c>k,c>m,d>g,d>h,d>i,g>m,h>j,h>k,h>l,h>n
+limit=22, n=14, i=4: b>e,c>m,d>f,d>g,d>h,f>n,g>i,g>j,g>m,h>k,h>l,h>n
+limit=22, n=14, i=4: a>e,a>m,b>d,b>f,b>k,c>g,c>k,c>n,e>j,f>n,g>h,g>i,g>m,k>l
+limit=22, n=14, i=4: a>g,a>j,b>d,b>e,b>i,c>f,c>g,c>i,f>h,f>j,g>l,h>k,i>m,i>n
+limit=22, n=13, i=4: a>g,a>i,a>k,b>g,b>h,b>j,c>f,c>g,c>j,c>k,d>e,d>f,d>j,d>k,e>h,e>i,f>l,f>m
+limit=22, n=14, i=4: a>e,a>i,b>g,b>l,c>f,c>j,c>k,d>h,d>i,d>n,g>n,h>j,h>k,h>l,i>m
+limit=22, n=14, i=4: a>e,a>k,a>l,b>g,c>d,c>f,c>m,c>n,e>j,f>k,f>l,g>h,g>i,g>m,g>n
+limit=22, n=15, i=4: a>h,a>n,b>f,b>j,b>l,c>g,c>j,c>k,c>o,d>e,d>i,d>j,d>m,g>m,h>o,i>k,i>l,i>n
+limit=22, n=14, i=4: a>f,a>m,a>n,b>c,b>d,b>e,b>g,e>n,f>h,f>k,g>i,g>j,g>m,k>l
+limit=22, n=14, i=4: b>f,b>i,b>l,c>g,c>m,c>n,d>e,d>h,d>i,f>j,g>k,h>l,h>m,h>n
+limit=22, n=13, i=4: a>e,a>h,b>i,b>l,c>f,c>j,c>k,d>g,d>h,d>i,d>m,f>m,g>j,g>k,g>l
+limit=22, n=13, i=4: a>h,a>i,a>l,b>e,b>h,c>i,c>j,c>k,c>m,d>f,d>h,d>i,e>l,e>m,f>g,f>j,f>k
+limit=22, n=15, i=4: a>f,a>i,a>m,a>n,b>e,b>g,b>l,c>d,c>h,c>i,c>k,g>j,g>k,h>l,h>m,h>n,j>o
+limit=22, n=14, i=4: a>e,a>l,b>g,b>i,b>j,b>k,c>d,c>f,c>g,d>l,e>k,f>h,f>i,f>j,h>m,h>n
+limit=22, n=13, i=4: c>h,d>g,e>k,e>l,e>m,f>i,f>k,f>l,f>m,i>j
+limit=22, n=14, i=4: a>j,a>k,b>g,b>i,c>d,c>e,c>f,d>l,e>i,e>j,f>k,f>l,g>h,h>m,h>n
+limit=22, n=15, i=4: b>d,b>g,b>j,b>l,b>m,b>n,b>o,c>e,c>f,c>h,c>j,c>k,e>o,f>n,g>i,g>k,h>l,h>m
+limit=22, n=15, i=4: b>e,b>h,b>l,c>f,c>g,c>l,c>m,d>i,d>l,d>n,g>n,h>k,i>j,i>m,k>o
+limit=22, n=14, i=4: b>d,c>e,d>h,e>f,e>g,e>i,e>j,i>k,j>l,j>m,j>n
+limit=22, n=14, i=4: a>h,b>g,b>n,c>f,c>h,c>l,c>m,d>e,d>h,d>i,d>j,d>k,e>m,f>i,f>n,g>j,g>k,g>l
+limit=22, n=13, i=4: b>h,b>i,c>d,c>e,c>f,c>g,g>j,h>m,i>k,i>m,k>l
+limit=22, n=14, i=4: b>n,c>e,c>f,c>l,d>g,d>h,g>l,h>i,h>j,h>k,h>n,k>m
+limit=22, n=14, i=4: a>i,a>j,b>f,b>g,b>j,c>d,c>e,c>i,c>j,c>k,c>l,c>m,e>h,f>m,g>k,g>l,i>n
+limit=22, n=15, i=4: a>f,a>i,b>e,b>i,b>k,c>d,c>g,c>l,c>m,e>m,f>h,f>l,g>j,g>k,i>n,j>o
+limit=22, n=14, i=4: c>n,d>f,d>g,d>k,d>l,d>m,d>n,e>h,e>i,e>n,h>j,h>k,i>l,i>m
+limit=22, n=14, i=4: c>l,d>g,d>h,d>j,d>m,e>f,e>i,e>j,e>l,e>m,i>k,m>n
+limit=22, n=15, i=4: a>f,b>e,b>k,c>d,c>g,c>h,c>l,c>m,e>l,f>m,g>i,g>k,h>j,j>n,j>o
+limit=22, n=13, i=4: a>h,a>j,a>k,a>l,b>g,b>i,c>d,c>e,c>f,c>h,c>m,f>i,f>j,g>k,g>l,g>m
+limit=22, n=15, i=4: a>g,a>j,b>d,b>g,b>j,b>l,b>m,c>e,c>f,d>i,e>m,f>h,f>k,f>l,j>n,k>o
+limit=22, n=13, i=4: a>f,b>h,b>m,c>e,c>k,c>l,d>g,d>h,f>j,g>i,g>k,g>l,g>m
+limit=22, n=14, i=4: a>d,a>f,a>k,b>e,b>h,b>l,c>g,c>i,c>m,f>j,g>n,h>m,i>k,i>l,i>n
+limit=22, n=14, i=4: a>g,a>h,a>i,a>j,a>k,b>e,b>g,b>h,b>i,c>d,c>g,c>h,c>i,c>l,d>f,e>j,e>k,e>l,f>m,f>n
+limit=22, n=13, i=4: a>g,a>k,b>e,b>f,b>l,b>m,c>d,c>h,c>i,h>j,h>k,i>l,i>m
+limit=22, n=15, i=4: c>n,d>e,d>f,d>g,d>h,f>l,g>k,h>i,h>j,h>n,k>m,l>o
+limit=22, n=14, i=3: a>d,a>e,a>l,a>n,b>f,b>j,b>k,b>l,c>g,c>j,c>k,c>n,f>m,g>h,g>i
+limit=22, n=13, i=4: a>g,a>j,b>e,b>j,c>j,c>k,c>l,d>f,d>g,e>h,f>i,f>k,f>l,i>m
+limit=22, n=13, i=4: b>d,b>i,b>j,b>k,c>e,c>i,c>j,d>h,e>f,e>g,e>k,i>m,j>l
+limit=22, n=14, i=4: c>g,c>l,d>h,d>m,d>n,e>f,e>i,e>k,f>l,g>k,h>j,i>m,i>n
+limit=22, n=15, i=4: b>l,c>m,d>i,d>j,d>k,e>f,e>g,e>h,e>l,e>m,k>n,n>o
+limit=22, n=15, i=4: a>i,b>j,b>o,c>l,c>o,d>e,d>f,d>g,d>h,d>k,d>l,d>o,k>m,m>n
+limit=22, n=14, i=4: b>j,b>l,c>f,c>g,d>e,d>h,d>j,f>i,g>l,h>k,j>m,k>n
+limit=22, n=15, i=4: a>g,b>f,b>j,c>e,c>h,c>j,d>i,h>l,i>k,i>m,m>n,m>o
+limit=22, n=13, i=4: a>i,a>l,b>g,b>h,b>k,c>e,c>f,c>k,c>m,d>j,d>k,j>l,j>m
+limit=22, n=15, i=4: a>e,b>d,b>g,c>f,c>l,c>n,c>o,d>l,e>o,f>h,f>k,g>i,g>j,g>n,k>m
+limit=22, n=15, i=4: a>h,a>l,b>g,b>m,c>i,d>e,d>f,d>j,d>k,d>n,d>o,f>l,g>n,h>o,i>j,i>k,i>m
+limit=22, n=14, i=4: a>g,b>e,b>l,c>f,c>m,d>h,d>k,d>n,e>m,f>n,g>k,h>i,h>j,h>l
+limit=22, n=14, i=4: a>d,b>e,c>f,c>i,c>j,c>k,c>l,d>l,e>i,e>j,e>k,f>g,f>h,h>m,h>n
+limit=22, n=15, i=4: a>f,a>g,a>i,b>h,c>d,c>e,c>j,c>k,c>l,c>m,c>n,c>o,e>i,f>k,g>j,h>l,h>m,h>n,h>o
+# hash_table_size = 694444444
+# n_solved = 905261
+# n_unsolved = 206642
+# n_hits = 193219112
+# n_misses = 65263044
+# avg_priority = 1524.963
+# avg_cost = 8.308
+limit=22, n=14, i=4: a>c,a>f,b>d,b>e,b>k,b>l,b>m,b>n,d>j,e>h,e>i,f>g,f>k,f>l,f>m,f>n
+limit=22, n=14, i=4: a>d,a>g,a>j,a>m,a>n,b>e,b>g,b>j,b>k,b>l,c>f,c>j,e>i,f>h,f>k,f>l,f>m,f>n
+limit=22, n=11, i=3: b>e,b>j,b>k,c>f,c>g,c>h,c>i,c>j,d>f,d>g,d>h,d>i,d>k
+limit=22, n=14, i=4: a>k,a>l,a>m,a>n,b>e,b>i,b>j,b>n,c>d,c>f,c>n,e>g,e>h,f>i,f>j,f>k,f>l,f>m
+limit=22, n=14, i=4: a>e,b>i,b>m,b>n,c>i,c>k,c>l,c>m,d>f,d>m,f>g,f>h,f>k,f>l,f>n,i>j
+limit=22, n=14, i=4: a>i,a>j,b>d,b>k,b>l,b>m,c>e,c>i,d>h,e>f,e>g,e>j,e>k,e>l,e>m,i>n
+limit=22, n=13, i=4: a>f,b>i,b>m,c>i,c>j,c>k,c>l,d>e,d>g,d>i,f>h,g>j,g>k,g>l,g>m
+limit=22, n=12, i=4: a>h,a>i,b>i,b>k,b>l,c>e,c>g,c>h,c>j,d>f,d>g,f>j,f>k,f>l
+limit=22, n=13, i=4: a>g,b>g,b>h,b>m,c>f,c>h,d>e,d>h,d>i,d>j,d>k,d>l,e>m,f>i,f>j,f>k,f>l
+limit=22, n=14, i=4: a>k,a>l,a>m,a>n,b>d,b>f,b>j,c>e,c>g,d>i,e>m,f>n,g>h,g>j,g>k,g>l
+limit=22, n=13, i=4: a>e,a>i,b>i,b>j,b>k,c>d,c>f,c>g,c>i,f>h,f>l,f>m,g>j,g>k,g>l,g>m
+limit=22, n=15, i=4: a>i,a>l,a>m,a>o,b>f,b>i,c>d,c>e,c>i,c>j,c>k,d>o,e>g,e>h,f>j,f>k,f>l,f>m,h>n
+limit=22, n=15, i=4: a>f,a>k,a>l,b>g,b>l,c>d,c>e,c>l,c>m,c>n,c>o,d>j,e>i,f>h,g>k,g>m,g>n,g>o
+limit=22, n=14, i=4: a>f,a>i,a>m,a>n,b>e,b>g,b>j,b>k,c>d,c>h,c>i,c>l,g>l,h>j,h>k,h>m,h>n
+limit=22, n=15, i=4: a>f,a>j,a>o,b>g,b>j,c>d,c>e,c>j,c>k,c>l,c>m,c>n,e>i,f>n,g>h,g>k,g>l,g>m,g>o
+limit=22, n=14, i=4: a>g,a>k,b>e,b>h,b>l,b>m,c>g,c>h,c>i,c>j,d>f,d>h,f>i,f>j,f>k,f>l,f>m,g>n
+limit=22, n=15, i=4: a>f,a>n,b>g,b>n,c>d,c>e,c>n,c>o,d>j,e>i,f>h,g>k,g>l,g>m,g>o
+limit=22, n=14, i=4: a>h,a>i,a>m,b>i,b>k,b>l,c>e,c>g,c>h,c>j,d>f,d>g,e>m,f>j,f>k,f>l,i>n
+limit=22, n=13, i=4: a>g,a>j,a>k,b>d,b>e,b>f,b>l,b>m,c>h,h>i,h>j,h>k,h>l,h>m
+limit=22, n=14, i=4: a>f,a>i,b>i,b>k,b>l,c>e,c>i,c>j,c>m,d>g,f>m,g>h,g>j,g>k,g>l,h>n
+limit=22, n=15, i=4: a>d,b>f,b>g,b>m,b>n,c>e,c>h,c>o,e>l,f>k,g>o,h>i,h>j,h>m,h>n
+limit=22, n=15, i=4: b>e,b>h,b>j,c>d,c>f,c>h,c>i,d>j,e>i,f>g,g>o,h>k,h>l,h>m,h>n
+limit=22, n=12, i=4: a>f,a>h,b>h,b>k,c>e,c>j,d>g,d>j,g>i,g>k,j>l
+limit=22, n=14, i=4: a>c,a>d,a>h,a>i,a>j,a>k,b>e,b>f,b>h,b>m,d>m,e>g,e>l,f>i,f>j,f>k,f>l,h>n
+limit=22, n=14, i=4: a>e,a>n,b>g,b>l,b>m,c>d,c>f,c>h,f>j,g>k,h>i,h>l,h>m,h>n
+limit=22, n=14, i=4: a>f,a>i,a>j,b>k,b>l,b>m,b>n,c>d,c>e,c>g,c>h,d>l,e>k,f>h,g>i,g>j,g>m,g>n
+limit=22, n=14, i=4: a>g,a>n,b>f,b>m,b>n,c>d,c>e,c>g,c>k,c>l,c>n,d>j,e>m,f>h,f>i,f>k,f>l
+limit=22, n=15, i=4: b>h,c>o,d>e,d>f,d>g,d>h,f>l,f>m,g>i,g>j,g>k,g>m,g>o,l>n
+limit=22, n=13, i=4: a>f,a>i,b>d,b>f,c>e,d>g,e>h,e>i,h>j,h>k,h>l,h>m
+limit=22, n=13, i=4: b>j,c>h,c>j,c>m,d>g,d>j,d>k,d>l,e>f,e>i,i>k,i>l,i>m
+limit=22, n=13, i=4: a>e,a>m,b>h,b>j,b>k,b>l,c>g,c>h,d>f,d>h,d>i,f>k,f>l,g>i,g>j,g>m
+limit=22, n=13, i=4: a>c,a>e,a>h,a>i,a>j,b>d,b>f,b>l,c>k,d>g,d>m,e>k,e>l,f>h,f>i,f>j,f>m
+limit=22, n=13, i=4: a>f,a>j,b>e,b>i,c>h,c>k,c>l,c>m,d>g,d>h,g>i,g>j,g>k,g>l,g>m
+limit=22, n=15, i=4: a>c,a>d,a>j,a>k,a>l,b>e,b>f,b>m,c>h,d>g,d>m,e>i,e>n,f>j,f>k,f>l,f>n,i>o
+limit=22, n=15, i=4: a>g,b>f,b>l,c>e,c>l,c>m,c>n,c>o,d>h,d>l,f>j,g>k,h>i,h>m,h>n,h>o
+limit=22, n=14, i=4: a>d,a>h,a>i,b>h,b>i,b>j,b>l,b>m,b>n,c>e,c>f,c>h,c>i,d>j,e>g,e>k,f>k,f>l,f>m,f>n
+limit=22, n=14, i=4: a>e,b>g,b>n,c>f,c>i,c>j,c>k,d>h,d>l,d>m,f>n,g>l,g>m,h>i,h>j,h>k
+limit=22, n=14, i=4: a>f,b>h,b>i,c>e,c>i,c>j,c>k,c>l,c>m,d>g,d>h,d>i,f>m,g>j,g>k,g>l,h>n
+limit=22, n=14, i=4: a>e,a>i,b>f,b>i,c>g,c>h,c>k,c>l,d>g,d>h,d>i,d>j,d>n,e>n,f>j,f>k,f>l,h>m
+limit=22, n=12, i=4: a>h,a>k,b>d,b>g,b>h,b>i,b>j,c>e,c>f,c>g,c>h,e>j,e>l,f>i,f>k,f>l
+limit=22, n=14, i=4: a>l,b>e,b>j,c>g,c>j,c>n,d>f,d>g,d>m,e>m,f>h,f>i,f>l,f>n,j>k
+limit=22, n=14, i=4: a>e,a>m,b>f,b>n,c>d,c>j,c>k,c>l,d>h,d>n,e>i,e>l,f>g,f>j,f>k,f>m
+limit=22, n=15, i=4: a>g,b>e,b>k,c>g,c>k,c>l,c>m,c>n,d>f,d>k,e>j,e>n,f>h,f>i,f>l,f>m,j>o
+limit=22, n=13, i=4: a>m,b>f,b>h,c>e,c>g,c>i,d>g,d>h,d>j,d>k,d>l,e>k,e>l,f>i,f>j,f>m
+limit=22, n=13, i=4: a>e,a>m,b>d,b>f,c>e,c>f,c>g,d>g,d>m,e>l,f>h,f>i,f>j,f>k
+limit=22, n=12, i=4: a>j,a>k,a>l,b>d,b>e,b>g,b>j,c>f,c>g,f>h,f>i,f>k,f>l
+limit=22, n=14, i=4: b>f,b>m,c>e,c>k,c>l,d>g,e>i,f>j,g>h,g>k,g>l,g>m,j>n
+limit=22, n=12, i=4: a>i,b>i,b>j,b>k,b>l,c>d,c>e,e>f,e>g,e>h,e>j,e>k,e>l
+limit=22, n=14, i=4: a>h,a>j,a>n,b>e,b>j,b>m,c>f,c>k,c>l,d>g,d>h,d>j,e>n,f>m,g>i,g>k,g>l
+limit=22, n=14, i=4: a>l,a>m,b>f,b>n,c>e,c>l,c>m,d>g,d>l,d>m,e>k,f>j,g>h,g>i,g>n
+limit=22, n=13, i=4: a>e,b>f,c>g,c>l,c>m,d>g,d>h,d>i,d>j,e>l,e>m,f>h,f>i,f>j,g>k
+limit=22, n=13, i=4: a>i,b>e,b>i,c>h,c>i,d>f,d>h,f>g,h>j,h>k,h>l,h>m
+limit=22, n=14, i=4: a>g,b>e,b>f,b>j,c>i,c>j,c>l,c>m,c>n,d>h,d>i,d>j,h>l,h>m,h>n,i>k
+limit=22, n=15, i=4: a>i,b>i,b>j,c>d,c>e,c>f,e>g,f>h,f>j,h>o,i>k,i>l,i>m,i>n
+limit=22, n=14, i=4: a>h,a>n,b>e,b>f,b>i,c>g,c>i,d>h,d>i,d>j,d>k,d>l,d>m,f>n,g>j,g>k,g>l,g>m
+limit=22, n=13, i=4: a>e,b>g,b>h,b>k,c>g,c>h,c>l,c>m,d>f,e>k,f>i,f>j,f>l,f>m
+limit=22, n=14, i=4: a>h,a>i,a>n,b>e,b>g,b>k,c>h,c>i,c>l,c>m,d>f,d>g,d>j,e>j,f>k,f>l,f>m,f>n
+limit=22, n=14, i=4: a>i,b>f,b>g,b>i,c>g,c>h,c>j,d>e,d>h,d>i,d>k,e>j,f>k,h>l,h>m,h>n
+limit=22, n=15, i=4: a>f,a>h,a>m,b>f,b>h,b>i,b>j,b>k,b>o,c>d,c>e,c>h,d>g,d>o,e>i,e>j,e>k,e>m,f>l,g>n
+limit=22, n=13, i=4: a>d,a>j,b>f,b>g,b>h,b>k,b>l,b>m,c>e,c>f,c>g,c>i,d>h,d>i,e>j,e>k,e>l,e>m
+limit=22, n=13, i=4: a>e,a>k,b>j,b>k,c>f,c>m,d>g,d>k,d>l,f>l,g>h,g>i,g>j,g>m
+limit=22, n=14, i=4: a>f,a>n,b>e,b>h,b>i,c>h,c>j,c>k,c>l,d>g,d>m,e>n,f>m,g>i,g>j,g>k,g>l
+limit=22, n=14, i=4: a>f,b>k,b>l,b>m,b>n,c>e,c>g,c>i,c>j,d>h,g>n,h>i,h>j,h>k,h>l,h>m
+limit=22, n=15, i=4: a>d,a>e,b>g,c>f,c>j,c>k,c>l,c>m,c>n,e>h,f>i,g>j,g>k,g>l,g>m,g>n,i>o
+# hash_table_size = 694444444
+# n_solved = 964982
+# n_unsolved = 208889
+# n_hits = 208484819
+# n_misses = 67875557
+# avg_priority = 1522.131
+# avg_cost = 8.308
+limit=22, n=14, i=4: a>g,a>n,b>d,b>e,b>f,b>k,b>l,b>m,c>h,c>j,g>j,h>i,h>k,h>l,h>m,h>n
+limit=22, n=15, i=4: a>g,a>m,a>n,b>e,b>k,c>d,c>g,c>i,c>j,d>h,d>k,e>f,e>i,e>j,e>m,e>n,g>l,h>o
+limit=22, n=14, i=4: a>d,a>f,b>e,b>h,c>f,c>h,c>i,c>j,d>g,e>i,e>j,g>k,h>l,h>m,h>n
+limit=22, n=14, i=4: a>d,b>g,b>i,b>j,b>k,b>l,c>e,c>g,d>f,e>h,e>i,e>j,e>k,e>l,g>n,h>m
+limit=22, n=15, i=4: b>n,c>m,d>e,d>f,d>g,e>o,f>l,g>h,g>i,g>j,g>k,g>m,g>n,g>o
+limit=22, n=13, i=4: a>e,a>i,b>i,b>m,c>g,c>j,c>k,d>f,d>h,d>i,d>l,f>m,g>l,h>j,h>k
+limit=22, n=15, i=4: b>d,b>j,b>k,b>l,c>e,c>f,c>n,c>o,d>n,d>o,e>h,e>i,f>g,f>j,f>k,f>l,i>m
+limit=22, n=13, i=4: a>h,b>g,b>i,c>e,c>g,c>h,c>j,c>k,c>l,d>f,d>i,f>j,f>k,f>l,i>m
+limit=22, n=13, i=4: b>e,b>m,c>g,c>h,d>f,d>h,d>i,d>j,d>k,f>m,g>i,g>j,g>k,h>l
+limit=22, n=14, i=4: c>e,d>f,d>g,d>h,f>n,g>m,h>i,h>j,h>k,h>l
+limit=22, n=15, i=4: a>n,b>f,c>g,c>k,c>l,c>m,d>e,d>h,d>o,f>j,g>o,h>i,h>k,h>l,h>m,h>n
+limit=22, n=13, i=4: a>h,a>k,a>m,b>h,b>i,b>l,c>g,d>e,d>f,d>j,e>k,f>i,g>j,g>l,g>m
+limit=22, n=14, i=4: a>g,b>m,b>n,c>f,c>h,d>e,d>i,g>l,h>m,i>j,i>k,i>n
+limit=22, n=14, i=4: a>f,b>l,c>l,c>m,d>e,d>g,e>k,f>m,g>h,g>i,g>j,l>n
+limit=22, n=12, i=4: a>h,b>k,c>h,c>j,c>k,d>j,d>k,d>l,e>f,e>g,e>j,g>i,g>l
+limit=22, n=13, i=4: a>k,a>m,b>e,b>f,c>h,c>l,d>g,d>i,d>j,e>m,f>l,g>k,h>i,h>j
+limit=22, n=13, i=4: b>l,b>m,c>e,c>g,c>j,d>f,d>h,d>k,f>m,g>k,h>i,h>j,h>l
+limit=22, n=13, i=4: a>i,b>i,c>f,c>j,d>e,d>j,e>g,f>h,i>k,j>l,j>m
+limit=22, n=13, i=4: a>j,a>m,b>i,b>j,b>l,c>g,c>i,c>j,d>e,d>f,d>i,d>k,e>h,f>m,g>k,g>l
+limit=22, n=9, i=4: b>h,c>i,d>e,d>h,d>i,e>f,e>g
+limit=22, n=15, i=4: a>e,a>l,b>g,b>h,b>m,c>d,c>f,c>h,c>k,e>m,f>i,f>l,g>j,g>k,i>n,j>o
+limit=22, n=15, i=4: a>h,a>o,b>f,b>k,b>m,c>i,c>k,d>e,d>g,d>k,d>l,d>n,g>o,h>n,i>j,i>l,i>m
+limit=22, n=14, i=4: a>f,b>g,b>i,c>h,d>e,d>i,d>l,d>m,d>n,g>k,h>j,h>l,h>m,h>n
+limit=22, n=14, i=4: a>n,b>d,b>k,b>l,b>n,c>e,c>f,c>m,c>n,d>m,e>i,e>j,e>l,f>g,f>h,f>i,f>j,f>k
+limit=22, n=15, i=4: a>c,a>d,b>e,b>f,c>h,d>g,e>i,e>j,f>k,f>l,f>m,f>n,n>o
+limit=22, n=13, i=4: b>e,b>l,c>i,c>j,c>k,d>f,f>g,f>h,f>i,f>j,f>k,f>l,h>m
+limit=22, n=14, i=4: a>i,a>l,b>e,b>i,c>g,c>m,d>f,d>i,d>j,d>k,e>m,f>h,g>j,g>k,g>l,h>n
+limit=22, n=14, i=4: c>e,c>h,c>i,c>j,c>k,c>l,c>m,d>f,d>g,d>h,d>i,d>j,f>k,g>l,g>m,j>n
+limit=22, n=13, i=4: b>e,b>g,c>f,c>m,d>g,d>h,d>i,d>j,d>l,e>l,e>m,f>h,f>i,f>j,g>k
+limit=22, n=13, i=4: a>i,a>j,a>k,b>f,c>e,c>i,c>j,c>k,d>i,d>j,d>k,d>l,d>m,e>h,f>g,f>l,f>m
+limit=22, n=12, i=4: b>l,c>g,c>j,d>f,d>j,d>k,e>h,e>j,g>k,h>i,h>l
+limit=22, n=15, i=4: a>g,a>o,b>f,b>l,b>m,c>h,d>e,d>j,d>k,d>n,e>o,f>n,g>l,h>i,h>j,h>k,h>m
+limit=22, n=14, i=4: c>h,d>e,d>f,d>g,d>i,d>j,i>k,j>l,j>m,m>n
+limit=22, n=13, i=4: c>e,c>f,c>g,c>l,d>h,d>i,d>j,d>l,j>k,l>m
+limit=22, n=14, i=4: a>h,a>i,a>j,b>e,b>j,c>d,c>h,c>j,c>l,c>m,c>n,d>i,e>f,e>g,e>l,e>m,e>n,h>k
+limit=22, n=14, i=4: a>d,b>f,b>n,c>e,c>g,e>n,f>l,g>h,g>i,g>j,g>k,l>m
+limit=22, n=14, i=4: a>g,b>g,c>e,c>i,d>f,d>j,e>j,f>h,f>i,h>k,h>l,h>m,h>n
+limit=22, n=15, i=4: b>k,c>j,d>m,e>f,e>j,e>k,e>m,f>g,f>h,f>i,f>l,l>n,m>o
+limit=22, n=14, i=4: a>h,a>k,b>g,b>l,c>e,c>h,c>i,c>j,d>f,d>g,d>h,d>n,e>n,f>i,f>j,f>k,f>l,g>m
+limit=22, n=14, i=4: c>l,d>f,e>g,e>h,e>i,e>j,e>k,e>l,i>m,j>n,k>n
+limit=22, n=14, i=4: b>f,b>l,b>m,c>g,c>j,c>k,d>e,d>h,d>n,g>l,g>n,h>i,h>j,h>k,h>m
+limit=22, n=14, i=4: c>l,c>m,c>n,d>f,d>j,d>k,d>l,e>g,e>i,e>l,f>i,f>n,g>h,g>j,g>k,g>m
+limit=22, n=13, i=4: d>e,d>f,d>g,d>h,e>m,f>m,g>k,g>l,h>i,h>j,h>l
+limit=22, n=13, i=4: a>k,a>m,b>d,b>g,c>e,c>f,c>i,c>j,d>h,e>l,f>l,f>m,g>i,g>j,g>k
+limit=22, n=13, i=4: a>h,b>i,c>f,c>j,c>k,d>i,d>m,e>g,e>h,g>j,g>k,g>m,i>l
+limit=22, n=15, i=4: a>d,a>k,b>e,b>l,b>m,b>o,c>f,c>g,e>k,f>j,f>o,g>h,g>i,g>l,g>m,j>n
+limit=22, n=14, i=4: a>j,b>g,b>j,c>e,c>j,c>k,d>f,d>l,d>m,e>i,f>h,f>k,g>l,g>m,i>n
+limit=22, n=13, i=4: a>k,a>m,b>g,c>f,c>k,d>e,d>k,d>l,e>m,f>h,f>i,g>j,g>l
+limit=22, n=13, i=4: a>h,b>i,c>j,c>k,c>l,d>e,d>f,d>g,d>m,f>l,g>k,h>m,i>j
+limit=22, n=13, i=4: a>h,b>h,b>i,b>j,c>e,c>h,d>f,e>i,e>j,f>g,g>k,g>l,g>m
+limit=22, n=13, i=4: a>l,b>l,c>f,c>g,d>h,d>l,e>i,e>m,h>m,i>j,i>k
+limit=22, n=13, i=4: a>k,a>m,b>k,b>l,c>e,c>f,c>h,d>g,d>i,d>k,h>j,i>l,i>m
+limit=22, n=13, i=4: a>i,a>l,b>f,b>k,c>h,c>i,c>m,d>e,d>g,d>h,e>l,f>m,g>j,g>k
+limit=22, n=13, i=4: a>m,b>e,b>i,b>l,c>f,c>g,c>j,d>h,d>i,d>k,f>m,g>k,h>j,h>l
+limit=22, n=13, i=4: a>m,b>e,b>f,c>g,d>h,d>l,e>k,f>k,g>l,g>m,h>i,i>j
+limit=22, n=13, i=4: a>k,a>l,b>d,b>g,c>e,c>f,c>i,c>j,d>l,e>h,e>m,f>k,f>m,g>i,g>j
+limit=22, n=13, i=4: a>g,a>h,a>l,b>g,b>h,b>j,c>f,d>e,d>m,e>j,e>l,f>i,f>m,i>k
+limit=22, n=13, i=4: a>m,b>f,b>g,b>m,c>h,d>i,d>m,e>i,e>k,e>l,h>k,h>l,i>j
+limit=22, n=13, i=4: b>g,c>g,d>e,d>f,e>i,e>j,f>h,f>k,k>l,k>m
+limit=22, n=14, i=4: a>f,b>j,c>h,c>n,d>j,d>k,d>l,d>m,e>g,e>i,g>n,h>m,i>k,i>l
+limit=22, n=11, i=4: a>k,b>e,b>h,c>d,c>f,c>g,f>j,g>j,h>i,h>k
+limit=22, n=13, i=4: a>j,a>m,b>h,b>j,b>l,c>f,c>h,c>j,d>e,d>g,d>k,e>l,f>k,g>i,g>m
+limit=22, n=14, i=4: a>h,b>f,b>k,c>h,c>l,c>m,d>e,d>g,e>i,f>m,g>j,g>k,g>l,j>n
+limit=22, n=14, i=4: a>j,b>f,b>n,c>g,c>j,d>h,d>k,e>i,e>j,e>l,e>m,g>l,h>m,i>k,i>n
+# hash_table_size = 694444444
+# n_solved = 1023348
+# n_unsolved = 211774
+# n_hits = 222030822
+# n_misses = 70909707
+# avg_priority = 1538.185
+# avg_cost = 8.337
+limit=22, n=13, i=4: a>m,b>f,b>m,c>e,c>j,c>k,d>g,d>h,d>l,d>m,f>l,g>i,g>k,h>i,h>j
+limit=22, n=15, i=4: a>h,a>k,b>e,b>k,b>n,b>o,c>f,c>g,c>l,d>i,d>k,d>m,f>j,g>m,h>o,i>l,i>n
+limit=22, n=14, i=4: a>h,b>g,b>i,c>f,c>m,c>n,d>e,d>i,d>k,d>l,f>j,g>k,g>l,h>m,h>n
+limit=22, n=14, i=4: a>e,b>h,b>m,c>f,c>h,d>g,d>l,e>j,f>l,f>m,g>i,g>k,k>n
+limit=22, n=14, i=4: a>e,b>j,b>l,c>f,c>m,c>n,d>g,d>j,e>l,f>h,f>i,g>m,g>n,j>k
+limit=22, n=15, i=4: a>e,a>g,a>o,b>f,b>k,b>l,c>h,c>k,c>m,d>i,d>k,d>n,f>j,g>n,h>o,i>l,i>m
+limit=22, n=15, i=4: a>g,a>j,b>h,b>m,c>e,c>f,c>j,c>k,c>n,d>i,d>j,d>l,d>o,f>l,g>n,h>o,i>k,i>m
+limit=22, n=13, i=4: a>l,b>h,c>k,c>l,d>g,d>k,e>f,e>k,e>l,e>m,f>i,g>j,h>m
+limit=22, n=13, i=4: a>k,b>f,b>l,c>g,c>i,d>h,d>k,e>i,e>k,e>m,f>j,g>l,h>m
+limit=22, n=14, i=4: a>g,b>f,b>k,b>m,c>j,c>n,d>j,d>n,e>h,e>n,g>m,h>i,h>k,j>l
+limit=22, n=12, i=4: a>i,a>j,b>j,b>l,c>f,c>h,c>k,d>h,d>i,d>j,e>g,e>h,e>i,g>k,g>l
+limit=22, n=13, i=4: a>g,a>i,b>i,b>j,b>k,c>f,d>e,d>g,d>i,e>j,e>k,f>h,h>l,h>m
+limit=22, n=14, i=4: a>f,b>i,b>l,c>i,c>n,d>g,d>l,e>h,e>l,e>m,f>k,g>m,h>j,h>n
+limit=22, n=13, i=4: a>j,b>g,c>f,c>h,d>h,d>i,d>j,e>i,e>j,e>k,e>l,f>k,g>l,i>m
+limit=22, n=15, i=4: a>f,a>k,b>g,b>o,c>h,c>k,d>e,d>k,d>l,d>m,d>n,e>j,f>o,g>n,h>i,h>l,h>m
+limit=22, n=13, i=4: a>d,a>m,b>g,b>h,c>e,c>f,c>h,c>j,c>k,d>i,e>l,f>l,f>m,g>j,g>k
+limit=22, n=12, i=4: a>j,b>k,c>h,c>k,d>f,d>j,d>k,d>l,e>g,e>h,e>j,g>i,g>l
+limit=22, n=14, i=4: a>e,a>g,b>g,b>i,b>k,b>l,c>d,c>f,c>j,d>k,e>j,e>l,f>h,f>i,h>m,h>n
+limit=22, n=14, i=4: a>e,a>f,a>l,a>m,b>h,b>l,c>g,c>j,d>j,d>l,d>n,g>m,h>i,h>n,j>k
+limit=22, n=14, i=4: a>h,a>j,b>i,b>j,b>m,b>n,c>e,c>f,c>i,c>k,d>g,d>i,d>j,d>l,f>m,g>k,h>l,h>n
+limit=22, n=14, i=4: b>f,b>n,c>l,d>h,d>n,e>g,e>l,e>n,g>k,h>i,h>j,l>m
+limit=22, n=14, i=4: a>g,a>i,b>f,b>i,c>e,c>h,c>j,d>g,d>h,d>k,d>l,e>l,f>j,f>k,h>m,i>n
+limit=22, n=14, i=4: a>i,b>f,b>j,c>h,c>j,c>m,d>g,d>j,e>h,e>i,e>k,e>l,f>l,g>k,g>m,i>n
+limit=22, n=15, i=4: b>k,b>l,c>h,c>l,d>f,d>l,d>n,e>g,e>k,e>m,f>j,g>n,h>i,h>m,k>o
+limit=22, n=15, i=4: c>i,c>j,d>h,d>j,d>m,d>n,d>o,e>f,e>g,e>j,e>k,e>l,f>n,g>m,h>k,i>l,i>o
+limit=22, n=15, i=4: c>f,d>g,d>h,e>i,e>n,g>n,h>l,i>j,i>k,i>m,m>o
+limit=22, n=14, i=4: a>j,b>k,c>e,c>k,c>n,d>f,d>g,d>j,f>n,g>h,g>i,j>l,k>m
+limit=22, n=14, i=4: a>k,b>j,b>k,c>g,c>n,d>h,d>j,d>k,e>f,e>j,e>l,e>m,f>n,g>m,h>i,h>l
+limit=22, n=13, i=4: a>i,b>f,b>g,c>h,c>i,c>k,d>e,d>h,d>i,d>j,e>k,f>m,g>j,g>m,h>l
+limit=22, n=14, i=4: b>g,c>f,c>l,d>i,d>k,e>h,e>i,e>k,g>j,h>l,k>m,k>n
+limit=22, n=14, i=4: a>h,b>e,b>h,b>k,c>j,c>l,c>m,d>f,d>g,d>j,e>i,f>m,g>k,g>l,j>n
+limit=22, n=13, i=4: a>g,a>m,b>f,b>g,b>j,c>d,c>e,c>j,c>k,e>h,e>i,f>k,f>m,j>l
+limit=22, n=15, i=4: b>f,c>i,c>k,d>e,d>i,d>k,e>g,f>h,f>j,i>n,j>o,k>l,k>m
+limit=22, n=14, i=4: b>h,b>i,b>k,b>m,c>h,c>i,c>j,c>l,d>e,d>f,d>i,e>j,e>k,f>g,f>l,f>m,h>n
+limit=22, n=13, i=4: a>e,a>m,b>e,b>g,b>h,c>d,c>g,c>h,d>f,d>i,d>m,g>k,h>j,i>l
+limit=22, n=13, i=4: a>g,a>k,b>j,b>k,c>f,c>i,c>m,d>i,d>j,d>k,d>l,e>h,e>i,e>j,h>l,h>m
+limit=22, n=13, i=4: b>i,c>f,c>j,d>j,d>k,d>l,e>g,e>i,e>j,f>h,g>k,g>l,i>m
+limit=22, n=14, i=4: a>m,b>m,c>f,c>l,d>h,e>g,e>j,e>m,e>n,f>n,g>l,h>i,h>j,i>k
+limit=22, n=13, i=4: a>j,b>j,c>g,d>h,d>j,e>f,e>k,e>l,e>m,g>i,g>m,h>k,h>l
+limit=22, n=12, i=4: b>j,c>j,d>f,d>j,e>g,e>k,e>l,f>k,f>l,g>h,g>i
+limit=22, n=13, i=4: b>k,b>m,c>f,c>g,c>l,d>i,e>h,e>k,h>m,i>j,i>l
+limit=22, n=12, i=4: a>k,a>l,b>k,b>l,c>f,d>g,d>h,d>k,d>l,e>g,e>h,e>i,e>j,f>i,f>j
+limit=22, n=12, i=4: a>h,a>i,a>j,b>e,c>f,c>g,d>f,d>g,e>h,e>i,e>j,g>k,g>l
+limit=22, n=13, i=4: b>m,c>g,d>h,d>i,e>f,e>i,e>l,f>k,g>m,h>j,h>l
+limit=22, n=14, i=4: a>f,b>k,c>g,c>j,d>i,d>j,d>k,e>i,e>j,e>k,e>l,g>h,g>l,i>m,i>n
+limit=22, n=12, i=4: a>j,b>j,c>e,c>f,c>k,c>l,d>g,g>h,g>i,g>k,g>l
+limit=22, n=11, i=4: b>j,c>g,c>h,c>k,d>e,d>f,d>i,i>j,i>k
+limit=22, n=14, i=4: c>f,c>h,c>i,c>l,c>m,d>e,d>g,d>h,d>i,d>n,f>n,g>l,g>m,h>k,i>j
+limit=22, n=13, i=4: a>g,a>h,a>i,a>l,a>m,b>c,b>d,b>e,b>f,b>j,b>k,j>m,k>l
+limit=22, n=14, i=4: b>e,b>h,b>n,c>g,d>f,d>h,d>j,d>k,d>l,d>m,e>m,f>i,f>n,g>j,g>k,g>l
+limit=22, n=14, i=4: a>i,b>i,b>l,b>m,c>d,c>e,d>f,d>g,d>h,e>j,e>l,e>m,i>n,j>k
+limit=22, n=14, i=4: d>g,d>h,d>i,e>f,e>j,e>m,e>n,h>n,i>m,j>k,k>l
+limit=22, n=15, i=4: d>o,e>f,e>g,e>h,f>o,g>l,h>i,h>j,h>l,i>k,j>m,j>n
+limit=22, n=14, i=4: a>h,b>g,c>e,d>f,d>g,d>h,d>l,e>l,f>i,f>j,f>k,j>n,k>m
+limit=22, n=14, i=4: c>h,d>f,d>h,e>g,f>k,g>i,g>j,g>l,l>m,l>n
+limit=22, n=13, i=4: d>h,d>i,e>f,e>g,e>h,e>i,f>j,g>k,j>m,k>l
+limit=22, n=14, i=4: a>g,b>h,b>n,c>i,c>l,c>m,d>e,d>f,d>j,h>k,i>n,j>l,j>m
+limit=22, n=13, i=3: a>k,b>m,c>g,c>h,c>i,c>m,d>e,d>f,d>h,d>i,d>k,f>l,g>j
+limit=22, n=11, i=4: a>k,b>j,c>i,d>f,d>k,e>g,e>k,g>h,g>i,g>j
+limit=22, n=14, i=4: c>f,c>k,d>k,d>l,d>m,e>g,e>h,h>i,h>j,h>l,h>m,k>n
+limit=22, n=14, i=4: b>k,c>j,d>e,d>f,d>g,d>h,d>i,d>j,d>k,e>l,f>n,g>n,h>m,i>m
+limit=22, n=12, i=4: a>k,b>k,c>g,c>h,c>k,c>l,d>g,d>i,d>j,d>l,e>f,e>l,f>h,f>i,f>j
+limit=22, n=14, i=4: a>c,a>d,a>h,a>i,a>m,b>e,b>h,b>i,b>l,b>n,c>l,d>n,e>f,e>g,e>j,e>m,j>k
+limit=22, n=13, i=4: a>e,a>g,a>h,b>d,b>f,b>g,c>h,c>i,c>j,c>k,c>l,e>l,f>i,f>j,f>k,h>m
+# hash_table_size = 694444444
+# n_solved = 1080635
+# n_unsolved = 215014
+# n_hits = 235792980
+# n_misses = 74073110
+# avg_priority = 1553.848
+# avg_cost = 8.374
+limit=22, n=14, i=4: c>m,d>f,d>i,d>l,d>m,e>g,e>h,e>i,e>m,f>j,g>l,h>k,k>n
+limit=22, n=14, i=4: b>e,b>j,b>m,c>f,c>i,c>j,c>k,c>l,d>g,d>i,d>j,f>h,g>k,g>l,g>m,i>n
+limit=22, n=14, i=4: a>d,a>e,a>f,b>c,b>g,b>h,b>n,f>n,g>i,g>j,h>k,k>l,k>m
+limit=22, n=15, i=4: a>j,b>d,b>j,b>l,b>m,b>o,c>e,c>f,c>g,e>o,f>h,f>k,g>i,g>l,g>m,k>n
+limit=22, n=13, i=4: b>e,b>i,c>f,c>l,d>g,d>h,d>i,g>k,h>j,h>l,k>m
+limit=22, n=15, i=4: c>o,d>e,d>f,d>g,d>h,e>l,f>k,g>i,g>j,h>m,h>o,m>n
+limit=22, n=13, i=4: e>j,f>i,g>l,g>m,h>k,h>l,h>m
+limit=22, n=14, i=4: b>e,c>d,c>f,c>g,d>l,e>j,f>i,f>k,g>h,g>k,g>l,i>m,j>n
+limit=22, n=14, i=4: a>i,b>e,b>l,b>m,c>g,c>i,c>k,d>f,d>h,d>j,f>k,g>j,h>l,h>m,i>n
+limit=22, n=14, i=4: a>f,b>i,c>i,c>k,d>k,d>l,d>m,e>g,e>h,g>j,h>l,h>m,k>n
+limit=22, n=15, i=4: a>i,b>f,c>d,c>e,c>i,d>h,e>g,f>j,f>k,i>o,j>n,k>l,k>m
+limit=22, n=14, i=4: a>g,b>e,b>g,c>f,c>h,d>f,d>h,d>i,d>j,e>i,e>j,f>k,g>l,h>m,h>n
+limit=22, n=14, i=4: a>h,b>g,b>h,b>m,c>f,c>i,c>n,d>e,d>i,d>j,d>k,e>n,f>m,g>j,g>k,i>l
+limit=22, n=15, i=4: a>f,a>k,a>o,b>d,b>g,c>e,c>k,c>l,c>m,d>h,e>i,f>j,g>l,g>m,g>o,k>n
+limit=22, n=15, i=4: a>d,b>c,b>e,b>k,c>f,c>g,d>i,d>k,e>h,e>j,h>o,i>l,j>m,j>n
+limit=22, n=14, i=4: a>f,a>l,b>d,b>k,b>m,b>n,c>e,c>g,c>h,e>l,f>k,g>i,g>j,h>m,h>n
+limit=22, n=15, i=4: a>f,a>l,b>h,b>l,c>e,c>l,c>m,c>n,d>g,d>i,d>o,f>k,g>n,h>o,i>j,i>m
+limit=22, n=14, i=4: a>l,b>e,b>h,c>h,c>i,c>j,c>m,d>f,d>h,d>k,e>k,e>m,f>g,f>i,f>j,f>l,g>n
+limit=22, n=14, i=4: c>g,d>i,d>l,d>m,d>n,e>f,e>i,f>m,f>n,g>h,g>l,h>j,i>k
+limit=22, n=13, i=4: a>h,a>j,b>h,b>j,b>k,c>e,c>g,c>j,d>f,d>g,d>l,e>l,f>i,f>k,i>m
+limit=22, n=12, i=4: a>i,b>h,b>i,c>h,c>j,d>g,e>f,e>g,e>h,e>i,f>j,g>k,g>l
+limit=22, n=13, i=4: a>h,b>h,b>m,c>i,c>j,c>l,d>e,d>f,e>l,e>m,f>g,f>i,f>j,h>k
+limit=22, n=15, i=4: b>j,b>o,c>j,c>l,c>o,d>e,d>f,d>o,e>i,e>k,f>g,f>h,f>l,j>m,k>n
+limit=22, n=13, i=4: b>d,b>j,c>e,c>j,c>m,d>i,d>m,e>f,e>g,e>h,j>k,j>l
+limit=22, n=14, i=4: a>m,b>e,b>i,b>k,c>i,c>j,c>l,d>f,d>g,f>k,f>l,g>h,g>j,g>m,i>n
+limit=22, n=15, i=4: c>i,c>k,c>n,d>i,d>j,d>l,d>n,e>f,e>g,e>n,f>j,f>k,g>h,g>l,h>m,i>o
+limit=22, n=13, i=4: b>i,c>i,c>j,c>k,d>e,d>f,d>i,e>j,e>k,e>l,f>g,f>h,f>l,h>m
+limit=22, n=14, i=4: a>e,a>g,b>d,b>h,b>m,c>f,c>g,c>h,d>k,e>i,e>j,f>l,f>m,l>n
+limit=22, n=13, i=4: a>d,a>g,a>j,b>h,b>k,b>l,c>e,c>f,c>g,c>h,e>i,f>j,f>k,f>l,i>m
+limit=22, n=13, i=4: a>g,b>h,c>f,c>l,d>k,d>m,e>i,g>l,h>m,i>j,i>k
+limit=22, n=14, i=4: a>h,b>i,b>l,b>n,c>e,c>i,c>k,c>m,d>f,d>g,f>k,g>j,g>l,h>m,h>n
+limit=22, n=14, i=4: a>i,a>n,b>h,c>e,c>f,c>l,d>g,d>i,d>k,d>m,e>j,f>k,g>n,h>l,h>m
+limit=22, n=13, i=4: a>f,a>i,b>d,c>e,c>f,c>j,c>k,d>j,d>k,e>g,e>h,e>i,h>l,h>m
+limit=22, n=13, i=4: b>l,b>m,c>e,c>f,c>j,d>g,d>h,d>k,f>k,g>i,g>l,h>j,h>m
+limit=22, n=13, i=4: a>j,b>i,b>m,c>f,c>i,c>l,d>h,e>g,e>j,e>k,g>l,h>k,h>m
+limit=22, n=13, i=4: a>k,b>j,b>m,c>f,c>j,c>k,d>h,d>j,e>g,e>k,e>l,g>m,h>i,h>l
+limit=22, n=14, i=4: a>j,a>n,b>e,b>j,b>m,c>h,c>j,c>k,d>f,d>g,d>l,f>m,g>i,g>k,h>l,h>n
+limit=22, n=13, i=4: c>h,d>j,d>m,e>g,e>j,e>l,f>i,h>k,i>l,i>m
+limit=22, n=14, i=4: a>j,a>m,b>h,b>n,c>f,c>g,c>j,d>e,d>j,d>k,d>l,e>i,f>m,g>n,h>k,h>l
+limit=22, n=14, i=4: a>k,b>f,b>h,c>g,d>e,d>h,d>k,d>l,d>m,e>i,f>j,g>l,g>m,k>n
+limit=22, n=13, i=4: b>h,b>i,c>h,c>j,d>i,d>k,d>l,e>f,e>g,e>i,f>l,g>j,g>k,h>m
+limit=22, n=13, i=4: b>k,c>m,d>l,e>j,f>h,f>i,f>k,g>j,g>l,g>m
+limit=22, n=14, i=4: a>j,b>i,c>g,c>j,d>h,d>m,e>f,e>l,e>n,g>m,h>n,i>k,i>l
+limit=22, n=14, i=4: a>k,b>f,b>g,c>h,c>n,d>j,e>i,e>k,e>m,i>n,j>l,j>m
+limit=22, n=14, i=4: a>f,b>h,c>g,c>i,d>e,d>i,d>k,d>l,d>m,d>n,f>n,g>j,g>k,h>l,h>m
+limit=22, n=15, i=4: a>e,b>h,b>j,b>n,c>f,c>j,c>l,c>m,d>g,d>i,d>o,f>k,g>m,h>o,i>l,i>n
+limit=22, n=15, i=4: c>g,c>l,d>i,d>k,d>l,d>o,e>f,e>h,e>l,e>m,e>n,f>j,g>o,h>k,i>m,i>n
+limit=22, n=13, i=4: b>f,b>k,c>d,c>e,c>g,c>j,d>k,e>l,f>j,g>h,g>i,g>l,i>m
+limit=22, n=14, i=4: a>h,b>d,b>h,b>l,c>e,c>f,d>j,e>i,e>l,e>m,f>g,f>k,f>m,k>n
+limit=22, n=12, i=4: a>j,b>f,b>i,b>j,c>h,c>i,c>j,d>i,d>k,d>l,e>g,e>h,g>k,g>l
+limit=22, n=13, i=4: a>f,b>e,b>h,b>k,c>h,c>k,c>l,c>m,d>g,d>k,f>l,g>i,g>j,g>m
+limit=22, n=14, i=4: a>e,a>n,b>f,b>h,b>j,b>k,c>d,c>g,c>h,c>l,c>m,e>l,f>m,f>n,g>i,g>j,g>k
+limit=22, n=15, i=4: a>e,a>j,a>m,b>f,b>i,c>d,c>i,c>j,c>k,c>l,d>g,e>l,f>h,f>k,f>m,i>n,j>o
+limit=22, n=14, i=4: a>e,a>l,b>i,b>k,c>f,c>h,d>g,d>h,d>i,d>j,f>j,g>k,g>l,h>m,i>n
+limit=22, n=15, i=4: b>j,c>j,c>l,c>m,d>e,d>f,d>l,d>m,e>k,f>g,f>h,f>i,l>o,m>n
+limit=22, n=14, i=4: c>l,d>e,d>f,d>g,e>m,e>n,f>h,f>k,g>i,g>j,g>k,g>l,g>m,g>n
+limit=22, n=15, i=4: d>o,e>h,f>i,g>j,i>o,j>k,j>l,l>m,l>n
+limit=22, n=15, i=4: a>f,b>i,c>k,d>k,e>g,e>h,e>j,j>l,l>m,l>n,l>o
+limit=22, n=14, i=4: a>d,a>h,a>m,b>c,b>e,b>h,c>m,d>i,d>j,d>k,e>f,e>g,e>l,l>n
+limit=22, n=14, i=4: a>c,a>d,a>m,a>n,b>e,b>f,d>j,d>k,e>l,e>m,e>n,f>g,f>h,f>i,f>l
+limit=22, n=15, i=4: a>d,a>g,a>j,b>f,b>o,c>e,c>g,c>j,c>k,c>l,c>m,e>h,e>o,f>i,f>k,f>l,f>m,j>n
+limit=22, n=15, i=4: a>e,a>g,b>d,b>f,b>l,b>m,b>n,c>h,c>k,c>o,f>k,g>o,h>i,h>j,h>l,h>m,h>n
+limit=22, n=14, i=4: a>f,a>h,a>i,b>c,b>d,b>e,b>j,b>k,b>l,b>m,b>n,d>i,e>h,f>g,f>j,f>k,f>l,f>m,f>n
+limit=22, n=14, i=4: a>i,b>f,b>h,b>m,c>g,c>i,d>e,d>h,d>i,d>j,d>k,d>l,g>j,g>k,g>l,g>m,h>n
+# hash_table_size = 694444444
+# n_solved = 1137939
+# n_unsolved = 219016
+# n_hits = 249740777
+# n_misses = 77243977
+# avg_priority = 1554.781
+# avg_cost = 8.402
+limit=22, n=14, i=4: a>h,a>i,b>e,b>f,b>l,c>h,c>i,c>m,c>n,d>g,f>k,g>j,g>l,g>m,g>n
+limit=22, n=14, i=4: a>i,b>n,c>e,c>i,c>j,c>k,c>l,c>m,d>f,d>i,e>h,f>g,f>j,f>k,f>l,f>m,f>n
+limit=22, n=15, i=4: a>f,b>e,c>g,c>m,c>n,c>o,d>h,h>i,h>j,h>k,h>m,h>n,h>o,k>l
+limit=22, n=13, i=4: a>g,b>m,c>h,d>i,e>f,e>i,h>m,i>j,i>k,i>l
+limit=22, n=14, i=4: b>e,b>h,b>i,b>j,b>k,b>l,b>m,b>n,c>d,c>f,c>g,f>n,g>h,g>i,g>j,g>k,g>l,g>m
+limit=22, n=15, i=4: a>o,b>d,b>e,b>g,b>j,b>k,b>l,b>m,b>o,c>f,c>h,c>n,c>o,g>n,h>i,h>j,h>k,h>l,h>m
+limit=22, n=14, i=4: b>h,c>f,c>g,c>h,c>i,c>j,c>k,c>l,c>m,c>n,d>e,d>f,d>g,d>h,e>i,e>j,e>k,e>l,e>m,e>n
+limit=22, n=12, i=3: b>e,b>f,b>g,b>h,b>i,b>j,b>k,b>l,c>d,c>f,c>g,c>h,c>i,c>j,c>k,c>l
+limit=22, n=14, i=4: a>f,a>g,b>e,b>f,b>g,c>d,c>j,c>k,c>l,c>m,c>n,d>h,e>j,e>k,e>l,e>m,e>n,h>i
+limit=22, n=14, i=3: c>d,c>e,c>f,d>n,e>m,f>g,f>h,f>i,f>j,f>k,f>l
+limit=22, n=15, i=4: a>d,a>f,a>g,a>o,b>c,b>e,b>g,b>h,b>i,b>j,b>k,b>l,b>m,e>o,f>h,f>i,f>j,f>k,f>l,f>m,g>n
+limit=22, n=13, i=4: d>f,d>i,d>j,d>k,d>l,d>m,e>g,e>h,h>i,h>j,h>k,h>l,h>m
+limit=22, n=15, i=4: b>g,b>i,b>m,c>f,c>i,c>j,c>k,c>l,d>e,d>h,d>n,g>n,h>j,h>k,h>l,h>m,i>o
+limit=22, n=14, i=4: a>j,b>d,b>e,c>f,d>h,e>g,e>j,f>i,i>k,i>l,i>m,i>n
+limit=22, n=14, i=4: b>d,b>e,b>g,b>l,b>m,b>n,c>f,c>h,c>j,c>k,g>j,g>k,h>i,h>l,h>m,h>n
+limit=22, n=15, i=4: a>j,b>f,c>d,c>e,d>j,e>g,e>h,f>i,h>o,i>k,i>l,i>m,i>n
+limit=22, n=13, i=4: b>e,b>j,b>k,b>l,b>m,c>d,c>f,c>g,c>h,c>i,d>j,d>k,d>l,d>m,e>f,e>g,e>h,e>i
+limit=22, n=15, i=4: b>d,b>h,c>e,c>f,c>g,g>i,g>n,h>j,h>k,h>l,h>m,n>o
+limit=22, n=15, i=4: b>e,b>h,b>i,b>j,b>k,c>d,c>f,c>g,c>i,c>l,c>m,c>n,c>o,f>k,g>j,h>l,h>m,h>n,h>o
+limit=22, n=14, i=4: b>e,b>f,b>j,b>l,c>h,c>m,d>g,d>k,d>n,f>n,g>l,g>m,h>i,h>j,h>k
+limit=22, n=14, i=4: a>g,a>i,a>n,b>g,b>j,b>m,c>e,c>i,c>j,c>k,c>l,d>f,d>i,d>j,e>n,f>h,f>k,f>l,f>m
+limit=22, n=15, i=4: a>j,b>d,b>j,b>k,b>l,c>e,c>f,c>j,c>m,d>m,e>h,e>l,e>n,f>g,f>i,f>k,f>n,i>o
+limit=22, n=14, i=4: c>e,c>i,c>j,c>k,c>l,c>m,c>n,d>f,d>g,f>i,f>j,g>h,g>k,g>l,g>m,g>n
+limit=22, n=14, i=4: c>e,c>i,c>j,c>k,d>f,d>m,d>n,e>g,e>m,e>n,f>h,f>i,f>j,f>k,h>l
+limit=22, n=14, i=4: b>e,c>g,c>i,c>j,d>f,d>g,f>h,f>i,f>j,g>k,h>l,h>m,h>n
+limit=22, n=13, i=4: a>d,a>e,b>f,b>g,c>e,c>f,d>g,e>l,e>m,f>h,f>i,f>j,f>k
+limit=22, n=14, i=3: b>j,c>n,d>f,d>g,d>h,d>l,d>m,e>i,e>j,e>l,e>m,e>n,i>k
+limit=22, n=15, i=4: a>h,b>j,c>i,d>e,d>f,d>g,d>h,d>i,g>j,i>k,i>l,i>m,i>n,i>o
+limit=22, n=15, i=4: a>f,b>d,b>f,b>h,b>i,c>e,c>o,d>o,e>g,e>h,e>i,g>j,g>k,g>l,g>m,g>n
+limit=22, n=14, i=4: c>l,c>m,c>n,d>i,d>j,d>k,d>l,d>m,e>f,e>g,e>l,e>m,f>k,g>h,g>i,g>j,g>n
+limit=22, n=14, i=4: b>j,c>g,c>m,d>f,d>j,d>k,d>l,e>h,e>j,e>n,g>n,h>i,h>k,h>l,h>m
+limit=22, n=14, i=4: a>f,a>j,b>i,b>j,b>m,b>n,c>e,c>g,c>i,c>j,c>k,d>h,d>i,d>l,g>l,h>k,h>m,h>n
+limit=22, n=15, i=4: a>f,b>d,b>e,b>l,b>m,c>g,c>n,c>o,e>j,f>k,f>n,f>o,g>h,g>i,g>l,g>m
+limit=22, n=12, i=4: a>i,a>j,b>f,b>g,b>l,c>f,c>g,c>k,c>l,d>e,d>l,e>h,e>i,e>j,e>k
+limit=22, n=15, i=4: a>h,b>j,c>g,c>i,c>j,d>e,d>f,d>h,d>i,d>j,d>k,d>l,d>m,d>n,d>o,g>k,g>l,g>m,g>n,g>o
+limit=22, n=14, i=4: b>e,b>h,c>f,c>g,d>g,d>h,d>j,d>k,d>l,d>m,e>i,f>j,f>k,f>l,f>m,i>n
+limit=22, n=14, i=4: a>f,b>h,b>i,b>m,b>n,c>e,c>i,c>j,c>k,c>l,d>g,d>h,d>i,g>j,g>k,g>l,g>m,g>n
+limit=22, n=15, i=4: b>e,b>k,b>o,c>f,c>m,c>n,c>o,d>g,d>o,f>j,g>h,g>i,g>k,g>m,g>n,j>l
+limit=22, n=14, i=4: a>i,a>j,a>k,a>l,a>m,b>d,b>e,b>n,c>f,c>i,c>j,d>h,e>g,f>k,f>l,f>m,f>n
+limit=22, n=15, i=4: b>g,c>e,c>f,c>j,c>o,d>h,d>j,h>i,h>o,j>k,j>l,j>m,j>n
+limit=22, n=14, i=4: d>f,d>i,d>j,d>k,e>g,e>l,e>m,e>n,f>l,f>m,f>n,g>h,g>i,g>j,g>k
+limit=22, n=14, i=4: a>f,a>g,b>g,b>i,c>d,c>e,c>i,f>h,i>j,i>k,i>l,i>m,i>n
+limit=22, n=15, i=4: c>m,d>l,e>k,f>g,f>k,f>l,f>m,g>h,g>i,g>j,g>n,n>o
+limit=22, n=13, i=4: a>m,b>m,c>h,c>l,d>h,d>i,d>j,e>f,e>m,f>g,f>i,f>j,f>l,h>k
+limit=22, n=15, i=4: a>f,a>j,a>k,b>c,b>d,b>e,b>m,b>n,b>o,c>g,d>k,e>j,f>h,f>i,f>m,f>n,f>o,i>l
+limit=22, n=14, i=4: a>g,a>k,b>j,c>h,c>j,d>e,d>f,d>h,d>l,e>i,f>k,g>l,j>m,j>n
+limit=22, n=14, i=4: a>f,a>i,b>e,b>j,b>n,c>g,d>i,d>k,d>l,e>h,f>n,g>j,g>k,g>l,i>m
+limit=22, n=13, i=4: a>h,b>e,b>f,b>h,c>g,c>j,d>g,d>h,d>i,f>i,f>j,g>k,g>l,g>m
+limit=22, n=15, i=4: d>g,d>h,d>k,d>o,e>f,e>i,e>j,e>k,i>o,j>l,j>m,m>n
+limit=22, n=14, i=4: a>d,a>h,a>n,b>g,b>i,b>k,b>l,c>e,c>f,c>i,c>m,e>l,f>k,g>n,h>j,h>m
+limit=22, n=13, i=4: a>i,a>m,b>e,b>h,b>i,c>g,d>f,d>h,d>i,d>j,d>k,d>l,f>m,g>j,g>k,g>l
+limit=22, n=14, i=4: a>c,a>d,b>e,b>i,b>j,c>n,d>g,d>i,d>j,d>n,e>f,e>h,h>k,h>l,h>m
+limit=22, n=14, i=4: b>f,c>h,c>j,c>k,d>e,d>h,e>i,f>g,f>j,f>k,h>n,i>l,i>m
+limit=22, n=14, i=4: b>f,b>g,b>i,b>m,b>n,c>d,c>e,c>h,c>i,c>k,c>l,g>k,g>l,h>j,h>m,h>n
+limit=22, n=13, i=4: d>h,d>i,d>j,d>k,d>l,e>f,e>g,e>i,e>j,e>k,e>m,g>l,h>m
+limit=22, n=14, i=4: a>f,a>g,a>i,a>k,a>l,a>m,a>n,b>c,b>d,b>e,b>h,b>i,h>k,h>l,h>m,h>n,i>j
+limit=22, n=13, i=4: a>i,a>j,a>l,b>c,b>d,b>e,b>f,b>g,b>h,b>l,j>k,l>m
+limit=22, n=12, i=4: a>i,b>h,b>i,c>f,d>g,d>h,d>i,d>j,e>g,e>h,e>k,e>l,f>j,f>k,f>l
+limit=22, n=14, i=4: a>e,a>j,b>d,b>j,b>k,b>l,b>m,c>f,c>g,c>j,e>i,f>h,f>k,f>n,g>l,g>m,g>n
+limit=22, n=14, i=4: a>e,a>i,b>d,b>g,b>l,b>m,b>n,c>f,c>h,c>i,f>j,g>k,h>l,h>m,h>n
+limit=22, n=15, i=4: b>e,c>f,c>n,d>g,d>h,d>o,e>k,f>o,g>l,h>i,h>j,h>n,l>m
+limit=22, n=14, i=4: c>f,c>i,c>j,d>e,d>g,d>i,d>k,f>k,g>h,g>j,i>l,i>m,i>n
+limit=22, n=15, i=4: c>i,d>e,d>f,d>g,d>i,e>h,f>m,f>n,g>j,g>k,g>l,g>n,m>o
+limit=22, n=14, i=4: a>f,b>e,b>l,c>k,c>m,d>g,d>h,d>k,g>m,h>i,h>j,h>l,k>n
+# hash_table_size = 694444444
+# n_solved = 1176704
+# n_unsolved = 235865
+# n_hits = 261577940
+# n_misses = 80569859
+# avg_priority = 1532.539
+# avg_cost = 8.401
+limit=22, n=15, i=4: a>f,b>g,b>m,c>l,c>o,d>e,d>h,d>l,f>k,g>o,h>i,h>j,h>m,l>n
+limit=22, n=15, i=4: a>h,b>e,b>f,c>l,c>m,c>o,d>g,d>h,d>l,e>k,f>o,g>i,g>j,g>m,l>n
+limit=22, n=14, i=4: b>i,b>k,b>l,b>m,c>f,c>g,c>j,d>e,d>h,d>i,d>n,f>n,g>m,h>j,h>k,h>l
+limit=22, n=14, i=4: a>g,a>n,b>h,b>l,c>h,c>k,d>e,d>f,d>g,e>i,f>k,f>l,f>n,h>j,i>m
+limit=22, n=14, i=4: a>e,a>g,a>h,a>i,b>c,b>d,b>f,b>h,b>i,b>l,b>m,b>n,f>j,g>l,g>m,g>n,j>k
+limit=22, n=15, i=4: c>f,c>m,c>n,c>o,d>e,d>g,d>k,e>m,f>j,f>k,g>h,g>i,g>n,g>o,j>l
+limit=22, n=15, i=4: b>e,b>g,b>i,c>d,c>f,c>i,c>j,c>k,c>l,f>h,g>j,g>k,g>l,h>m,i>n,i>o
+limit=22, n=14, i=4: b>d,b>e,b>f,b>i,b>l,b>m,b>n,c>g,c>h,c>i,g>j,h>l,h>m,h>n,j>k
+limit=22, n=14, i=4: a>h,b>e,b>j,b>k,b>l,b>m,b>n,c>d,c>f,c>g,f>k,g>i,g>j,h>l,h>m,h>n
+limit=22, n=14, i=4: a>e,b>f,c>g,c>h,c>n,d>g,d>i,d>j,e>n,f>h,f>i,f>j,g>k,g>l,g>m
+limit=22, n=13, i=4: a>h,a>i,b>f,b>k,c>e,c>h,c>i,c>m,d>g,d>l,f>l,g>j,g>k,g>m
+limit=22, n=14, i=4: a>c,a>d,a>i,a>j,b>e,b>f,e>i,e>k,e>l,f>g,f>h,f>j,f>k,f>l,h>m,h>n
+limit=22, n=15, i=4: a>k,b>g,b>m,c>d,c>e,c>f,c>k,c>n,c>o,d>j,e>i,f>m,g>h,g>n,g>o,k>l
+limit=22, n=14, i=4: a>d,b>f,b>h,b>j,b>k,b>l,c>e,c>f,c>h,d>j,d>k,d>l,e>g,e>i,h>n,i>m
+limit=22, n=13, i=4: a>g,a>i,a>j,b>g,b>i,b>j,b>m,c>i,c>j,c>k,c>l,d>e,d>f,e>k,f>h,f>l,f>m
+limit=22, n=15, i=4: a>m,b>k,c>g,c>k,c>m,d>e,d>f,d>k,d>m,d>n,d>o,e>i,f>h,g>j,g>n,g>o,j>l
+limit=22, n=15, i=4: a>d,a>e,a>n,a>o,b>f,b>l,c>g,c>j,c>k,f>h,f>j,f>k,f>n,g>i,g>l,g>o,i>m
+limit=22, n=14, i=4: b>g,b>i,c>d,c>e,c>f,c>i,c>j,c>k,g>h,g>j,g>k,i>l,i>m,i>n
+limit=22, n=14, i=3: e>i,f>h,g>j,j>k,j>l,j>m,j>n
+limit=22, n=15, i=4: a>e,b>g,b>j,b>m,c>h,c>j,c>n,d>f,d>j,d>k,d>l,d>o,e>i,f>n,g>o,h>k,h>l,h>m
+limit=22, n=13, i=4: d>e,d>f,d>g,d>h,f>i,g>j,g>k,g>l,g>m,h>i,h>j,h>k,h>l,h>m
+limit=22, n=14, i=4: a>f,a>i,b>e,b>j,b>k,c>i,c>m,c>n,d>g,d>i,g>h,g>j,g>k,g>m,g>n,h>l
+limit=22, n=14, i=4: b>d,b>i,b>j,b>k,b>l,b>m,b>n,c>e,c>f,c>i,c>j,c>k,e>h,f>g,f>l,f>m,f>n
+limit=22, n=14, i=4: c>e,c>f,c>n,d>g,d>h,h>i,h>j,h>k,h>n,j>m,k>l
+limit=22, n=13, i=4: b>k,c>g,c>m,d>f,d>l,d>m,e>h,e>m,g>l,h>i,h>j,h>k
+limit=22, n=13, i=4: a>j,b>i,c>h,d>h,d>i,d>k,d>l,d>m,e>f,e>j,f>g,f>k,f>l,f>m
+limit=22, n=14, i=4: c>h,c>l,c>m,c>n,d>f,d>h,d>i,d>j,d>k,d>l,e>g,e>l,g>i,g>j,g>k,g>m,g>n
+limit=22, n=14, i=4: d>f,e>g,e>n,f>n,g>h,g>i,g>j,g>k,j>m,k>l
+limit=22, n=15, i=4: a>g,b>e,b>f,b>o,c>i,c>o,d>h,d>l,d>m,d>o,h>k,i>j,i>l,i>m,k>n
+limit=22, n=13, i=4: a>f,b>g,c>f,c>i,d>e,d>g,d>i,e>h,g>l,h>m,i>j,i>k
+limit=22, n=13, i=4: a>f,b>h,b>j,b>l,c>h,c>i,c>k,d>i,d>j,d>m,e>g,e>i,e>j,g>k,g>l,g>m
+limit=22, n=14, i=4: b>j,b>m,c>h,c>k,d>e,d>f,d>g,d>j,d>n,g>k,h>i,h>m,h>n,j>l
+limit=22, n=14, i=4: a>h,a>i,b>f,b>i,c>g,c>m,d>e,d>h,d>i,d>j,d>k,d>l,d>n,f>m,f>n,g>j,g>k,g>l
+limit=22, n=12, i=4: a>i,b>e,b>g,b>h,c>f,d>g,d>h,d>j,d>k,d>l,f>i,f>j,f>k,f>l
+limit=22, n=14, i=4: a>g,a>i,b>f,b>i,c>d,c>e,c>h,h>j,j>k,j>l,j>m,j>n
+limit=22, n=15, i=4: c>f,c>g,c>i,c>l,d>e,d>h,d>i,d>l,h>j,h>k,h>m,l>o,m>n
+limit=22, n=13, i=4: d>k,d>l,d>m,e>j,e>k,e>l,e>m,f>g,f>h,f>i,f>j,f>k,f>l,f>m
+limit=22, n=15, i=4: a>c,a>h,a>k,b>d,b>h,b>o,c>g,c>i,c>o,d>e,d>f,d>j,d>k,i>n,j>l,j>m
+limit=22, n=14, i=4: a>g,b>d,b>i,b>j,b>k,b>l,c>e,c>f,c>g,c>i,e>h,e>j,f>k,f>l,i>m,i>n
+limit=22, n=15, i=4: c>k,d>g,d>k,d>l,d>m,e>f,e>h,e>k,g>i,h>j,h>l,h>m,j>n,j>o
+limit=22, n=15, i=4: b>m,c>g,c>h,d>e,d>f,d>i,d>m,h>j,h>k,i>l,i>n,n>o
+limit=22, n=15, i=4: a>g,b>h,b>k,b>m,b>n,b>o,c>d,c>e,c>f,c>i,c>j,c>k,c>l,h>l,i>o,j>m,j>n
+limit=22, n=14, i=4: d>i,d>n,e>f,e>g,e>h,e>k,e>l,e>m,h>j,h>n,i>k,i>l,i>m
+limit=22, n=14, i=4: a>i,b>g,b>l,c>e,c>f,c>i,c>m,c>n,d>h,g>m,h>j,h>k,h>l,h>n
+limit=22, n=14, i=4: a>d,b>c,b>e,b>h,b>i,c>k,c>l,c>m,d>g,d>h,d>i,e>f,e>k,e>l,e>m,f>j,g>n
+limit=22, n=14, i=4: a>d,b>h,b>m,b>n,c>e,c>h,c>i,c>j,c>k,d>i,d>j,d>k,e>f,e>g,e>m,e>n,h>l
+limit=22, n=15, i=4: d>h,e>j,f>g,f>i,f>l,f>m,f>n,i>k,j>l,j>m,j>n,k>o
+limit=22, n=14, i=4: b>h,c>n,d>f,d>g,d>k,d>l,d>m,d>n,e>i,e>n,i>j,i>k,i>l,i>m
+limit=22, n=13, i=4: b>h,b>j,b>l,b>m,c>e,c>g,c>h,c>j,c>k,d>f,d>g,d>j,e>i,f>k,f>l,f>m
+limit=22, n=13, i=4: d>g,e>k,f>h,f>i,f>j,f>k,i>l,i>m,j>l,j>m
+limit=22, n=15, i=4: e>f,e>g,f>j,f>k,g>h,g>i,g>l,k>o,l>m,l>n
+limit=22, n=14, i=4: b>g,b>j,b>m,c>e,c>f,c>j,c>n,d>h,h>i,h>m,h>n,i>k,j>l
+limit=22, n=15, i=4: c>l,c>n,d>g,d>h,e>f,e>i,e>l,g>n,h>j,i>k,k>o,l>m
+limit=22, n=14, i=4: b>k,c>j,d>f,d>j,d>k,d>l,d>m,d>n,e>g,e>j,e>k,f>i,g>h,g>l,g>m,g>n
+limit=22, n=15, i=4: e>j,e>l,e>m,f>g,f>h,f>j,h>i,h>k,h>l,h>m,j>o,k>n
+limit=22, n=14, i=4: a>f,a>h,b>d,b>e,b>h,b>i,b>j,c>g,c>k,c>l,c>m,c>n,d>n,e>k,f>l,f>m,g>i,g>j
+limit=22, n=13, i=4: b>m,c>f,c>i,c>m,d>i,d>j,d>k,e>g,e>h,e>m,g>k,h>j,i>l
+limit=22, n=15, i=4: c>l,c>m,d>e,d>f,d>g,d>h,d>l,e>k,f>j,g>i,h>m,l>n,l>o
+limit=22, n=14, i=4: b>e,b>j,b>k,c>i,c>l,d>f,d>g,d>h,d>i,f>k,g>j,h>l,i>m,i>n
+limit=22, n=15, i=4: a>c,a>d,a>e,a>f,b>g,f>h,f>i,g>j,g>k,g>l,j>o,k>n,l>m
+limit=22, n=15, i=4: d>g,e>h,e>i,e>l,e>m,f>j,f>l,f>m,j>k,l>o,m>n
+limit=22, n=14, i=4: a>k,b>f,b>g,b>h,b>k,c>d,c>e,c>i,c>l,c>m,c>n,f>n,g>m,h>l,i>j
+limit=22, n=15, i=4: b>g,c>h,d>i,d>l,d>n,d>o,e>f,e>i,e>j,e>k,f>o,g>n,h>j,h>k,h>l,i>m
+limit=22, n=13, i=4: a>i,a>m,b>e,b>f,b>l,c>g,c>k,c>l,d>h,d>i,d>l,h>j,h>k,h>m
+# hash_table_size = 694444444
+# n_solved = 1219807
+# n_unsolved = 248839
+# n_hits = 273542952
+# n_misses = 84142251
+# avg_priority = 1517.540
+# avg_cost = 8.420
+limit=22, n=15, i=4: a>d,b>e,b>g,c>f,c>h,e>j,f>i,f>m,g>l,h>k,h>m,k>n,l>o
+limit=22, n=13, i=4: e>h,f>j,f>k,f>l,f>m,g>i,g>j,g>k,i>l,i>m
+limit=22, n=14, i=4: e>n,f>i,f>k,f>l,f>m,f>n,g>h,g>j,g>k,g>n,j>l,j>m
+limit=22, n=15, i=4: e>i,f>l,f>m,g>k,g>n,h>j,h>n,n>o
+limit=22, n=13, i=4: e>g,e>h,e>j,f>i,f>j,i>k,k>l,k>m
+limit=22, n=15, i=4: e>l,f>k,g>h,g>i,g>k,g>l,h>j,i>m,m>n,m>o
+limit=22, n=15, i=4: a>i,b>e,b>f,c>g,c>m,c>n,d>h,d>i,d>o,g>o,h>j,h>m,h>n,j>k,j>l
+limit=22, n=13, i=4: b>f,b>k,c>f,c>k,d>e,e>g,e>h,e>i,e>j,j>l,k>m
+limit=22, n=15, i=4: a>j,b>i,c>h,c>n,d>f,d>j,d>k,e>g,e>l,e>m,g>k,h>m,i>l,i>n,j>o
+limit=22, n=15, i=4: a>g,b>f,b>l,b>m,c>i,d>e,d>h,g>m,h>k,i>j,i>l,j>n,k>o
+limit=22, n=15, i=4: a>k,b>g,b>n,c>i,d>h,d>m,e>f,e>k,e>l,g>j,h>n,i>l,i>m,k>o
+limit=22, n=15, i=4: a>i,b>e,b>k,b>o,c>h,c>k,c>l,c>n,d>f,d>g,d>k,d>m,f>j,g>l,h>o,i>m,i>n
+limit=22, n=13, i=4: b>k,b>m,c>g,c>k,d>i,d>l,e>f,e>h,e>k,g>j,h>l,i>m
+limit=22, n=13, i=4: b>e,b>l,c>g,c>k,d>f,d>h,f>i,f>m,g>j,g>l,h>k,h>m
+limit=22, n=14, i=4: a>e,a>m,a>n,b>g,b>k,c>f,c>k,c>l,d>h,d>k,f>j,g>i,g>l,h>m,h>n
+limit=22, n=13, i=4: c>g,d>f,d>m,e>h,g>m,h>i,h>j,j>k,j>l
+limit=22, n=13, i=4: c>h,d>g,d>h,d>i,e>j,f>i,f>j,j>k,j>l,j>m
+limit=22, n=13, i=4: a>i,b>e,b>i,c>g,c>j,c>k,d>f,d>g,d>i,f>h,f>j,f>k,h>l,h>m
+limit=22, n=14, i=4: a>i,a>j,b>e,b>i,b>j,c>i,c>j,c>l,c>m,d>f,d>n,e>n,f>g,f>h,f>l,f>m,h>k
+limit=22, n=13, i=4: a>j,b>h,b>l,c>e,c>h,c>k,d>f,d>g,d>j,f>l,g>i,g>k,j>m
+limit=22, n=15, i=4: a>f,b>e,b>g,c>d,c>h,c>m,c>n,e>j,f>k,g>m,g>n,h>i,h>l,l>o
+limit=22, n=15, i=4: c>k,d>i,d>k,d>n,d>o,e>f,e>g,e>h,e>j,e>k,e>l,e>m,i>l,i>m,j>n,j>o
+limit=22, n=13, i=4: d>h,e>h,e>j,e>m,f>g,f>j,g>i,g>m,j>k,j>l
+limit=22, n=14, i=4: b>h,b>i,c>h,c>i,d>e,e>f,e>g,e>j,h>n,i>m,j>k,j>l
+limit=22, n=15, i=4: e>n,f>m,g>l,h>n,h>o,i>j,i>k,i>o
+limit=22, n=13, i=4: a>j,b>f,b>m,c>j,c>l,d>i,d>k,e>g,e>h,e>j,g>k,h>l,i>m
+limit=22, n=15, i=4: a>g,b>h,b>m,c>f,c>l,d>l,d>n,e>i,e>j,h>k,i>m,j>n,l>o
+limit=22, n=12, i=4: a>i,b>k,c>h,d>k,d>l,e>f,e>g,e>i,e>k,g>j,h>l
+limit=22, n=15, i=4: a>h,a>i,b>e,b>j,b>k,c>j,c>m,c>n,d>f,d>g,d>l,f>n,g>m,h>k,i>l,j>o
+limit=22, n=13, i=4: b>h,c>h,d>e,d>f,e>g,e>k,f>i,f>j,f>k,i>m,j>l
+limit=22, n=12, i=4: a>j,b>j,c>i,d>g,d>h,e>h,e>j,f>g,f>i,h>k,i>l
+limit=22, n=13, i=4: a>g,b>i,b>j,b>k,c>e,c>f,c>l,d>h,d>i,e>m,f>m,g>k,h>j,h>l
+limit=22, n=14, i=4: c>l,d>g,d>l,e>h,e>j,f>j,f>k,f>l,f>n,g>k,h>i,h>n,j>m
+limit=22, n=13, i=4: a>j,b>j,c>k,d>m,e>l,f>g,f>h,f>i,h>k,i>l,i>m
+limit=22, n=14, i=4: d>m,e>k,f>k,g>i,h>j,j>l,j>m,l>n
+limit=22, n=13, i=4: a>k,b>k,c>e,c>f,c>l,d>g,g>h,g>i,g>j,g>l,k>m
+limit=22, n=14, i=4: a>f,b>e,b>g,c>j,c>k,c>l,c>n,d>h,g>n,h>i,h>j,h>k,h>l,i>m
+limit=22, n=15, i=4: a>e,b>n,c>n,d>f,d>g,d>h,d>i,d>j,d>n,j>k,j>l,j>m,m>o
+limit=22, n=13, i=4: a>f,a>g,a>k,b>g,b>j,b>l,c>f,c>i,c>j,d>e,d>i,d>j,e>h,e>k,e>l,i>m
+limit=22, n=13, i=4: c>f,c>j,d>k,e>g,e>j,e>k,g>h,g>i,k>l,k>m
+limit=22, n=13, i=4: b>i,c>i,c>j,c>k,d>e,d>f,d>i,e>j,e>k,f>g,f>h,g>m,h>l
+limit=22, n=14, i=4: a>k,b>d,b>l,b>m,c>e,c>f,d>k,e>h,e>m,e>n,f>g,f>l,f>n,g>i,h>j
+limit=22, n=13, i=4: a>g,b>i,c>h,d>m,e>m,f>j,f>m,j>k,k>l
+limit=22, n=14, i=4: a>f,b>g,b>l,c>d,c>e,c>l,d>i,e>h,f>j,g>k,l>m,l>n
+limit=22, n=14, i=4: c>m,d>l,e>n,f>j,g>i,h>k,k>l,k>m,k>n
+limit=22, n=14, i=4: d>h,d>n,e>g,e>l,e>m,e>n,f>i,f>n,h>j,i>k,i>l,i>m
+limit=22, n=13, i=4: a>l,b>i,b>k,b>l,c>d,c>e,c>f,c>g,c>h,c>k,c>m,i>j,i>m
+limit=22, n=14, i=4: c>k,d>h,d>i,d>j,d>k,e>f,e>h,e>i,e>j,e>k,f>g,h>n,i>m,j>l
+limit=22, n=12, i=4: a>h,b>f,b>g,c>i,c>j,d>e,d>h,d>i,e>j,f>k,g>k,i>l
+limit=22, n=13, i=4: c>i,d>k,d>m,e>h,e>l,e>m,f>g,f>j,f>m,i>l,j>k
+limit=22, n=15, i=4: a>h,b>h,b>j,b>k,b>l,b>m,c>d,c>e,c>f,d>g,d>k,e>l,e>m,f>i,f>j,h>o,i>n
+limit=22, n=14, i=4: d>e,d>f,d>g,e>h,e>i,f>k,f>n,g>j,g>n,j>l,k>m
+limit=22, n=13, i=4: a>i,b>j,c>j,c>m,d>f,d>g,d>i,e>h,e>l,g>l,h>k,h>m
+limit=22, n=13, i=4: a>f,a>k,b>i,b>m,c>h,d>g,d>k,e>i,e>k,e>l,g>m,h>j,h>l
+limit=22, n=14, i=4: b>n,c>f,c>n,d>g,d>n,e>h,e>k,g>k,h>i,h>j,i>m,j>l
+limit=22, n=15, i=4: c>e,c>o,d>f,d>g,d>n,e>n,f>h,f>i,f>o,g>j,g>k,j>m,k>l
+limit=22, n=13, i=4: a>f,a>i,b>e,b>h,c>f,c>g,c>i,c>j,d>g,d>h,d>i,e>j,g>m,h>k,h>l
+limit=22, n=13, i=4: f>i,g>j,g>k,h>i,h>j,h>k,j>m,k>l
+limit=22, n=14, i=4: a>d,a>g,a>h,a>k,b>c,b>g,b>h,b>j,c>e,c>k,d>f,d>j,g>i,h>l,h>m,h>n
+limit=22, n=14, i=4: b>h,c>e,c>l,c>m,c>n,d>f,d>g,d>k,f>i,g>l,g>m,h>j,h>k,h>n
+limit=22, n=15, i=4: a>d,a>e,b>c,b>f,b>j,c>g,d>j,d>k,e>h,e>k,f>i,h>o,i>l,i>m,i>n
+limit=22, n=15, i=4: a>d,a>e,b>f,b>k,b>l,c>g,c>m,c>n,d>m,e>j,f>i,f>n,g>h,g>k,g>l,j>o
+limit=22, n=15, i=4: a>g,b>e,b>f,b>m,b>n,c>h,c>o,d>i,d>j,d>k,d>l,g>j,h>k,h>l,i>m,i>n,i>o
+limit=22, n=13, i=4: a>e,b>f,b>m,c>i,d>i,e>m,f>g,f>h,i>j,i>k,i>l
+# hash_table_size = 694444444
+# n_solved = 1268125
+# n_unsolved = 256523
+# n_hits = 285587450
+# n_misses = 87902344
+# avg_priority = 1515.433
+# avg_cost = 8.466
+limit=22, n=14, i=4: a>f,b>g,b>j,b>k,c>d,c>e,c>g,c>h,c>i,d>k,e>j,f>h,f>i,g>l,g>m,g>n
+limit=22, n=14, i=4: a>h,a>m,a>n,b>f,b>h,c>g,c>l,d>e,d>i,d>j,d>k,e>m,f>l,f>n,g>i,g>j,g>k
+limit=22, n=15, i=4: c>g,d>i,e>f,e>h,g>m,h>n,i>j,i>k,i>l,n>o
+limit=22, n=15, i=4: a>g,a>h,b>e,b>f,b>l,b>o,c>i,c>m,c>n,d>j,i>o,j>k,j>l,j>m,j>n
+limit=22, n=15, i=4: a>e,b>d,b>j,b>k,b>l,b>n,c>f,c>g,c>m,e>m,f>i,f>n,g>h,g>j,g>k,g>l,i>o
+limit=22, n=15, i=4: a>c,a>g,a>i,a>j,a>k,b>d,b>e,b>g,b>l,c>h,c>l,d>f,d>i,d>n,d>o,e>j,e>k,e>n,e>o,h>m
+limit=22, n=15, i=4: a>g,b>e,b>h,b>m,b>n,c>d,c>f,c>h,c>l,c>o,e>l,f>i,f>j,g>k,g>m,g>n,g>o
+limit=22, n=15, i=4: b>e,b>g,c>f,c>m,c>n,d>h,d>o,f>o,g>l,g>m,h>i,h>j,h>k,h>n
+limit=22, n=15, i=4: a>d,a>e,a>m,a>n,b>f,b>k,b>l,c>g,c>o,f>o,g>h,g>i,g>k,g>l,g>m,g>n,i>j
+limit=22, n=15, i=4: a>d,a>m,a>n,b>e,b>m,b>o,c>f,c>m,d>j,e>k,e>l,f>g,f>h,f>i,f>n,f>o
+limit=22, n=14, i=4: a>f,a>g,a>k,a>l,a>m,b>f,b>g,b>h,b>i,b>j,b>n,c>d,c>e,d>k,d>n,e>h,e>i,e>j,e>l,e>m
+limit=22, n=13, i=4: a>m,b>f,c>d,c>e,c>h,c>i,c>j,c>k,e>g,e>m,f>h,f>i,f>j,f>k,g>l
+limit=22, n=15, i=4: a>e,a>j,a>k,a>l,a>m,b>c,b>d,b>f,b>i,e>h,e>i,f>g,f>j,f>k,f>l,f>m,h>n,h>o
+limit=22, n=14, i=3: a>f,b>h,b>k,b>l,c>i,c>j,c>k,c>l,d>e,d>g,d>i,d>j,g>n,h>m
+limit=22, n=13, i=4: b>l,b>m,c>f,c>h,c>i,d>e,d>g,d>j,d>k,f>j,f>k,g>h,g>i,g>l,g>m
+limit=22, n=15, i=4: a>g,a>i,b>d,b>e,b>i,b>j,b>n,b>o,c>f,c>i,c>k,c>l,c>m,e>h,f>n,f>o,g>j,g>k,g>l,g>m
+limit=22, n=15, i=4: a>e,a>o,b>f,b>j,b>m,b>n,c>d,c>g,c>k,c>l,d>n,e>m,f>k,f>l,g>h,g>i,g>j,g>o
+limit=22, n=15, i=4: a>e,a>f,a>h,b>d,b>g,b>h,b>i,b>j,c>f,c>g,c>h,c>k,c>l,c>n,c>o,d>k,d>l,e>i,e>j,e>n,e>o,g>m
+limit=22, n=15, i=4: a>d,a>e,a>f,b>g,b>k,b>l,b>m,b>n,b>o,c>h,c>i,c>j,g>j,h>k,i>l,i>m,i>n,i>o
+limit=22, n=14, i=4: a>c,a>d,a>g,a>m,a>n,b>e,b>f,b>g,e>h,e>i,e>j,e>n,f>h,f>i,f>j,f>m,g>k,g>l
+limit=22, n=14, i=4: a>i,a>m,b>h,b>k,b>l,c>e,c>f,c>i,c>j,d>g,d>h,g>j,g>k,g>l,g>m,i>n
+limit=22, n=13, i=4: a>f,a>m,b>d,c>e,c>f,d>g,d>h,e>i,e>m,i>j,i>k,i>l
+limit=22, n=14, i=4: a>d,a>m,b>f,b>l,b>n,c>e,c>f,d>n,e>g,e>h,e>i,e>l,e>m,i>j,i>k
+limit=22, n=15, i=4: a>c,a>d,a>i,a>j,a>o,b>e,b>f,b>k,b>l,c>l,d>h,d>k,e>m,e>n,e>o,f>g,f>i,f>j,f>m,f>n
+limit=22, n=15, i=4: a>d,a>e,a>f,a>g,a>l,a>m,b>c,b>h,b>i,b>o,g>o,h>j,h>m,i>k,i>l,k>n
+limit=22, n=15, i=4: a>d,a>e,a>j,a>o,b>g,b>i,b>k,b>l,b>m,c>f,c>h,c>n,f>i,g>j,g>n,h>k,h>l,h>m,h>o
+limit=22, n=14, i=4: a>h,b>e,b>h,b>i,c>g,c>j,c>k,c>l,d>f,d>g,d>h,d>n,e>l,e>n,f>i,f>j,f>k,g>m
+limit=22, n=14, i=4: a>d,a>m,a>n,b>e,b>l,c>f,c>g,c>k,e>j,e>k,f>m,f>n,g>h,g>i,g>l
+limit=22, n=15, i=4: a>m,a>n,a>o,b>d,b>i,b>l,b>m,c>e,c>i,c>m,d>g,d>h,e>f,e>l,e>n,e>o,i>j,i>k
+limit=22, n=15, i=4: a>h,a>k,a>l,a>n,b>d,b>e,b>i,b>j,c>f,c>h,c>m,d>n,e>g,e>m,f>i,f>j,f>k,f>l,h>o
+limit=22, n=14, i=4: a>g,a>l,b>f,b>g,b>k,c>d,c>e,c>m,c>n,e>i,e>j,e>k,f>h,f>l,f>m,f>n
+limit=22, n=14, i=4: a>g,a>l,a>m,a>n,b>f,b>g,c>d,c>e,c>j,c>k,d>n,e>h,e>l,e>m,f>i,f>j,f>k
+limit=22, n=14, i=4: a>g,a>k,a>l,a>n,b>d,b>g,b>h,b>i,b>j,c>e,c>f,c>g,d>n,e>k,e>m,f>h,f>i,f>j,f>l,f>m
+limit=22, n=14, i=4: a>i,a>j,a>k,b>e,b>i,c>d,c>i,c>l,c>m,c>n,d>h,d>j,d>k,e>f,e>g,e>l,e>m,e>n
+limit=22, n=15, i=4: a>f,a>g,a>h,a>o,b>d,b>g,b>h,b>k,b>l,b>m,c>e,c>f,c>g,c>h,c>i,c>j,d>i,d>j,e>k,e>l,e>m,e>o,f>n
+limit=22, n=15, i=4: a>e,a>g,a>n,a>o,b>c,b>d,b>f,b>k,b>l,b>m,d>j,e>m,f>n,f>o,g>h,g>i,g>k,g>l
+limit=22, n=15, i=4: b>d,b>e,b>m,b>n,b>o,c>f,c>g,c>l,e>k,e>l,f>n,f>o,g>h,g>i,g>j,g>m
+limit=22, n=14, i=4: a>d,a>f,a>g,b>e,b>h,c>f,c>g,c>h,c>i,e>i,g>m,g>n,h>j,h>k,h>l
+limit=22, n=14, i=4: a>e,a>h,a>l,b>d,b>g,b>i,b>j,b>k,c>f,c>g,c>h,f>i,f>j,f>k,f>l,h>m,h>n
+limit=22, n=15, i=4: a>f,a>i,a>j,a>m,a>n,b>f,b>h,b>j,b>k,b>l,c>d,c>e,c>j,d>g,d>h,d>i,e>k,e>l,e>m,e>n,g>o
+limit=22, n=15, i=4: a>d,a>l,a>m,a>n,a>o,b>c,b>e,c>h,c>l,d>i,e>f,e>g,e>m,e>n,e>o,i>j,i>k
+limit=22, n=15, i=4: b>d,b>e,b>g,b>j,b>k,b>l,b>m,b>o,c>f,c>h,c>n,f>o,g>n,h>i,h>j,h>k,h>l,h>m
+limit=22, n=13, i=4: a>f,b>g,b>h,c>e,c>g,c>i,d>h,d>i,h>m,i>j,i>k,i>l
+limit=22, n=15, i=4: a>g,b>j,b>k,c>h,c>i,c>m,d>e,d>f,d>l,d>m,l>n,n>o
+limit=22, n=14, i=4: a>j,b>g,b>m,c>e,c>h,c>j,c>l,d>f,d>h,d>j,d>k,e>m,f>i,g>k,g>l,i>n
+limit=22, n=15, i=4: b>d,b>j,b>k,b>l,c>e,c>f,c>j,c>k,c>l,d>o,e>m,e>n,f>g,f>h,f>i
+limit=22, n=15, i=4: a>c,a>f,a>k,b>d,b>e,b>n,b>o,d>i,d>k,e>j,f>g,f>h,f>n,f>o,j>l,j>m
+limit=22, n=15, i=4: b>g,b>o,c>f,c>j,c>k,c>l,c>n,d>e,d>h,d>m,e>n,f>o,g>i,g>m,h>j,h>k,h>l
+limit=22, n=15, i=4: b>g,c>e,c>k,c>l,c>m,c>o,d>f,d>h,d>n,e>i,f>o,g>j,g>n,h>k,h>l,h>m
+limit=22, n=15, i=4: a>g,a>m,a>n,b>f,b>i,b>j,b>k,b>o,c>d,c>e,c>h,c>l,e>m,f>n,g>l,g>o,h>i,h>j,h>k
+limit=22, n=14, i=4: b>f,c>g,c>m,c>n,d>e,d>h,d>l,e>k,f>l,g>i,g>j,h>m,h>n
+limit=22, n=14, i=4: a>e,b>g,b>h,b>i,b>l,c>d,c>f,c>g,c>m,c>n,d>j,d>l,e>m,e>n,f>h,f>i,f>j,g>k
+limit=22, n=14, i=4: b>e,b>h,b>j,c>f,c>k,c>l,c>m,d>g,d>i,d>n,g>m,h>n,i>j,i>k,i>l
+limit=22, n=13, i=4: a>h,a>i,a>j,a>k,a>l,b>d,b>e,b>g,b>h,c>f,c>g,c>h,d>m,e>l,e>m,f>i,f>j,f>k
+limit=22, n=13, i=4: a>h,a>k,a>l,b>d,b>e,c>f,c>g,c>h,e>j,f>i,f>m,g>k,g>l,g>m
+limit=22, n=14, i=4: a>e,b>i,c>j,d>f,d>i,d>j,d>k,e>k,f>g,f>h,i>l,j>m,j>n
+limit=22, n=13, i=4: b>h,b>m,c>h,c>i,d>f,d>j,d>k,e>g,e>i,g>j,g>k,g>m,i>l
+limit=22, n=13, i=4: a>e,a>m,b>g,b>l,b>m,c>h,c>i,c>j,c>k,c>m,d>f,d>g,f>h,f>i,f>j,f>k,f>l
+limit=22, n=13, i=4: a>h,b>f,b>j,b>k,c>e,c>h,c>i,d>g,d>i,g>j,g>k,i>l,i>m
+limit=22, n=13, i=4: b>l,c>e,c>i,c>j,c>k,d>f,d>g,d>m,e>m,f>h,f>l,g>i,g>j,g>k
+limit=22, n=14, i=4: a>i,b>e,b>k,c>g,c>i,c>j,c>m,d>f,d>g,d>l,e>l,e>m,f>h,f>j,f>k,i>n
+limit=22, n=13, i=4: a>i,a>l,b>i,b>j,b>k,c>e,c>h,c>i,d>f,d>h,e>g,f>j,f>k,f>l,h>m
+limit=22, n=14, i=4: a>f,a>k,a>l,a>m,b>f,b>h,b>i,b>j,c>d,c>e,c>h,d>g,d>i,d>k,e>j,e>l,e>m,h>n
+limit=22, n=14, i=4: a>f,a>i,b>g,b>i,c>e,c>h,d>g,d>h,d>i,d>j,d>k,e>j,f>k,g>n,h>l,h>m
+# hash_table_size = 694444444
+# n_solved = 1325635
+# n_unsolved = 260006
+# n_hits = 301240507
+# n_misses = 90601836
+# avg_priority = 1501.416
+# avg_cost = 8.466
+limit=22, n=14, i=4: a>i,a>l,a>n,b>h,b>i,c>f,c>g,c>l,d>e,d>j,d>k,d>l,d>m,f>k,g>j,h>m,h>n
+limit=22, n=15, i=4: c>e,c>h,c>n,c>o,d>f,d>g,d>k,d>l,f>j,g>n,g>o,h>i,h>k,h>l,j>m
+limit=22, n=14, i=4: a>i,b>i,b>j,b>k,b>l,b>m,b>n,c>d,c>e,c>f,c>j,e>g,e>h,e>k,f>l,f>m,f>n
+limit=22, n=15, i=4: a>g,b>e,c>g,c>j,c>k,c>l,d>f,d>j,e>i,f>h,f>k,f>l,j>m,j>n,j>o
+limit=22, n=14, i=4: a>g,a>h,b>d,b>k,b>l,b>m,b>n,c>e,c>f,c>h,c>j,e>i,f>k,f>l,g>j,g>m,g>n
+limit=22, n=14, i=4: a>e,b>g,b>j,c>h,c>j,c>l,c>m,c>n,d>f,d>h,d>j,d>k,f>m,f>n,g>i,g>k,g>l
+limit=22, n=14, i=4: a>g,a>k,a>l,a>m,b>f,b>g,b>m,c>d,c>e,c>m,c>n,d>j,d>l,e>i,e>k,f>h,f>n
+limit=22, n=14, i=4: a>d,a>m,a>n,b>f,b>g,b>m,b>n,c>f,c>g,c>l,c>m,c>n,d>e,d>l,f>j,f>k,g>h,g>i
+limit=22, n=15, i=4: b>h,c>e,c>f,c>g,c>n,c>o,d>i,d>j,d>k,i>o,j>n,k>l,k>m
+limit=22, n=14, i=4: a>g,a>n,b>f,b>l,b>m,c>d,c>e,c>g,c>i,c>j,c>k,d>l,e>m,e>n,f>h,f>i,f>j,f>k
+limit=22, n=15, i=4: c>o,d>g,d>j,d>k,d>l,d>o,e>f,e>h,e>m,e>n,e>o,f>j,g>m,g>n,h>i,h>k,h>l
+limit=22, n=14, i=4: a>e,b>g,b>h,b>i,b>j,b>k,b>l,c>d,c>f,c>m,c>n,d>j,d>k,e>l,e>m,e>n,f>g,f>h,f>i
+limit=22, n=15, i=4: a>d,a>n,b>f,b>h,b>l,b>m,c>e,c>h,c>i,c>j,c>k,d>g,e>l,e>m,e>n,f>i,f>j,f>k,h>o
+limit=22, n=14, i=4: a>e,a>f,b>d,b>f,b>h,c>h,c>i,c>j,c>k,c>l,c>m,d>g,d>i,d>j,e>k,e>l,e>m,h>n
+limit=22, n=15, i=4: a>d,a>h,a>i,a>j,a>k,a>l,a>m,b>c,b>e,b>h,b>i,b>n,b>o,c>f,c>j,d>g,d>n,d>o,e>k,e>l,e>m
+limit=22, n=15, i=4: a>e,b>i,b>j,b>k,b>o,c>d,c>f,c>i,c>l,c>m,d>h,e>l,e>m,e>o,f>g,f>j,f>k,i>n
+limit=22, n=14, i=3: c>h,c>i,d>e,d>f,d>g,d>j,i>n,j>k,j>l,j>m
+limit=22, n=15, i=4: b>l,c>j,c>k,c>l,c>m,c>n,c>o,d>e,d>f,d>g,d>j,d>k,d>l,e>i,f>o,g>h,g>m,g>n
+limit=22, n=15, i=4: a>d,a>j,a>m,b>f,b>j,b>l,c>e,c>g,e>i,f>k,g>h,g>l,g>m,j>n,k>o
+limit=22, n=14, i=4: a>c,a>d,a>l,b>e,b>g,b>h,c>h,c>m,c>n,d>g,d>m,d>n,e>f,e>l,f>i,f>j,f>k
+limit=22, n=13, i=4: a>e,a>f,b>g,c>j,c>k,c>l,d>h,d>m,g>j,g>m,h>i,h>k,h>l
+limit=22, n=14, i=4: a>l,a>m,b>j,b>k,c>e,c>f,d>g,d>j,f>i,f>m,g>h,g>k,g>l,j>n
+limit=22, n=14, i=4: b>h,b>l,b>m,b>n,c>e,c>f,c>h,c>k,d>g,d>h,d>i,d>j,f>i,f>j,f>n,g>k,g>l,g>m
+limit=22, n=13, i=4: b>f,b>m,c>d,c>e,d>m,e>g,e>h,e>i,f>j,f>k,f>l
+limit=22, n=14, i=4: d>i,d>n,e>f,e>g,e>h,e>m,h>l,h>n,i>j,i>k,i>m
+limit=22, n=13, i=4: b>g,c>g,c>j,c>k,d>e,d>f,d>j,e>i,f>h,f>k,j>l,j>m
+limit=22, n=14, i=4: c>f,c>g,c>j,c>n,d>h,d>k,d>l,d>m,e>i,e>j,h>n,i>k,i>l,i>m
+limit=22, n=15, i=4: a>d,a>g,a>o,b>f,b>i,b>k,b>l,c>e,c>h,c>i,c>m,c>n,e>o,f>n,g>m,h>j,h>k,h>l
+limit=22, n=15, i=4: b>f,c>k,c>n,d>g,d>l,d>n,e>h,e>k,e>m,e>n,g>m,h>i,h>j,h>l,k>o
+limit=22, n=15, i=4: d>k,e>f,e>g,e>h,h>i,h>j,h>k,i>o,j>l,j>m,j>n
+limit=22, n=14, i=4: c>k,c>l,c>m,d>e,d>f,d>g,d>k,f>h,f>i,g>j,g>l,g>m,k>n
+limit=22, n=12, i=4: a>j,b>e,c>g,c>h,c>i,c>k,d>f,d>g,d>h,e>k,f>i,f>j,h>l
+limit=22, n=13, i=4: a>e,b>g,c>h,c>i,c>m,d>f,d>h,d>i,f>j,f>k,g>l,g>m
+limit=22, n=15, i=4: a>d,a>g,a>l,b>e,b>g,b>l,c>f,c>l,c>m,e>h,e>i,e>m,f>j,f>k,j>o,k>n
+limit=22, n=14, i=4: c>n,d>n,e>i,f>g,f>h,f>j,f>n,j>k,j>l,j>m
+limit=22, n=13, i=4: a>f,b>g,b>h,b>j,b>k,b>l,b>m,c>d,c>e,c>g,c>h,e>i,e>m,f>j,f>k,f>l
+limit=22, n=13, i=4: c>e,c>h,d>f,d>g,d>k,d>l,f>m,g>i,g>m,h>j,h>k,h>l
+limit=22, n=15, i=4: d>h,d>m,e>f,e>g,e>i,e>m,e>o,h>l,h>o,i>j,i>k,m>n
+limit=22, n=11, i=3: d>e,d>f,d>g,d>h,d>i,d>j,d>k
+limit=22, n=14, i=4: b>l,c>e,d>f,d>m,e>j,e>l,e>m,f>g,f>h,f>i,f>k,k>n
+limit=22, n=14, i=4: a>j,b>g,b>h,c>i,c>j,d>e,d>f,d>k,d>l,d>m,d>n,g>n,h>m,i>k,i>l
+limit=22, n=14, i=4: a>e,a>i,b>f,b>h,b>k,b>l,c>d,c>g,c>i,c>m,c>n,f>j,g>k,g>l,h>m,h>n
+limit=22, n=15, i=4: c>i,d>f,d>g,e>h,e>j,j>k,j>l,k>m,l>n,l>o
+limit=22, n=15, i=4: c>k,d>f,d>g,e>h,e>i,e>j,e>k,h>m,i>l,j>n,j>o
+limit=22, n=14, i=4: a>e,b>m,c>m,d>f,d>g,d>h,f>n,g>k,g>l,h>i,h>j,h>n
+limit=22, n=14, i=4: c>j,d>f,d>g,d>j,d>l,d>m,e>h,e>i,h>k,i>l,i>m,k>n
+limit=22, n=14, i=4: a>m,b>k,b>m,c>e,c>k,c>l,c>m,d>f,d>g,d>k,f>i,f>l,g>h,g>j,j>n
+limit=22, n=13, i=4: c>i,c>j,d>e,d>f,d>i,d>j,f>g,f>h,j>k,j>l,j>m
+limit=22, n=14, i=4: a>i,a>n,b>f,b>i,c>g,c>i,d>e,d>j,d>k,d>l,e>h,f>j,f>n,g>k,g>l,h>m
+limit=22, n=13, i=4: b>h,b>j,b>k,c>f,c>h,d>e,d>g,d>h,d>i,e>l,e>m,f>i,f>k,g>j,g>l,g>m
+limit=22, n=14, i=4: a>h,a>k,b>e,b>k,c>g,c>h,c>l,d>f,d>k,d>m,d>n,e>j,f>i,f>l,g>m,g>n
+limit=22, n=14, i=4: a>e,a>h,a>k,b>g,b>i,c>f,c>i,c>n,d>h,d>i,d>j,d>l,d>m,e>n,f>j,f>k,g>l,g>m
+limit=22, n=14, i=4: a>h,a>j,b>e,b>j,b>m,b>n,c>g,c>h,d>f,d>j,d>k,d>l,f>i,f>m,g>k,g>l,g>n
+limit=22, n=14, i=4: a>g,b>h,b>k,b>m,c>h,c>k,c>l,c>n,d>e,d>f,d>k,e>m,f>i,f>l,g>j,g>n
+limit=22, n=15, i=4: b>h,b>o,c>g,c>j,c>m,c>n,d>e,d>f,d>k,d>l,e>o,f>i,f>j,g>k,g>l,h>m,h>n
+limit=22, n=14, i=4: a>h,a>i,b>e,b>h,c>g,c>j,c>m,d>f,d>k,d>l,e>i,f>j,f>m,g>k,g>l,h>n
+limit=22, n=14, i=4: a>d,a>e,a>i,a>k,b>f,b>h,c>g,c>i,c>l,c>m,f>k,g>j,h>l,h>m,j>n
+limit=22, n=13, i=4: a>j,b>j,c>f,d>l,d>m,e>g,e>h,f>l,g>k,h>i,h>m
+limit=22, n=13, i=4: a>j,a>m,b>i,b>k,b>l,c>g,d>e,d>f,d>h,e>k,f>i,f>j,g>h,g>l,g>m
+limit=22, n=14, i=4: a>e,a>j,b>h,b>j,c>f,c>g,d>j,d>k,d>l,d>m,d>n,f>i,g>k,g>l,h>m,h>n
+limit=22, n=14, i=4: a>h,b>i,c>g,d>h,d>l,d>m,e>f,e>i,e>j,e>k,f>l,f>m,g>j,g>k,i>n
+limit=22, n=14, i=4: a>j,b>f,b>i,b>j,c>h,c>l,d>i,d>j,d>m,d>n,e>g,e>i,e>k,g>l,g>m,h>k,h>n
+limit=22, n=14, i=4: a>l,b>f,b>l,c>i,c>n,d>h,e>g,e>i,e>l,e>m,g>j,g>n,h>k,h>m
+limit=22, n=14, i=4: a>e,a>h,a>k,b>g,c>h,c>j,d>f,d>j,d>l,d>m,f>i,f>k,g>l,g>m,j>n
+# hash_table_size = 694444444
+# n_solved = 1378557
+# n_unsolved = 267270
+# n_hits = 315481102
+# n_misses = 93615367
+# avg_priority = 1491.818
+# avg_cost = 8.474
+limit=22, n=13, i=4: c>i,d>k,d>l,e>i,e>k,f>g,f>h,g>l,h>j,k>m
+limit=22, n=15, i=4: d>e,d>f,d>g,e>h,f>i,g>j,i>o,j>k,j>l,j>m,j>n
+limit=22, n=15, i=4: a>j,a>l,b>f,b>k,b>n,b>o,c>d,c>e,c>j,d>g,d>k,e>n,e>o,f>h,f>i,f>l,j>m
+limit=22, n=15, i=4: b>f,b>j,b>k,b>n,b>o,c>d,c>e,c>g,c>h,c>j,c>m,f>m,g>i,g>k,h>n,h>o,j>l
+limit=22, n=13, i=4: a>i,a>m,b>i,b>k,b>l,c>e,c>h,c>i,c>j,d>f,d>g,d>h,f>j,f>l,g>k,g>m
+limit=22, n=14, i=4: a>e,b>h,b>i,b>j,b>k,b>m,b>n,c>d,c>f,c>g,c>h,e>i,f>m,f>n,g>j,g>k,h>l
+limit=22, n=14, i=4: c>g,c>l,c>m,d>e,d>f,d>g,d>l,e>k,e>m,f>h,f>i,f>j,l>n
+limit=22, n=14, i=4: d>l,e>f,e>g,e>h,e>i,e>l,i>j,i>k,l>m,l>n
+limit=22, n=14, i=4: b>f,b>l,c>e,c>m,c>n,d>g,d>h,f>k,g>j,g>n,h>i,h>l,h>m
+limit=22, n=15, i=4: b>e,b>l,b>m,b>n,b>o,c>h,c>i,d>f,d>g,d>j,d>k,f>o,g>n,h>j,i>k,i>l,i>m
+limit=22, n=15, i=4: a>h,a>m,b>e,b>f,b>n,c>i,d>g,d>l,d>o,f>k,g>n,h>o,i>j,i>l,i>m
+limit=22, n=14, i=4: a>i,b>g,c>i,c>l,c>m,d>h,d>n,e>f,e>i,e>j,e>k,f>n,g>l,h>j,h>k,h>m
+limit=22, n=15, i=4: b>f,b>j,c>i,d>e,d>i,e>j,f>g,f>h,h>o,i>k,i>l,i>m,i>n
+limit=22, n=14, i=4: b>j,b>k,b>l,b>m,c>e,c>f,c>i,d>g,d>n,e>h,f>n,g>i,g>j,g>k,g>l,g>m
+limit=22, n=13, i=4: a>g,a>i,b>i,b>m,c>e,c>g,c>j,c>k,c>l,d>f,d>i,e>h,f>j,f>k,f>l,f>m
+limit=22, n=14, i=4: a>n,b>f,b>l,c>h,c>k,d>h,d>i,d>j,e>g,f>n,g>i,g>j,g>k,g>l,h>m
+limit=22, n=14, i=4: a>i,a>m,b>e,b>h,b>n,c>h,c>i,c>j,c>k,c>l,d>f,d>h,d>i,f>g,f>j,f>k,f>l,f>m,f>n
+limit=22, n=14, i=4: a>g,b>m,c>j,c>l,d>f,d>j,d>k,e>h,h>i,h>k,h>l,h>m,j>n
+limit=22, n=14, i=4: b>e,b>k,b>l,b>m,b>n,c>d,c>f,d>j,e>h,e>i,f>g,f>j,f>k,f>l,f>m,f>n
+limit=22, n=14, i=4: a>f,a>h,b>e,b>i,b>j,b>k,c>h,c>l,c>m,c>n,d>g,f>k,g>i,g>j,g>l,g>m,g>n
+limit=22, n=15, i=4: a>f,a>g,b>j,b>o,c>h,d>e,d>j,d>k,d>l,d>m,h>i,h>k,h>l,h>m,h>o,j>n
+limit=22, n=14, i=4: b>g,c>e,c>g,c>m,d>f,e>l,f>h,f>i,f>j,f>k,f>m,l>n
+limit=22, n=14, i=4: a>e,a>n,b>d,b>j,b>k,b>l,b>m,c>f,c>g,f>l,f>m,g>h,g>i,g>j,g>k,g>n
+limit=22, n=14, i=4: a>h,b>e,b>g,b>h,c>g,c>i,c>j,c>k,c>l,c>m,d>f,d>g,d>h,d>n,e>n,f>i,f>j,f>k,f>l,f>m
+limit=22, n=14, i=4: a>e,a>m,b>d,b>i,b>j,b>k,b>l,c>f,c>g,f>h,f>m,f>n,g>i,g>j,g>k,g>l,g>n
+limit=22, n=14, i=4: a>n,b>g,b>n,c>f,c>n,d>e,d>g,d>h,d>i,d>j,d>k,d>l,f>h,f>i,f>j,f>k,f>l,g>m
+limit=22, n=14, i=4: a>e,b>d,b>j,b>l,b>m,b>n,c>f,c>k,e>i,e>j,e>k,f>g,f>h,f>l,f>m,f>n
+limit=22, n=14, i=4: b>g,b>m,b>n,c>f,c>g,c>h,c>i,c>j,d>e,d>f,d>g,e>h,e>i,e>j,e>m,e>n,f>k,f>l
+limit=22, n=15, i=4: a>e,a>m,a>n,b>d,b>f,b>j,b>k,c>g,c>l,d>o,e>l,f>i,f>o,g>h,g>j,g>k,g>m,g>n
+limit=22, n=15, i=4: a>e,a>g,a>m,a>n,b>d,b>i,b>j,b>k,b>l,c>f,c>g,c>o,d>h,e>o,f>i,f>j,f>k,f>l,f>m,f>n
+limit=22, n=13, i=4: a>h,a>m,b>g,b>l,c>g,c>h,c>i,c>j,c>k,d>e,d>f,f>i,f>j,f>k,f>l,f>m
+limit=22, n=14, i=4: a>l,b>e,b>l,c>f,c>n,d>g,d>l,d>m,f>m,g>h,g>i,g>j,g>k,g>n
+limit=22, n=14, i=4: a>f,b>h,b>n,c>h,c>m,d>e,d>g,f>l,g>i,g>j,g>k,g>m,g>n
+limit=22, n=13, i=4: a>g,a>j,b>e,b>k,b>l,b>m,c>d,c>f,c>g,f>h,f>i,f>j,f>k,f>l,f>m
+limit=22, n=13, i=4: a>l,b>l,b>m,c>e,c>h,c>i,c>j,c>k,d>f,d>l,f>g,f>h,f>i,f>j,f>k,f>m
+limit=22, n=13, i=4: a>f,b>j,b>k,b>l,b>m,c>g,c>h,c>i,c>j,d>e,d>f,d>j,e>g,e>h,e>i,e>k,e>l,e>m
+limit=22, n=14, i=4: c>f,c>m,c>n,d>j,d>k,d>l,d>m,e>g,e>m,g>h,g>i,g>j,g>k,g>l,g>n
+limit=22, n=14, i=4: a>d,a>h,b>h,b>j,b>k,b>l,b>m,c>e,c>f,e>i,e>n,f>g,f>j,f>k,f>l,f>m,f>n
+limit=22, n=15, i=4: c>g,d>h,d>o,e>f,e>i,e>n,g>n,h>j,i>k,i>l,i>m,i>o
+limit=22, n=14, i=4: a>g,a>l,b>g,b>m,c>e,c>i,c>j,c>k,d>f,e>l,f>h,f>i,f>j,f>k,f>m,h>n
+limit=22, n=14, i=4: b>g,b>h,b>l,c>e,c>h,c>i,c>j,d>f,d>g,d>n,e>n,f>i,f>j,f>l,g>k,h>m
+limit=22, n=14, i=4: a>i,a>l,b>g,b>k,b>m,c>g,c>i,c>j,d>e,d>f,e>m,f>h,f>j,f>k,f>l,i>n
+limit=22, n=15, i=4: a>i,b>d,b>k,b>l,b>m,c>e,c>f,c>i,d>h,e>j,f>g,f>k,f>l,f>m,i>n,j>o
+limit=22, n=14, i=4: a>g,a>l,a>m,b>d,b>g,b>j,b>k,c>e,c>f,d>i,e>h,e>l,e>n,f>j,f>k,f>m,f>n
+limit=22, n=14, i=4: a>h,a>i,a>n,b>e,b>h,b>i,b>j,c>h,c>i,c>k,c>l,c>m,d>f,d>g,f>k,g>j,g>l,g>m,g>n
+limit=22, n=14, i=4: a>g,b>f,c>n,d>i,d>k,d>l,d>m,e>h,e>i,h>k,h>l,h>m,h>n,i>j
+limit=22, n=15, i=4: a>e,a>j,a>l,b>d,b>j,b>k,b>n,c>f,c>k,e>i,f>g,f>h,f>l,f>n,j>m,k>o
+limit=22, n=14, i=4: a>c,a>d,a>l,a>m,a>n,b>e,b>f,d>k,e>l,e>m,f>g,f>h,f>i,f>j,f>n
+limit=22, n=14, i=4: a>n,b>f,b>j,b>k,c>e,c>i,c>l,c>m,d>g,d>h,g>l,g>m,h>i,h>j,h>k,h>n
+limit=22, n=15, i=4: b>h,c>j,d>e,d>f,d>g,d>h,e>n,f>j,f>k,f>l,f>m,g>i,g>k,g>l,g>m,g>n,i>o
+limit=22, n=14, i=4: b>h,b>l,c>f,c>h,c>m,c>n,d>e,d>g,e>k,f>l,g>i,g>j,g>m,g>n
+limit=22, n=14, i=4: a>n,b>e,b>m,c>f,c>h,c>k,c>l,d>g,d>h,e>j,f>m,g>i,g>k,g>l,g>n
+limit=22, n=13, i=4: a>i,b>h,b>i,c>f,c>j,c>k,c>l,d>e,d>f,d>h,d>i,e>g,e>j,e>k,e>l,h>m
+limit=22, n=15, i=4: a>h,a>o,b>h,b>m,b>n,c>f,c>i,c>j,c>k,d>e,d>g,f>o,g>i,g>j,g>k,g>m,g>n,h>l
+limit=22, n=13, i=4: a>g,a>h,b>i,c>i,c>m,d>h,d>j,d>k,e>f,e>g,f>j,f>k,f>m,i>l
+limit=22, n=13, i=4: a>m,b>f,c>h,c>i,c>j,c>k,c>l,d>e,d>g,e>l,f>m,g>h,g>i,g>j,g>k
+limit=22, n=14, i=4: b>j,c>h,c>m,d>f,d>h,d>k,d>l,e>g,e>j,g>i,g>k,g>l,g>m,j>n
+limit=22, n=15, i=4: b>e,b>f,b>h,b>i,c>d,c>g,c>i,c>k,c>l,c>m,c>n,g>j,h>k,h>l,h>m,h>n,j>o
+limit=22, n=15, i=4: c>f,c>m,c>n,d>g,d>l,e>h,e>o,f>i,g>m,g>o,h>j,h>k,h>l,h>n
+limit=22, n=15, i=4: a>g,b>f,b>h,b>n,c>e,c>h,d>f,d>g,d>h,d>i,d>j,d>k,d>l,e>i,e>j,e>k,e>l,e>n,f>o,g>m
+limit=22, n=15, i=4: b>g,b>i,b>m,b>n,c>f,c>i,c>j,c>k,c>l,c>o,d>e,d>h,d>i,g>o,h>j,h>k,h>l,h>m,h>n
+limit=22, n=12, i=4: a>g,a>i,b>k,b>l,c>e,c>f,c>j,d>h,d>i,h>j,h>k,h>l
+limit=22, n=14, i=3: b>m,c>n,d>e,d>f,d>g,d>h,d>m,d>n,h>i,h>j,h>k,h>l
+limit=22, n=14, i=4: b>f,c>i,c>m,d>g,d>h,e>h,e>i,e>j,e>k,e>l,f>m,g>j,g>k,g>l,i>n
+# hash_table_size = 694444444
+# n_solved = 1435969
+# n_unsolved = 270666
+# n_hits = 330696674
+# n_misses = 96265691
+# avg_priority = 1487.148
+# avg_cost = 8.486
+limit=22, n=13, i=4: a>e,a>i,b>g,b>h,b>i,c>i,c>j,c>k,c>l,d>f,d>g,d>h,f>j,f>k,f>l,h>m
+limit=22, n=14, i=4: a>e,a>n,b>i,b>m,c>i,c>l,c>n,d>f,d>n,f>g,f>h,f>l,f>m,i>j,i>k
+limit=22, n=15, i=4: a>l,b>e,b>f,c>i,c>l,c>n,c>o,d>g,d>i,d>l,g>h,g>j,g>n,g>o,i>m,j>k
+limit=22, n=14, i=4: a>d,a>e,a>n,b>g,b>h,b>j,b>k,b>l,b>m,c>f,c>g,c>h,e>i,f>j,f>k,f>l,f>m,f>n
+limit=22, n=15, i=4: d>o,e>n,f>g,f>h,g>i,h>j,h>k,h>l,h>m,h>n,h>o
+limit=22, n=13, i=4: b>j,c>i,c>m,d>i,d>j,d>l,e>h,e>j,f>g,f>i,f>k,g>l,h>k,h>m
+limit=22, n=15, i=4: b>i,c>g,c>m,d>f,d>h,e>i,e>j,e>k,e>l,e>n,f>n,g>l,h>j,h>k,h>m,i>o
+limit=22, n=13, i=4: a>l,b>l,c>f,c>h,c>m,d>g,d>m,e>h,e>i,e>j,e>k,e>l,e>m,f>i,g>j,g>k
+limit=22, n=11, i=4: a>i,b>i,c>h,c>j,c>k,d>e,d>f,d>g,d>i,f>h,g>j,g>k
+limit=22, n=14, i=4: a>f,a>g,b>i,c>j,d>j,d>m,d>n,e>h,e>i,h>m,h>n,i>k,j>l
+limit=22, n=14, i=4: a>j,b>f,b>l,c>i,c>m,d>i,d>j,d>k,e>g,e>j,f>m,g>h,g>k,g>l,i>n
+limit=22, n=13, i=4: a>g,b>i,c>g,c>i,c>j,d>h,d>i,e>f,e>h,f>j,h>k,h>l,h>m
+limit=22, n=14, i=4: a>h,b>h,b>j,b>k,c>d,c>e,c>f,d>g,d>j,e>k,e>l,f>i,f>l,h>m,i>n
+limit=22, n=14, i=4: b>d,b>e,b>f,c>g,c>h,g>i,h>j,j>k,j>l,j>m,j>n
+limit=22, n=14, i=4: a>g,b>g,b>i,b>j,b>n,c>e,c>i,c>j,c>k,c>l,d>f,d>i,d>j,f>h,f>k,f>l,f>n,h>m
+limit=22, n=13, i=4: e>k,e>m,f>k,f>l,f>m,g>h,g>i,g>j,g>l,g>m
+limit=22, n=15, i=4: a>d,a>j,b>e,b>k,b>l,b>m,c>f,c>o,e>o,f>g,f>h,f>i,f>j,f>k,f>l,f>m,i>n
+limit=22, n=14, i=4: a>e,b>d,c>f,c>g,c>h,c>i,g>j,h>k,h>l,h>m,h>n,i>k,i>l,i>m,i>n
+limit=22, n=13, i=4: c>l,d>l,e>f,e>g,e>h,e>i,e>l,g>m,h>m,i>j,i>k
+limit=22, n=14, i=4: c>j,d>j,d>m,d>n,e>g,e>k,e>l,f>h,f>i,g>m,h>n,i>k,i>l
+limit=22, n=14, i=4: a>i,b>i,c>f,d>g,e>h,e>l,e>m,e>n,f>n,g>l,g>m,h>j,h>k
+limit=22, n=15, i=4: a>h,b>i,b>m,c>e,c>i,c>k,d>f,d>g,d>l,f>k,g>j,h>l,h>m,i>n,j>o
+limit=22, n=13, i=4: a>i,b>f,b>g,c>i,c>j,c>k,d>j,d>l,d>m,e>h,e>j,g>m,h>k,h>l
+limit=22, n=14, i=4: a>j,a>l,a>m,b>g,b>j,c>e,c>i,c>k,d>f,d>i,d>j,e>h,f>l,g>k,g>m,i>n
+limit=22, n=13, i=4: a>i,a>j,b>g,b>h,c>e,c>f,c>j,d>i,d>j,d>k,d>l,d>m,f>m,g>l,h>k
+limit=22, n=15, i=4: a>f,b>d,b>e,b>l,c>g,c>h,c>n,c>o,e>o,f>n,g>k,h>i,h>j,h>l,k>m
+limit=22, n=14, i=4: a>e,a>i,a>m,a>n,b>d,b>h,b>i,c>f,c>g,c>l,f>k,g>j,g>m,h>l,h>n
+limit=22, n=14, i=4: a>e,a>k,b>j,b>k,c>f,c>g,c>k,d>g,d>j,d>n,e>n,f>h,f>i,j>l,j>m
+limit=22, n=14, i=4: a>k,b>e,b>h,c>g,c>k,c>n,d>f,d>h,d>k,d>l,d>m,f>i,f>n,g>j,g>l,g>m
+limit=22, n=14, i=4: a>g,b>j,c>h,c>l,c>n,d>f,d>j,d>l,d>m,e>i,e>l,h>k,i>m,i>n
+limit=22, n=14, i=4: a>g,b>f,b>l,b>m,c>k,c>l,d>e,d>h,d>k,d>l,g>j,h>i,h>m,k>n
+limit=22, n=14, i=4: a>f,a>l,b>i,b>l,c>g,c>h,c>l,d>e,d>i,d>j,d>k,g>k,h>j,i>m,i>n
+limit=22, n=15, i=4: f>g,f>h,f>i,g>j,h>k,i>l,k>o,l>m,l>n
+limit=22, n=15, i=4: a>f,a>m,b>d,b>e,b>l,c>g,e>i,e>m,f>k,g>h,g>j,g>l,j>n,k>o
+limit=22, n=14, i=4: f>l,g>k,g>l,g>m,h>i,h>j,h>k,h>m,m>n
+limit=22, n=13, i=4: e>g,e>h,e>i,e>j,f>g,f>h,f>i,f>j,i>m,j>k,j>l
+limit=22, n=13, i=4: a>c,a>i,b>d,b>e,b>f,c>g,d>h,d>j,e>i,e>k,e>l,f>j,f>k,f>l,h>m
+limit=22, n=13, i=4: b>f,b>j,c>e,c>g,c>j,c>k,d>h,d>i,d>l,g>l,h>m,i>k,i>m
+limit=22, n=13, i=4: f>l,g>h,g>i,g>j,j>k,j>l,k>m
+limit=22, n=15, i=4: c>o,d>e,d>f,d>g,d>h,d>i,g>j,h>l,i>k,i>l,i>o,k>m,k>n
+limit=22, n=15, i=4: e>l,f>m,g>h,g>i,g>l,g>m,h>k,i>j,m>n,m>o
+limit=22, n=15, i=4: e>g,e>i,f>h,f>i,f>n,f>o,g>n,g>o,h>j,h>k,j>m,k>l
+limit=22, n=14, i=4: a>f,b>e,b>i,c>g,d>i,d>j,d>k,d>l,g>h,g>j,g>k,g>l,i>m,i>n
+limit=22, n=14, i=4: c>e,c>n,d>f,e>l,f>g,f>h,f>i,f>j,f>k,f>n,l>m
+limit=22, n=14, i=4: a>h,b>d,b>e,b>f,b>k,b>l,b>m,b>n,c>g,c>h,c>i,f>i,g>k,g>l,g>m,g>n,h>j
+limit=22, n=13, i=4: a>m,b>g,c>f,c>j,d>e,d>j,d>l,f>l,g>h,g>i,g>m,j>k
+limit=22, n=15, i=4: a>f,b>e,b>i,b>o,c>g,c>i,c>m,c>n,d>h,g>l,h>j,h>k,h>m,h>n,h>o
+limit=22, n=15, i=4: a>e,a>n,a>o,b>f,b>k,b>l,b>m,c>d,c>g,c>j,e>j,f>n,f>o,g>h,g>i,g>k,g>l,g>m
+limit=22, n=15, i=4: a>e,a>o,b>f,c>d,c>j,c>k,c>l,c>m,c>n,d>o,e>j,e>k,f>g,f>h,f>i,f>l,f>m,f>n
+limit=22, n=15, i=4: b>h,c>j,d>i,d>j,e>f,e>g,e>j,e>k,e>l,e>m,e>n,e>o,i>k,i>l,i>m,i>n,i>o
+limit=22, n=15, i=4: a>h,b>g,c>g,c>h,c>i,c>j,c>k,c>l,c>m,c>n,c>o,d>e,d>g,d>h,e>f,e>i,e>j,e>k,e>l,e>m,e>n,e>o
+limit=22, n=15, i=4: a>e,a>h,b>h,b>l,b>m,b>n,b>o,c>f,c>i,c>j,c>k,d>g,d>h,f>l,f>m,g>i,g>j,g>k,g>n,g>o
+limit=22, n=15, i=4: c>h,d>f,e>g,e>h,g>i,g>j,g>k,g>l,g>m,g>n,n>o
+limit=22, n=15, i=4: a>d,b>e,b>i,b>j,b>k,b>l,c>f,c>g,c>m,e>m,f>h,f>l,f>n,f>o,g>i,g>j,g>k,g>n,g>o
+limit=22, n=13, i=4: a>g,b>d,b>h,b>i,b>j,c>e,c>f,c>g,e>l,e>m,f>h,f>i,f>j,f>l,f>m,g>k
+limit=22, n=15, i=4: a>d,a>e,b>c,b>f,c>i,d>o,e>g,e>o,f>h,f>i,h>j,h>k,h>l,h>m,h>n
+limit=22, n=15, i=4: b>f,b>i,b>j,b>k,b>l,b>m,b>n,c>d,c>e,c>g,c>i,g>h,g>j,g>k,g>l,g>m,g>n,i>o
+limit=22, n=13, i=3: a>e,a>f,a>g,a>h,a>i,a>j,a>k,a>l,a>m,b>c,b>d,b>g,b>h,b>i,b>j,b>k,b>l,b>m
+limit=22, n=14, i=4: a>e,a>f,a>g,b>c,b>d,b>g,g>h,g>i,g>j,g>k,g>l,g>m,g>n
+limit=22, n=15, i=4: b>d,b>e,b>g,c>f,c>i,c>j,c>k,c>l,c>m,c>n,f>h,g>i,g>j,g>k,g>l,g>m,g>n,h>o
+limit=22, n=13, i=4: a>h,b>f,b>g,b>i,c>h,c>j,c>k,c>l,d>e,d>f,d>g,e>i,e>j,e>k,e>l,h>m
+limit=22, n=15, i=4: a>d,a>o,b>e,b>g,c>f,c>i,c>j,c>k,c>l,c>m,e>m,f>h,f>o,g>i,g>j,g>k,g>l,h>n
+limit=22, n=14, i=4: a>g,b>d,b>f,c>f,c>g,c>h,c>i,c>j,d>e,d>h,d>i,d>j,g>k,g>l,g>m,g>n
+limit=22, n=15, i=4: c>g,c>h,c>i,c>j,d>e,d>f,d>h,d>i,d>k,d>l,d>m,d>n,d>o,f>j,g>k,g>l,g>m,g>n,g>o
+# hash_table_size = 694444444
+# n_solved = 1483221
+# n_unsolved = 279399
+# n_hits = 343599938
+# n_misses = 99409211
+# avg_priority = 1479.824
+# avg_cost = 8.510
+limit=22, n=14, i=4: e>g,e>h,e>k,e>l,e>m,f>i,f>n,h>n,i>j,i>k,i>l,i>m
+limit=22, n=15, i=4: c>h,c>i,c>k,d>e,d>f,d>g,d>k,i>j,k>l,k>m,k>n,k>o
+limit=22, n=15, i=4: b>e,c>g,c>o,d>f,d>l,d>m,f>h,f>i,f>j,f>o,g>k,g>l,g>m,k>n
+limit=22, n=15, i=4: b>f,b>l,b>m,c>d,c>e,c>n,c>o,d>i,e>g,e>h,e>l,e>m,f>j,f>k,f>n,f>o
+limit=22, n=15, i=4: d>h,e>i,e>j,e>k,f>g,f>i,f>j,f>k,k>l,k>m,k>n,k>o
+limit=22, n=15, i=4: b>f,c>g,c>h,c>i,c>j,c>k,c>l,c>m,c>n,c>o,d>e,d>f,d>g,d>h,d>i,d>j,e>k,e>l,e>m,e>n,e>o
+limit=22, n=15, i=4: b>j,c>g,c>j,c>k,c>l,c>m,c>n,c>o,d>e,d>f,d>h,h>i,h>k,h>l,h>m,h>n,h>o
+limit=22, n=14, i=4: c>f,c>i,d>i,d>j,d>k,d>l,d>m,d>n,e>g,e>i,g>h,g>j,g>k,g>l,g>m,g>n
+limit=22, n=15, i=4: b>d,b>g,b>h,c>e,c>g,e>f,e>h,g>i,g>j,g>k,g>l,g>m,g>n,g>o
+limit=22, n=15, i=4: b>f,c>h,d>j,e>g,e>j,e>k,g>i,h>k,j>l,j>m,j>n,j>o
+limit=22, n=15, i=4: a>h,b>g,b>o,c>d,c>e,c>f,c>h,c>l,c>m,e>o,f>i,f>k,g>j,g>l,g>m,k>n
+limit=22, n=15, i=4: d>f,d>g,d>h,d>l,d>o,e>i,e>j,e>k,e>l,k>m,k>o,m>n
+limit=22, n=14, i=4: e>f,e>g,e>h,e>i,f>n,g>m,h>l,i>j,i>k,i>l,i>m,i>n
+limit=22, n=15, i=4: a>f,b>g,b>k,c>h,c>k,d>e,d>k,d>l,d>m,d>n,d>o,e>i,f>j,g>o,h>l,h>m,h>n
+limit=22, n=15, i=4: a>e,a>k,b>g,b>k,c>d,c>f,c>k,c>l,c>m,c>n,d>h,e>i,f>j,g>l,g>m,g>n,j>o
+limit=22, n=15, i=4: d>m,e>h,e>k,e>m,f>g,f>k,f>m,f>n,f>o,g>j,h>i,h>n,h>o,k>l
+limit=22, n=15, i=4: a>f,b>g,c>d,c>e,c>k,c>l,c>o,e>h,f>j,f>o,g>i,g>k,g>l,i>m,j>n
+limit=22, n=14, i=4: a>i,b>g,b>i,b>n,c>e,c>g,d>f,d>i,d>j,d>k,e>j,e>k,f>h,f>n,g>m,h>l
+limit=22, n=14, i=4: b>k,c>n,d>m,e>f,e>g,e>h,e>i,e>k,h>j,i>l,i>m,i>n
+limit=22, n=14, i=4: a>e,a>f,a>k,b>j,b>l,c>d,c>g,c>j,g>h,g>i,g>k,g>l,j>m,j>n
+limit=22, n=13, i=3: a>h,b>h,c>d,c>e,c>f,c>g,d>l,e>k,f>m,g>i,g>j
+limit=22, n=14, i=4: a>f,b>g,c>h,d>e,d>h,d>i,d>j,g>i,g>j,h>k,h>l,h>m,h>n
+limit=22, n=14, i=4: a>j,a>k,a>n,b>d,b>k,c>e,c>k,c>l,c>m,d>j,d>l,d>m,e>f,e>g,e>h,e>i,e>n
+limit=22, n=15, i=4: a>l,a>n,a>o,b>d,b>i,b>j,c>e,c>m,d>g,d>l,d>m,e>f,e>h,e>i,e>j,e>n,e>o,h>k
+limit=22, n=15, i=4: e>g,e>m,f>h,f>i,f>j,f>k,f>l,f>m,k>o,l>n
+limit=22, n=15, i=4: e>l,f>h,f>l,f>m,f>n,f>o,g>i,g>j,g>k,g>l,i>o,j>n,k>m
+limit=22, n=15, i=4: a>j,b>g,b>m,b>n,c>d,c>e,c>f,c>j,c>l,d>h,e>n,f>m,g>i,g>k,g>l,k>o
+limit=22, n=15, i=4: e>k,f>m,g>h,g>i,g>j,g>k,i>m,j>l,l>n,l>o
+limit=22, n=14, i=4: a>m,b>g,c>f,c>j,c>l,d>e,d>h,d>k,f>m,g>k,g>l,h>i,h>j,i>n
+limit=22, n=15, i=4: b>i,c>l,d>e,d>f,d>g,d>h,d>i,e>l,f>n,g>j,g>m,h>k,h>m,h>n,k>o
+limit=22, n=14, i=4: b>j,c>k,c>l,c>n,d>e,d>f,d>g,d>j,d>k,e>n,f>l,g>h,g>i,k>m
+limit=22, n=13, i=4: a>i,b>j,b>k,c>f,c>i,d>h,d>j,e>g,e>h,e>j,g>k,h>l,i>m
+limit=22, n=15, i=4: f>o,g>h,g>i,g>j,h>n,i>n,j>k,j>l,j>o,l>m
+limit=22, n=14, i=4: a>g,b>k,c>k,c>l,d>e,d>f,d>g,d>k,e>h,e>i,f>j,f>l,i>m,j>n
+limit=22, n=14, i=4: b>e,c>n,d>f,f>g,f>h,f>i,f>j,f>n,h>m,i>l,j>k
+limit=22, n=12, i=4: a>l,b>e,b>f,c>i,d>g,d>h,d>i,g>k,h>k,h>l,i>j
+limit=22, n=13, i=4: f>m,g>i,h>j,h>k,j>m,k>l
+limit=22, n=14, i=4: a>e,b>j,b>m,c>j,c>l,d>f,e>i,f>g,f>h,f>k,f>l,f>m,k>n
+limit=22, n=15, i=4: b>h,c>h,d>e,e>f,e>g,e>i,e>j,e>k,h>o,i>n,j>m,k>l
+limit=22, n=14, i=4: e>k,e>n,f>h,f>k,f>m,g>i,g>j,h>n,i>m,j>l
+limit=22, n=11, i=4: f>j,f>k,g>h,g>j,g>k,h>i
+limit=22, n=15, i=4: b>g,b>o,c>f,c>n,d>e,d>k,d>l,e>j,f>h,f>k,f>o,g>i,g>l,g>n,j>m
+limit=22, n=13, i=3: b>m,c>l,d>e,d>f,d>g,d>h,d>i,d>l,d>m,i>j,i>k
+limit=22, n=15, i=4: a>e,a>h,a>m,b>g,c>f,c>i,c>j,d>h,d>k,d>l,d>n,f>k,f>l,g>i,g>j,g>m,g>n,h>o
+limit=22, n=15, i=4: a>d,b>g,c>e,c>f,c>m,c>n,c>o,e>l,f>h,f>i,f>l,g>j,g>k,g>m,g>n,g>o
+limit=22, n=14, i=4: a>f,a>k,a>l,b>f,b>g,b>h,b>i,c>d,c>e,d>j,d>l,e>g,e>h,e>i,e>j,e>k,f>m,f>n
+limit=22, n=14, i=4: b>g,b>i,b>j,b>k,c>e,c>f,c>i,c>l,c>m,c>n,d>h,h>j,h>k,h>l,h>m,h>n
+limit=22, n=15, i=4: a>e,a>f,a>i,a>k,b>h,b>k,b>n,b>o,c>h,c>k,c>l,c>m,d>g,g>i,g>l,g>m,g>n,g>o,h>j
+limit=22, n=14, i=4: a>h,b>g,b>k,b>l,b>m,c>e,c>g,c>h,c>i,c>j,d>f,d>n,e>n,f>i,f>j,f>k,f>l,f>m
+limit=22, n=15, i=4: b>e,b>j,b>k,b>l,b>m,b>n,b>o,c>d,c>f,c>g,f>j,g>h,g>i,g>k,g>l,g>m,g>n,g>o
+limit=22, n=14, i=3: a>m,a>n,b>f,b>g,b>h,b>n,c>d,c>e,c>g,c>h,c>m,e>k,e>l,f>i,f>j
+limit=22, n=15, i=4: a>g,b>f,b>h,b>i,c>d,c>e,c>i,c>k,c>l,c>m,c>n,c>o,h>k,h>l,h>m,h>n,h>o,i>j
+limit=22, n=13, i=4: a>d,a>k,b>c,b>k,b>l,b>m,c>e,c>f,c>g,c>h,d>i,d>j,d>l,d>m
+limit=22, n=14, i=4: d>n,e>f,e>g,e>h,e>i,h>n,i>j,i>k,i>l,i>m
+limit=22, n=15, i=4: e>f,e>g,f>i,f>l,g>h,g>j,g>l,i>k,j>m,j>n,j>o
+limit=22, n=15, i=4: a>e,b>d,b>h,c>h,c>i,c>j,c>k,c>l,c>m,c>n,d>f,d>i,d>j,d>k,e>g,e>l,e>m,e>n,h>o
+limit=22, n=15, i=4: b>j,b>k,c>d,c>e,c>f,c>g,c>h,c>i,c>o,j>n,k>l,k>m,k>o
+limit=22, n=14, i=4: a>c,a>d,a>h,a>l,a>m,b>e,b>f,b>g,f>k,g>l,g>m,h>i,h>j,k>n
+limit=22, n=13, i=4: b>i,c>h,c>i,c>m,d>h,d>i,d>j,d>k,d>l,e>f,e>g,f>m,g>j,g>k,g>l
+limit=22, n=12, i=4: b>k,b>l,c>g,c>h,c>k,d>g,d>h,d>i,d>j,e>f,e>k,f>i,f>j,f>l
+limit=22, n=13, i=4: a>h,a>l,b>e,b>h,b>j,c>g,c>j,c>k,d>f,d>g,f>i,f>k,f>l,j>m
+limit=22, n=15, i=4: a>j,b>f,b>j,c>d,c>e,c>k,c>l,d>h,e>i,f>g,f>k,f>l,i>o,j>m,j>n
+limit=22, n=14, i=4: b>f,c>e,c>l,c>n,d>g,d>l,f>j,f>k,g>h,g>i,g>n,l>m
+limit=22, n=14, i=4: a>k,b>e,b>h,c>i,c>j,d>f,d>h,d>i,e>g,f>j,f>k,h>n,i>l,i>m
+# hash_table_size = 694444444
+# n_solved = 1524358
+# n_unsolved = 291162
+# n_hits = 355637993
+# n_misses = 102539993
+# avg_priority = 1467.263
+# avg_cost = 8.532
+limit=22, n=14, i=4: c>i,d>f,e>g,e>h,e>i,g>k,h>j,h>k,j>l,j>m,j>n
+limit=22, n=13, i=4: b>e,c>i,c>j,c>m,d>f,d>g,e>h,f>k,f>l,f>m,g>i,g>j,g>k,g>l
+limit=22, n=14, i=4: a>g,b>j,c>i,d>e,d>f,d>g,e>j,f>h,f>i,h>k,h>l,h>m,h>n
+limit=22, n=14, i=4: a>i,b>d,b>h,b>i,b>k,b>l,c>e,c>f,c>h,d>g,e>j,f>k,f>l,i>n,j>m
+limit=22, n=13, i=4: b>j,c>j,c>m,d>g,e>f,e>j,e>k,e>l,f>i,g>h,g>k,g>l,g>m
+limit=22, n=15, i=4: a>i,a>j,b>e,b>n,b>o,c>i,c>k,c>m,d>f,e>k,f>g,f>h,f>j,f>m,f>n,f>o,i>l
+limit=22, n=12, i=4: a>h,a>i,b>h,b>i,c>h,c>i,c>j,c>k,c>l,d>e,e>f,e>g,e>j,e>k,e>l
+limit=22, n=13, i=4: a>d,b>e,b>m,c>f,c>l,e>l,f>g,f>h,f>i,f>j,f>k,f>m
+limit=22, n=14, i=4: a>e,a>g,a>h,b>g,b>h,b>i,b>j,c>g,c>h,c>k,c>l,c>m,c>n,d>f,f>i,f>j,f>k,f>l,f>m,f>n
+limit=22, n=14, i=4: b>m,c>g,d>f,d>n,e>h,f>l,g>n,h>i,h>j,h>k,h>m
+limit=22, n=15, i=4: d>f,d>n,e>g,f>l,g>h,g>i,g>j,g>k,g>m,g>n,m>o
+limit=22, n=15, i=4: a>e,b>j,b>k,c>j,c>k,c>l,c>m,c>n,d>f,d>k,e>i,f>g,f>h,f>l,f>m,f>n,j>o
+limit=22, n=15, i=4: b>m,c>i,c>o,d>f,d>j,d>k,d>l,e>g,e>i,f>h,g>j,g>k,g>l,g>m,g>o,i>n
+limit=22, n=13, i=4: d>k,d>l,e>l,e>m,f>g,f>l,g>h,g>i,g>j,g>k,g>m
+limit=22, n=15, i=4: b>g,b>j,b>k,c>d,c>e,c>f,c>j,c>n,c>o,f>k,g>h,g>i,g>n,g>o,j>l,j>m
+limit=22, n=13, i=4: b>h,c>h,c>j,c>k,d>g,d>h,d>i,e>f,e>g,f>i,f>j,f>k,g>l,g>m
+limit=22, n=13, i=4: a>f,a>k,a>l,a>m,b>f,b>g,b>h,b>i,b>j,c>d,c>e,d>h,d>i,d>j,e>g,e>k,e>l,e>m
+limit=22, n=14, i=4: a>f,a>j,a>k,a>m,b>f,b>g,b>h,b>l,b>n,c>d,c>e,d>j,d>l,d>n,e>g,e>h,e>k,e>m,f>i
+limit=22, n=13, i=4: a>i,b>f,c>f,c>h,c>i,d>g,d>h,e>g,e>h,e>i,f>m,g>j,g>k,g>l
+limit=22, n=14, i=4: a>e,a>j,b>f,b>j,c>h,c>k,c>l,c>m,c>n,d>g,d>h,d>j,f>n,g>i,g>k,g>l,g>m
+limit=22, n=11, i=4: d>j,e>i,e>j,f>j,f>k,g>h,g>i,h>k
+limit=22, n=14, i=4: d>j,e>h,f>j,f>m,f>n,g>i,g>l,h>l,i>m,i>n,j>k
+limit=22, n=14, i=4: b>e,b>f,c>h,d>g,d>m,d>n,f>n,g>i,g>j,h>k,h>m,k>l
+limit=22, n=14, i=4: a>f,b>e,b>m,c>i,c>j,d>g,d>i,d>j,d>n,f>n,g>h,g>m,i>l,j>k
+limit=22, n=14, i=3: b>n,c>d,c>e,c>f,c>g,c>h,c>i,c>j,c>k,c>l,c>n,l>m
+limit=22, n=15, i=4: c>j,d>k,e>j,e>k,e>l,e>m,e>n,e>o,f>g,f>h,f>k,h>i,h>l,h>m,h>n,h>o
+limit=22, n=15, i=4: b>g,c>k,c>l,c>m,c>n,c>o,d>e,d>f,d>h,h>i,h>j,h>k,h>l,h>m,h>n,h>o
+limit=22, n=15, i=4: d>f,d>g,e>f,e>g,f>h,g>i,g>j,g>k,g>l,g>m,g>n,g>o
+limit=22, n=15, i=4: a>f,b>g,b>m,b>n,b>o,c>d,c>e,c>h,c>j,c>k,c>l,g>j,g>k,g>l,h>i,h>m,h>n,h>o
+limit=22, n=14, i=3: d>g,d>h,d>i,d>j,d>k,d>l,d>m,d>n,e>f,e>h,e>i,e>j,e>k,e>l,e>m,e>n
+limit=22, n=15, i=4: d>k,d>l,d>m,e>f,e>g,e>h,e>i,e>j,e>n,e>o,l>o,m>n
+limit=22, n=14, i=4: b>g,b>h,c>d,c>e,c>f,c>h,c>k,c>l,e>j,f>i,g>k,g>l,i>m,j>n
+limit=22, n=14, i=4: h>l,h>m,h>n,i>j,i>k,j>n,k>l,k>m
+limit=22, n=14, i=4: a>j,b>i,c>k,c>n,d>h,d>k,e>f,e>g,e>l,e>m,h>l,i>n,j>m
+limit=22, n=15, i=4: i>j,i>k,i>l,j>o,k>n,l>m
+limit=22, n=14, i=4: e>l,f>i,g>l,g>m,g>n,h>j,h>k,h>l,k>m,k>n
+limit=22, n=15, i=4: a>e,b>o,c>n,d>f,f>g,f>h,f>i,f>j,f>n,f>o,h>m,i>l,j>k
+# cost = 23
+# n_nodes = 2134988
+# version = 1.6
+# time = 1636.850
+# hash_table_size = 694444444
+# n_solved = 1550040
+# n_unsolved = 296011
+# n_hits = 362969574
+# n_misses = 104131783
+# avg_priority = 1462.024
+# avg_cost = 8.549
+
+# n=15, i=4, a?b: no comparisons done
+find_1(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_2(c,d,e,f,g,h,i,j,k,l,m,n,o,a,b)
+  else find_2(c,d,e,f,g,h,i,j,k,l,m,n,o,b,a)
+# n=15, i=4, a?b: n>o
+find_2(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_3(c,d,e,f,g,h,i,j,k,l,m,a,n,o,b)
+  else find_3(c,d,e,f,g,h,i,j,k,l,m,b,n,o,a)
+# n=15, i=4, a?b: l>o,m>n
+find_3(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_4(c,d,e,f,g,h,i,j,k,a,l,m,n,o,b)
+  else find_4(c,d,e,f,g,h,i,j,k,b,l,m,n,o,a)
+# n=15, i=4, a?b: j>o,k>n,l>m
+find_4(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_5(c,d,e,f,g,h,i,a,j,k,l,m,n,o,b)
+  else find_5(c,d,e,f,g,h,i,b,j,k,l,m,n,o,a)
+# n=15, i=4, a?b: h>o,i>n,j>m,k>l
+find_5(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_6(c,d,e,f,g,a,h,i,j,k,l,m,n,o,b)
+  else find_6(c,d,e,f,g,b,h,i,j,k,l,m,n,o,a)
+# n=15, i=4, a?b: f>o,g>n,h>m,i>l,j>k
+find_6(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_7(c,d,e,a,f,g,h,i,j,k,l,m,n,o,b)
+  else find_7(c,d,e,b,f,g,h,i,j,k,l,m,n,o,a)
+# n=15, i=4, a?b: d>o,e>n,f>m,g>l,h>k,i>j
+find_7(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_8(c,a,d,e,f,g,h,i,j,k,l,m,n,o,b)
+  else find_8(c,b,d,e,f,g,h,i,j,k,l,m,n,o,a)
+# n=15, i=4, a?b: b>o,c>n,d>m,e>l,f>k,g>j,h>i
+find_8(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_9(c,d,e,f,g,h,a,i,j,k,l,m,n,b,o)
+  else find_10(c,d,e,f,g,h,b,i,j,k,l,m,n,a,o)
+# n=15, i=4, a?b: a>m,b>l,c>k,d>j,e>i,f>h,g>n,g>o
+find_10(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_11(c,d,e,f,g,a,h,i,j,k,n,o,m,b,l)
+  else find_11(c,d,e,f,g,b,h,i,j,k,n,o,l,a,m)
+# n=15, i=4, a?b: a>j,b>i,c>h,d>g,e>k,e>l,f>m,f>n,n>o
+find_11(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_12(c,d,e,a,f,h,m,j,g,l,k,n,b,o,i)
+  else find_12(c,d,e,b,f,h,m,i,g,l,k,n,a,o,j)
+# n=15, i=4, a?b: a>f,b>i,c>j,c>k,d>h,d>m,e>g,e>l,l>n,m>o
+find_12(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_13(c,a,d,e,g,h,f,j,k,b,l,m,i,n,o)
+  else find_13(c,b,d,e,g,h,i,j,k,a,l,m,f,n,o)
+# n=15, i=4, a?b: a>h,a>i,b>g,b>j,c>f,c>l,d>e,d>k,j>m,k>n,l>o
+find_13(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_14(c,d,a,h,i,e,f,k,l,b,n,g,o,j,m)
+  else find_15(c,d,b,e,f,g,k,l,j,a,m,h,i,n,o)
+# n=15, i=4, a?b: a>e,a>h,b>d,b>g,c>f,c>i,c>j,g>n,h>o,i>k,j>l,j>m
+find_15(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_16(c,a,e,f,h,i,j,b,d,l,m,o,k,g,n)
+  else find_16(c,b,d,f,g,i,j,a,e,l,m,n,k,h,o)
+# n=15, i=4, a?b: a>d,a>f,a>g,b>c,b>e,b>h,e>l,f>m,g>j,g>k,h>i,h>n,n>o
+find_16(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_17(d,f,g,b,c,j,k,m,e,h,i,n,l)
+  else find_18(c,e,h,a,d,i,l,f,n,g,j,k,o,m)
+# n=14, i=3, a?b: b>g,c>f,c>i,d>e,d>h,d>j,h>n,i>m,j>k,j>l
+find_18(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if a > b
+  then find_19(a,c,d,e,f,h,i,b,j,k,l,m,n,g)
+  else find_20(b,c,d,e,f,a,g,h,i,j,k,l,n,m)
+# n=14, i=3, a?b: a>f,a>g,b>e,b>i,c>d,c>h,c>j,h>m,i>n,j>k,j>l
+find_20(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if a > b
+  then find_21(a,c,d,f,g,h,b,j,i,e,k,l,m)
+  else find_22(b,c,d,e,h,i,j,a,k,l,m,f,g,n)
+# n=14, i=3, a?b: a>d,a>f,a>h,b>c,b>e,b>g,e>k,f>n,g>i,g>j,h>l,h>m
+find_22(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if a > b
+  then find_23(d,f,h,b,c,g,e,n,m,l)
+  else find_23(c,e,g,a,f,d,h,k,j,i)
+# n=10, i=2, a?b: b>h,c>i,c>j,d>e,d>f,d>g
+find_23(a,b,c,d,e,f,g,h,i,j) =
+  if a > b
+  then find_24(a,c,d,e,f,g,b,j,i)
+  else find_25(b,c,d,e,f,g,i,j,a,h)
+# n=10, i=2, a?b: a>i,a>j,b>g,b>h,c>d,c>e,c>f
+find_25(a,b,c,d,e,f,g,h,i,j) =
+  if a > b
+  then find_26(a,c,d,e,f,b,i,j)
+  else find_26(b,c,d,e,f,a,g,h)
+# n=8, i=2, a?b: a>f,a>g,a>h,b>c,b>d,b>e
+find_26(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_27(b,f,g,h)
+  else find_27(a,c,d,e)
+# n=4, i=1, a?b: no comparisons done
+find_27(a,b,c,d) =
+  if a > b
+  then find_28(a,c,d)
+  else find_28(b,c,d)
+# n=3, i=1, a?b: no comparisons done
+find_28(a,b,c) =
+  if a > b
+  then find_29(a,c)
+  else find_29(b,c)
+# n=2, i=1, a?b: no comparisons done
+find_29(a,b) =
+  if a > b
+  then a
+  else b
+# n=9, i=2, a?b: a>g,b>h,b>i,c>d,c>e,c>f
+find_24(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_30(a,c,d,e,f,b,g)
+  else find_26(b,c,d,e,f,a,h,i)
+# n=7, i=2, a?b: a>f,a>g,b>c,b>d,b>e
+find_30(a,b,c,d,e,f,g) =
+  if a > b
+  then find_28(b,f,g)
+  else find_27(a,c,d,e)
+# n=13, i=3, a?b: a>d,a>e,a>g,b>c,b>f,b>h,f>m,g>i,g>j,h>k,h>l
+find_21(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_31(d,e,g,b,f,c,h,i,j)
+  else find_23(c,f,h,a,d,g,e,m,l,k)
+# n=9, i=2, a?b: c>h,c>i,d>e,d>f,d>g
+find_31(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_24(a,c,d,e,f,g,b,i,h)
+  else find_24(b,c,d,e,f,g,a,i,h)
+# n=14, i=3, a?b: a>h,b>e,b>g,c>d,c>f,c>i,f>m,g>l,h>n,i>j,i>k
+find_19(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if a > b
+  then find_32(a,c,d,f,h,i,b,j,k,n,m,e,g)
+  else find_33(b,c,d,e,f,a,g,i,j,k,m,h,l)
+# n=13, i=3, a?b: a>d,a>f,a>g,b>c,b>e,b>h,e>k,f>l,g>m,h>i,h>j
+find_33(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_34(d,f,g,b,c,e,h,m,l)
+  else find_23(c,e,h,a,f,g,d,k,j,i)
+# n=9, i=2, a?b: b>i,c>h,d>e,d>f,d>g
+find_34(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_35(a,c,d,e,f,g,b,h)
+  else find_24(c,b,d,e,f,g,h,i,a)
+# n=8, i=2, a?b: a>g,b>h,c>d,c>e,c>f
+find_35(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_30(a,c,d,e,f,b,g)
+  else find_30(b,c,d,e,f,a,h)
+# n=13, i=3, a?b: a>e,a>g,b>c,b>d,b>f,d>k,e>j,f>h,f>i,g>l,g>m
+find_32(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_24(e,g,b,c,f,d,j,m,l)
+  else find_36(c,d,a,f,k,i,h,g,e)
+# n=9, i=2, a?b: b>e,c>h,c>i,d>f,d>g
+find_36(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_37(a,c,d,b,g,f,i,h)
+  else find_38(b,c,d,f,g,h,i,a,e)
+# n=9, i=2, a?b: a>h,a>i,b>f,b>g,c>d,c>e
+find_38(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_30(c,a,b,h,i,d,e)
+  else find_30(c,b,a,f,g,d,e)
+# n=8, i=2, a?b: a>d,b>g,b>h,c>e,c>f
+find_37(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_39(a,c,e,f,b,d)
+  else find_30(c,b,a,g,h,e,f)
+# n=6, i=2, a?b: a>e,a>f,b>c,b>d
+find_39(a,b,c,d,e,f) =
+  if a > b
+  then find_28(b,e,f)
+  else find_28(a,c,d)
+# n=13, i=3, a?b: b>h,c>f,c>g,d>e,d>i,d>j,i>m,j>k,j>l
+find_17(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_40(c,a,d,e,f,g,i,b,j,k,l,m,h)
+  else find_41(b,c,d,e,f,g,a,h,i,j,l,k,m)
+# n=13, i=3, a?b: a>g,a>h,b>e,b>f,c>d,c>i,c>j,i>m,j>k,j>l
+find_41(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_21(a,c,d,g,h,i,b,j,e,f,k,l,m)
+  else find_21(b,c,d,e,f,i,a,j,g,h,k,l,m)
+# n=13, i=3, a?b: a>e,a>f,b>h,c>d,c>g,c>i,g>l,h>m,i>j,i>k
+find_40(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_42(a,c,d,e,f,g,b,i,j,k,l,h)
+  else find_32(b,c,d,g,h,i,a,j,k,m,l,f,e)
+# n=12, i=3, a?b: a>d,a>e,a>g,b>c,b>f,b>h,f>k,g>l,h>i,h>j
+find_42(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_43(d,e,g,b,f,c,h,l)
+  else find_23(c,f,h,a,d,g,e,k,j,i)
+# n=8, i=2, a?b: c>h,d>e,d>f,d>g
+find_43(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_35(a,c,d,e,f,g,b,h)
+  else find_35(b,c,d,e,f,g,a,h)
+# n=15, i=4, a?b: a>g,a>i,b>f,b>h,c>d,c>e,c>j,h>k,i>m,j>l,j>n,n>o
+find_14(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_44(c,a,g,e,d,i,j,b,f,l,m,n,h,k,o)
+  else find_44(c,b,f,e,d,h,j,a,g,l,k,n,i,m,o)
+# n=15, i=4, a?b: a>d,a>e,a>g,b>c,b>f,b>h,f>k,g>j,g>l,h>i,h>m,l>o,m>n
+find_44(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_45(d,e,g,b,c,j,l,f,h,o,k,i,m)
+  else find_46(c,f,h,a,d,e,k,i,m,g,l,j,n)
+# n=13, i=3, a?b: b>g,c>h,c>i,d>e,d>f,d>j,i>m,j>k,j>l
+find_46(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_47(a,c,d,e,f,h,b,i,j,k,l,g,m)
+  else find_48(b,c,d,e,f,h,g,a,i,j,m,l,k)
+# n=13, i=3, a?b: a>g,a>h,b>f,b>i,c>d,c>e,c>j,i>k,j>l,j>m
+find_48(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_49(a,c,d,e,g,h,j,b,i,f,l,m)
+  else find_21(c,b,f,e,d,i,j,a,l,m,g,h,k)
+# n=12, i=3, a?b: a>e,a>f,a>h,b>c,b>d,b>g,g>k,g>l,h>i,h>j
+find_49(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_31(e,f,h,b,d,g,c,i,j)
+  else find_31(c,d,g,a,f,e,h,k,l)
+# n=13, i=3, a?b: a>g,b>f,b>h,c>d,c>e,c>i,g>l,h>m,i>j,i>k
+find_47(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_50(c,a,d,e,g,b,i,j,k,l,f,h)
+  else find_51(b,c,f,e,d,a,h,i,j,k,m,g)
+# n=12, i=3, a?b: a>c,a>f,a>g,b>d,b>e,b>h,f>l,g>k,h>i,h>j
+find_51(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_34(c,f,g,b,d,e,h,k,l)
+  else find_31(d,e,h,a,f,g,c,i,j)
+# n=12, i=3, a?b: a>c,a>d,a>g,b>e,b>f,e>j,f>k,f>l,g>h,g>i
+find_50(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_52(c,d,b,g,h,i,f,e)
+  else find_24(e,f,a,c,d,g,j,l,k)
+# n=8, i=2, a?b: c>g,c>h,d>e,d>f
+find_52(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_37(a,c,d,b,f,e,h,g)
+  else find_37(b,c,d,a,f,e,h,g)
+# n=13, i=3, a?b: c>f,c>g,d>e,d>h,d>i,g>j,h>k,i>l,i>m
+find_45(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_53(a,c,d,e,f,b,h,g,i,l,m,j,k)
+  else find_53(b,c,d,e,f,a,h,g,i,l,m,j,k)
+# n=13, i=3, a?b: a>f,b>e,b>h,c>d,c>g,c>i,g>m,h>l,i>j,i>k
+find_53(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > b
+  then find_54(a,c,d,f,g,i,b,j,k,m,e,h)
+  else find_33(b,c,d,e,g,a,h,i,j,k,m,f,l)
+# n=12, i=3, a?b: a>d,a>g,b>c,b>e,b>f,e>j,f>h,f>i,g>k,g>l
+find_54(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if a > b
+  then find_55(d,g,b,e,f,c,k,l)
+  else find_36(c,e,a,f,j,i,h,g,d)
+# n=8, i=2, a?b: b>g,b>h,c>d,c>e,c>f
+find_55(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_56(a,c,d,e,f,b)
+  else find_26(b,c,d,e,f,a,g,h)
+# n=6, i=2, a?b: a>f,b>c,b>d,b>e
+find_56(a,b,c,d,e,f) =
+  if a > b
+  then find_29(b,f)
+  else find_27(a,c,d,e)
+# n=15, i=4, a?b: a>m,b>l,c>k,d>j,e>i,f>h,g>n,n>o
+find_9(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_57(c,d,e,f,g,a,h,i,j,k,m,b,n,l,o)
+  else find_57(c,d,e,f,g,b,h,i,j,k,l,a,n,m,o)
+# n=15, i=4, a?b: a>j,b>i,c>h,d>g,e>m,f>k,f>l,l>n,m>o
+find_57(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_58(c,d,e,a,f,h,k,j,g,m,l,b,o,n,i)
+  else find_58(c,d,e,b,f,h,k,i,g,m,l,a,o,n,j)
+# n=15, i=4, a?b: a>f,b>i,c>j,d>h,d>l,e>g,e>k,j>m,k>n,l>o
+find_58(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_59(c,a,d,e,g,h,f,j,k,l,b,m,n,o,i)
+  else find_59(c,b,d,e,g,h,i,j,k,l,a,m,n,o,f)
+# n=15, i=4, b?c: a>h,b>g,b>k,c>f,c>j,d>e,d>i,h>l,i>m,j>n,k>o
+find_59(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if b > c
+  then find_60(a,d,b,g,e,k,i,h,c,f,o,m,l,j,n)
+  else find_60(a,d,c,f,e,j,i,h,b,g,n,m,l,k,o)
+# n=15, i=4, a?f: a>h,b>e,b>g,c>d,c>f,c>i,f>k,g>l,h>m,i>j,i>n,n>o
+find_60(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > f
+  then find_61(b,a,c,d,e,h,g,i,j,m,l,f,n,k,o)
+  else find_62(b,c,d,e,g,f,i,l,j,k,n,a,o,h)
+# n=14, i=4, a?c: a>d,a>e,b>c,b>f,b>g,e>h,f>j,f>l,g>i,g>k,k>m,l>n
+find_62(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if a > c
+  then find_63(a,b,d,e,f,g,h,c,i,j,k,l,m,n)
+  else find_64(c,f,g,i,j,k,l,a,d,e,m,n)
+# n=12, i=3, b?c: a>h,b>e,b>g,c>d,c>f,f>k,g>l,h>i,h>j
+find_64(a,b,c,d,e,f,g,h,i,j,k,l) =
+  if b > c
+  then find_65(a,b,e,g,c,h,d,f,l,j,i)
+  else find_65(a,c,d,f,b,h,g,e,k,j,i)
+# n=11, i=3, a?c: a>f,b>c,b>d,b>e,d>i,e>g,e>h,f>j,f>k
+find_65(a,b,c,d,e,f,g,h,i,j,k) =
+  if a > c
+  then find_66(a,b,d,e,f,c,g,h,i,j,k)
+  else find_67(c,d,e,i,a,g,h)
+# n=7, i=2, a?b: a>e,b>d,c>f,c>g
+find_67(a,b,c,d,e,f,g) =
+  if a > b
+  then find_39(a,c,f,g,b,e)
+  else find_39(b,c,f,g,a,d)
+# n=11, i=3, a?c: a>e,a>f,b>c,b>d,b>f,c>i,d>g,d>h,e>j,e>k
+find_66(a,b,c,d,e,f,g,h,i,j,k) =
+  if a > c
+  then find_68(a,b,d,e,g,h,j,k,c,f)
+  else find_39(c,d,g,h,a,i)
+# n=10, i=3, c?d: a>d,a>i,a>j,b>c,b>i,b>j,c>e,c>f,d>g,d>h
+find_68(a,b,c,d,e,f,g,h,i,j) =
+  if c > d
+  then find_39(a,c,e,f,i,j)
+  else find_39(b,d,g,h,i,j)
+# n=14, i=4, e?f: a>c,a>d,a>h,b>e,b>f,b>h,d>g,e>j,e>l,f>i,f>k,k>m,l>n
+find_63(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if e > f
+  then find_69(a,b,c,d,e,h,j,g,l,f,k,i,n)
+  else find_69(a,b,c,d,f,h,i,g,k,e,j,l,m)
+# n=13, i=4, a?e: a>c,a>d,a>f,b>e,b>f,d>h,e>g,e>i,e>j,i>m,j>k,j>l
+find_69(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > e
+  then find_70(c,d,b,f,h,e,g,i,j)
+  else find_23(g,i,j,a,c,d,f,m,l,k)
+# n=9, i=3, a?d: b>e,c>d,c>f,f>g,f>h,f>i
+find_70(a,b,c,d,e,f,g,h,i) =
+  if a > d
+  then find_71(b,a,c,e,f,d,g,h,i)
+  else find_72(b,c,e,d,f,g,h,i,a)
+# n=9, i=3, a?d: a>c,b>d,b>e,d>i,e>f,e>g,e>h
+find_72(a,b,c,d,e,f,g,h,i) =
+  if a > d
+  then find_73(a,b,c,e,d,f,g,h)
+  else find_30(d,e,f,g,h,a,i)
+# n=8, i=3, a?d: a>c,a>e,b>d,b>e,d>f,d>g,d>h
+find_73(a,b,c,d,e,f,g,h) =
+  if a > d
+  then find_74(c,b,d,e)
+  else find_27(a,f,g,h)
+# n=4, i=2, a?b: b>c,b>d
+find_74(a,b,c,d) =
+  if a > b
+  then b
+  else find_28(a,c,d)
+# n=9, i=3, a?b: a>d,b>f,c>e,c>f,e>g,e>h,e>i
+find_71(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_75(a,c,b,d,e,g,h,i)
+  else find_76(b,c,a,e,f,g,h,i,d)
+# n=9, i=3, a?d: a>c,a>e,b>d,b>e,c>i,d>f,d>g,d>h
+find_76(a,b,c,d,e,f,g,h,i) =
+  if a > d
+  then find_77(c,b,d,e,i)
+  else find_27(a,f,g,h)
+# n=5, i=2, a?b: a>e,b>c,b>d
+find_77(a,b,c,d,e) =
+  if a > b
+  then find_29(b,e)
+  else find_28(a,c,d)
+# n=8, i=3, a?e: a>c,a>d,b>e,e>f,e>g,e>h
+find_75(a,b,c,d,e,f,g,h) =
+  if a > e
+  then find_78(c,d,b,e)
+  else find_27(a,f,g,h)
+# n=4, i=2, a?b: c>d
+find_78(a,b,c,d) =
+  if a > b
+  then find_79(a,c,d,b)
+  else find_79(b,c,d,a)
+# n=4, i=2, a?b: a>d,b>c
+find_79(a,b,c,d) =
+  if a > b
+  then find_29(b,d)
+  else find_29(a,c)
+# n=15, i=4, a?b: a>e,a>g,b>f,b>l,c>d,c>h,c>l,f>j,g>k,h>i,h>m,l>n,m>o
+find_61(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if a > b
+  then find_80(c,a,e,d,g,h,b,i,k,f,m,l,j,o)
+  else find_81(c,b,d,f,a,h,e,i,j,l,g,m,n,k,o)
+# n=15, i=4, d?f: a>c,a>f,a>j,b>d,b>e,b>j,d>i,e>g,e>k,f>h,f>l,j>m,k>n,l>o
+find_81(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) =
+  if d > f
+  then find_82(d,e,a,c,g,i,j,k,f,m,n)
+  else find_83(b,a,c,e,f,h,g,j,l,k,d,m,o,n)
+# n=14, i=4, c?d: a>d,a>h,a>k,b>c,b>e,b>h,d>g,d>j,e>f,e>i,e>k,h>l,i>m,j>n
+find_83(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if c > d
+  then find_84(c,a,e,f,i,h,k,d,m,l)
+  else find_85(a,b,e,d,f,g,i,j,h,l,k,c,m,n)
+# n=14, i=4, c?d: a>d,a>i,a>k,b>c,b>i,b>l,c>e,c>g,c>k,d>f,d>h,d>l,g>m,h>n,i>j
+find_85(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if c > d
+  then find_86(a,c,e,g,i,d,k,m,j)
+  else find_86(b,d,f,h,i,c,l,n,j)
+# n=9, i=3, c?d: a>e,a>f,a>g,b>c,b>d,b>f,b>g,d>h,e>i
+find_86(a,b,c,d,e,f,g,h,i) =
+  if c > d
+  then find_87(a,b,c,e,f,g,d,i)
+  else find_88(a,b,e,d,f,g,c,h,i)
+# n=9, i=3, c?d: a>c,a>e,a>f,b>d,b>e,b>f,c>i,d>g,d>h
+find_88(a,b,c,d,e,f,g,h,i) =
+  if c > d
+  then find_77(c,b,e,f,i)
+  else find_39(a,d,g,h,e,f)
+# n=8, i=3, c?d: a>d,a>e,a>f,b>c,b>e,b>f,c>g,d>h
+find_87(a,b,c,d,e,f,g,h) =
+  if c > d
+  then find_77(c,a,e,f,g)
+  else find_77(d,b,e,f,h)
+# n=10, i=3, a?d: a>h,b>f,b>g,b>h,c>d,c>e,c>g,e>i,f>j
+find_84(a,b,c,d,e,f,g,h,i,j) =
+  if a > d
+  then find_89(a,b,c,e,f,d,h,i,j,g)
+  else find_90(b,c,d,e,f,g,j,i,a)
+# n=9, i=3, a?b: a>e,a>f,b>c,b>d,b>f,c>i,d>h,e>g
+find_90(a,b,c,d,e,f,g,h,i) =
+  if a > b
+  then find_56(e,b,d,c,f,g)
+  else find_67(c,d,a,h,i,e,f)
+# n=10, i=3, b?c: a>f,a>g,b>e,b>g,b>j,c>d,c>f,c>j,d>h,e>i
+find_89(a,b,c,d,e,f,g,h,i,j) =
+  if b > c
+  then find_67(a,e,c,i,g,d,j)
+  else find_67(a,d,b,h,f,e,j)
+# n=11, i=3, b?c: a>f,a>i,b>e,b>h,c>d,c>g,c>i,g>j,h>k
+find_82(a,b,c,d,e,f,g,h,i,j,k) =
+  if b > c
+  then find_91(a,b,e,f,h,c,g,d,k)
+  else find_92(a,c,d,f,g,b,i,h,e,j)
+# n=10, i=3, a?f: a>d,a>g,b>c,b>e,b>f,b>g,e>j,f>h,f>i
+find_92(a,b,c,d,e,f,g,h,i,j) =
+  if a > f
+  then find_93(a,b,c,d,e,f,g,j)
+  else find_94(c,e,f,a,h,i,j)
+# n=7, i=2, a?b: b>g,c>d,c>e,c>f
+find_94(a,b,c,d,e,f,g) =
+  if a > b
+  then find_56(a,c,d,e,f,b)
+  else find_30(b,c,d,e,f,a,g)
+# n=8, i=3, c?d: a>d,a>f,a>g,b>c,b>e,b>f,b>g,e>h
+find_93(a,b,c,d,e,f,g,h) =
+  if c > d
+  then find_95(c,e,a,f,g,h)
+  else find_96(a,b,d,e,f,g,h)
+# n=7, i=3, c?d: a>c,a>e,a>f,b>d,b>e,b>f,d>g
+find_96(a,b,c,d,e,f,g) =
+  if c > d
+  then find_74(c,b,e,f)
+  else find_77(d,a,e,f,g)
+# n=6, i=2, a?b: b>f,c>d,c>e
+find_95(a,b,c,d,e,f) =
+  if a > b
+  then find_77(a,c,d,e,b)
+  else find_39(b,c,d,e,a,f)
+# n=9, i=3, a?c: a>d,b>c,b>e,b>f,e>i,f>g,f>h
+find_91(a,b,c,d,e,f,g,h,i) =
+  if a > c
+  then find_97(a,b,d,e,f,c,g,h,i)
+  else find_67(c,e,f,i,a,g,h)
+# n=9, i=3, a?d: a>c,a>f,b>d,b>e,b>f,d>i,e>g,e>h
+find_97(a,b,c,d,e,f,g,h,i) =
+  if a > d
+  then find_98(a,b,c,e,d,f,g,h)
+  else find_39(d,e,g,h,a,i)
+# n=8, i=3, c?d: a>c,a>e,a>f,b>d,b>e,b>f,d>g,d>h
+find_98(a,b,c,d,e,f,g,h) =
+  if c > d
+  then find_74(c,b,e,f)
+  else find_39(a,d,g,h,e,f)
+# n=14, i=4, c?d: a>d,a>f,a>l,b>c,b>e,b>g,e>i,f>h,f>k,g>j,g>l,j>m,k>n
+find_80(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if c > d
+  then find_99(a,b,e,c,f,g,i,h,j,k,l,d,m,n)
+  else find_100(a,b,e,d,f,g,h,i,k,j,l,c,n,m)
+# n=14, i=4, c?d: a>d,a>e,a>k,b>c,b>f,b>l,c>h,d>l,e>g,e>i,f>j,f>k,i>m,j>n
+find_100(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if c > d
+  then find_101(a,b,c,e,f,h,g,j,i,k,d,n,m)
+  else find_102(b,a,d,e,f,g,i,j,k,c,l,m,n)
+# n=13, i=4, a?d: a>e,a>j,a>k,b>c,b>d,b>i,c>j,c>k,d>f,d>g,e>h,e>i,g>l,h>m
+find_102(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if a > d
+  then find_103(e,b,h,c,d,m,i,g,f,k,j)
+  else find_104(c,f,a,g,l,e)
+# n=6, i=2, a?b: c>f,d>e
+find_104(a,b,c,d,e,f) =
+  if a > b
+  then find_105(a,c,d,e,f,b)
+  else find_105(b,c,d,e,f,a)
+# n=6, i=2, a?b: a>f,b>e,c>d
+find_105(a,b,c,d,e,f) =
+  if a > b
+  then find_77(c,a,b,f,d)
+  else find_77(c,b,a,e,d)
+# n=11, i=3, a?d: a>c,a>g,b>d,b>e,b>g,c>f,d>j,d>k,e>h,e>i
+find_103(a,b,c,d,e,f,g,h,i,j,k) =
+  if a > d
+  then find_88(a,b,c,e,d,g,h,i,f)
+  else find_30(e,d,a,j,k,h,i)
+# n=13, i=4, d?e: a>d,a>j,a>k,b>c,b>e,c>f,c>k,d>g,d>i,e>h,e>j,h>l,i>m
+find_101(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if d > e
+  then find_106(b,a,c,d,g,f,i,e,k,m)
+  else find_107(c,a,e,f,h,d,j,k,l)
+# n=9, i=3, a?c: a>d,a>h,b>f,b>g,b>h,c>e,c>f,c>g,e>i
+find_107(a,b,c,d,e,f,g,h,i) =
+  if a > c
+  then find_108(d,c,b,h,e)
+  else find_67(a,e,b,i,d,f,g)
+# n=5, i=2, a?b: b>e,c>d
+find_108(a,b,c,d,e) =
+  if a > b
+  then find_79(a,c,d,b)
+  else find_77(c,b,a,e,d)
+# n=10, i=4, a?d: a>c,a>h,b>d,b>i,c>f,c>i,d>e,d>g,d>h,g>j
+find_106(a,b,c,d,e,f,g,h,i,j) =
+  if a > d
+  then find_73(c,b,f,d,i,g,h,e)
+  else find_95(e,g,a,c,h,j)
+# n=14, i=4, c?e: a>e,a>k,a>l,b>c,b>d,b>f,c>g,d>l,e>h,e>j,f>i,f>k,i>m,j>n
+find_99(a,b,c,d,e,f,g,h,i,j,k,l,m,n) =
+  if c > e
+  then find_109(d,c,f,a,g,i,k,e,l,m)
+  else find_110(b,a,d,f,e,h,j,i,c,k,l,n,m)
+# n=13, i=4, d?e: a>c,a>d,a>i,b>e,b>j,b>k,c>k,d>h,d>j,e>f,e>g,e>i,g>l,h>m
+find_110(a,b,c,d,e,f,g,h,i,j,k,l,m) =
+  if d > e
+  then find_111(c,b,d,h,e,j,k,m)
+  else find_86(a,e,f,g,c,d,i,l,k)
+# n=8, i=3, a?b: a>g,b>e,b>f,b>g,c>d,c>e,c>f,d>h
+find_111(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_112(a,c,d,b,h,g)
+  else find_87(b,c,d,a,e,f,h,g)
+# n=6, i=3, a?c: a>d,b>c,c>e,d>f
+find_112(a,b,c,d,e,f) =
+  if a > c
+  then find_79(b,d,f,c)
+  else find_29(a,e)
+# n=10, i=3, b?c: a>i,b>e,b>h,c>f,c>g,d>g,d>h,d>i,f>j
+find_109(a,b,c,d,e,f,g,h,i,j) =
+  if b > c
+  then find_113(a,d,b,e,c,h,i,f)
+  else find_114(a,d,c,b,f,g,j,e,i)
+# n=9, i=3, a?d: a>i,b>f,b>i,c>d,c>e,c>f,d>h,e>g
+find_114(a,b,c,d,e,f,g,h,i) =
+  if a > d
+  then find_115(a,b,c,e,f,d,g,i)
+  else find_67(b,e,d,g,f,a,h)
+# n=8, i=3, a?b: a>f,a>h,b>e,b>h,c>d,c>e,c>f,d>g
+find_115(a,b,c,d,e,f,g,h) =
+  if a > b
+  then find_116(a,c,d,b,g,h,f)
+  else find_116(b,c,d,a,g,h,e)
+# n=7, i=3, c?d: a>d,a>g,b>c,b>g,c>e,d>f
+find_116(a,b,c,d,e,f,g) =
+  if c > d
+  then find_79(a,c,e,g)
+  else find_79(b,d,f,g)
+# n=8, i=3, a?e: a>g,b>f,b>g,c>d,c>e,c>f,e>h
+find_113(a,b,c,d,e,f,g,h) =
+  if a > e
+  then find_117(a,b,c,d,g,f,e)
+  else find_95(d,b,e,a,h,f)
+# n=7, i=3, a?b: a>e,a>g,b>e,b>f,c>d,c>f,c>g
+find_117(a,b,c,d,e,f,g) =
+  if a > b
+  then find_118(c,a,d,b,g,e)
+  else find_118(c,b,d,a,f,e)
+# n=6, i=3, c?d: a>c,a>e,b>d,b>e,d>f
+find_118(a,b,c,d,e,f) =
+  if c > d
+  then find_119(c,b,e)
+  else find_79(a,d,f,e)
+# n=3, i=2, a?b: b>c
+find_119(a,b,c) =
+  if a > b
+  then b
+  else find_29(a,c)
