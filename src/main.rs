@@ -244,7 +244,7 @@ fn run_backward(args: &Args) {
 
                 let mut writer = BufWriter::new(file);
 
-                print_algorithm_backward2(
+                print_algorithm_backward(
                     BackwardsPoset::new(n, i),
                     &mut writer,
                     &cache,
@@ -452,7 +452,7 @@ where
     index
 }
 
-#[allow(unused, clippy::too_many_lines)]
+#[allow(clippy::too_many_lines)]
 fn print_algorithm_backward<W>(
     poset: BackwardsPoset,
     writer: &mut BufWriter<W>,

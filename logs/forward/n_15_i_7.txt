@@ -1,0 +1,12 @@
+n: 15, i: 7
+Comparisons: 27
+
+Cache entries: 15710506210
+Cache size: 321.894 Gigabyte
+Cache hits: 267514248542
+Cache misses: 17391943951
+Cache replaced: 1681437747
+
+Posets searched: 3525511907
+Duration: 14d 1h 50m 45.25s
+

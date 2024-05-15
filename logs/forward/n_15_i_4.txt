@@ -1,0 +1,28 @@
+
+Branch: main
+SHA: 7892ddb
+
+Thread(s) per core: 2
+Core(s) per socket: 12
+CPU max MHz: 2900.0000
+CPU min MHz: 1200.0000
+
+Current time: 2024-05-14 10:21:57
+===============
+Cache entries: 0
+Maximum cache entries: 20833333332
+
+Congratulations. A solution was found!
+
+n: 15, i: 4
+Comparisons: 24
+
+Cache entries: 52962109
+Cache size: 1.184 Gigabyte
+Cache hits: 917072014
+Cache misses: 52962109
+Cache replaced: 0
+
+Posets searched: 16258197
+Duration: 0d 1h 12m 9.550781s
+
