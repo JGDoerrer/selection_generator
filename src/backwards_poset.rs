@@ -109,7 +109,6 @@ impl BackwardsPoset {
         debug_assert_ne!(i, j);
         debug_assert!(!self.is_less(j, i));
         // debug_assert!(self.is_closed());
-        // TODO: could also add assert !is_less(i, j)
 
         if !self.is_less(i, j) {
             self.add_and_close_recursive(i, j);
@@ -172,7 +171,6 @@ impl BackwardsPoset {
 
     // reduce
     pub fn calculate_relations(&self) -> ([u8; MAX_N], [u8; MAX_N]) {
-        // TODO: warum so kompliziert in main?
         let mut less = [0u8; MAX_N];
         let mut greater = [0u8; MAX_N];
 

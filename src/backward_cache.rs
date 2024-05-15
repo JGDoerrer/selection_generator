@@ -5,7 +5,7 @@ use std::mem::size_of;
 use crate::backwards_poset::BackwardsPoset;
 
 pub struct BackwardCache {
-    buckets: Vec<[[HashMap<PseudoCanonifiedPoset, (u8, u8)>; MAX_N]; MAX_N]>, // TODO: CanonifiedPoset
+    buckets: Vec<[[HashMap<PseudoCanonifiedPoset, (u8, u8)>; MAX_N]; MAX_N]>,
 }
 
 impl BackwardCache {
