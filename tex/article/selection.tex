@@ -34,6 +34,9 @@
 \usepackage[english]{babel}
 \usepackage{pgfplots}
 \usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
 % Commands
 \newcommand\smallO{
   \mathchoice
@@ -51,6 +54,8 @@
 \newtheorem{definition}{Definition}
 
 \hyphenation{op-tical net-works semi-conduc-tor}
+
+\DeclareMathOperator{\N}{\mathbb{N}}
 
 \makeatletter
 \def\endthebibliography{%
@@ -358,7 +363,16 @@ This means that the following heuristics must only provably be not too pessimist
 The first heuristic uses the number of compatible solutions.
 We use the fact, proven in Theorem \ref{theorem:compatible_log}, that the $\log_2$ of the number of compatible solutions is a lower bound for the cost of a poset.
 
-The calculation of this number first picks a solution element - since posets are always reduced in the forward search any element is valid - and then counts the number of possible separations into greater and lesser elements, summing up these counts over all solution elements.
+Algorithm~\ref{algo:compatible_solutions} shows an algorithm for computing the number of compatible solutions for a poset.
+The algorithm assumes that the elements in the poset are sorted in such a way that an element that is smaller than another has a smaller index.
+The calculation of this number first picks a solution element $j$ - since posets are always reduced in the forward search any element is valid - and then counts the number of possible separations into greater and lesser elements, summing up these counts over all solution elements.
+
+\begin{algorithm}[t]
+  \centering
+  \input{figures/algorithm_compatible_solutions.tex}
+  \caption{An algorithm for computing the number of compatible solutions for a given poset.}
+  \label{algo:compatible_solutions}
+\end{algorithm}
 
 As an example, the empty poset $(n,i,\emptyset)$ has $n \cdot \binom{n - 1}{i}$ compatible solutions because
 for each of the $n$ elements, all separations of the remaining $n - 1$ elements
