@@ -1,8 +1,0 @@
-#[cfg(test)]
-mod test {
-
-    use indicatif::ProgressBar;
-    use rayon::iter::{IntoParallelIterator, ParallelIterator};
-
-    use crate::utils::{advance_permutations, fac};
-

@@ -31,7 +31,6 @@ use crate::{
 };
 
 mod algorithm_test;
-mod algorithm_test_backward;
 mod backward_cache;
 mod backwards_poset;
 mod bitset;

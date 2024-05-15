@@ -27,8 +27,20 @@ clang 16.0.6-1
 
 Having all required packages installed, starting a calculation on your own is straight forward.
 
+To calculate all values from the start, you can use :
+
 ```shell
-cargo run --release -- -n 10 -i 3
+cargo run --release -- --search-mode forward --verbose --print-algorithm
+
+cargo run --release -- --search-mode backward --verbose --max-core 16 --print-algorithm
+```
+
+To calculate a specific value, e.g. `n = 12`, `i = 5` you can use:
+
+```shell
+cargo run --release -- --search-mode forward --verbose --print-algorithm --single -n 12 -i 5
+
+cargo run --release -- --search-mode backward --verbose --max-core 16 --print-algorithm --single -n 12 -i 5
 ```
 
 This will start calculating compares starting at the **i=4th** (index starts at 0) value for a list of **n=10** and will continue calculating until you stop.
@@ -42,7 +54,7 @@ For more details please read
 
 ## Results
 
-The minimum amount of comparisons needed to select the `i + 1`-th smallest of `n`
+The minimum amount of comparisons needed to select the `i`-th smallest of `n`
 
 | `n` \ `i` | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  |
 | -         | -  | -  | -  | -  | -  | -  | -  | -  |
