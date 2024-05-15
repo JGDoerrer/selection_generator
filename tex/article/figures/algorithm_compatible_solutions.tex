@@ -1,0 +1,172 @@
+\begin{algorithmic}
+    \State{\Call{assert}{$\forall a,b,c \in \N : (a,b) \in R \land (b,c) \in R \implies (a,c) \in R$}}
+    \State{\Call{assert}{$\forall a,b \in \N: (a,b) \in R \implies a < b$}}
+
+    \Function{NumComaptibleSolutions}{$P = (n,i,R)$}
+
+    \State{$sum \gets 0$}
+
+    \For{$j \gets 0..n$}
+
+    \State{$smallerThanJ \gets \{ v \mid (v,j) \in R \}$}
+    \State{$greaterThanJ \gets \{ v \mid (j,v) \in R \}$}
+    \State{$orderedWithJ \gets smallerThanJ \cup greaterThanJ$}
+    \State{$Subsets \gets \{ smallerThanJ \}$}
+
+    \For{$k \gets 0..n$}
+    \If{$j=k \lor k \in orderedWithJ$}
+    \State{\textbf{continue}}
+    \EndIf
+
+    \State{$smallerThanK \gets \{ v \mid (v,k) \in R \}$}
+
+    \For{$S \in Subsets$}
+
+    \If{$smallerThanK \subseteq S$}
+    \State{$newSubset \gets S \cup \{ k \}$}
+    \State{$Subsets \gets Subsets \cup \{ newSubset \}$}
+    \EndIf
+
+    \EndFor
+
+    \EndFor
+
+    \State{$sum \gets sum + |\{S \in Subsets \mid |S| = i \}|$}
+
+    \EndFor
+
+    \State{\Return{$sum$}}
+
+    \EndFunction
+\end{algorithmic}
+
+% New Version
+
+% pub fn num_compatible_posets(&self) -> usize {
+% debug_assert!(self.is_lower_triangle_matrix());
+
+% let all_less_than = {
+%     let mut bitsets = [BitSet::empty(); MAX_N];
+%     bitsets
+%         .iter_mut()
+%         .take(self.n() as usize)
+%         .enumerate()
+%         .for_each(|(i, bs)| *bs = self.get_all_less_than(i as u8));
+%     bitsets
+% };
+
+% let mut less_subsets = Vec::with_capacity(1000);
+
+% let mut sum = 0;
+% for i in 0..self.n() as usize {
+%     // assume the ith element is the solution
+
+%     let less_than_i = all_less_than[i];
+
+%     if less_than_i.len() == self.i() as usize {
+%         sum += 1;
+%         continue;
+%     }
+%     if less_than_i.len() > self.i() as usize {
+%         continue;
+%     }
+
+%     let greater_than_i = self.get_all_greater_than(i as u8);
+%     let ordered_with_i = less_than_i.union(greater_than_i);
+
+%     less_subsets.clear();
+%     less_subsets.push(less_than_i);
+
+%     for j in 0..self.n() as usize {
+%         if j == i || ordered_with_i.contains(j) {
+%             continue;
+%         }
+
+%         let less_than_j = all_less_than[j];
+
+%         // try adding j to all previous subsets
+%         for i in 0..less_subsets.len() {
+%             let subset = less_subsets[i];
+
+%             // test if adding j would make a valid subset
+%             // we know, that there is no k with p[k] > p[j]
+%             if less_than_j.intersect(subset) == less_than_j {
+%                 let mut new_subset = subset;
+%                 new_subset.insert(j);
+%                 less_subsets.push(new_subset);
+%             }
+%         }
+%     }
+
+%     sum += less_subsets
+%         .iter()
+%         .filter(|s| s.len() == self.i() as usize)
+%         .count();
+% }
+
+% sum
+% }
+
+% Old Version
+
+% pub fn num_compatible_posets(&self) -> usize {
+%     let canonified = self.canonify_lower_matrix();
+
+%     let mut sum = 0;
+%     for i in 0..canonified.n {
+%         // assume the ith element is the solution
+
+%         let less_than_i = canonified.get_all_less_than(i);
+%         let greater_than_i = canonified.get_all_greater_than(i);
+
+%         let mut less_subsets = Vec::new();
+%         less_subsets.push(BitSet::empty());
+
+%         for j in 0..canonified.n {
+%             if j == i || greater_than_i.contains(j as usize) {
+%                 continue;
+%             }
+
+%             let less_than_j = canonified.get_all_less_than(j);
+
+%             // try adding j to all previous subsets
+%             if less_than_i.contains(j as usize) {
+%                 // all subsets must contain j to be valid
+
+%                 let mut next_free = 0;
+%                 for i in 0..less_subsets.len() {
+%                     let subset = less_subsets[i];
+
+%                     // test if adding j would make a valid subset
+%                     // we know, that there is no k with p[k] > p[j]
+%                     if less_than_j.intersect(subset) == less_than_j {
+%                         let mut new_subset = subset;
+%                         new_subset.insert(j as usize);
+%                         less_subsets[next_free] = new_subset;
+%                         next_free += 1;
+%                     }
+%                 }
+%                 less_subsets.truncate(next_free);
+%             } else {
+%                 for i in 0..less_subsets.len() {
+%                     let subset = less_subsets[i];
+
+%                     // test if adding j would make a valid subset
+%                     // we know, that there is no k with p[k] > p[j]
+%                     if less_than_j.intersect(subset) == less_than_j {
+%                         let mut new_subset = subset;
+%                         new_subset.insert(j as usize);
+%                         less_subsets.push(new_subset);
+%                     }
+%                 }
+%             }
+%         }
+
+%         sum += less_subsets
+%             .into_iter()
+%             .filter(|s| s.len() == canonified.i as usize)
+%             .count();
+%     }
+
+%     sum
+% }
