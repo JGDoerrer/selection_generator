@@ -105,7 +105,7 @@ An approach to finding optimal algorithms is made by Gasarch, Kelly and Pugh \ci
 On his website Kenneth Oksanen \cite{Oksanen} published a computer search algorithm improving the previously known lower bounds found by Gasarch et. al.
 However, the results are not published in a scientific journal and lack explanation.
 This work will continue the work of Oksanen \cite{Oksanen} by confirming, improving and expanding the values he found.
-It will reimplement some ideas of the algorithms Oksanen published along with his found lower bounds and improve the computer search algorithms by researching the benefits of different search strategies, adding $\alpha$-$\beta$-pruning and the exploitation of compatible posets.
+It will reimplement some ideas of the algorithms Oksanen published along with his found lower bounds and improve the computer search algorithms by researching the benefits of different search strategies, adding $\alpha$-$\beta$-pruning and the exploitation of compatible solutions.
 A quote from Miguel de Cervantes from Don Quijote will hold true for this article: The journey is better than the inn.
 So buckle up.
 
@@ -231,7 +231,7 @@ By definition of the problem, we seek an element that is larger than $n-i$ eleme
 
 With Lemma~\ref{lemma:partition}, a solved poset has exactly one compatible solution.
 
-Let $\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$ be the set of all posets compatible with $P$.
+Let $\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$ be the set of all solutions compatible with $P$.
 
 \begin{lemma}\label{lemma:compatible_union}
   For a poset $P = (n, i, R)$ and $a, b$ with $(a, b), (b, a)\notin R$ it holds $\mathcal{C}(P) = \mathcal{C}(n, i, R\cup \{(a, b)\}) \cup \mathcal{C}(n, i, R\cup \{(b, a)\})$.
@@ -265,7 +265,7 @@ Let $\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$ be the set of all
 
   $$\frac{|\mathcal{C}(P)|}{2}\leq |\mathcal{C}((n,i,R\cup \{(a, b)\}))|$$
 
-  Repeated application of this over multiple comparisons results in $\frac{|\mathcal{C}(P)|}{2^j}$ as the lower bound for the amount of compatible posets after $j$ comparisons.
+  Repeated application of this over multiple comparisons results in $\frac{|\mathcal{C}(P)|}{2^j}$ as the lower bound for the amount of compatible solutions after $j$ comparisons.
 
   Since $|\mathcal{C}(P)|\leq 2^j$ must be satisfied for the solution, $j\geq\log_2(|\mathcal{C}(P)|)$
 \end{proof}
@@ -290,7 +290,7 @@ This is also the optimal algorithm for $i = 2$ and $n = 5$.
 
 \section{Methods and Tools}
 In this section we describe our three main approaches being the forward search, backward search and bidirectional search.
-Furthermore, we explain how we harness the notion of compatible posets with respect to all of the three search approaches.
+Furthermore, we explain how we harness the notion of compatible solutions with respect to all of the three search approaches.
 
 \subsection{Forward Search}\label{chapter:forward_search}
 Forward Search starts with an empty poset $(n,i,\emptyset)$, and recursively determines solvability of a given poset within some bound by exhaustively searching the results of all possible comparisons to be made unless it is already solved or we determine that it cannot be solved within the alloted number of comparisons by some heuristic.
@@ -379,7 +379,7 @@ The diagonal does not need to be stored, as an element can not be smaller than i
 
 By canonifying the poset, the elements can be sorted in a way such that each element is not smaller than any element before it.
 This property can be used to reduce the adjacency matrix to a triangular matrix, which can then be stored using $\frac{n^2 - n}{2}$ bits.
-It can also simplify some algorithms, for example calculating the number of compatible posets.
+It can also simplify some algorithms, for example calculating the number of compatible solutions.
 
 \subsubsection{Multithreading}
 

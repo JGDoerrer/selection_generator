@@ -1,6 +1,6 @@
 use backward_cache::BackwardCache;
 use backwards_poset::BackwardsPoset;
-use canonified_poset::CanonifiedPoset;
+use pseudo_canonified_poset::PseudoCanonifiedPoset;
 use clap::{
     error::{Error, ErrorKind},
     ArgAction, Parser,
@@ -23,7 +23,7 @@ use std::{
 use crate::{
     cache::Cache,
     constants::{KNOWN_VALUES, MAX_N},
-    normal_poset::NormalPoset,
+    free_poset::FreePoset,
     poset::Poset,
     search_backward::start_search_backward,
     search_forward::Search,
@@ -36,9 +36,9 @@ mod backward_cache;
 mod backwards_poset;
 mod bitset;
 mod cache;
-mod canonified_poset;
+mod pseudo_canonified_poset;
 mod constants;
-mod normal_poset;
+mod free_poset;
 mod poset;
 mod search_backward;
 mod search_forward;
@@ -185,7 +185,7 @@ fn run_forward(args: &Args, use_bidirectional_search: bool) {
                 let mut writer = BufWriter::new(file);
 
                 print_algorithm(
-                    CanonifiedPoset::new(n, i),
+                    PseudoCanonifiedPoset::new(n, i),
                     &mut writer,
                     &algorithm,
                     &mut HashMap::new(),
@@ -202,7 +202,7 @@ fn run_forward(args: &Args, use_bidirectional_search: bool) {
                     mapping
                 };
 
-                explore(NormalPoset::new(n, i), mapping, &cache);
+                explore(FreePoset::new(n, i), mapping, &cache);
                 return;
             }
 
@@ -268,10 +268,10 @@ fn run_backward(args: &Args) {
 
 #[allow(clippy::too_many_lines)]
 fn print_algorithm<W>(
-    poset: CanonifiedPoset,
+    poset: PseudoCanonifiedPoset,
     writer: &mut BufWriter<W>,
-    comparisons: &HashMap<CanonifiedPoset, (u8, u8)>,
-    done: &mut HashMap<CanonifiedPoset, usize>,
+    comparisons: &HashMap<PseudoCanonifiedPoset, (u8, u8)>,
+    done: &mut HashMap<PseudoCanonifiedPoset, usize>,
 ) -> usize
 where
     W: Write,
@@ -304,8 +304,8 @@ where
         unreachable!()
     };
 
-    let (less, less_mapping) = poset.to_normal().with_less_mapping(i, j);
-    let (greater, greater_mapping) = poset.to_normal().with_less_mapping(j, i);
+    let (less, less_mapping) = poset.to_free().with_less_mapping(i, j);
+    let (greater, greater_mapping) = poset.to_free().with_less_mapping(j, i);
 
     let less_index = print_algorithm(less.canonified(), writer, comparisons, done);
     let greater_index = print_algorithm(greater.canonified(), writer, comparisons, done);
@@ -650,7 +650,7 @@ where
 }
 
 #[allow(clippy::too_many_lines)]
-fn explore(poset: NormalPoset, mapping: [u8; MAX_N], cache: &Cache) {
+fn explore(poset: FreePoset, mapping: [u8; MAX_N], cache: &Cache) {
     loop {
         let old_mapping = {
             let mut old = [0; MAX_N];

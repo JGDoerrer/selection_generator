@@ -12,9 +12,9 @@ use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use crate::{
     backwards_poset::BackwardsPoset,
     cache::Cache,
-    canonified_poset::CanonifiedPoset,
+    pseudo_canonified_poset::PseudoCanonifiedPoset,
     constants::{LOWER_BOUNDS, UPPER_BOUNDS},
-    normal_poset::NormalPoset,
+    free_poset::FreePoset,
     poset::Poset,
     utils::format_duration,
 };
@@ -25,7 +25,7 @@ pub struct Search<'a> {
     current_max: u8,
     cache: &'a mut Cache,
     analytics: Analytics,
-    comparisons: &'a mut HashMap<CanonifiedPoset, (u8, u8)>,
+    comparisons: &'a mut HashMap<PseudoCanonifiedPoset, (u8, u8)>,
     use_bidirectional_search: bool,
 }
 
@@ -65,7 +65,7 @@ impl<'a> Search<'a> {
         n: u8,
         i: u8,
         cache: &'a mut Cache,
-        comparisons: &'a mut HashMap<CanonifiedPoset, (u8, u8)>,
+        comparisons: &'a mut HashMap<PseudoCanonifiedPoset, (u8, u8)>,
         use_bidirectional_search: bool,
     ) -> Self {
         Search {
@@ -79,7 +79,7 @@ impl<'a> Search<'a> {
         }
     }
 
-    fn search_cache(&mut self, poset: &CanonifiedPoset) -> Option<Cost> {
+    fn search_cache(&mut self, poset: &PseudoCanonifiedPoset) -> Option<Cost> {
         let result = self.cache.get_mut(poset);
         if result.is_some() {
             self.analytics.record_hit();
@@ -89,7 +89,7 @@ impl<'a> Search<'a> {
         result
     }
 
-    fn insert_cache(&mut self, poset: CanonifiedPoset, new_cost: Cost) {
+    fn insert_cache(&mut self, poset: PseudoCanonifiedPoset, new_cost: Cost) {
         if let Some(cost) = self.cache.get(&poset) {
             let res = match (cost, new_cost) {
                 (Cost::Minimum(old_min), Cost::Minimum(new_min)) => {
@@ -128,7 +128,7 @@ impl<'a> Search<'a> {
         let mut result = max as u8;
 
         for current in min.. {
-            let mut poset = NormalPoset::new(self.n, self.i);
+            let mut poset = FreePoset::new(self.n, self.i);
             let mut comparisons_done = 0u8;
             if PAIR_WISE_OPTIMIZATION {
                 println!("Attention: searching with pairwise-optimisation");
@@ -188,7 +188,7 @@ impl<'a> Search<'a> {
     fn search_rec(
         &mut self,
         backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
-        poset: CanonifiedPoset,
+        poset: PseudoCanonifiedPoset,
         max_comparisons: u8,
         depth: u8,
     ) -> Cost {
@@ -300,7 +300,7 @@ impl<'a> Search<'a> {
     fn estimate_solvable(
         &mut self,
         backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
-        poset: CanonifiedPoset,
+        poset: PseudoCanonifiedPoset,
         max_comparisons: u8,
         depth: u8,
     ) -> Option<bool> {

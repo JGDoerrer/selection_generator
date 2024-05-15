@@ -3,13 +3,13 @@ use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use std::os::raw::c_int;
 
 use crate::{
-    backwards_poset::BackwardsPoset, bitset::BitSet, canonified_poset::CanonifiedPoset,
+    backwards_poset::BackwardsPoset, bitset::BitSet, pseudo_canonified_poset::PseudoCanonifiedPoset,
     constants::MAX_N, poset::Poset,
 };
 
 /// A partially ordered set with <
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
-pub struct NormalPoset {
+pub struct FreePoset {
     /// The number of elements
     n: u8,
     i: u8,
@@ -17,18 +17,18 @@ pub struct NormalPoset {
     adjacency: [BitSet; MAX_N],
 }
 
-impl Default for NormalPoset {
+impl Default for FreePoset {
     fn default() -> Self {
-        NormalPoset::new(0, 0)
+        FreePoset::new(0, 0)
     }
 }
 
-impl Poset for NormalPoset {
+impl Poset for FreePoset {
     fn new(n: u8, i: u8) -> Self {
         debug_assert!(n <= MAX_N as u8);
         debug_assert!(i < n);
 
-        NormalPoset {
+        FreePoset {
             n,
             i,
             adjacency: [BitSet::empty(); MAX_N],
@@ -81,7 +81,7 @@ impl Poset for NormalPoset {
     }
 }
 
-impl NormalPoset {
+impl FreePoset {
     #[inline]
     pub fn set_is_less(&mut self, i: u8, j: u8) {
         debug_assert!(i < self.n);
@@ -122,12 +122,12 @@ impl NormalPoset {
     }
 
     #[inline]
-    pub fn canonified(&self) -> CanonifiedPoset {
+    pub fn canonified(&self) -> PseudoCanonifiedPoset {
         let mut copy = *self;
         copy.reduce_elements();
         let mapping = copy.get_canonification_mapping();
 
-        let mut canonified = CanonifiedPoset::new(copy.n, copy.i);
+        let mut canonified = PseudoCanonifiedPoset::new(copy.n, copy.i);
 
         for i in 0..canonified.n() {
             let mapped_i = mapping[i as usize] as u8;
@@ -212,7 +212,7 @@ impl NormalPoset {
     fn canonify_mapping(&mut self) -> [usize; MAX_N] {
         let new_indices = self.get_canonification_mapping();
 
-        let mut new = NormalPoset::new(self.n, self.i);
+        let mut new = FreePoset::new(self.n, self.i);
 
         // make the new poset
         for i in 0..new.n {
@@ -284,7 +284,7 @@ impl NormalPoset {
             return new_indices;
         }
 
-        let mut new = NormalPoset::new(new_n as u8, self.i - n_less_dropped);
+        let mut new = FreePoset::new(new_n as u8, self.i - n_less_dropped);
 
         // make the new poset
         for i in 0..new.n {
@@ -404,7 +404,7 @@ impl NormalPoset {
             );
         }
 
-        let mut new = NormalPoset::new(self.n, self.i);
+        let mut new = FreePoset::new(self.n, self.i);
 
         // make the new poset
         for i in 0..new.n {
@@ -432,7 +432,7 @@ impl NormalPoset {
     }
 
     /// returns a clone of the poset, with i < j added
-    pub fn with_less(&self, i: u8, j: u8) -> CanonifiedPoset {
+    pub fn with_less(&self, i: u8, j: u8) -> PseudoCanonifiedPoset {
         let mut new = *self;
         new.add_and_close(i, j);
         new.canonified()
@@ -456,7 +456,7 @@ impl NormalPoset {
     /// Assumes self is normalized
     #[allow(unused)]
     pub fn dual(&self) -> Self {
-        let mut dual = NormalPoset::new(self.n, self.n - self.i - 1);
+        let mut dual = FreePoset::new(self.n, self.n - self.i - 1);
         for i in 0..self.n {
             for j in 0..self.n {
                 if self.is_less(i, j) {
@@ -469,7 +469,7 @@ impl NormalPoset {
     }
 
     #[allow(unused)]
-    pub fn num_compatible_posets_upper_bound(&self) -> usize {
+    pub fn num_compatible_solutions_upper_bound(&self) -> usize {
         let mut sum = 0;
         for i in 0..self.n {
             // assume the ith element is the solution
@@ -518,7 +518,7 @@ impl NormalPoset {
     }
 }
 
-impl Debug for NormalPoset {
+impl Debug for FreePoset {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // nicer debug output
         let adjacency: Vec<String> = (0..self.n)

@@ -152,7 +152,7 @@ pub trait Poset: Sized + Debug {
 mod test {
     use std::collections::HashSet;
 
-    use crate::{canonified_poset::CanonifiedPoset, normal_poset::NormalPoset};
+    use crate::{pseudo_canonified_poset::PseudoCanonifiedPoset, free_poset::FreePoset};
 
     use super::*;
 
@@ -168,7 +168,7 @@ mod test {
                 if j == k {
                     continue;
                 }
-                hashset.insert(NormalPoset::new(n, i).with_less(j, k));
+                hashset.insert(FreePoset::new(n, i).with_less(j, k));
             }
         }
 
@@ -195,7 +195,7 @@ mod test {
                             continue;
                         }
 
-                        let mut poset = NormalPoset::new(n, i);
+                        let mut poset = FreePoset::new(n, i);
                         poset.add_and_close(j, k); // just adding without normalizing
                         poset.add_and_close(l, m);
                         poset.canonify();
@@ -217,7 +217,7 @@ mod test {
 
     #[test]
     fn test_reduce() {
-        let mut poset = NormalPoset::new(4, 0);
+        let mut poset = FreePoset::new(4, 0);
         poset.add_and_close(0, 1);
         poset.reduce_elements(); // removes 0
         dbg!(poset);
@@ -231,22 +231,22 @@ mod test {
 
     #[test]
     fn test_compatible_posets() {
-        assert_eq!(NormalPoset::new(5, 2).num_compatible_posets(), 30); // 5 * (4 choose 2)
-        assert_eq!(NormalPoset::new(10, 4).num_compatible_posets(), 1260); // 10 * (9 choose 4)
-        let mut poset = NormalPoset::new(10, 4);
+        assert_eq!(FreePoset::new(5, 2).num_compatible_posets(), 30); // 5 * (4 choose 2)
+        assert_eq!(FreePoset::new(10, 4).num_compatible_posets(), 1260); // 10 * (9 choose 4)
+        let mut poset = FreePoset::new(10, 4);
         poset.add_and_close(0, 1);
         poset.canonify();
         // dbg!(poset, poset.num_compatible_posets());
         assert_eq!(poset.num_compatible_posets(), 854); // i don't know if this is correct
 
-        let mut poset = NormalPoset::new(10, 4);
+        let mut poset = FreePoset::new(10, 4);
         poset.add_and_close(0, 1);
         poset.add_and_close(1, 2);
         poset.canonify();
         // dbg!(poset, poset.num_compatible_posets());
         assert_eq!(poset.num_compatible_posets(), 483); // i don't know if this is correct
 
-        let mut poset = NormalPoset::new(6, 1);
+        let mut poset = FreePoset::new(6, 1);
         poset.add_and_close(2, 0);
         poset.add_and_close(3, 0);
         poset.add_and_close(4, 1);
@@ -260,7 +260,7 @@ mod test {
     fn a() {
         for i in 0..MAX_N {
             for j in (i + 1)..MAX_N {
-                let mut poset = CanonifiedPoset::new(MAX_N as u8, 0);
+                let mut poset = PseudoCanonifiedPoset::new(MAX_N as u8, 0);
                 poset.set_is_less(i as u8, j as u8);
                 assert!(
                     dbg!(poset.get_all_greater_than(i as u8)).contains(j),

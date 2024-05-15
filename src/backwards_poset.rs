@@ -11,7 +11,7 @@ use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use crate::backward_cache::BackwardCache;
 use crate::bitset::BitSet;
 use crate::constants::MAX_N;
-use crate::normal_poset::NormalPoset;
+use crate::free_poset::FreePoset;
 use crate::poset::Poset;
 use crate::search_backward::{COUTNER_USE_NAUTY, COUTNER_USE_NOT_NAUTY};
 
@@ -1104,8 +1104,8 @@ impl BackwardsPoset {
         true
     }
 
-    pub fn to_normal(&self) -> NormalPoset {
-        let mut result = NormalPoset::new(self.n, self.i);
+    pub fn to_normal(&self) -> FreePoset {
+        let mut result = FreePoset::new(self.n, self.i);
         for i in 0..self.n {
             for j in 0..self.n {
                 if self.is_less(i, j) {

@@ -1,11 +1,11 @@
-use crate::{canonified_poset::CanonifiedPoset, constants::MAX_N, poset::Poset};
+use crate::{pseudo_canonified_poset::PseudoCanonifiedPoset, constants::MAX_N, poset::Poset};
 use hashbrown::HashMap;
 use std::mem::size_of;
 
 use crate::backwards_poset::BackwardsPoset;
 
 pub struct BackwardCache {
-    buckets: Vec<[[HashMap<CanonifiedPoset, (u8, u8)>; MAX_N]; MAX_N]>, // TODO: CanonifiedPoset
+    buckets: Vec<[[HashMap<PseudoCanonifiedPoset, (u8, u8)>; MAX_N]; MAX_N]>, // TODO: CanonifiedPoset
 }
 
 impl BackwardCache {
@@ -15,8 +15,8 @@ impl BackwardCache {
         }
     }
 
-    fn to_canonified(poset: &BackwardsPoset) -> CanonifiedPoset {
-        let mut canonified = CanonifiedPoset::new(poset.n(), poset.i());
+    fn to_canonified(poset: &BackwardsPoset) -> PseudoCanonifiedPoset {
+        let mut canonified = PseudoCanonifiedPoset::new(poset.n(), poset.i());
         for i in 0..poset.n() {
             for j in 0..poset.n() {
                 if poset.is_less(i, j) {
@@ -36,7 +36,7 @@ impl BackwardCache {
                 }
             }
         }
-        let mut new_bucket: [[HashMap<CanonifiedPoset, (u8, u8)>; MAX_N]; MAX_N] =
+        let mut new_bucket: [[HashMap<PseudoCanonifiedPoset, (u8, u8)>; MAX_N]; MAX_N] =
             Default::default();
         for (poset, indices) in posets {
             new_bucket[poset.n() as usize][poset.i() as usize]
@@ -70,9 +70,9 @@ impl BackwardCache {
         for k in 0..self.buckets.len() {
             for n in 0..self.buckets[k].len() {
                 for i in 0..self.buckets[k][n].len() {
-                    memory_size += size_of::<HashMap<CanonifiedPoset, (u8, u8)>>()
+                    memory_size += size_of::<HashMap<PseudoCanonifiedPoset, (u8, u8)>>()
                         + self.buckets[k][n][i].capacity()
-                            * size_of::<(CanonifiedPoset, (u8, u8))>();
+                            * size_of::<(PseudoCanonifiedPoset, (u8, u8))>();
                 }
             }
         }

@@ -1,13 +1,13 @@
 use core::fmt::Debug;
 
 use crate::{
-    backwards_poset::BackwardsPoset, bitset::BitSet, constants::MAX_N, normal_poset::NormalPoset,
+    backwards_poset::BackwardsPoset, bitset::BitSet, constants::MAX_N, free_poset::FreePoset,
     poset::Poset,
 };
 
 /// A partially ordered set with <
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
-pub struct CanonifiedPoset {
+pub struct PseudoCanonifiedPoset {
     /// The number of elements
     n: u8,
     i: u8,
@@ -15,9 +15,9 @@ pub struct CanonifiedPoset {
     adjacency: [BitSet; MAX_N / 2 + 1],
 }
 
-impl Poset for CanonifiedPoset {
+impl Poset for PseudoCanonifiedPoset {
     fn new(n: u8, i: u8) -> Self {
-        CanonifiedPoset {
+        PseudoCanonifiedPoset {
             n,
             i,
             adjacency: [BitSet::empty(); MAX_N / 2 + 1],
@@ -126,7 +126,7 @@ impl Poset for CanonifiedPoset {
     }
 }
 
-impl CanonifiedPoset {
+impl PseudoCanonifiedPoset {
     #[inline]
     const fn get_index(i: u8, j: u8) -> (usize, usize) {
         debug_assert!(i < j);
@@ -146,13 +146,13 @@ impl CanonifiedPoset {
     }
 
     /// returns a clone of the poset, with i < j added
-    pub fn with_less(&self, i: u8, j: u8) -> CanonifiedPoset {
-        let mut new: NormalPoset = (*self).into();
+    pub fn with_less(&self, i: u8, j: u8) -> PseudoCanonifiedPoset {
+        let mut new: FreePoset = (*self).into();
         new.add_and_close(i, j);
         new.canonified()
     }
 
-    pub fn to_normal(self) -> NormalPoset {
+    pub fn to_free(self) -> FreePoset {
         self.into()
     }
 
@@ -170,7 +170,7 @@ impl CanonifiedPoset {
         result
     }
 
-    pub fn get_comparison_pairs(&self) -> Vec<(CanonifiedPoset, CanonifiedPoset, u8, u8)> {
+    pub fn get_comparison_pairs(&self) -> Vec<(PseudoCanonifiedPoset, PseudoCanonifiedPoset, u8, u8)> {
         let mut pairs = Vec::with_capacity(self.n() as usize * (self.n() as usize - 1) / 2);
 
         for i in 0..self.n() {
@@ -193,7 +193,7 @@ impl CanonifiedPoset {
 
                 if pairs
                     .iter()
-                    .find(|e: &&(CanonifiedPoset, CanonifiedPoset, u8, u8, u32)| {
+                    .find(|e: &&(PseudoCanonifiedPoset, PseudoCanonifiedPoset, u8, u8, u32)| {
                         e.0 == pair.0 && e.1 == pair.1
                     })
                     .is_none()
@@ -212,9 +212,9 @@ impl CanonifiedPoset {
     }
 }
 
-impl From<CanonifiedPoset> for NormalPoset {
-    fn from(value: CanonifiedPoset) -> Self {
-        let mut new_poset = NormalPoset::new(value.n, value.i);
+impl From<PseudoCanonifiedPoset> for FreePoset {
+    fn from(value: PseudoCanonifiedPoset) -> Self {
+        let mut new_poset = FreePoset::new(value.n, value.i);
         for i in 0..value.n {
             new_poset.set_all_greater_than(i as usize, value.get_all_greater_than(i));
         }
@@ -222,7 +222,7 @@ impl From<CanonifiedPoset> for NormalPoset {
     }
 }
 
-impl Debug for CanonifiedPoset {
+impl Debug for PseudoCanonifiedPoset {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // nicer debug output
         let adjacency: Vec<String> = (0..self.n)
