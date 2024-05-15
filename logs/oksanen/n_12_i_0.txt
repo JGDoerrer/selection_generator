@@ -2,7 +2,7 @@ limit=1, n=12, i=1: no comparisons done
 # cost = 11
 # n_nodes = 21
 # version = 1.6
-# time = 0.020
+# time = 0.000
 # hash_table_size = 892857142
 # n_solved = 11
 # n_unsolved = 0

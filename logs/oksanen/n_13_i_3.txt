@@ -174,7 +174,7 @@ limit=20, n=11, i=4: a>e,a>f,a>h,a>i,a>j,b>c,b>d,b>g,b>h,b>k,f>k,g>i,g>j
 # cost = 20
 # n_nodes = 161963
 # version = 1.6
-# time = 181.620
+# time = 55.370
 # hash_table_size = 892857142
 # n_solved = 91673
 # n_unsolved = 42960

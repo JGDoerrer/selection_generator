@@ -77,7 +77,7 @@ limit=18, n=11, i=3: c>d,c>e,c>f,c>g,c>h,h>i,h>j,h>k
 # cost = 19
 # n_nodes = 69789
 # version = 1.6
-# time = 59.180
+# time = 21.420
 # hash_table_size = 892857142
 # n_solved = 33985
 # n_unsolved = 24024

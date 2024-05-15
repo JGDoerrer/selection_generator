@@ -929,7 +929,7 @@ limit=19, n=12, i=5: c>f,c>j,c>k,c>l,d>g,d>j,d>k,d>l,e>h,g>i,h>i,h>j,h>k,h>l
 # cost = 20
 # n_nodes = 856857
 # version = 1.6
-# time = 938.040
+# time = 299.520
 # hash_table_size = 892857142
 # n_solved = 582802
 # n_unsolved = 180438
