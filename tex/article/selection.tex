@@ -316,11 +316,11 @@ For this means, the following strategies are applied.
 
 \begin{enumerate}
   \item[1.]
-    Use solvable-heuristic. A heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states `unsolvable', the branch is pruned.
-    Otherwise, the search continues regularly.
+        Use solvable-heuristic. A heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states `unsolvable', the branch is pruned.
+        Otherwise, the search continues regularly.
   \item[2.]
-    Use \texttt{current\_best}. Each call of \texttt{search\_rec} gets a maximum numbers of comparisons.
-    When searching the children of a node, the limit is the best (minimal) value found so far.
+        Use \texttt{current\_best}. Each call of \texttt{search\_rec} gets a maximum numbers of comparisons.
+        When searching the children of a node, the limit is the best (minimal) value found so far.
 \end{enumerate}
 
 It is optimal because of an inductive argument over the number of relative orders determined.
@@ -474,66 +474,66 @@ The computation of a predecessor for a given poset $p = (n_p, i_p, R_p)$ proceed
 
 \begin{itemize}
   \item[1.]
-    Firstly, we search for all posets with $n_p$ elements that result in poset $p$ after inserting a comparison $u < v$ followed by canonification.
+        Firstly, we search for all posets with $n_p$ elements that result in poset $p$ after inserting a comparison $u < v$ followed by canonification.
 
-    A challenge arises from transitive comparisons, as the insertion of one comparison can result in the insertion of multiple transitive comparisons.
+        A challenge arises from transitive comparisons, as the insertion of one comparison can result in the insertion of multiple transitive comparisons.
 
-    \begin{figure}[!b]
-      \centering
-      \input{figures/tikz_problematic_case.tex}
-      \caption{case in which further comparisons could be removed transitively by removing a comparison}
-      \label{fig:backward_problematic}
-    \end{figure}
+        \begin{figure}[!b]
+          \centering
+          \input{figures/tikz_problematic_case.tex}
+          \caption{case in which further comparisons could be removed transitively by removing a comparison}
+          \label{fig:backward_problematic}
+        \end{figure}
 
-    As illustrated in Figure~\ref{fig:backward_problematic}, all three posets are fully reduced and canonified.
-    Removing a comparison from poset (1) can result in either poset (2) or poset (3).
-    This implies that depending on the current cache, both poset (2) and poset (3) are valid potential predecessors, even though the same comparison is removed each time.
+        As illustrated in Figure~\ref{fig:backward_problematic}, all three posets are fully reduced and canonified.
+        Removing a comparison from poset (1) can result in either poset (2) or poset (3).
+        This implies that depending on the current cache, both poset (2) and poset (3) are valid potential predecessors, even though the same comparison is removed each time.
 
-    To solve this problem, all potential predecessors must be computed.
+        To solve this problem, all potential predecessors must be computed.
 
   \item[2.]
-    In the next step, all predecessors with $n + 1$ elements are calculated and, by inserting a comparison followed by a canonification, should result in the poset $p$, so that one element is dropped during the reduction.
+        In the next step, all predecessors with $n + 1$ elements are calculated and, by inserting a comparison followed by a canonification, should result in the poset $p$, so that one element is dropped during the reduction.
 
-    As the new element is smaller or larger than the $i$-smallest element being searched for, the $(i + 1)$-smallest or the $i$-smallest element is searched in these predecessors. Since the poset $p$ is canonified, $i \leq n - 1 - i$ applies to $p$. However, by canonifying a poset with $n + 1$ elements and the $(i + 1)$-smallest element searched for, it may be necessary to form the dual poset, whereby the $(n + 1) - (i + 1) - 1 = n - i + 1$-th element is searched for.
+        As the new element is smaller or larger than the $i$-smallest element being searched for, the $(i + 1)$-smallest or the $i$-smallest element is searched in these predecessors. Since the poset $p$ is canonified, $i \leq n - 1 - i$ applies to $p$. However, by canonifying a poset with $n + 1$ elements and the $(i + 1)$-smallest element searched for, it may be necessary to form the dual poset, whereby the $(n + 1) - (i + 1) - 1 = n - i + 1$-th element is searched for.
 
-    Construct poset $q$ as follows:
-    To achieve this, insert a new element into poset $p$ and add arbitrary comparisons between the new element and the existing elements.
-    It is essential to ensure that the new element cannot be immediately reduced and that it is not possible to reduce any of the existing elements.
-    Furthermore, there must exist a comparison $u < v$ such that the addition of this comparison results in poset $p$ again.
+        Construct poset $q$ as follows:
+        To achieve this, insert a new element into poset $p$ and add arbitrary comparisons between the new element and the existing elements.
+        It is essential to ensure that the new element cannot be immediately reduced and that it is not possible to reduce any of the existing elements.
+        Furthermore, there must exist a comparison $u < v$ such that the addition of this comparison results in poset $p$ again.
 
-    \begin{lemma} \label{lemma:remove_only_last_element_edge}
-      Let $p = (n_p, i_p, R_p)$ be a reduced poset.
-      Let $q$ be a reduced poset obtained from $p$ by adding the comparison $u < v$.
-      Then, $q$ contains either the element $u$ or $v$, both elements cannot be reduced simultaneously.
-    \end{lemma}
+        \begin{lemma} \label{lemma:remove_only_last_element_edge}
+          Let $p = (n_p, i_p, R_p)$ be a reduced poset.
+          Let $q$ be a reduced poset obtained from $p$ by adding the comparison $u < v$.
+          Then, $q$ contains either the element $u$ or $v$, both elements cannot be reduced simultaneously.
+        \end{lemma}
 
-    \begin{proof}
-      Let $less_p[v]$ denote the number of elements smaller than $v$ in the poset $p$.
-      Let $greater_p[u]$ denote the number of elements greater than $u$ in the poset $p$.
-      For both $u$ and $v$ not to be reducible in the poset $p$, it holds that $less_p[v] \leq i_p$ and $greater_p[u] \leq n_p - 1 - i_p$ (see Definition~\ref{definition:reduced_poset}).
-      When the comparison $u < v$ is added to the poset $p$, the poset $q$ satisfies $less_q[v] = less_p[v] + 1$ and $greater_q[u] = greater_p[u] + 1$.
-      For $u$ and $v$ to be reducible in the poset $q$, it must hold that $less_q[v] > i_p$ and $greater_q[u] > n_p - 1 - i_p$, meaning $less_p[v] = i_p$ and $greater_p[u] = n_p - 1 - i_p$.
-      Consequently, $less_q[v] = i_p + 1$ and $greater_q[u] = n_p - i_p$.
-      Since it is known that the poset $q$ has at most $n_p$ elements before reduction, and $u < v$, it must satisfy $less_q[v] + greater_q[u] \leq n_p$.
-      However, $less_q[v] + greater_q[u] = i_p + 1 + n_p - i_p = n_p + 1$.
-      Thus, $u$ and $v$ cannot be reduced simultaneously.
-    \end{proof}
+        \begin{proof}
+          Let $less_p[v]$ denote the number of elements smaller than $v$ in the poset $p$.
+          Let $greater_p[u]$ denote the number of elements greater than $u$ in the poset $p$.
+          For both $u$ and $v$ not to be reducible in the poset $p$, it holds that $less_p[v] \leq i_p$ and $greater_p[u] \leq n_p - 1 - i_p$ (see Definition~\ref{definition:reduced_poset}).
+          When the comparison $u < v$ is added to the poset $p$, the poset $q$ satisfies $less_q[v] = less_p[v] + 1$ and $greater_q[u] = greater_p[u] + 1$.
+          For $u$ and $v$ to be reducible in the poset $q$, it must hold that $less_q[v] > i_p$ and $greater_q[u] > n_p - 1 - i_p$, meaning $less_p[v] = i_p$ and $greater_p[u] = n_p - 1 - i_p$.
+          Consequently, $less_q[v] = i_p + 1$ and $greater_q[u] = n_p - i_p$.
+          Since it is known that the poset $q$ has at most $n_p$ elements before reduction, and $u < v$, it must satisfy $less_q[v] + greater_q[u] \leq n_p$.
+          However, $less_q[v] + greater_q[u] = i_p + 1 + n_p - i_p = n_p + 1$.
+          Thus, $u$ and $v$ cannot be reduced simultaneously.
+        \end{proof}
 
-    As proven in Lemma~\ref{lemma:remove_only_last_element_edge}, it suffices to compare the new element solely with the existing ones.
+        As proven in Lemma~\ref{lemma:remove_only_last_element_edge}, it suffices to compare the new element solely with the existing ones.
 
-    Subsequently, the posets from the first and second steps are merged into a set, ensuring the canonification of all posets.
+        Subsequently, the posets from the first and second steps are merged into a set, ensuring the canonification of all posets.
 
   \item[3.]
-    In the third step, new elements are iteratively inserted, followed by new comparisons for each previously found element, until the upper limit on elements, $n_{\text{max}}$, is reached.
-    This upper limit $n_{\text{max}}$ also prevents the reuse of cache values from a backward search traversal for subsequent iterations.
-    When inserting a new element, it is important to note that it may no longer be the $i$-th smallest, but rather the $(i + 1)$-th smallest element being searched, similar to the second step, and thus cannot be directly reduced.
-    Additionally, by adding the comparison $u < v$, as in the first and second steps, followed by subsequent reduction and canonification, the resulting poset $p$ should be obtained anew.
+        In the third step, new elements are iteratively inserted, followed by new comparisons for each previously found element, until the upper limit on elements, $n_{\text{max}}$, is reached.
+        This upper limit $n_{\text{max}}$ also prevents the reuse of cache values from a backward search traversal for subsequent iterations.
+        When inserting a new element, it is important to note that it may no longer be the $i$-th smallest, but rather the $(i + 1)$-th smallest element being searched, similar to the second step, and thus cannot be directly reduced.
+        Additionally, by adding the comparison $u < v$, as in the first and second steps, followed by subsequent reduction and canonification, the resulting poset $p$ should be obtained anew.
 
   \item[4.]
-    In the last step, the minimum number of comparisons that still need to be removed until the empty poset is reached is calculated for each predecessor.
-    This number corresponds to the edges in the corresponding Hasse diagram.
-    Based on the known theoretical upper bounds, all posets that contain too many comparisons can be discarded, as these cannot lead to an empty poset in the remaining comparisons and therefore cannot be considered in the forward search.
-    As no more than one comparison can be removed in one step, these posets can be discarded.
+        In the last step, the minimum number of comparisons that still need to be removed until the empty poset is reached is calculated for each predecessor.
+        This number corresponds to the edges in the corresponding Hasse diagram.
+        Based on the known theoretical upper bounds, all posets that contain too many comparisons can be discarded, as these cannot lead to an empty poset in the remaining comparisons and therefore cannot be considered in the forward search.
+        As no more than one comparison can be removed in one step, these posets can be discarded.
 \end{itemize}
 
 \begin{figure}[!b]
@@ -723,7 +723,7 @@ Nevertheless, bidirectional search has great potential that can be exploited thr
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
-  \caption{The minimum amount of comparisons needed to select the $i$-th smallest of $n$ elements.}
+  \caption{The minimum number of comparisons needed to select the $i$-th smallest of $n$ elements.}
   \label{table:num-comparisons}
   \centering
   \begin{tabular}{c|cccccccc}
@@ -747,12 +747,11 @@ Nevertheless, bidirectional search has great potential that can be exploited thr
   \end{tabular}
 \end{table}
 
-See Table~\ref{table:num-comparisons}.
-
+The values we calculated to be the minimum number of comparisons needed to solve the selection problem for $n \leq 15$ are shown in Table~\ref{table:num-comparisons} .
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
-  \caption{Comparison of the times for the forward and backward search (note: the forward search runs single threaded, in contrast to the backward search which benefits greatly from parallelism; the forward search was started with 500gb RAM; for each value of $n$ and $i$ the forward search was restarted, meaning that it does not use the cache from previous runs; the column `Oksanen' shows the times of his program \cite{Oksanen} on our hardware); the program from Oksanen was started with only 25gb due to the fact, that it was designed for 400mb RAM; the numbers marked with an asterisk by Oksanen do not provide the perfect lower bound in the public available version 1.6, even if he has specified a perfect algorithm on the website with the unavailable version 1.1}
+  \caption{Execution times of different search methods. Times marked with an asterisk gave a nonoptimal result}
   \label{table:search_algorithms}
   \centering
   \begin{tabular}{c|c|l|l|l}
@@ -792,18 +791,21 @@ See Table~\ref{table:num-comparisons}.
   \end{tabular}
 \end{table}
 
-% TODO: hier muss noch hin, dass die werte gerundet wurden und eh nicht 100% genau sind, da wir uns teils die Server geteilt haben
-
-See Table~\ref{table:search_algorithms}.
+Table~\ref{table:search_algorithms} shows the time taken to solve the selection problem.
+The times are rounded and may not be represetative, as the server they were measured on was shared with other people.
+Additionally we measured the number of posets that were stored in the cache after the calculation, which can be seen in Table~\ref{table:cache_entries}.
+The forward search runs single threaded, in contrast to the backward search which benefits greatly from parallelism.
+The forward search was started with 500GB RAM, and for each value of $n$ and $i$ it was restarted, meaning that it does not use the cache from previous runs.
+The column 'Oksanen' shows the times of his program \cite{Oksanen} on our hardware.
+The program from Oksanen was started with only 25GB due to the fact, that it was designed for 400MB RAM.
+The numbers marked with an asterisk by Oksanen do not provide the optimal lower bound in the public available version 1.6, even if he has specified an optimal algorithm on the website with the unavailable version 1.1.
 
 Furthermore, we can disprove Gasarch's \cite{Gasarch1996} conjecture that “pair-forming algorithms”, in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
 For $n = 12$ and $i = 4$, this assumption gives a bound of 20 comparisons, which does not correspond to the optimal bound of 19 comparisons.
 
-% TODO: und hier noch a sätzchen, dass werte von oksanen auch noch nicht optimal
-
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
-  \caption{Number of posets stored in the cache after the corresponding search (note: the fewer entries stored in the cache, the less RAM is needed by the corresponding search)}
+  \caption{Number of posets stored in the cache after the corresponding search}
   \label{table:cache_entries}
   \centering
   \begin{tabular}{c|c|r|r}
@@ -836,9 +838,6 @@ For $n = 12$ and $i = 4$, this assumption gives a bound of 20 comparisons, which
   \end{tabular}
 \end{table}
 
-See Table~\ref{table:cache_entries}.
-
-% TODO: die ganzen See Table in Text einbauen
 
 \section{Conclusion}
 Using computer search based on the work of Oksanen we were able to write our own version of a search program for selecting the $i$-th element of a list of $n$ elements (see: \href{https://github.com/JGDoerrer/selection_generator}{Github}) and not only confirming the found solutions of Oksanen for the problem but also improving some entries (e.g. $n = 15, i = 4$).
