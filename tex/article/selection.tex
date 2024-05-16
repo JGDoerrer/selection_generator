@@ -151,7 +151,7 @@ An upper bound is been proposed by Blum, in the paper \textit{Time Bounds for Se
 It stated that no more than $5.430\dot{5} \cdot n$ comparisons are ever required \todo{cite}.
 Therefore selection is for sure in a time complexity of $\mathcal{O}(n)$ for best and worst-case.
 
-\begin{lemma}
+\begin{lemma} \label{lemma:previous_next_poset}
   If $k$ is a lower bound for selecting $i$ of $n$, then selecting $i$ of $n + 1$ must take at least $k + 1$ comparisons.
 \end{lemma}
 
@@ -618,7 +618,7 @@ For small values of $i$, the high percentage of nauty is uncritical, as the resu
 \subsubsection{Optimization}
 
 As the theoretical upper bounds are too high in practice, the program uses an iterative deepening approach.
-It starts with an upper bound that corresponds to the theoretical lower bound and increases this bound iteratively until a solution is finally found.
+It starts with an upper bound that corresponds to the theoretical lower bound, derived by Lemma~\ref{lemma:previous_next_poset} from the smaller values for $n$ and increases this bound iteratively until a solution is finally found.
 As it is not possible to save which posets are lost due to the guessed upper bound without considerable effort, the backward search is restarted several times.
 Although results from previous rounds are not used, the search space can be considerably reduced and the program can be made more efficient.
 
@@ -771,24 +771,24 @@ See Table~\ref{table:num-comparisons}.
     13         & 3          & 13.8s                   & 16.1s                    & 55.4s            \\
     13         & 4          & 3m 42s                  & 1m 40s                   & 26m 36s          \\
     13         & 5          & 17m 10s                 & 8m 35s                   & 3h 25m           \\
-    13         & 6          & 59m 20s                 & 18m 5s                   & tbd.             \\
+    13         & 6          & 59m 20s                 & 18m 5s                   & 16h 10m          \\
     \hline
     14         & 0          & 0.0s                    & 0.0s                     & 0.0s             \\
     14         & 1          & 0.0s                    & 1.5s                     & 0.0s             \\
     14         & 2          & 1.4s                    & 5.9s                     & 0.6s             \\
     14         & 3          & 35.9s                   & 46.9s                    & 1m 47s           \\
-    14         & 4          & 17m 27s                 & 15m 33s                  & tbd.             \\
-    14         & 5          & 2h 40m                  & 1h 40m                   & tbd.             \\
-    14         & 6          & 14h 40m                 & 6h 27m                   & tbd.             \\
+    14         & 4          & 17m 27s                 & 15m 33s                  & 6h 29m           \\
+    14         & 5          & 2h 40m                  & 1h 40m                   & >24h             \\
+    14         & 6          & 14h 40m                 & 6h 27m                   & >24h             \\
     \hline
     15         & 0          & 0.0s                    & 0.0s                     & 0.0s             \\
     15         & 1          & 0.1s                    & 4.0s                     & 0.0s             \\
     15         & 2          & 2.8s                    & 25.9s                    & 1.4s             \\
     15         & 3          & 2m 24s                  & 13m 11s                  & 27m 17s          \\
-    15         & 4          & 1h 12m                  & 45m 52s                  & tbd.             \\
-    15         & 5          & 1d 8h 37m               & 19h 30m                  & tbd.             \\
-    15         & 6          & 12d 13h 43m             & 1d 5h 43m                & tbd.             \\
-    15         & 7          & 14d 1h 51m              & 3d 8h 9m                 & tbd.             \\
+    15         & 4          & 1h 12m                  & 45m 52s                  & >24h             \\
+    15         & 5          & 1d 8h 37m               & 19h 30m                  & >24h             \\
+    15         & 6          & 12d 13h 43m             & 1d 5h 43m                & >24h             \\
+    15         & 7          & 14d 1h 51m              & 3d 8h 9m                 & >24h             \\
   \end{tabular}
 \end{table}
 
