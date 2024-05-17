@@ -320,8 +320,7 @@ For this means, the following strategies are applied.
         If the check returns 'unsolvable', the branch is pruned.
         Otherwise, the search is continued in the current branch.
   \item[2.]
-        Use \texttt{current\_best}. Each call of \texttt{search\_rec} gets a maximum numbers of comparisons.
-        When searching the children of a node, the limit is the best (minimal) value found so far.
+        Use \texttt{current\_best}. This variable facilitates cutting off branches according to the idea of alpha-beta pruning.
 \end{enumerate}
 
 It is optimal because of an inductive argument over the number of relative orders determined.
