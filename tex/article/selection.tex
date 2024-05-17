@@ -181,6 +181,10 @@ The \texttt{SELECT} problem is thus embedded as $(n, i, \emptyset)$.
   Hence, all elements are still possible solutions.
 \end{definition}
 
+\begin{definition}[Dual poset] \label{definition:dual_poset}
+  The dual of a poset $P = (n, i, R)$ is the poset $P^{-1} = (n, n - 1 - i, R')$ with $R' = \{(u,v) \; \vert \; (v,u) \in R\}$.
+\end{definition}
+
 \begin{definition}[Canonified]
   A poset is \textbf{Canonified} if it matches the following conditions making it unique among all posets isomorphic to it:
   \begin{itemize}
@@ -199,10 +203,6 @@ The \texttt{SELECT} problem is thus embedded as $(n, i, \emptyset)$.
   The cost $V(P)$ of the poset $P = (n, i, R)$ is the optimal number of further comparisons needed to perform the selection.
 
   We measure this pessimistically, meaning that among all possible outcomes of those further comparisons we assume the most expensive ones.
-\end{definition}
-
-\begin{definition}[Dual poset] \label{definition:dual_poset}
-  The dual of a poset $P = (n, i, R)$ is the poset $P^{-1} = (n, n - 1 - i, R')$ with $R' = \{(u,v) \; \vert \; (v,u) \in R\}$.
 \end{definition}
 
 \begin{lemma} \label{lemma:dual_poset_allowed}
