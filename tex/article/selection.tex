@@ -287,10 +287,9 @@ Let $\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$ be the set of all
 \end{figure}
 A good visual example is finding the median $i=2$ in a list of $n = 5$ elements.
 Figure~\ref{fig:median_of_5} illustrate the search of the median using Hasse diagrams.
-Each step shows the comparisons to be performed next as a yellow line.
-A Hasse diagram of the order of relation found so far (smaller=lower, larger=higher) is shown as the blue lines.
-The red circles have already found to be greater than three others and disqualified.
-The red elements have already been determined to be larger than three other elements and are therefore disqualified as medians.
+Each step shows the comparisons to be performed next as a dashed line.
+A Hasse diagram of the order of relation found so far (smaller=lower, larger=higher) is shown as the solid lines.
+The red crosses indicate elements that have been found to be greater or smaller than three other elements and therefore are disqualified for the median.
 The larger element of the final comparison is the median.
 This is also the optimal algorithm for $i = 2$ and $n = 5$.
 
