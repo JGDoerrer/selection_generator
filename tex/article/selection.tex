@@ -299,7 +299,7 @@ In this section we describe our three main approaches being the forward search, 
 Furthermore, we explain how we harness the notion of compatible solutions with respect to all of the three search approaches.
 
 \subsection{Forward Search}\label{chapter:forward_search}
-Forward Search starts with an unordered poset $P=(n,i,\emptyset)$, and recursively determines solvability of a given poset within some bound by exhaustively searching the results of all possible comparisons to be made unless it is already solved or we determine that it cannot be solved within the alloted number of comparisons by some heuristic.
+Forward Search starts with an unordered poset $P=(n,i,\emptyset)$, and recursively determines solvability of a given poset within some bound by exhaustively searching the results of all possible comparisons to be made unless it is already solved or we determine that it cannot be solved within the alloted number of comparisons by some solvability-check.
 
 Between the two possible outcomes of a comparison we assume the worse, but since an algorithm is free to choose which elements to compare we are looking for the most useful comparison, the one that yields result posets cheapest to solve themselves, still in terms of worst case outcome.
 The algorithms output by the search program are built by saving the comparison that lead to this cheapest to solve result.
@@ -315,8 +315,10 @@ For this means, the following strategies are applied.
 
 \begin{enumerate}
   \item[1.]
-        Use solvable-heuristic. A heuristic is employed to estimate whether a poset is solvable. If the heuristic's estimate states `unsolvable', the branch is pruned.
-        Otherwise, the search continues regularly.
+        Use solvability-check. For an unsolvable poset the check always returns 'unsolvable'. 
+        However, the check may return 'solvable' or 'unsolvable' for a poset that is in fact solvable. 
+        If the check returns 'unsolvable', the branch is pruned.
+        Otherwise, the search is continued in the current branch.
   \item[2.]
         Use \texttt{current\_best}. Each call of \texttt{search\_rec} gets a maximum numbers of comparisons.
         When searching the children of a node, the limit is the best (minimal) value found so far.
