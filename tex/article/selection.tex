@@ -299,7 +299,7 @@ In this section we describe our three main approaches being the forward search, 
 Furthermore, we explain how we harness the notion of compatible solutions with respect to all of the three search approaches.
 
 \subsection{Forward Search}\label{chapter:forward_search}
-Forward Search starts with an empty poset $(n,i,\emptyset)$, and recursively determines solvability of a given poset within some bound by exhaustively searching the results of all possible comparisons to be made unless it is already solved or we determine that it cannot be solved within the alloted number of comparisons by some heuristic.
+Forward Search starts with an unordered poset $P=(n,i,\emptyset)$, and recursively determines solvability of a given poset within some bound by exhaustively searching the results of all possible comparisons to be made unless it is already solved or we determine that it cannot be solved within the alloted number of comparisons by some heuristic.
 
 Between the two possible outcomes of a comparison we assume the worse, but since an algorithm is free to choose which elements to compare we are looking for the most useful comparison, the one that yields result posets cheapest to solve themselves, still in terms of worst case outcome.
 The algorithms output by the search program are built by saving the comparison that lead to this cheapest to solve result.
@@ -373,7 +373,7 @@ The calculation of this number first picks a solution element $j$ - since posets
   \label{algo:compatible_solutions}
 \end{algorithm}
 
-As an example, the empty poset $(n,i,\emptyset)$ has $n \cdot \binom{n - 1}{i}$ compatible solutions because
+As an example, the unordered poset $(n,i,\emptyset)$ has $n \cdot \binom{n - 1}{i}$ compatible solutions because
 for each of the $n$ elements, all separations of the remaining $n - 1$ elements
 are valid.
 
@@ -435,7 +435,7 @@ And if a poset is solvable within that number of comparisons it must have at lea
 
 \subsubsection{Algorithm} \label{sec:backward:algorithm}
 The input parameters for the backward search are denoted by $n$ and $i$, like in the forward search.
-The backward search starts with the smallest solved poset $p_{\text{empty} (1, 0)} = (1, 0, \emptyset)$ and iteratively computes all posets solvable within $k = 1, 2, 3, \dots$ comparisons until the empty poset $p_{\text{empty} (n, i)} = (n, i, \emptyset)$ is encountered.
+The backward search starts with the smallest solved poset $p_{\text{empty} (1, 0)} = (1, 0, \emptyset)$ and iteratively computes all posets solvable within $k = 1, 2, 3, \dots$ comparisons until the unordered poset $p_{\text{empty} (n, i)} = (n, i, \emptyset)$ is encountered.
 
 Let $A_k$ denote the set of all posets solvable in $k$ comparisons.
 For all $n$ and $i$, we have $A_0 = { (1, 0, \emptyset) }$.
@@ -529,9 +529,9 @@ The computation of a predecessor for a given poset $p = (n_p, i_p, R_p)$ proceed
         Additionally, by adding the comparison $u < v$, as in the first and second steps, followed by subsequent reduction and canonification, the resulting poset $p$ should be obtained anew.
 
   \item[4.]
-        In the last step, the minimum number of comparisons that still need to be removed until the empty poset is reached is calculated for each predecessor.
+        In the last step, the minimum number of comparisons that still need to be removed until the unordered poset is reached is calculated for each predecessor.
         This number corresponds to the edges in the corresponding Hasse diagram.
-        Based on the known theoretical upper bounds, all posets that contain too many comparisons can be discarded, as these cannot lead to an empty poset in the remaining comparisons and therefore cannot be considered in the forward search.
+        Based on the known theoretical upper bounds, all posets that contain too many comparisons can be discarded, as these cannot lead to an unordered poset in the remaining comparisons and therefore cannot be considered in the forward search.
         As no more than one comparison can be removed in one step, these posets can be discarded.
 \end{itemize}
 
