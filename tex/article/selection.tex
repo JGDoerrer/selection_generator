@@ -712,7 +712,7 @@ Nevertheless, bidirectional search has great potential that can be exploited thr
 % \end{lemma}
 % \begin{proof}
 %   1. Zu zeigen: p' ist reduziert:
-%     für $V' = \emptyset$ trivial
+%     für $V' = \emptyset$ oder V trivial
 %     sei $V' = {x}$: 
 
 %   2. Zu zeigen: hinzunahem von $u < v$ & reduzieren => Q
@@ -795,12 +795,12 @@ Table~\ref{table:search_algorithms} shows the time taken to solve the selection 
 The times are rounded and may not be represetative, as the server they were measured on was shared with other people.
 Additionally we measured the number of posets that were stored in the cache after the calculation, which can be seen in Table~\ref{table:cache_entries}.
 The forward search runs single threaded, in contrast to the backward search which benefits greatly from parallelism.
-The forward search was started with 500GB RAM, and for each value of $n$ and $i$ it was restarted, meaning that it does not use the cache from previous runs.
+The forward search was started with 500 GB RAM, and for each value of $n$ and $i$ it was restarted, meaning that it does not use the cache from previous runs.
 The column 'Oksanen' shows the times of his program \cite{Oksanen} on our hardware.
-The program from Oksanen was started with only 25GB due to the fact, that it was designed for 400MB RAM.
+The program from Oksanen was started with only 25 GB due to the fact, that it was designed for 400 MB RAM.
 The numbers marked with an asterisk by Oksanen do not provide the optimal lower bound in the public available version 1.6, even if he has specified an optimal algorithm on the website with the unavailable version 1.1.
 
-Furthermore, we can disprove Gasarch's \cite{Gasarch1996} conjecture that “pair-forming algorithms”, in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
+Furthermore, we can disprove Gasarch's \cite{Gasarch1996} conjecture that ``pair-forming algorithms'', in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
 For $n = 12$ and $i = 4$, this assumption gives a bound of 20 comparisons, which does not correspond to the optimal bound of 19 comparisons.
 
 \begin{table}[!t]
@@ -845,7 +845,7 @@ Further we added some more numbers and therefore algorithms to the table for hig
 As stated in the motivation before: the road is better than the inn.
 Along the way we learned a lot about the problem structure and complexity, improved our forward and backward search algorithms coming to a final conclusion that both are valid and have their strength an weaknesses as stated in (\ref{}). % TODO: andi: ref fehlt
 If you want to use the program to generate more optimal numbers and therefore algorithms one should have quite some time and a good hardware in form of a high count CPU and as much RAM as possible (see: \ref{sec:hardware} for our used hardware).
-It is noteworthy that, due to technical constraints, the forward search utilized only 500gb of RAM. % TODO: überarbeitet andi, oder 600 genau zahlen
+It is noteworthy that, due to technical constraints, the forward search utilized only 500GB of RAM. % TODO: überarbeitet andi, oder 600 genau zahlen
 Right now one should use the backward search due to the lower RAM footprint and scaling with the CPU count.
 
 Another interesting aspect for the forward search is not only to search for isomorphic posets in the cache, but also whether a poset is a subgraph of another.
