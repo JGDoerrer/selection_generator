@@ -113,7 +113,7 @@ On his website Kenneth Oksanen \cite{Oksanen} published a computer search algori
 However, the results are not published in a scientific journal and lack explanation.
 This work will continue the work of Oksanen \cite{Oksanen} by confirming, improving and expanding the values he found.
 It will reimplement some ideas of the algorithms Oksanen published along with his found lower bounds and improve the computer search algorithms by researching the benefits of different search strategies, adding $\alpha$-$\beta$-pruning and the exploitation of compatible solutions.
-A quote from Miguel de Cervantes from Don Quijote will hold true for this article: The journey is better than the inn.
+A quote from Miguel de Cervantes from Don Quijote will hold true for this article: The journey is better than the inn. % TODO: @andi: bitte belegen
 So buckle up.
 
 \section{Fundamentals}
@@ -171,7 +171,7 @@ A partial order is an ordering relation $\leq$ on a set $P$ that satisfies refle
   Given a set of elements $\Omega$ with $|\Omega| = n < \infty$ we write $(n, i, R)$ for the selection of the $i$-th largest of $n$ elements with the existing comparisons $R$.
   Explicitly, $R\subseteq\Omega^2$ such that $(a, b)\in R \Longleftrightarrow a \leq b$.
 
-  The enumeration of $i$ starts at $0$, so $(4, 1, R)$ is the second smallest, rather than the minimum.
+  The enumeration of $i$ starts at $0$, so in $(4, 1, R)$ is the second smallest searched, rather than the minimum.
 \end{definition}
 
 The \texttt{SELECT} problem is thus embedded as $(n, i, \emptyset)$.
@@ -315,12 +315,12 @@ For this means, the following strategies are applied.
 
 \begin{enumerate}
   \item[1.]
-        Use solvability-check. For an unsolvable poset the check always returns 'unsolvable'. 
-        However, the check may return 'solvable' or 'unsolvable' for a poset that is in fact solvable. 
-        If the check returns 'unsolvable', the branch is pruned.
-        Otherwise, the search is continued in the current branch.
+    Use solvability-check. For an unsolvable poset the check always returns 'unsolvable'.
+    However, the check may return 'solvable' or 'unsolvable' for a poset that is in fact solvable.
+    If the check returns 'unsolvable', the branch is pruned.
+    Otherwise, the search is continued in the current branch.
   \item[2.]
-        Use \texttt{current\_best}. This variable facilitates cutting off branches according to the idea of alpha-beta pruning.
+    Use \texttt{current\_best}. This variable facilitates cutting off branches according to the idea of alpha-beta pruning.
 \end{enumerate}
 
 It is optimal because of an inductive argument over the number of relative orders determined.
@@ -422,8 +422,9 @@ See the git branch \textit{multi-threaded} for the last state.
 To develop the backward search, primarily the backward search from \cite{stober2022lower} was taken as orientation, since it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen \cite{Oksanen}.
 
 The backward search starts with the solved poset and iteratively removes comparisons until the searched poset is found.
-It should be noted that if a comparison is removed from the poset $p = (n_p, i_p, R_p)$ resulting in $p' = (n_p, i_p, R_p \setminus (u, v))$, the reverse comparison should also return a correct result.
-This means that $q' = (n_p, i_p, R_p \setminus (u, v) \cup (v, u))$ has already been discovered in the search.
+It should be noted that if a comparison is removed from the poset $P = (n, i, R)$ resulting in the poset $(n, i, R \setminus (u, v))$,
+the poset $Q = (n, i, R \setminus (u, v) \cup (v, u))$ should already be in a canonified from in the cache.
+This means that $Q$ has already been discovered in the search.
 
 Thus, the number of iterations taken until a poset is added to the frontier equals the number of worst case comparisons needed to solve it, which means that the search terminates once $(n, i, \emptyset)$ with the desired $n$ and $i$ is found.
 
@@ -436,7 +437,7 @@ And if a poset is solvable within that number of comparisons it must have at lea
 
 \subsubsection{Algorithm} \label{sec:backward:algorithm}
 The input parameters for the backward search are denoted by $n$ and $i$, like in the forward search.
-The backward search starts with the smallest solved poset $p_{\text{empty} (1, 0)} = (1, 0, \emptyset)$ and iteratively computes all posets solvable within $k = 1, 2, 3, \dots$ comparisons until the unordered poset $p_{\text{empty} (n, i)} = (n, i, \emptyset)$ is encountered.
+The backward search starts with the smallest solved poset $P_{\text{empty} (1, 0)} = (1, 0, \emptyset)$ and iteratively computes all posets solvable within $k = 1, 2, 3, \dots$ comparisons until the unordered poset $P_{\text{empty} (n, i)} = (n, i, \emptyset)$ is encountered.
 
 Let $A_k$ denote the set of all posets solvable in $k$ comparisons.
 For all $n$ and $i$, we have $A_0 = { (1, 0, \emptyset) }$.
@@ -448,92 +449,92 @@ If $(n, i, \emptyset) \in A_l$, then $l$ comparisons are the lower bound to dete
 \subsubsection{Predecessor calculation} \label{sec:backward:predecessor_calculation}
 
 \begin{definition}[Predecessor] \label{definition:predecessor_calculation}
-  Poset $q$ is the predecessor of poset $p$ if the following conditions hold:
+  Poset $Q$ is the predecessor of poset $P$ if the following conditions hold:
   \begin{itemize}
-    \item poset $q$ is normalised
-    \item poset $q$ was not found in any previous round (otherwise it would be solvable in fewer comparisons)
-    \item There exists a comparison $(i, j)$ whose adding in $q$ and subsequent normalization results in the poset $p$ and adding the reverse comparison $(j, i)$ and subsequent normalization results in an already found poset
+    \item poset $Q$ is normalised
+    \item poset $Q$ was not found in any previous round (otherwise it would be solvable in fewer comparisons)
+    \item There exists a comparison $(i, j)$ whose adding in $Q$ and subsequent normalization results in the poset $P$ and adding the reverse comparison $(j, i)$ and subsequent normalization results in an already found poset
   \end{itemize}
 \end{definition}
 
 \begin{lemma} \label{lemma:predecessor_calculation}
-  If poset $p$ is solvable in $k$ comparisons and $q$ is a predecessor of poset $p$, poset $q$ is solvable in $k + 1$ comparisons
+  If poset $P$ is solvable in $k$ comparisons and $Q$ is a predecessor of poset $P$, poset $Q$ is solvable in $k + 1$ comparisons
 \end{lemma}
 
 \begin{proof} \label{proof:predecessor_calculation}
-  Since $q$ was not found in any previous round, according to the assumption, it is not solvable in fewer comparisons.
-  By performing the addition of comparison $(i, j)$ followed by normalization, the poset $p$ is derived, consequently establishing the reachability of $q$.
-  As $p$ is solvable in $k$ comparisons, thus $q$ is solvable in $k + 1$ comparisons.
+  Since $Q$ was not found in any previous round, according to the assumption, it is not solvable in fewer comparisons.
+  By performing the addition of comparison $(i, j)$ followed by normalization, the poset $P$ is derived, consequently establishing the reachability of $Q$.
+  As $P$ is solvable in $k$ comparisons, thus $Q$ is solvable in $k + 1$ comparisons.
   If the comparison is inserted in reverse, according to the assumption, the resulting poset is already in the cache.
   Thus, this path is solvable in at most $k + 1$ comparisons.
 \end{proof}
 
 Since potentially infinitely many predecessors exist, only up to a maximum limit of $n_{\text{max}}$ elements are computed.
 This is possible because a predecessor always has fewer or the same number of elements.
-The computation of a predecessor for a given poset $p = (n_p, i_p, R_p)$ proceeds in four steps:
+The computation of a predecessor for a given poset $P = (n_P, i_P, R_P)$ proceeds in four steps:
 
 \begin{itemize}
   \item[1.]
-        Firstly, we search for all posets with $n_p$ elements that result in poset $p$ after inserting a comparison $u < v$ followed by canonification.
+    Firstly, we search for all posets with $n_P$ elements that result in poset $P$ after inserting a comparison $u < v$ followed by canonification.
 
-        A challenge arises from transitive comparisons, as the insertion of one comparison can result in the insertion of multiple transitive comparisons.
+    A challenge arises from transitive comparisons, as the insertion of one comparison can result in the insertion of multiple transitive comparisons.
 
-        \begin{figure}[!b]
-          \centering
-          \input{figures/tikz_problematic_case.tex}
-          \caption{case in which further comparisons could be removed transitively by removing a comparison}
-          \label{fig:backward_problematic}
-        \end{figure}
+    \begin{figure}[!b]
+      \centering
+      \input{figures/tikz_problematic_case.tex}
+      \caption{case in which further comparisons could be removed transitively by removing a comparison}
+      \label{fig:backward_problematic}
+    \end{figure}
 
-        As illustrated in Figure~\ref{fig:backward_problematic}, all three posets are fully reduced and canonified.
-        Removing a comparison from poset (1) can result in either poset (2) or poset (3).
-        This implies that depending on the current cache, both poset (2) and poset (3) are valid potential predecessors, even though the same comparison is removed each time.
+    As illustrated in Figure~\ref{fig:backward_problematic}, all three posets are fully reduced and canonified.
+    Removing a comparison from poset (1) can result in either poset (2) or poset (3).
+    This implies that depending on the current cache, both poset (2) and poset (3) are valid potential predecessors, even though the same comparison is removed each time.
 
-        To solve this problem, all potential predecessors must be computed.
+    To solve this problem, all potential predecessors must be computed.
 
   \item[2.]
-        In the next step, all predecessors with $n + 1$ elements are calculated and, by inserting a comparison followed by a canonification, should result in the poset $p$, so that one element is dropped during the reduction.
+    In the next step, all predecessors with $n + 1$ elements are calculated and, by inserting a comparison followed by a canonification, should result in the poset $P$, so that one element is dropped during the reduction.
 
-        As the new element is smaller or larger than the $i$-smallest element being searched for, the $(i + 1)$-smallest or the $i$-smallest element is searched in these predecessors. Since the poset $p$ is canonified, $i \leq n - 1 - i$ applies to $p$. However, by canonifying a poset with $n + 1$ elements and the $(i + 1)$-smallest element searched for, it may be necessary to form the dual poset, whereby the $(n + 1) - (i + 1) - 1 = n - i + 1$-th element is searched for.
+    As the new element is smaller or larger than the $i$-smallest element being searched for, the $(i + 1)$-smallest or the $i$-smallest element is searched in these predecessors. Since the poset $P$ is canonified, $i \leq n - 1 - i$ applies to $P$. However, by canonifying a poset with $n + 1$ elements and the $(i + 1)$-smallest element searched for, it may be necessary to form the dual poset, whereby the $(n + 1) - (i + 1) - 1 = n - i + 1$-th element is searched for.
 
-        Construct poset $q$ as follows:
-        To achieve this, insert a new element into poset $p$ and add arbitrary comparisons between the new element and the existing elements.
-        It is essential to ensure that the new element cannot be immediately reduced and that it is not possible to reduce any of the existing elements.
-        Furthermore, there must exist a comparison $u < v$ such that the addition of this comparison results in poset $p$ again.
+    Construct poset $Q$ as follows:
+    To achieve this, insert a new element into poset $P$ and add arbitrary comparisons between the new element and the existing elements.
+    It is essential to ensure that the new element cannot be immediately reduced and that it is not possible to reduce any of the existing elements.
+    Furthermore, there must exist a comparison $u < v$ such that the addition of this comparison results in poset $P$ again.
 
-        \begin{lemma} \label{lemma:remove_only_last_element_edge}
-          Let $p = (n_p, i_p, R_p)$ be a reduced poset.
-          Let $q$ be a reduced poset obtained from $p$ by adding the comparison $u < v$.
-          Then, $q$ contains either the element $u$ or $v$, both elements cannot be reduced simultaneously.
-        \end{lemma}
+    \begin{lemma} \label{lemma:remove_only_last_element_edge}
+      Let $P = (n_P, i_P, R_P)$ be a reduced poset.
+      Let $Q$ be a reduced poset obtained from $P$ by adding the comparison $u < v$.
+      Then, $Q$ contains either the element $u$ or $v$, both elements cannot be reduced simultaneously.
+    \end{lemma}
 
-        \begin{proof}
-          Let $less_p[v]$ denote the number of elements smaller than $v$ in the poset $p$.
-          Let $greater_p[u]$ denote the number of elements greater than $u$ in the poset $p$.
-          For both $u$ and $v$ not to be reducible in the poset $p$, it holds that $less_p[v] \leq i_p$ and $greater_p[u] \leq n_p - 1 - i_p$ (see Definition~\ref{definition:reduced_poset}).
-          When the comparison $u < v$ is added to the poset $p$, the poset $q$ satisfies $less_q[v] = less_p[v] + 1$ and $greater_q[u] = greater_p[u] + 1$.
-          For $u$ and $v$ to be reducible in the poset $q$, it must hold that $less_q[v] > i_p$ and $greater_q[u] > n_p - 1 - i_p$, meaning $less_p[v] = i_p$ and $greater_p[u] = n_p - 1 - i_p$.
-          Consequently, $less_q[v] = i_p + 1$ and $greater_q[u] = n_p - i_p$.
-          Since it is known that the poset $q$ has at most $n_p$ elements before reduction, and $u < v$, it must satisfy $less_q[v] + greater_q[u] \leq n_p$.
-          However, $less_q[v] + greater_q[u] = i_p + 1 + n_p - i_p = n_p + 1$.
-          Thus, $u$ and $v$ cannot be reduced simultaneously.
-        \end{proof}
+    \begin{proof}
+      Let $less_P[v]$ denote the number of elements smaller than $v$ in the poset $P$.
+      Let $greater_P[u]$ denote the number of elements greater than $u$ in the poset $P$.
+      For both $u$ and $v$ not to be reducible in the poset $P$, it holds that $less_P[v] \leq i_P$ and $greater_P[u] \leq n_P - 1 - i_P$ (see Definition~\ref{definition:reduced_Poset}).
+      When the comparison $u < v$ is added to the poset $P$, the poset $Q$ satisfies $less_Q[v] = less_P[v] + 1$ and $greater_Q[u] = greater_P[u] + 1$.
+      For $u$ and $v$ to be reducible in the poset $Q$, it must hold that $less_Q[v] > i_P$ and $greater_Q[u] > n_P - 1 - i_P$, meaning $less_P[v] = i_P$ and $greater_P[u] = n_P - 1 - i_P$.
+      Consequently, $less_Q[v] = i_P + 1$ and $greater_Q[u] = n_P - i_P$.
+      Since it is known that the poset $Q$ has at most $n_P$ elements before reduction, and $u < v$, it must satisfy $less_Q[v] + greater_Q[u] \leq n_P$.
+      However, $less_Q[v] + greater_Q[u] = i_P + 1 + n_P - i_P = n_P + 1$.
+      Thus, $u$ and $v$ cannot be reduced simultaneously.
+    \end{proof}
 
-        As proven in Lemma~\ref{lemma:remove_only_last_element_edge}, it suffices to compare the new element solely with the existing ones.
+    As proven in Lemma~\ref{lemma:remove_only_last_element_edge}, it suffices to compare the new element solely with the existing ones.
 
-        Subsequently, the posets from the first and second steps are merged into a set, ensuring the canonification of all posets.
+    Subsequently, the posets from the first and second steps are merged into a set, ensuring the canonification of all posets.
 
   \item[3.]
-        In the third step, new elements are iteratively inserted, followed by new comparisons for each previously found element, until the upper limit on elements, $n_{\text{max}}$, is reached.
-        This upper limit $n_{\text{max}}$ also prevents the reuse of cache values from a backward search traversal for subsequent iterations.
-        When inserting a new element, it is important to note that it may no longer be the $i$-th smallest, but rather the $(i + 1)$-th smallest element being searched, similar to the second step, and thus cannot be directly reduced.
-        Additionally, by adding the comparison $u < v$, as in the first and second steps, followed by subsequent reduction and canonification, the resulting poset $p$ should be obtained anew.
+    In the third step, new elements are iteratively inserted, followed by new comparisons for each previously found element, until the upper limit on elements, $n_{\text{max}}$, is reached.
+    This upper limit $n_{\text{max}}$ also prevents the reuse of cache values from a backward search traversal for subsequent iterations.
+    When inserting a new element, it is important to note that it may no longer be the $i$-th smallest, but rather the $(i + 1)$-th smallest element being searched, similar to the second step, and thus cannot be directly reduced.
+    Additionally, by adding the comparison $u < v$, as in the first and second steps, followed by subsequent reduction and canonification, the resulting poset $P$ should be obtained anew.
 
   \item[4.]
-        In the last step, the minimum number of comparisons that still need to be removed until the unordered poset is reached is calculated for each predecessor.
-        This number corresponds to the edges in the corresponding Hasse diagram.
-        Based on the known theoretical upper bounds, all posets that contain too many comparisons can be discarded, as these cannot lead to an unordered poset in the remaining comparisons and therefore cannot be considered in the forward search.
-        As no more than one comparison can be removed in one step, these posets can be discarded.
+    In the last step, the minimum number of comparisons that still need to be removed until the unordered poset is reached is calculated for each predecessor.
+    This number corresponds to the edges in the corresponding Hasse diagram.
+    Based on the known theoretical upper bounds, all posets that contain too many comparisons can be discarded, as these cannot lead to an unordered poset in the remaining comparisons and therefore cannot be considered in the forward search.
+    As no more than one comparison can be removed in one step, these posets can be discarded.
 \end{itemize}
 
 \begin{figure}[!b]
@@ -562,7 +563,7 @@ The canonic labelling of the elements is provided by nauty, which is a program i
 With this canonic labelling the poset can be represented canonically.
 
 A potential problem occurs, if $i = n - 1 - i$ holds.
-In this case, it is impossible to decide whether $p$ or $p^{-1}$ corresponds to to the canonical form based on the value of $i$.
+In this case, it is impossible to decide whether $P$ or $P^{-1}$ corresponds to to the canonical form based on the value of $i$.
 
 \begin{figure}[!b]
   \centering
@@ -704,14 +705,14 @@ Nevertheless, bidirectional search has great potential that can be exploited thr
 
 % TODO: lemma einbauen
 % \begin{lemma}
-%   Sei $p = (n_p, i_p, R_p)$ ein reduziertes poset.
-%   Sei $q = (n_q, i_q, R_q)$ ein reduziertes poset das man aus $p$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält.
+%   Sei $P = (n_p, i_p, R_p)$ ein reduziertes poset.
+%   Sei $Q = (n_q, i_q, R_q)$ ein reduziertes poset das man aus $P$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält.
 %   Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen, außer $u$ und $v$.
 %   Dann gilt für alle $V' \subseteq V$:
-%   Das poset $p' = (n_{p'}, i_{p'}, R_{p'})$ mit $p' = p \setminus V'$ (entferne alle Elemente aus $V'$) ist reduziert und durch hinzufügen des Vergleich $u < v$ und anschließendem Reduzieren erhält man $q$ aus $p'$.
+%   Das poset $P' = (n_{P'}, i_{P'}, R_{P'})$ mit $P' = P \setminus V'$ (entferne alle Elemente aus $V'$) ist reduziert und durch hinzufügen des Vergleich $u < v$ und anschließendem Reduzieren erhält man $Q$ aus $P'$.
 % \end{lemma}
 % \begin{proof}
-%   1. Zu zeigen: p' ist reduziert:
+%   1. Zu zeigen: P' ist reduziert:
 %     für $V' = \emptyset$ oder V trivial
 %     sei $V' = {x}$: 
 
@@ -747,7 +748,7 @@ Nevertheless, bidirectional search has great potential that can be exploited thr
   \end{tabular}
 \end{table}
 
-The values we calculated to be the minimum number of comparisons needed to solve the selection problem for $n \leq 15$ are shown in Table~\ref{table:num-comparisons} .
+The values we calculated to be the minimum number of comparisons needed to solve the selection problem for $n \leq 15$ are shown in Table~\ref{table:num-comparisons}.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
@@ -777,22 +778,22 @@ The values we calculated to be the minimum number of comparisons needed to solve
     14         & 2          & 1.4s                    & 5.9s                     & 0.6s             \\
     14         & 3          & 35.9s                   & 46.9s                    & 1m 47s           \\
     14         & 4          & 17m 27s                 & 15m 33s                  & 6h 29m           \\
-    14         & 5          & 2h 40m                  & 1h 40m                   & >24h             \\
-    14         & 6          & 14h 40m                 & 6h 27m                   & >24h             \\
+    14         & 5          & 2h 40m                  & 1h 40m                   & >3d              \\
+    14         & 6          & 14h 40m                 & 6h 27m                   & >3d              \\
     \hline
     15         & 0          & 0.0s                    & 0.0s                     & 0.0s             \\
     15         & 1          & 0.1s                    & 4.0s                     & 0.0s             \\
     15         & 2          & 2.8s                    & 25.9s                    & 1.4s             \\
     15         & 3          & 2m 24s                  & 13m 11s                  & 27m 17s          \\
-    15         & 4          & 1h 12m                  & 45m 52s                  & >24h             \\
-    15         & 5          & 1d 8h 37m               & 19h 30m                  & >24h             \\
-    15         & 6          & 12d 13h 43m             & 1d 5h 43m                & >24h             \\
-    15         & 7          & 14d 1h 51m              & 3d 8h 9m                 & >24h             \\
+    15         & 4          & 1h 12m                  & 45m 52s                  & 29h 40m          \\
+    15         & 5          & 1d 8h 37m               & 19h 30m                  & >3d              \\
+    15         & 6          & 12d 13h 43m             & 1d 5h 43m                & >3d              \\
+    15         & 7          & 14d 1h 51m              & 3d 8h 9m                 & >3d              \\
   \end{tabular}
 \end{table}
 
 Table~\ref{table:search_algorithms} shows the time taken to solve the selection problem.
-The times are rounded and may not be represetative, as the server they were measured on was shared with other people.
+The times are rounded and may not be representative, as the server they were measured on was shared with other people.
 Additionally we measured the number of posets that were stored in the cache after the calculation, which can be seen in Table~\ref{table:cache_entries}.
 The forward search runs single threaded, in contrast to the backward search which benefits greatly from parallelism.
 The forward search was started with 500 GB RAM, and for each value of $n$ and $i$ it was restarted, meaning that it does not use the cache from previous runs.
@@ -862,7 +863,7 @@ Our results were facilitated by advancements in both hardware and software.
 For hardware, we employed two Intel Xeon CPUs, each equipped with 12 cores (24 threads), and a total of 768 GB of RAM. % das ist aus dem paper von florian
 The latest version of our software can be found on github (\url{https://github.com/JGDoerrer/selection_generator}).
 
-% todo
+% todo: Tabelle
 % > rustc -V
 % rustc 1.77.2 (25ef9e3d8 2024-04-09)
 
