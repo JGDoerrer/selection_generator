@@ -177,16 +177,16 @@ A partial order is an ordering relation $\leq$ on a set $P$ that satisfies refle
 The \texttt{SELECT} problem is thus embedded as $(n, i, \emptyset)$.
 
 \begin{definition}[Reduced] \label{definition:reduced_poset}
-  A poset is \textbf{Reduced} if all of its elements have less than $i - 1$ elements smaller than themselves and less than $n - 1$ larger.
+  A poset is \textbf{reduced} if all its elements have at most $i$ elements smaller than themselves and at most $n - 1 - i$ larger than themselves.
   Hence, all elements are still possible solutions.
 \end{definition}
 
 \begin{definition}[Dual poset] \label{definition:dual_poset}
-  The dual of a poset $P = (n, i, R)$ is the poset $P^{-1} = (n, n - 1 - i, R')$ with $R' = \{(u,v) \; \vert \; (v,u) \in R\}$.
+  The dual of a poset $P = (n, i, R)$ is the poset $P^{-1} = (n, n - 1 - i, R')$ with $R' = \{(u,v) \mid (v,u) \in R\}$.
 \end{definition}
 
 \begin{definition}[Canonified]
-  A poset is \textbf{Canonified} if it matches the following conditions making it unique among all posets isomorphic to it:
+  A poset is \textbf{canonified} if it matches the following conditions making it unique among all posets isomorphic to it:
   \begin{itemize}
     \item all elements in the poset are arranged canonically, i.e. all permutations of these elements must map to this poset
     \item
@@ -194,11 +194,11 @@ The \texttt{SELECT} problem is thus embedded as $(n, i, \emptyset)$.
           This is also described in more detail in Section~\ref{sec:backward:normal_form}
   \end{itemize}
 
-  Some parts of this paper use a best effort approximation for this to increase speed, the results are then called \textbf{Pseudo Canonified}.
+  Some parts of this paper use a best effort approximation for this to increase speed, the results are then called \textbf{pseudo canonified}.
 \end{definition}
 
 \begin{definition}[Normal]
-  A \textbf{Normal} poset is reduced and canonified.
+  A \textbf{normal} poset is reduced and canonified.
 \end{definition}
 
 \begin{definition}[Optimal Cost]
@@ -424,17 +424,17 @@ See the git branch \textit{multi-threaded} for the last state.
 To develop the backward search, primarily the backward search from \cite{stober2022lower} was taken as orientation, since it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen \cite{Oksanen}.
 
 The backward search starts with the solved poset and iteratively removes comparisons until the searched poset is found.
-It should be noted that if a comparison is removed from the poset $P = (n, i, R)$ resulting in the poset $(n, i, R \setminus (u, v))$,
+It should be noted that if a comparison is removed from the poset $P = (n, i, R)$ resulting in the poset $P' = (n, i, R \setminus (u, v))$,
 the poset $Q = (n, i, R \setminus (u, v) \cup (v, u))$ should already be in a canonified from in the cache.
 This means that $Q$ has already been discovered in the search.
 
 Thus, the number of iterations taken until a poset is added to the cache equals the number of worst case comparisons needed to solve it, which means that the search terminates once $(n, i, \emptyset)$ with the desired $n$ and $i$ is found.
 
-The argument for correctness is that the number of comparisons for which we have found all posets solvable within them equals the number of iterations of the search.
-If for a given poset and a comparison within it we have already discovered both results then their cost must be less than the current number of iterations.
-Hence, we can conclude that the poset is solvable within this number of comparisons.
-Since this condition did not hold true in any previous iteration, we can further infer that the cost must also be optimal.
-And if a poset is solvable within that number of comparisons it must have at least one comparison with a result among the posets discovered in the previous iteration, as otherwise it would have to be solvable in less.
+% The argument for correctness is that the number of comparisons for which we have found all posets solvable within them equals the number of iterations of the search.
+% If for a given poset and a comparison within it we have already discovered both results then their cost must be less than the current number of iterations.
+% Hence, we can conclude that the poset is solvable within this number of comparisons.
+% Since this condition did not hold true in any previous iteration, we can further infer that the cost must also be optimal.
+% And if a poset is solvable within that number of comparisons it must have at least one comparison with a result among the posets discovered in the previous iteration, as otherwise it would have to be solvable in less.
 
 
 \subsubsection{Algorithm} \label{sec:backward:algorithm}
@@ -453,14 +453,14 @@ If $(n, i, \emptyset) \in A_l$, then $l$ comparisons are the lower bound to dete
 \begin{definition}[Predecessor] \label{definition:predecessor_calculation}
   Poset $Q$ is the predecessor of poset $P$ if the following conditions hold:
   \begin{itemize}
-    \item poset $Q$ is normalised
+    \item poset $P$ and $Q$ are both normalised
     \item poset $Q$ was not found in any previous round (otherwise it would be solvable in fewer comparisons)
     \item There exists a comparison $(i, j)$ whose adding in $Q$ and subsequent normalization results in the poset $P$ and adding the reverse comparison $(j, i)$ and subsequent normalization results in an already found poset
   \end{itemize}
 \end{definition}
 
 \begin{lemma} \label{lemma:predecessor_calculation}
-  If poset $P$ is solvable in $k$ comparisons and $Q$ is a predecessor of poset $P$, poset $Q$ is solvable in $k + 1$ comparisons
+  If poset $P$ is solvable in $k$ comparisons and $Q$ is a predecessor of poset $P$, poset $Q$ is solvable in $k + 1$ comparisons.
 \end{lemma}
 
 \begin{proof} \label{proof:predecessor_calculation}
@@ -477,10 +477,11 @@ Furthermore, not all predecessors are calculated, as some cannot contribute to a
 As illustrated in Table~\ref{table:n_i_values_calculated}, the search with $n = 7$ and $i = 3$ only considers predecessors that have an `x' in the corresponding row or column. As the addition of a comparison can reduce $n$ by a maximum of $1$ and therefore $i$ by a maximum of $1$, all other predecessors can be ignored as they can never be used.
 For example, no poset with $n = 6$ and $i = 1$ can result in a poset of size $n = 7, i = 3$ by adding a comparison.
 
-The table can be calculated by marking initial $n, i$ with an `x' and then marking recursive the entries for $n - 1, i$ and $n - 1, i - 1$ with an `x'.
-It must be noted that $n = 6, i = 3$ does not exist, as the dual poset would be formed at this point.
-In this case, $n = 6, i = 2$ is marked with an `x'.
+The table can be calculated by marking initial $n, i$ with an `x' and then marking recursive the entries for $n - 1, i$ and $n - 1, i - 1$ with an `x', as in each step the new element could be smaller or larger than the i-smallest element.
 
+For Table~\ref{table:n_i_values_calculated}, this means that $n = 6, i = 2$ and $n = 6, i = 3$ should be marked.
+It must be noted that $n = 6, i = 3$ does not exist, as the dual poset would be formed at this point.
+In this case, only $n = 6, i = 2$ is marked with an `x'.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
@@ -540,7 +541,7 @@ The computation of a predecessor for a given poset $P = (n_P, i_P, R_P)$ proceed
     \begin{proof}
       Let $less_P[v]$ denote the number of elements smaller than $v$ in the poset $P$.
       Let $greater_P[u]$ denote the number of elements greater than $u$ in the poset $P$.
-      For both $u$ and $v$ not to be reducible in the poset $P$, it holds that $less_P[v] \leq i_P$ and $greater_P[u] \leq n_P - 1 - i_P$ (see Definition~\ref{definition:reduced_Poset}).
+      For both $u$ and $v$ not to be reducible in the poset $P$, it holds that $less_P[v] \leq i_P$ and $greater_P[u] \leq n_P - 1 - i_P$ (see Definition~\ref{definition:reduced_poset}).
       When the comparison $u < v$ is added to the poset $P$, the poset $Q$ satisfies $less_Q[v] = less_P[v] + 1$ and $greater_Q[u] = greater_P[u] + 1$.
       For $u$ and $v$ to be reducible in the poset $Q$, it must hold that $less_Q[v] > i_P$ and $greater_Q[u] > n_P - 1 - i_P$, meaning $less_P[v] = i_P$ and $greater_P[u] = n_P - 1 - i_P$.
       Consequently, $less_Q[v] = i_P + 1$ and $greater_Q[u] = n_P - i_P$.
@@ -735,46 +736,47 @@ For these reasons, the bidirectional search is slower than the pure forward sear
 Nevertheless, bidirectional search has great potential that can be exploited through further research.
 
 % TODO: lemma einbauen
-% \begin{lemma}
-%   Sei $P = (n_p, i_p, R_p)$ ein reduziertes poset.
-%   Sei $Q = (n_q, i_q, R_q)$ ein reduziertes poset das man aus $P$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält.
-%   Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen, außer $u$ und $v$.
-%   Dann gilt für alle $V' \subseteq V$:
-%   Das poset $P' = (n_{P'}, i_{P'}, R_{P'})$ mit $P' = P \setminus V'$ (entferne alle Elemente aus $V'$) ist reduziert und durch hinzufügen des Vergleich $u < v$ und anschließendem Reduzieren erhält man $Q$ aus $P'$.
-% \end{lemma}
-% \begin{proof}
-%   1. Zu zeigen: P' ist reduziert:
-%     für $V' = \emptyset$ oder V trivial
-%     sei $V' = {x}$: 
 
-%   2. Zu zeigen: hinzunahem von $u < v$ & reduzieren => Q
-
-% \end{proof}
-% Annahme: ip <= ip' <= iq' muss gelten
+% 2. Zu zeigen: hinzunahem von $u < v$ & reduzieren => Q
 
 % \begin{lemma}
-%   Sei $P = (n_p, i_p, R_p)$ ein reduziertes poset.
-%   Sei $q = (n_p + 1, i_q, R_q)$ ein reduziertes poset das man aus $P$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält.
-%   Sei $o$ das Element, dass beim Reduzieren wegfällt, mit $o != u$ und $o != v$.
-%   Dann gilt: Das poset $P' = (n_{P'}, i_{P'}, R_{P'})$ mit $P' = P \setminus V'$ (entferne alle Elemente aus $V'$) ist reduziert und durch hinzufügen des Vergleich $u < v$ und anschließendem Reduzieren erhält man $Q$ aus $P'$.
+%   Sei $P = (n_P, i_P, R_P)$ ein reduziertes poset.
+%   Sei $Q = (n_Q, i_Q, R_Q)$ ein reduziertes poset das man aus $P$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält.
+%   Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen mit.
+%   Sei $i_Q \leq i_{P'} \leq i_P$.
+
+%   Dann gilt für alle $V' \subseteq V \setminus \{ u, v \}$:
+%   Das poset $P' = (n_P - |V'|, i_{P'}, \{ (a, b) \in R_P \mid a, b \notin V' \})$ ist reduziert und durch hinzufügen des Vergleichs $u < v$ und anschließendem Reduzieren erhält man $Q$ aus $P'$.
 % \end{lemma}
+
 % \begin{proof}
-%   1. Zu zeigen: P' ist reduziert:
-%   für $V' = \emptyset$ trivial
-%   sei $V' = {x}$:
+%   Da $P$ reduziert ist, gilt für jedes Element $x$: $less[x] \leq i_P$ und $greater[x] \leq n_P - 1 - i_P$
 
-%   2. Zu zeigen: hinzunahem von $u < v$ & reduzieren => Q
+%   Zeige zunächst, dass $P'$ reduziert ist.
 
+%   Für $V' = \emptyset$ gilt $P' = P$ und $P'$ ist somit reduziert.
+
+%   Sei $V' = \{ x \}$.
+%   Dann gilt $P' = (n_P - 1, i_{P'}, \{ (a, b) \in R_P \mid a \neq x, b \neq x \})$ mit $i_{P'} \in \{ i_P, (n_P - 1) - 1 - i_P, i_P - 1, (n_P - 1) - 1 - (i_P - 1) \}$.
+
+%   Da nur ein Element entfernt wird, gilt:
+%   $less_P'[x] = less_P[x]$ oder $less_P[x] - 1$
+%   $greater_P'[x] = greater_P[x]$ oder $greater_P[x] - 1$
+
+%   o.b.d.a gilt $less_P[z] \leq i_P$. Damit Element $z$ wegreduziert werden kann, muss $i_P' < less_P'[z]$ gelten.
+%   mit $less_P'[z] = less_P[z]$: $i_{P'} < less_P[z] \leq i_P$. Lösungen: $less_P[z] = i_P$, $less_P[z] = i_P - 1$
+%   mit $less_P'[z] = less_P[z] - 1$: $i_{P'} + 1 < less_P[z] \leq i_P$. Lösungen:
+%   % D.h. $less_P'[z] = less_P[z]$, also $less_P[z] = i_P' + 1$ und somit $i_P' + 1 = i_P$ => $i_P' = i_P - 1$
+
+
+%   Weil wir nur Entfernen von Elementen zulassen, die durch das Hinzufügen von $u < v$ rausfliegen, müssen diese in Verbindung mit $u$ oder $v$ stehen.
+%   (hier müsste man noch untersuchen unter welchen umständen es dazu kommen kann, dass ein nicht mit denen geordnetes element rausfliegt weil $n$ und $i$ sich durch das entfernen anderer ändern).
+
+%   Damit verändern sich $less$ und $greater$ von $u$ und $v$ parallel zu den $n$ und $i$ von $P$ zu $P'$ und sie sind damit nicht aus $P'$ eliminiert.
+%   Andersherum ist zu zeigen dass obwohl die Elemente aus $V \setminus V'$ durch das Entfernen potentiell $less$ und $greater$ verlieren, $n$ und $i$ so verändert sein müssen, dass sie trotzdem rausfliegen.
+%   Hier wissen wir, dass alle Elemente kleiner $u$ $greater[v] + 1$ greater dazubekommen haben und das die aus $V$ über die Grenze gebracht hat, umgekehrt für $v$ mit $n_{P'} = n_P - |V'|$ und eventuellen Einschränkungen für $i$ sollte dann begründbar sein, dass sie auch in $P'$ über die Grenze kommen wenn $u < v$. dazukommt
 % \end{proof}
 
-% da p reduziert ist müssen alle elemente die less und greater schranken halten
-
-% weil wir nur entfernen von elementen zulassen, die durch das hinzufügen von u < v rausfliegen, müssen welche in verbindung mit u oder v stehen (hier müsste man noch untersuchen unter welchen umständen es dazu kommen kann, dass ein nicht mit denen geordnetes element rausfliegt weil n und i sich durch das entfernen anderer ändern)
-
-% damit verändern sich less und greater von u und v parallel zu den n und i von p zu p' und sie sind damit nicht aus p' eliminiert
-% andersherum ist zu zeigen dass obwohl die elemente aus V \ V' durch das entfernen ja potentiell less und greater verlieren, n und i so verändert sein müssen, dass sie trotzdem rausfliegen
-% hier wissen wir, dass alle elemente kleiner u greater(v) + 1 greater dazubekommen haben und das die aus V über die grenze gebracht hat, umgekehrt für v
-% mit n_p' = n_p - |V'| und eventuellen einschränkungen für i sollte dann begründbar sein, dass sie auch in p' über die grenze kommen wenn u < v dazukommt
 
 \section{Results}
 
@@ -850,16 +852,16 @@ The values we calculated as the minimum number of comparisons needed to solve th
 
 Table~\ref{table:search_algorithms} shows the time taken to solve the selection problem.
 The times are rounded and may not be representative as the server they were measured on was shared.
-The forward search was started with 500 GB of RAM, and was restarted for each value of $n$ and $i$, so it does not use the cache from previous runs.
+The forward search was started with $500$ GB of RAM, and was restarted for each value of $n$ and $i$, so it does not use the cache from previous runs.
 The forward search is single-threaded, unlike the backward search, which benefits greatly from parallelism.
 The column `Oksanen' shows the times of his program \cite{Oksanen} on our hardware.
-Oksanen's program was started with only 25 GB because it was designed for only 400 MB RAM.
-The numbers marked with an asterisk by Oksanen do not give the optimal lower bound in the publicly available version 1.6, even though he has given an optimal algorithm on the website with the unavailable version 1.1.
+Oksanen's program was started with only $25$ GB because it was designed for only $400$ MB RAM.
+The numbers marked with an asterisk by Oksanen do not give the optimal lower bound in the publicly available version \texttt{1.6}, even though he has given an optimal algorithm on the website with the unavailable version \texttt{1.1}.
 
 Additionally we measured the number of posets that were stored in the cache after the calculation, which can be seen in Table~\ref{table:cache_entries}.
 
 Furthermore, we can disprove Gasarch's \cite{Gasarch1996} conjecture that ``pair-forming algorithms'', in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
-For $n = 12$ and $i = 4$, this assumption gives a bound of 20 comparisons, which does not correspond to the optimal bound of 19 comparisons.
+For $n = 12$ and $i = 4$, this assumption gives a bound of $20$ comparisons, which does not correspond to the optimal bound of 19 comparisons.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
@@ -898,12 +900,13 @@ For $n = 12$ and $i = 4$, this assumption gives a bound of 20 comparisons, which
 
 
 \section{Conclusion}
+
 Using computer search based on the work of Oksanen we were able to write our own version of a search program for selecting the $i$-th element of a list of $n$ elements (see: \href{https://github.com/JGDoerrer/selection_generator}{Github}) and not only confirming the found solutions of Oksanen for the problem but also improving some entries (e.g. $n = 15, i = 4$).
 Further we added some more numbers and therefore algorithms to the table for higher $n$ and $i$.
 As stated in the motivation before: the road is better than the inn.
 Along the way we learned a lot about the problem structure and complexity, improved our forward and backward search algorithms coming to a final conclusion that both are valid and have their strength an weaknesses as stated in (\ref{}). % TODO: andi: ref fehlt
 If you want to use the program to generate more optimal numbers and therefore algorithms one should have quite some time and a good hardware in form of a high count CPU and as much RAM as possible (see: \ref{sec:hardware} for our used hardware).
-It is noteworthy that, due to technical constraints, the forward search utilized only 500GB of RAM. % TODO: überarbeitet andi, oder 600 genau zahlen
+It is noteworthy that, due to technical constraints, the forward search utilized only $500$ GB of RAM. % TODO: überarbeitet andi, oder 600 genau zahlen
 Right now one should use the backward search due to the lower RAM footprint and scaling with the CPU count.
 
 Another interesting aspect for the forward search is not only to search for isomorphic posets in the cache, but also whether a poset is a subgraph of another.
@@ -917,7 +920,7 @@ bidirectional search.
 \subsection{Used Soft- and Hardware} \label{sec:hardware}
 
 Our results were facilitated by advancements in both hardware and software.
-For hardware, we employed two Intel Xeon CPUs, each equipped with 12 cores (24 threads), and a total of 768 GB of RAM. % das ist aus dem paper von florian
+For hardware, we employed two Intel Xeon CPUs, each equipped with $12$ cores ($24$ threads), and a total of $768$ GB of RAM. % das ist aus dem paper von florian
 The latest version of our software can be found on github (\url{https://github.com/JGDoerrer/selection_generator}).
 
 % todo: Tabelle
