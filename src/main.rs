@@ -1,11 +1,11 @@
 use backward_cache::BackwardCache;
 use backwards_poset::BackwardsPoset;
-use pseudo_canonified_poset::PseudoCanonifiedPoset;
 use clap::{
     error::{Error, ErrorKind},
     ArgAction, Parser,
 };
 use hashbrown::HashMap;
+use pseudo_canonified_poset::PseudoCanonifiedPoset;
 use search_backward::iterative_deepening_backward;
 use search_forward::Cost;
 use serde::{Deserialize, Serialize};
@@ -13,11 +13,7 @@ use std::{
     fs::{DirBuilder, OpenOptions},
     io::{BufWriter, Write},
     str::FromStr,
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        Arc, RwLock,
-    },
-    thread,
+    sync::{atomic::AtomicBool, Arc},
 };
 
 use crate::{
@@ -25,7 +21,6 @@ use crate::{
     constants::{KNOWN_VALUES, MAX_N},
     free_poset::FreePoset,
     poset::Poset,
-    search_backward::start_search_backward,
     search_forward::Search,
     utils::format_duration,
 };
@@ -35,10 +30,10 @@ mod backward_cache;
 mod backwards_poset;
 mod bitset;
 mod cache;
-mod pseudo_canonified_poset;
 mod constants;
 mod free_poset;
 mod poset;
+mod pseudo_canonified_poset;
 mod search_backward;
 mod search_forward;
 mod utils;
@@ -134,35 +129,8 @@ fn run_forward(args: &Args, use_bidirectional_search: bool) {
         let start_i = if n == start_n { args.i.unwrap_or(0) } else { 0 };
 
         for i in start_i..(n + 1) / 2 {
-            let result = if use_bidirectional_search {
-                let backward_search_state = Arc::new(RwLock::new((HashMap::new(), -1)));
-                let interrupt = Arc::new(AtomicBool::new(false));
-                let handle = {
-                    let interrupt_local = interrupt.clone();
-                    let backward_search_state_local = backward_search_state.clone();
-                    thread::spawn(move || {
-                        start_search_backward(
-                            &interrupt_local,
-                            Some(&backward_search_state_local),
-                            n,
-                            i,
-                            (n * n) as usize,
-                        );
-                    })
-                };
-
-                let result =
-                    Search::new(n, i, &mut cache, &mut algorithm, use_bidirectional_search)
-                        .search(&backward_search_state);
-
-                interrupt.store(true, Ordering::Relaxed);
-                handle.join().unwrap();
-                result
-            } else {
-                let backward_search_state = Arc::new(RwLock::new((HashMap::new(), -1)));
-                Search::new(n, i, &mut cache, &mut algorithm, use_bidirectional_search)
-                    .search(&backward_search_state)
-            };
+            let result =
+                Search::new(n, i, &mut cache, &mut algorithm, use_bidirectional_search).search();
 
             if (n as usize) < KNOWN_VALUES.len() && (i as usize) < KNOWN_VALUES[n as usize].len() {
                 assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);
@@ -625,7 +593,7 @@ where
 
         let (less, (less_mapping, less_is_dual)) = poset.with_less_mapping(i, j);
         let less_index = print_algorithm_backward2(less, writer, comparisons, done);
-        
+
         let (greater, (greater_mapping, greater_is_dual)) = poset.with_less_mapping(j, i);
         let greater_index = print_algorithm_backward2(greater, writer, comparisons, done);
 
@@ -641,11 +609,11 @@ where
             less_is_dual,
             greater_is_dual,
         }
-      };
+    };
 
-      bincode::serialize_into(writer, &binary_item).expect("Serialization failed");
+    bincode::serialize_into(writer, &binary_item).expect("Serialization failed");
 
-      index
+    index
 }
 
 #[allow(clippy::too_many_lines)]

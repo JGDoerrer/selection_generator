@@ -3,8 +3,8 @@ use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 use std::os::raw::c_int;
 
 use crate::{
-    backwards_poset::BackwardsPoset, bitset::BitSet, pseudo_canonified_poset::PseudoCanonifiedPoset,
-    constants::MAX_N, poset::Poset,
+    backwards_poset::BackwardsPoset, bitset::BitSet, constants::MAX_N, poset::Poset,
+    pseudo_canonified_poset::PseudoCanonifiedPoset,
 };
 
 /// A partially ordered set with <

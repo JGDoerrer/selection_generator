@@ -1,4 +1,4 @@
-use crate::{pseudo_canonified_poset::PseudoCanonifiedPoset, constants::MAX_N, poset::Poset};
+use crate::{constants::MAX_N, poset::Poset, pseudo_canonified_poset::PseudoCanonifiedPoset};
 use hashbrown::HashMap;
 use std::mem::size_of;
 

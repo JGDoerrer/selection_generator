@@ -574,10 +574,7 @@ impl BackwardsPoset {
     }
 
     fn handle_poset(
-        current_bucket: &mut [(
-            HashSet<(Self, (u8, u8))>,
-            HashSet<(Self, (u8, u8))>,
-        ); MAX_N],
+        current_bucket: &mut [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N],
         poset: Self,
         indices: (u8, u8),
         poset_cache: &BackwardCache,

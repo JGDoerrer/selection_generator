@@ -1,9 +1,9 @@
 use std::mem::size_of;
 
 use crate::{
-    pseudo_canonified_poset::PseudoCanonifiedPoset,
     constants::{LOWER_BOUNDS, MAX_N},
     poset::Poset,
+    pseudo_canonified_poset::PseudoCanonifiedPoset,
     search_forward::Cost,
 };
 

@@ -152,7 +152,7 @@ pub trait Poset: Sized + Debug {
 mod test {
     use std::collections::HashSet;
 
-    use crate::{pseudo_canonified_poset::PseudoCanonifiedPoset, free_poset::FreePoset};
+    use crate::{free_poset::FreePoset, pseudo_canonified_poset::PseudoCanonifiedPoset};
 
     use super::*;
 

@@ -1,8 +1,9 @@
 use std::{
     sync::{
-        atomic::{AtomicU64, Ordering},
+        atomic::{AtomicBool, AtomicU64, Ordering},
         Arc, RwLock,
     },
+    thread,
     time::Instant,
 };
 
@@ -12,10 +13,11 @@ use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use crate::{
     backwards_poset::BackwardsPoset,
     cache::Cache,
-    pseudo_canonified_poset::PseudoCanonifiedPoset,
     constants::{LOWER_BOUNDS, UPPER_BOUNDS},
     free_poset::FreePoset,
     poset::Poset,
+    pseudo_canonified_poset::PseudoCanonifiedPoset,
+    search_backward::start_search_backward,
     utils::format_duration,
 };
 
@@ -114,10 +116,7 @@ impl<'a> Search<'a> {
         }
     }
 
-    pub fn search(
-        &mut self,
-        backward_search_state: &Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>,
-    ) -> u8 {
+    pub fn search(&mut self) -> u8 {
         const PAIR_WISE_OPTIMIZATION: bool = false;
 
         let start = Instant::now();
@@ -128,6 +127,26 @@ impl<'a> Search<'a> {
         let mut result = max as u8;
 
         for current in min.. {
+            let backward_search_state = Arc::new(RwLock::new((HashMap::new(), -1)));
+            let interrupt = Arc::new(AtomicBool::new(false));
+            let handle = if self.use_bidirectional_search {
+                let n_local = self.n;
+                let i_local = self.i;
+                let interrupt_local = interrupt.clone();
+                let backward_search_state_local = backward_search_state.clone();
+                Some(thread::spawn(move || {
+                    start_search_backward(
+                        &interrupt_local,
+                        Some(&backward_search_state_local),
+                        n_local,
+                        i_local,
+                        current,
+                    );
+                }))
+            } else {
+                None
+            };
+
             let mut poset = FreePoset::new(self.n, self.i);
             let mut comparisons_done = 0u8;
             if PAIR_WISE_OPTIMIZATION {
@@ -142,12 +161,14 @@ impl<'a> Search<'a> {
             self.current_max = current;
             self.analytics.set_max_depth(current / 2);
 
-            let search_result = self.search_rec(
-                backward_search_state,
-                poset.canonified(),
-                current,
-                0,
-            );
+            let search_result =
+                self.search_rec(&backward_search_state, poset.canonified(), current, 0);
+
+            if let Some(handle) = handle {
+                interrupt.store(true, Ordering::Relaxed);
+                handle.join().unwrap();
+            }
+
             result = match search_result {
                 Cost::Solved(solved) => solved + comparisons_done,
                 Cost::Minimum(min) => {

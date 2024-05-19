@@ -170,7 +170,9 @@ impl PseudoCanonifiedPoset {
         result
     }
 
-    pub fn get_comparison_pairs(&self) -> Vec<(PseudoCanonifiedPoset, PseudoCanonifiedPoset, u8, u8)> {
+    pub fn get_comparison_pairs(
+        &self,
+    ) -> Vec<(PseudoCanonifiedPoset, PseudoCanonifiedPoset, u8, u8)> {
         let mut pairs = Vec::with_capacity(self.n() as usize * (self.n() as usize - 1) / 2);
 
         for i in 0..self.n() {
@@ -193,9 +195,11 @@ impl PseudoCanonifiedPoset {
 
                 if pairs
                     .iter()
-                    .find(|e: &&(PseudoCanonifiedPoset, PseudoCanonifiedPoset, u8, u8, u32)| {
-                        e.0 == pair.0 && e.1 == pair.1
-                    })
+                    .find(
+                        |e: &&(PseudoCanonifiedPoset, PseudoCanonifiedPoset, u8, u8, u32)| {
+                            e.0 == pair.0 && e.1 == pair.1
+                        },
+                    )
                     .is_none()
                 {
                     pairs.push(pair);
