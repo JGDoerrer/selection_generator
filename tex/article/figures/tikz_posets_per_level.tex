@@ -2,15 +2,15 @@
   \begin{axis}[
       ymode=log,
       axis x line = bottom,%x-Achse nur unten
-      x dir=reverse,
+      % x dir=reverse,
       enlarge x limits = .05,%x-Achse erweitern
       x axis line style = {-},%kein Pfeil
       % title = {\dots},
-      ylabel={number posets},
-      xlabel={number comparisons left},
+      ylabel={number of posets},
+      xlabel={number of comparisons removed},
       % only marks,
       cycle list={{mark=x}},
-      legend pos=north west,
+      legend pos=north east,
     ]
     \addlegendentry{$i = 0$}
     \addplot+[cyan] table { %n=14,i=0
