@@ -18,7 +18,6 @@
 %
 \usepackage{amsmath}
 \usepackage{amsthm}
-\usepackage{todonotes}
 \usepackage{nicefrac}
 \usepackage{array}
 \usepackage{lmodern,amssymb}
@@ -177,8 +176,8 @@ deterministic algorithms it has also been shown that
   &\text{with~} H(x) = x \cdot \log_2 \frac{1}{x} + (1-x) \log_2 \frac{1}{1-x}
 \end{eqnarray*}
 comparisons are required. An upper bound is been proposed by Blum, in the paper
-\textit{Time Bounds for Selection} \cite{Blum1972}. It stated that no more than
-$5.430\dot{5} \cdot n$ comparisons are ever required. Therefore
+\textit{Time Bounds for Selection}. \cite{Blum1972} It stated that no more than
+$5.430\dot{5} \cdot n$ comparisons are ever required. \cite{Blum1972} Therefore
 selection is for sure in a time complexity of $\mathcal{O}(n)$ for best and
 worst-case.
 
@@ -710,14 +709,14 @@ The only two bottlenecks here are read access to the cache and the efficient mer
   \label{table:backward-parallel}
   \centering
   \begin{tabular}{l|r|l}
-    number cores & time      & efficiency \\
+    \textbf{number cores} & \textbf{time} & \textbf{efficiency} \\
     \hline
-    $1$          & 7h 2m 59s & $1.000$    \\
-    $2$          & 3h 57m 9s & $0.892$    \\
-    $4$          & 2h 41s    & $0.877$    \\
-    $8$          & 1h 2m 9s  & $0.851$    \\
-    $16$         & 32m 57s   & $0.803$    \\
-    $32$         & 20m 11s   & $0.655$    \\
+    $1$                   & 7h 2m 59s     & $1.000$             \\
+    $2$                   & 3h 57m 9s     & $0.892$             \\
+    $4$                   & 2h 41s        & $0.877$             \\
+    $8$                   & 1h 2m 9s      & $0.851$             \\
+    $16$                  & 32m 57s       & $0.803$             \\
+    $32$                  & 20m 11s       & $0.655$             \\
   \end{tabular}
 \end{table}
 
@@ -830,7 +829,7 @@ Nevertheless, bidirectional search has great potential that can be exploited thr
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
-  \caption{The minimum number of comparisons needed to select the $i$-th smallest of $n$ elements under the assumption, that all numbers are pairwise different}
+  \caption{The minimum number of comparisons needed to select the $i$-th smallest of $n$ elements.}
   \label{table:num-comparisons}
   \centering
   \begin{tabular}{c|cccccccc}
@@ -864,39 +863,39 @@ We then checked the algorithm on each of the $n!$ permutations to make sure it i
   \label{table:search_algorithms}
   \centering
   \begin{tabular}{c|c|l|l|l}
-    \textbf{n} & \textbf{i} & \textbf{Forward Search} & \textbf{Backward Search} & \textbf{Oksanen} \\
+    $n$ & $i$ & \textbf{Forward Search} & \textbf{Backward Search} & \textbf{Oksanen} \\
     \hline
-    12         & 0          & 0.0s                    & 0.0s                     & 0.0s             \\
-    12         & 1          & 0.0s                    & 0.1s                     & 0.0s             \\
-    12         & 2          & 0.4s                    & 0.7s                     & 0.0s             \\
-    12         & 3          & 3.5s                    & 1.6s                     & 21.4s*           \\
-    12         & 4          & 36.1s                   & 8.4s                     & 4m 59s*          \\
-    12         & 5          & 1m 30s                  & 42.0s                    & 1.9s*            \\
+    12  & 0   & 0.0s                    & 0.0s                     & 0.0s             \\
+    12  & 1   & 0.0s                    & 0.1s                     & 0.0s             \\
+    12  & 2   & 0.4s                    & 0.7s                     & 0.0s             \\
+    12  & 3   & 3.5s                    & 1.6s                     & 21.4s*           \\
+    12  & 4   & 36.1s                   & 8.4s                     & 4m 59s*          \\
+    12  & 5   & 1m 30s                  & 42.0s                    & 1.9s*            \\
     \hline
-    13         & 0          & 0.0s                    & 0.0s                     & 0.0s             \\
-    13         & 1          & 0.0s                    & 0.5s                     & 0.0s             \\
-    13         & 2          & 0.8s                    & 1.5s                     & 0.2s             \\
-    13         & 3          & 13.8s                   & 16.1s                    & 55.4s            \\
-    13         & 4          & 3m 42s                  & 1m 40s                   & 26m 36s          \\
-    13         & 5          & 17m 10s                 & 8m 35s                   & 3h 25m           \\
-    13         & 6          & 59m 20s                 & 18m 5s                   & 16h 10m          \\
+    13  & 0   & 0.0s                    & 0.0s                     & 0.0s             \\
+    13  & 1   & 0.0s                    & 0.5s                     & 0.0s             \\
+    13  & 2   & 0.8s                    & 1.5s                     & 0.2s             \\
+    13  & 3   & 13.8s                   & 16.1s                    & 55.4s            \\
+    13  & 4   & 3m 42s                  & 1m 40s                   & 26m 36s          \\
+    13  & 5   & 17m 10s                 & 8m 35s                   & 3h 25m           \\
+    13  & 6   & 59m 20s                 & 18m 5s                   & 16h 10m          \\
     \hline
-    14         & 0          & 0.0s                    & 0.0s                     & 0.0s             \\
-    14         & 1          & 0.0s                    & 1.5s                     & 0.0s             \\
-    14         & 2          & 1.4s                    & 5.9s                     & 0.6s             \\
-    14         & 3          & 35.9s                   & 46.9s                    & 1m 47s           \\
-    14         & 4          & 17m 27s                 & 15m 33s                  & 6h 29m           \\
-    14         & 5          & 2h 40m                  & 1h 40m                   & >3d              \\
-    14         & 6          & 14h 40m                 & 6h 27m                   & >3d              \\
+    14  & 0   & 0.0s                    & 0.0s                     & 0.0s             \\
+    14  & 1   & 0.0s                    & 1.5s                     & 0.0s             \\
+    14  & 2   & 1.4s                    & 5.9s                     & 0.6s             \\
+    14  & 3   & 35.9s                   & 46.9s                    & 1m 47s           \\
+    14  & 4   & 17m 27s                 & 15m 33s                  & 6h 29m           \\
+    14  & 5   & 2h 40m                  & 1h 40m                   & >3d              \\
+    14  & 6   & 14h 40m                 & 6h 27m                   & >3d              \\
     \hline
-    15         & 0          & 0.0s                    & 0.0s                     & 0.0s             \\
-    15         & 1          & 0.1s                    & 4.0s                     & 0.0s             \\
-    15         & 2          & 2.8s                    & 25.9s                    & 1.4s             \\
-    15         & 3          & 2m 24s                  & 13m 11s                  & 27m 17s          \\
-    15         & 4          & 1h 12m                  & 45m 52s                  & 29h 40m          \\
-    15         & 5          & 1d 8h 37m               & 19h 30m                  & >3d              \\
-    15         & 6          & 12d 13h 43m             & 1d 5h 43m                & >3d              \\
-    15         & 7          & 14d 1h 51m              & 3d 8h 9m                 & >3d              \\
+    15  & 0   & 0.0s                    & 0.0s                     & 0.0s             \\
+    15  & 1   & 0.1s                    & 4.0s                     & 0.0s             \\
+    15  & 2   & 2.8s                    & 25.9s                    & 1.4s             \\
+    15  & 3   & 2m 24s                  & 13m 11s                  & 27m 17s          \\
+    15  & 4   & 1h 12m                  & 45m 52s                  & 29h 40m          \\
+    15  & 5   & 1d 8h 37m               & 19h 30m                  & >3d              \\
+    15  & 6   & 12d 13h 43m             & 1d 5h 43m                & >3d              \\
+    15  & 7   & 14d 1h 51m              & 3d 8h 9m                 & >3d              \\
   \end{tabular}
 \end{table}
 
@@ -919,32 +918,32 @@ For $n = 12$ and $i = 4$, this assumption gives a bound of $20$ comparisons, whi
   \label{table:cache_entries}
   \centering
   \begin{tabular}{c|c|r|r}
-    \textbf{n} & \textbf{i} & \textbf{Forward Search} & \textbf{Backward Search} \\
+    $n$ & $i$ & \textbf{Forward Search} & \textbf{Backward Search} \\
     \hline
-    13         & 0          & $12$                    & $13$                     \\
-    13         & 1          & $329$                   & $245$                    \\
-    13         & 2          & $9.7 \cdot 10^3$        & $10.9 \cdot 10^3$        \\
-    13         & 3          & $199.7 \cdot 10^3$      & $276.9 \cdot 10^3$       \\
-    13         & 4          & $3.7 \cdot 10^6$        & $2.2 \cdot 10^6$         \\
-    13         & 5          & $18.1 \cdot 10^6$       & $9.7 \cdot 10^6$         \\
-    13         & 6          & $67.6 \cdot 10^6$       & $14.5 \cdot 10^6$        \\
+    13  & 0   & $12$                    & $13$                     \\
+    13  & 1   & $329$                   & $245$                    \\
+    13  & 2   & $9.7 \cdot 10^3$        & $10.9 \cdot 10^3$        \\
+    13  & 3   & $199.7 \cdot 10^3$      & $276.9 \cdot 10^3$       \\
+    13  & 4   & $3.7 \cdot 10^6$        & $2.2 \cdot 10^6$         \\
+    13  & 5   & $18.1 \cdot 10^6$       & $9.7 \cdot 10^6$         \\
+    13  & 6   & $67.6 \cdot 10^6$       & $14.5 \cdot 10^6$        \\
     \hline
-    14         & 0          & $13$                    & $14$                     \\
-    14         & 1          & $442$                   & $319$                    \\
-    14         & 2          & $15.2 \cdot 10^3$       & $19.6 \cdot 10^3$        \\
-    14         & 3          & $438.0 \cdot 10^3$      & $644.2 \cdot 10^3$       \\
-    14         & 4          & $14.1 \cdot 10^6$       & $13.9 \cdot 10^6$        \\
-    14         & 5          & $149.5 \cdot 10^6$      & $84.1 \cdot 10^6$        \\
-    14         & 6          & $925.3 \cdot 10^6$      & $263.3 \cdot 10^6$       \\
+    14  & 0   & $13$                    & $14$                     \\
+    14  & 1   & $442$                   & $319$                    \\
+    14  & 2   & $15.2 \cdot 10^3$       & $19.6 \cdot 10^3$        \\
+    14  & 3   & $438.0 \cdot 10^3$      & $644.2 \cdot 10^3$       \\
+    14  & 4   & $14.1 \cdot 10^6$       & $13.9 \cdot 10^6$        \\
+    14  & 5   & $149.5 \cdot 10^6$      & $84.1 \cdot 10^6$        \\
+    14  & 6   & $925.3 \cdot 10^6$      & $263.3 \cdot 10^6$       \\
     \hline
-    15         & 0          & $14$                    & $15$                     \\
-    15         & 1          & $741$                   & $407$                    \\
-    15         & 2          & $23.6 \cdot 10^3$       & $34.9 \cdot 10^3$        \\
-    15         & 3          & $1.3 \cdot 10^6$        & $3.1 \cdot 10^6$         \\
-    15         & 4          & $53.0 \cdot 10^6$       & $40.0 \cdot 10^6$        \\
-    15         & 5          & $1.6 \cdot 10^9$        & $0.73 \cdot 10^9$        \\
-    15         & 6          & $5.6 \cdot 10^9$        & $1.3 \cdot 10^9$         \\
-    15         & 7          & $15.7 \cdot 10^9$       & $2.2 \cdot 10^9$         \\
+    15  & 0   & $14$                    & $15$                     \\
+    15  & 1   & $741$                   & $407$                    \\
+    15  & 2   & $23.6 \cdot 10^3$       & $34.9 \cdot 10^3$        \\
+    15  & 3   & $1.3 \cdot 10^6$        & $3.1 \cdot 10^6$         \\
+    15  & 4   & $53.0 \cdot 10^6$       & $40.0 \cdot 10^6$        \\
+    15  & 5   & $1.6 \cdot 10^9$        & $0.73 \cdot 10^9$        \\
+    15  & 6   & $5.6 \cdot 10^9$        & $1.3 \cdot 10^9$         \\
+    15  & 7   & $15.7 \cdot 10^9$       & $2.2 \cdot 10^9$         \\
   \end{tabular}
 \end{table}
 
@@ -982,24 +981,23 @@ search.
 
 \subsection{Used Soft- and Hardware} \label{sec:hardware}
 
-Our results were facilitated by advancements in both hardware and software. For
-hardware, we employed two Intel Xeon CPUs, each equipped with $12$ cores ($24$
-threads), and a total of $768$ GB of RAM.
-The latest version of our software can be found on github
-(\url{https://github.com/JGDoerrer/selection_generator}).
+Our results were facilitated by advancements in both hardware and software.
+All versions of the software used are listed in the Table~\ref{table:command_outputs}.
+For hardware, we employed two Intel Xeon CPUs, each equipped with $12$ cores ($24$ threads), and a total of $768$ GB of RAM.
+The latest version of our software can be found on github (\url{https://github.com/JGDoerrer/selection_generator}).
 
-% todo: Tabelle
-% > rustc -V
-% rustc 1.77.2 (25ef9e3d8 2024-04-09)
-
-% > clang --version
-% Ubuntu clang version 14.0.0-1ubuntu1.1
-% Target: x86_64-pc-linux-gnu
-% Thread model: posix
-% InstalledDir: /usr/bin
-
-% > uname -a
-% Linux plankton 5.15.0-105-generic #115-Ubuntu SMP Mon Apr 15 09:52:04 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
+\begin{table}[!t]
+  \renewcommand{\arraystretch}{1.2}
+  \caption{Specific versions on the software used.}
+  \label{table:command_outputs}
+  \centering
+  \begin{tabular}{l|l}
+    \textbf{Command}         & \textbf{Output}                        \\ \hline
+    \texttt{rustc -V}        & rustc 1.77.2                           \\ \hline
+    \texttt{clang --version} & Ubuntu clang version 14.0.0-1ubuntu1.1 \\ \hline
+    \texttt{uname -a}        & Linux plankton 5.15.0-105-generic      \\
+  \end{tabular}
+\end{table}
 
 
 \section*{Acknowledgments}
