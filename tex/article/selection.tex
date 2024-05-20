@@ -314,12 +314,12 @@ For this means, the following strategies are applied.
 
 \begin{enumerate}
   \item[1.]
-    Use solvability-check. For an unsolvable poset the check always returns 'unsolvable'.
-    However, the check may return 'solvable' or 'unsolvable' for a poset that is in fact solvable.
-    If the check returns 'unsolvable', the branch is pruned.
-    Otherwise, the search is continued in the current branch.
+        Use solvability-check. For an unsolvable poset the check always returns 'unsolvable'.
+        However, the check may return 'solvable' or 'unsolvable' for a poset that is in fact solvable.
+        If the check returns 'unsolvable', the branch is pruned.
+        Otherwise, the search is continued in the current branch.
   \item[2.]
-    Use \texttt{current\_best}. This variable facilitates cutting off branches according to the idea of alpha-beta pruning.
+        Use \texttt{current\_best}. This variable facilitates cutting off branches according to the idea of alpha-beta pruning.
 \end{enumerate}
 
 It is optimal because of an inductive argument over the number of relative orders determined.
@@ -502,70 +502,70 @@ The computation of a predecessor for a given poset $P = (n_P, i_P, R_P)$ proceed
 
 \begin{itemize}
   \item[1.]
-    First, we search for all posets with $n_P$ elements that result in poset $P$ after inserting a comparison $u < v$ and then canonifying it.
-    In other words, we remove a comparison.
+        First, we search for all posets with $n_P$ elements that result in poset $P$ after inserting a comparison $u < v$ and then canonifying it.
+        In other words, we remove a comparison.
 
-    A challenge arises from transitive comparisons, as the insertion of a single comparison can lead to the insertion of multiple transitive comparisons.
+        A challenge arises from transitive comparisons, as the insertion of a single comparison can lead to the insertion of multiple transitive comparisons.
 
-    \begin{figure}[!b]
-      \centering
-      \input{figures/tikz_problematic_case.tex}
-      \caption{Case where further comparisons can be removed transitively by removing a comparison.}
-      \label{fig:backward_problematic}
-    \end{figure}
+        \begin{figure}[!b]
+          \centering
+          \input{figures/tikz_problematic_case.tex}
+          \caption{Case where further comparisons can be removed transitively by removing a comparison.}
+          \label{fig:backward_problematic}
+        \end{figure}
 
-    As illustrated in Figure~\ref{fig:backward_problematic}, all three posets are fully normalized.
-    Removing a comparison from poset (1) can result in either poset (2) or poset (3).
-    This implies that, depending on the current cache, both poset (2) and poset (3) are valid potential predecessors, even though the same comparison is removed each time.
+        As illustrated in Figure~\ref{fig:backward_problematic}, all three posets are fully normalized.
+        Removing a comparison from poset (1) can result in either poset (2) or poset (3).
+        This implies that, depending on the current cache, both poset (2) and poset (3) are valid potential predecessors, even though the same comparison is removed each time.
 
-    To address this issue, all potential predecessors must be computed.
+        To address this issue, all potential predecessors must be computed.
 
   \item[2.]
-    In the next step, all predecessors with $n + 1$ elements are calculated.
-    By inserting a comparison followed by canonification, the poset $P$ is obtained such that one element is eliminated during reduction.
+        In the next step, all predecessors with $n + 1$ elements are calculated.
+        By inserting a comparison followed by canonification, the poset $P$ is obtained such that one element is eliminated during reduction.
 
-    Since the new element is either smaller or larger than the $i$-th smallest element being searched for, the $(i + 1)$-th smallest or the $i$-th smallest element is searched in these predecessors.
-    Given that the poset $P$ is canonified, $i \leq n - 1 - i$ holds for $P$.
-    However, when canonifying a poset with $n + 1$ elements and searching for the $(i + 1)$-th smallest element, it may be necessary to form the dual poset, whereby the $(n + 1) - (i + 1) - 1 = n - i + 1$-th element is searched.
+        Since the new element is either smaller or larger than the $i$-th smallest element being searched for, the $(i + 1)$-th smallest or the $i$-th smallest element is searched in these predecessors.
+        Given that the poset $P$ is canonified, $i \leq n - 1 - i$ holds for $P$.
+        However, when canonifying a poset with $n + 1$ elements and searching for the $(i + 1)$-th smallest element, it may be necessary to form the dual poset, whereby the $(n + 1) - (i + 1) - 1 = n - i + 1$-th element is searched.
 
-    Construct the poset $Q$ as follows:
-    Insert a new element into poset $P$ and add arbitrary comparisons between the new element and the existing elements.
-    It is crucial to ensure that the new element cannot be immediately reduced and that no existing elements can be reduced either.
-    Furthermore, there must exist a comparison $u < v$ such that the addition of this comparison results in the poset $P$ again.
+        Construct the poset $Q$ as follows:
+        Insert a new element into poset $P$ and add arbitrary comparisons between the new element and the existing elements.
+        It is crucial to ensure that the new element cannot be immediately reduced and that no existing elements can be reduced either.
+        Furthermore, there must exist a comparison $u < v$ such that the addition of this comparison results in the poset $P$ again.
 
-    \begin{lemma} \label{lemma:remove_only_last_element_edge}
-      Let $P = (n_P, i_P, R_P)$ be a reduced poset.
-      Let $Q$ be a reduced poset obtained from $P$ by adding the comparison $u < v$.
-      Then, $Q$ contains either the element $u$ or $v$, but both elements cannot be reduced simultaneously.
-    \end{lemma}
+        \begin{lemma} \label{lemma:remove_only_last_element_edge}
+          Let $P = (n_P, i_P, R_P)$ be a reduced poset.
+          Let $Q$ be a reduced poset obtained from $P$ by adding the comparison $u < v$.
+          Then, $Q$ contains either the element $u$ or $v$, but both elements cannot be reduced simultaneously.
+        \end{lemma}
 
-    \begin{proof}
-      Let $less_P[v]$ denote the number of elements smaller than $v$ in poset $P$.
-      Let $greater_P[u]$ denote the number of elements greater than $u$ in poset $P$.
-      For both $u$ and $v$ to be non-reducible in poset $P$, it must hold that $less_P[v] \leq i_P$ and $greater_P[u] \leq n_P - 1 - i_P$ (see Definition~\ref{definition:reduced_poset}).
-      When the comparison $u < v$ is added to poset $P$, the resulting poset $Q$ satisfies $less_Q[v] = less_P[v] + 1$ and $greater_Q[u] = greater_P[u] + 1$.
-      For $u$ and $v$ to be reducible in poset $Q$, it must hold that $less_Q[v] > i_P$ and $greater_Q[u] > n_P - 1 - i_P$, which means $less_P[v] = i_P$ and $greater_P[u] = n_P - 1 - i_P$.
-      Consequently, $less_Q[v] = i_P + 1$ and $greater_Q[u] = n_P - i_P$.
-      Since the poset $Q$ has at most $n_P$ elements before reduction, and $u < v$, it must satisfy $less_Q[v] + greater_Q[u] \leq n_P$.
-      However, $less_Q[v] + greater_Q[u] = i_P + 1 + n_P - i_P = n_P + 1$.
-      Thus, $u$ and $v$ cannot be reduced simultaneously.
-    \end{proof}
+        \begin{proof}
+          Let $less_P[v]$ denote the number of elements smaller than $v$ in poset $P$.
+          Let $greater_P[u]$ denote the number of elements greater than $u$ in poset $P$.
+          For both $u$ and $v$ to be non-reducible in poset $P$, it must hold that $less_P[v] \leq i_P$ and $greater_P[u] \leq n_P - 1 - i_P$ (see Definition~\ref{definition:reduced_poset}).
+          When the comparison $u < v$ is added to poset $P$, the resulting poset $Q$ satisfies $less_Q[v] = less_P[v] + 1$ and $greater_Q[u] = greater_P[u] + 1$.
+          For $u$ and $v$ to be reducible in poset $Q$, it must hold that $less_Q[v] > i_P$ and $greater_Q[u] > n_P - 1 - i_P$, which means $less_P[v] = i_P$ and $greater_P[u] = n_P - 1 - i_P$.
+          Consequently, $less_Q[v] = i_P + 1$ and $greater_Q[u] = n_P - i_P$.
+          Since the poset $Q$ has at most $n_P$ elements before reduction, and $u < v$, it must satisfy $less_Q[v] + greater_Q[u] \leq n_P$.
+          However, $less_Q[v] + greater_Q[u] = i_P + 1 + n_P - i_P = n_P + 1$.
+          Thus, $u$ and $v$ cannot be reduced simultaneously.
+        \end{proof}
 
-    As proven in Lemma~\ref{lemma:remove_only_last_element_edge}, it suffices to compare the new element solely with the existing ones.
+        As proven in Lemma~\ref{lemma:remove_only_last_element_edge}, it suffices to compare the new element solely with the existing ones.
 
-    Subsequently, the posets from the first and second steps are merged into a set, ensuring the canonification of all posets.
+        Subsequently, the posets from the first and second steps are merged into a set, ensuring the canonification of all posets.
 
   \item[3.]
-    In the third step, new elements are iteratively inserted, followed by new comparisons for each previously found element, until the upper limit on elements, $n_P$, is reached.
-    This upper limit, $n_P$, also prevents the reuse of cached values from a backward search traversal in subsequent iterations.
-    When inserting a new element, it is important to note that it may no longer be the $i$-th smallest but rather the $(i + 1)$-th smallest element being searched, similar to the second step, and thus cannot be directly reduced.
-    Additionally, by adding the comparison $u < v$, as in the first and second steps, and subsequently normalizing, the resulting poset $P$ should be obtained anew.
+        In the third step, new elements are iteratively inserted, followed by new comparisons for each previously found element, until the upper limit on elements, $n_P$, is reached.
+        This upper limit, $n_P$, also prevents the reuse of cached values from a backward search traversal in subsequent iterations.
+        When inserting a new element, it is important to note that it may no longer be the $i$-th smallest but rather the $(i + 1)$-th smallest element being searched, similar to the second step, and thus cannot be directly reduced.
+        Additionally, by adding the comparison $u < v$, as in the first and second steps, and subsequently normalizing, the resulting poset $P$ should be obtained anew.
 
   \item[4.]
-    In the final step, the minimum number of comparisons that must be removed until the unordered poset is reached is calculated for each predecessor.
-    This number corresponds to the edges in the corresponding Hasse diagram.
-    Based on known theoretical upper bounds, all posets containing too many comparisons can be discarded, as they cannot lead to an unordered poset with the remaining comparisons and therefore cannot be considered in the forward search.
-    Since no more than one comparison can be removed in each step, these posets can be excluded.
+        In the final step, the minimum number of comparisons that must be removed until the unordered poset is reached is calculated for each predecessor.
+        This number corresponds to the edges in the corresponding Hasse diagram.
+        Based on known theoretical upper bounds, all posets containing too many comparisons can be discarded, as they cannot lead to an unordered poset with the remaining comparisons and therefore cannot be considered in the forward search.
+        Since no more than one comparison can be removed in each step, these posets can be excluded.
 \end{itemize}
 
 \begin{figure}[!b]
@@ -822,6 +822,8 @@ Nevertheless, bidirectional search has great potential that can be exploited thr
 \end{table}
 
 The values we calculated as the minimum number of comparisons needed to solve the selection problem for $n \leq 15$ are shown in Table~\ref{table:num-comparisons}.
+For each value we generated an algorithm that solves the problem in that number of comparisons.
+We then checked the algorithm on each of the $n!$ permutations to make sure it is correct.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
