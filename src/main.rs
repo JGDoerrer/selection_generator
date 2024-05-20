@@ -105,18 +105,18 @@ fn main() {
         utils::print_current_time();
     }
 
-    match args.search_mode {
-        SearchMode::Forward => run_forward(&args, false),
-        SearchMode::Backward => run_backward(&args),
-        SearchMode::Bidirectional => run_forward(&args, true),
-    }
-}
-
-fn run_forward(args: &Args, use_bidirectional_search: bool) {
-    if use_bidirectional_search {
+    if matches!(args.search_mode, SearchMode::Bidirectional) {
         assert!(args.max_core.is_some(), "You should specify the maximum number of cores via e.g. '--max-cores 4'. Otherwise the backward-search will consume all resources and the forward-search gets really slow. Hint: leave at least one core for the forward-search");
     }
 
+    match args.search_mode {
+        SearchMode::Forward | SearchMode::Bidirectional => run_forward(&args),
+        SearchMode::Backward => run_backward(&args),
+    }
+}
+
+fn run_forward(args: &Args) {
+    let use_bidirectional_search = matches!(args.search_mode, SearchMode::Bidirectional);
     let start_n = args.n.unwrap_or(1);
 
     let mut cache = Cache::new(args.max_cache_size);
