@@ -103,8 +103,8 @@ measuring the cost as the number of comparisons made. A first approach to solve
 this can be achieved by sorting the list at first and selecting the $i$-th
 element. However, this approach has a time complexity of $\mathcal{O}(n \cdot
   \log n)$. Putting more thought into this problem one can find algorithms like
-the median of medians (Schöning~\cite{Schoening1993}) or PICK
-(Blum~\cite{Blum1972}) and reduce the time complexity to $\mathcal{O}(n)$.
+the median of medians \cite{Schoening1993} or PICK
+\cite{Blum1972} and reduce the time complexity to $\mathcal{O}(n)$.
 Optimal algorithms are known for any $n$ when $i$ is either one or two, but
 there is a significant performance gap finding the median $i = \nicefrac{n}{2}$
 from the best known algorithm with a time complexity of $2.95n$ described in
@@ -205,15 +205,15 @@ Furthermore, we assume in the following that all numbers are pairwise different.
   The enumeration of $i$ starts at $0$, so in $(4, 1, R)$ is the second smallest searched, rather than the minimum.
 \end{definition}
 
-The \texttt{SELECT} problem is thus embedded as $(n, i, \emptyset)$.
+The select problem is thus embedded as $(n, i, \emptyset)$.
+
+\begin{definition}[Dual poset] \label{definition:dual_poset}
+  The dual of a poset $P = (n, i, R)$ is the poset $P^{-1} = (n, n - 1 - i, R')$ with $R' = \{(u,v) \mid (v,u) \in R\}$.
+\end{definition}
 
 \begin{definition}[Reduced] \label{definition:reduced_poset}
   A poset is \textbf{reduced} if all its elements have at most $i$ elements smaller than themselves and at most $n - 1 - i$ larger than themselves.
   Hence, all elements are still possible solutions.
-\end{definition}
-
-\begin{definition}[Dual poset] \label{definition:dual_poset}
-  The dual of a poset $P = (n, i, R)$ is the poset $P^{-1} = (n, n - 1 - i, R')$ with $R' = \{(u,v) \mid (v,u) \in R\}$.
 \end{definition}
 
 \begin{definition}[Canonified]
@@ -263,7 +263,7 @@ By definition of the problem, we seek an element that is larger than $n-i$ eleme
 \end{proof}
 
 \begin{definition}[Compatible Solution]
-  As such we can define a \textbf{Compatible Solution} $Q = (n, i, S)$ of a poset $P = (n, i, R)$, to be solved and agreeing with $P$, that is $(a, b)\in S\implies (b, a)\notin R$.
+  As such we can define a \textbf{compatible solution} $Q = (n, i, S)$ of a poset $P = (n, i, R)$, to be solved and agreeing with $P$, that is $(a, b)\in S\implies (b, a)\notin R$.
 
   Furthermore, $Q$ has no comparisons other than the $n - 1$ needed to prove the solution and the ones resulting from application of transitivity to the former.
 \end{definition}
@@ -331,7 +331,7 @@ In this section we describe our three main approaches being the forward search, 
 Furthermore, we explain how we harness the notion of compatible solutions with respect to all of the three search approaches.
 
 \subsection{Forward Search}\label{chapter:forward_search}
-Forward Search starts with an unordered poset $P=(n,i,\emptyset)$, and recursively determines solvability of a given poset within some bound by exhaustively searching the results of all possible comparisons to be made unless it is already solved or we determine that it cannot be solved within the alloted number of comparisons by some solvability-check.
+Forward search starts with an unordered poset $P=(n,i,\emptyset)$, and recursively determines solvability of a given poset within some bound by exhaustively searching the results of all possible comparisons to be made unless it is already solved or we determine that it cannot be solved within the alloted number of comparisons by some solvability-check.
 
 Between the two possible outcomes of a comparison we assume the worse, but since an algorithm is free to choose which elements to compare we are looking for the most useful comparison, the one that yields result posets cheapest to solve themselves, still in terms of worst case outcome.
 The algorithms output by the search program are built by saving the comparison that lead to this cheapest to solve result.
@@ -955,7 +955,7 @@ version of a search program for selecting the $i$-th element of a list of $n$
 elements (see: \href{https://github.com/JGDoerrer/selection_generator}{Github})
 and not only confirming the found solutions of Oksanen for the problem but also
 improving some entries (e.g. $n = 15, i = 4$). Further we added some more
-numbers and therefore algorithms to the table for higher $n$ and $i$. As stated
+numbers and therefore algorithms to Table~\ref{table:num-comparisons} for higher $n$ and $i$. As stated
 in the motivation before: the road is better than the inn. Along the way we
 learned a lot about the problem structure and complexity, improved our forward
 and backward search algorithms coming to a final conclusion that both are valid.
