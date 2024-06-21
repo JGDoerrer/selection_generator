@@ -1,0 +1,44 @@
+\documentclass[12pt]{article}
+
+% Packages
+\usepackage[utf8]{inputenc} % Input encoding
+\usepackage{amsmath} % Mathematical symbols and environments
+\usepackage{graphicx} % Include graphics
+\usepackage{hyperref} % Hyperlinks
+\usepackage{geometry} % Page layout
+\usepackage{setspace} % Line spacing
+
+% Page layout
+\geometry{a4paper, margin=1in, top=0.5in}
+
+% Document starts
+\begin{document}
+
+% Title
+\title{Finding Lower Bounds for the Number of Comparisons in Selection Algorithms}
+\author{Julius von Smercek, Josua Dörrer, Konrad Gendle, \\ Andreas Steding, Johanna Hofmann}
+\date{June 26, 2024}
+\maketitle
+
+\section*{Abstract}
+This research project aims to find worst case optimal comparison algorithms for selecting the i-th smallest of n elements of
+a set for n up to 15 with computer search.
+Explicitly, we concern ourselves with optimal worst-case selection of a single element from a set of initially unordered unique others, measuring the cost as number of comparisons made.
+For this problem, the method of computer search was first applied by Gasarch, Kelly and Pugh \cite{Gasarch1996}.
+On his website Kenneth Oksanen \cite{Oksanen} published a computer search algorithm improving the previously known lower bounds found by Gasarch. In this work we continue the work of Oksanen \cite{Oksanen} by confirming, improving and expanding the values he found.
+
+Our method comprises the three main approaches forward search, backward search and bidirectional search. Additionally, we harness the notion of compatible solutions in all of the three searches.
+For the forward search approach besides pruning, poset canonification and heuristics, multithreading was applied successfully.
+In backward search the greatest challenge is posed by the task of calculating the predecessors. This was tackled by a four-step procedure that can be performed within reasonable time and storage costs.
+
+Time measurements showed that the backward search performed slightly faster for  smaller $n$ and $i$. For higher values, up to $n=15$ and $i=7$ the backward search consumed only about $24\%$ of the time taken by the forward search.
+Overall, we could not only confirm the solutions of Oksanen but also improve the lower bound for $n=15$ and $i=4$ by one comparison.
+Furthermore, we can disprove Gasarch’s \cite{Gasarch1996} conjecture that
+“pair-forming algorithms”, in which the first comparison of
+any singleton with another singleton is performed, do not lead
+to suboptimal results. For $n = 12$ and $i = 4$, this assumption
+gives a bound of 20 comparisons, which does not correspond
+to the optimal bound of 19 comparisons
+\bibliographystyle{IEEEtran}
+\bibliography{biblio.bib}
+\end{document}
