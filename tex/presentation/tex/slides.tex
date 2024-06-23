@@ -35,60 +35,12 @@
 
 \sectionframe{This Is Section 2}
 
-\section{Section 2}
-
-% text along an arrow
-% (from LaTeX Stack Exchange: https://tex.stackexchange.com/a/154769,
-% by Gonzalo Medina: https://tex.stackexchange.com/users/3954/gonzalo-medina,
-% licensed under CC BY-SA: https://creativecommons.org/licenses/by-sa/3.0/)
-\usetikzlibrary{decorations.text}
-\tikzset{
-  textalongpath/.style 2 args={
-      decoration={
-          text align={left indent=#1},
-          text along path,
-          text={#2}
-        },
-      decorate
-    }
-}
-
-\begin{frame}{Ti\textit{k}Z Example}
-  \centering
-  \begin{tikzpicture}
-    \visible<4->{\node[white,fill=mittelblau,circle,minimum size=25mm,align=center]
-      at (0,0) (parameters) {\textbf{Parameters}\\$\vec{x} = (a, b, c)$};}
-    \visible<3->{\node[white,fill=mittelblau,circle,minimum size=25mm,align=center]
-      at (3.5,0) (model) {\textbf{Model}};}
-    \node[white,fill=mittelblau,circle,minimum size=25mm,align=center] at (7,0) (simulation)
-    {\textbf{Simulation}};
-    \node[white,fill=hellblau,circle,minimum size=25mm,align=center] at (7,-3.5) (reality)
-    {\textbf{Reality}};
-    \visible<4->{\draw[->,line width=1mm,anthrazit,>=stealth] (parameters) -- (model);}
-    \visible<3->{\draw[->,line width=1mm,anthrazit,>=stealth] (model) -- (simulation);}
-    \visible<2->{\draw[<->,dots,line width=1mm,anthrazit,>=stealth] (simulation)
-      to[bend left=45] (reality);}
-    \visible<6->{
-      \draw[->,dots,line width=1mm,anthrazit,>=stealth] (reality)
-      to[bend left=45] (parameters);
-      \path[postaction={textalongpath={20mm}{%
-                |\usebeamercolor[fg]{structure}\bfseries|Inverse problem},
-            /pgf/decoration/raise=-5mm}] (parameters)
-      to[bend right=45] (reality);
-    }
-    \visible<5->{\node at (3.5,1.5) {\term{Forward problem}};}
-    \visible<2->{\node at (7.2,-1.75) {\term{Matches?}};}
-  \end{tikzpicture}
-\end{frame}
-
 \begin{frame}{Another Frame}
   At the top, you can see the progress throughout the presentation.
   Each circle (round shapes -- yay!) stands for one frame.
 
   Also, there is a progress bar beneath.
 \end{frame}
-
-
 
 \sectionframe{Now the Last Section}
 
@@ -115,6 +67,389 @@
   This is the final frame.
 \end{frame}
 
+\begin{frame}
+  \titlepage
+\end{frame}
 
+\section{Outline}
+
+\begin{frame}
+  \frametitle{\insertsection}
+  \begin{enumerate}[1.]
+    \item Introduction
+    \item Fundamentals
+    \item Forward Search
+    \item Backward search
+    \item Results
+  \end{enumerate}
+\end{frame}
+
+\section{Introduction}
+\begin{frame}
+  \frametitle{\insertsection}
+
+
+  \textit{Selection:} Select the $i$-th smallest element in a list with $n$ elements.
+
+  \vspace{5mm}
+  Previous works:
+
+  \vspace{5mm}
+  \begin{tabular}{|p{5cm}|p{5cm}|}
+    \hline
+    Gasarch, Kelly, and Puth                                               & Oksanen   \\
+    \hline
+    \raggedright \begin{itemize}
+                   \item Introduced computer search to find optimal selection algorithms.
+                   \item ...
+                 \end{itemize} &
+    \raggedright \begin{itemize}
+                   \item Published a computer search algorithm improving the previously known lower bounds found
+                         by Gasarch et. al.
+                 \end{itemize}
+  \end{tabular}
+\end{frame}
+
+\section{Poset}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  $$ \Omega = \{ a,b,c,...\}, \quad |\Omega| = n $$
+  $$P = (n,i,R), \quad R \subseteq \Omega^2$$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  \centering
+  \begin{tikzpicture}
+
+    \node[draw, circle] (a) {$a$}
+    child {
+        node[draw, circle] {$b$}
+      }
+    child {
+        node[draw, circle] (c) {$c$}
+        child {
+            node[draw, circle] {$d$}
+          }
+      }
+    ;
+
+    \node[draw, circle, right of=c, node distance=2cm] {$e$};
+
+  \end{tikzpicture}
+
+  \begin{align*}
+    a & > b \\
+    a & > c \\
+    c & > d
+  \end{align*}
+
+\end{frame}
+
+\section{Compatible Solution}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  \centering
+  \begin{tikzpicture}
+
+    \node[draw, circle] (l0) at (0, 0) {};
+    \node[draw, circle] (l1) at (1, 0) {};
+    \node[draw, circle] (l2) at (2, 0) {};
+    \node[draw, circle] (l3) at (3, 0) {};
+
+    \node[draw, circle] (I) at (1.5, 2) {$i$};
+
+    \path[draw] (l0) to (I);
+    \path[draw] (l1) to (I);
+    \path[draw] (l2) to (I);
+    \path[draw] (l3) to (I);
+
+    \node[draw, circle] (u0) at (0.5, 4) {};
+    \node[draw, circle] (u1) at (1.5, 4) {};
+    \node[draw, circle] (u2) at (2.5, 4) {};
+
+    \path[draw] (u0) to (I);
+    \path[draw] (u1) to (I);
+    \path[draw] (u2) to (I);
+
+  \end{tikzpicture}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  \centering
+  \begin{tikzpicture}
+
+    \node[draw, circle] (fl0) at (0, 0) {};
+    \node[draw, circle] (fl1) at (1, 0) {};
+    \node[draw, circle] (fl2) at (2, 0) {};
+    \node[draw, circle] (fl3) at (3, 0) {};
+
+    \node[draw, circle] (fI) at (1.5, 2) {$i$};
+
+    \path[draw] (fl0) to (fI);
+    \path[draw] (fl1) to (fI);
+    \path[draw] (fl2) to (fI);
+    \path[draw] (fl3) to (fI);
+
+    \node[draw, circle] (fu0) at (0.5, 4) {};
+    \node[draw, circle] (fu1) at (1.5, 4) {};
+    \node[draw, circle] (fu2) at (2.5, 4) {};
+
+    \path[draw] (fu0) to (fI);
+    \path[draw] (fu1) to (fI);
+    \path[draw] (fu2) to (fI);
+
+    \path[draw=red] (fu0) to (fl1);
+
+    %second
+
+    \node[draw, circle] (sl0) at (0 + 5, 0) {};
+    \node[draw, circle] (sl1) at (1 + 5, 0) {};
+    \node[draw, circle] (sl2) at (2 + 5, 0) {};
+    \node[draw, circle] (sl3) at (3 + 5, 0) {};
+
+    \node[draw, circle] (sI) at (1.5 + 5, 2) {$i$};
+
+    \path[draw] (sl0) to (sI);
+    \path[draw] (sl1) to (sI);
+    \path[draw] (sl2) to (sI);
+    \path[draw] (sl3) to (sI);
+
+    \node[draw, circle] (su0) at (0.5 + 5, 4) {};
+    \node[draw, circle] (su1) at (1.5 + 5, 4) {};
+    \node[draw, circle] (su2) at (2.5 + 5, 4) {};
+
+    \path[draw] (su0) to (sI);
+    \path[draw] (su1) to (sI);
+    \path[draw] (su2) to (sI);
+
+    \path[draw=red] (su0) to (su1);
+
+  \end{tikzpicture}
+
+\end{frame}
+
+\section{Forward Search}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  \centering
+  \begin{tikzpicture}
+    [
+      level 1/.style = {sibling distance = 4cm},
+      level 2/.style = {sibling distance = 2.5cm},
+    ]
+
+    \node[] (root) {$(n,i,\emptyset)$}
+    child {
+        node[] {$\{a,b\}$}
+        child {
+            node[] {$(n,i,\{(a,b)\})$}
+            child[sibling distance = 1cm] {
+                node[] {$\{c,d\}$}
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+              }
+            child[sibling distance = 1cm] { node[] {$\cdots$}}
+          }
+        child {
+            node[] {$(n,i,\{(b,a)\})$}
+            child[sibling distance = 1cm] {
+                node[] {$\{c,d\}$}
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+              }
+            child[sibling distance = 1cm] { node[] {$\cdots$}}
+          }
+      }
+    child {
+        node {$\{a,c\}$}
+        child[sibling distance = 1cm] { node[] {$\cdots$}}
+        child[sibling distance = 1cm] { node[] {$\cdots$}}
+      }
+    child {
+        node[] {$\cdots$}
+      }
+    ;
+
+  \end{tikzpicture}
+
+\end{frame}
+
+\subsection{Multithreading}
+
+\begin{frame}
+  \frametitle{\insertsubsection}
+
+
+
+\end{frame}
+
+\section{Backward Search}
+\sectionframe{Backward Search}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  % - backward search starts with the solved poset
+  % - iteratively removes comparisons until the searched poset is found
+
+  % $P_{\text{unordered} (1, 0)} = (1, 0, \emptyset)$
+
+  ...
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  % Idee: interaktiv an Tafel
+  % Ebene k enthält alle Posets, die in k Vergleichen gelöst werden können und durch vorherigen Ebene(n) gebildet werden können
+  % ganze Pfeile: zeigen auf Poset in Ebene k - 1, das durch Entfernen eines Vergleichs resultiert
+  % gestrichelte Pfeile: zeigen auf Poset, das resultiert Umkehrvergleich eingefügt wird (alle Ebenen kleiner k)
+  % Rückwärtssuche startet unten bei k = 0, einzigem "gelösten" Poset
+  % berechne Ebene k + 1 wie folgt:
+  %  - versuche zunächst einen Vergleich zu entfernen
+  %  - füge Element mit Vergleichen hinzu, sodass lösbarkeit nicht beeinfluss & entferne anschließend Vergleich
+  %  - 
+
+  \begin{figure}[!b]
+    \centering
+    \includegraphics[width=0.9\textwidth,height=0.8\textheight,keepaspectratio]{./figures/backward-searchtree-bound3.png}
+    \caption{$n=4,i=1,\text{comparison bound}=3$}
+    \label{fig:backward-searchtree-bound3}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  \begin{figure}[!b]
+    \centering
+    \includegraphics[width=0.9\textwidth,height=0.8\textheight,keepaspectratio]{./figures/backward-searchtree-bound4.png}
+    \caption{$n=4,i=1,\text{comparison bound}=4$}
+    \label{fig:backward-searchtree-bound4}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{\insertsection~--~Multithreading}
+
+  % 1  core : 7h 2m 59s
+  % 32 cores:   20m 11s
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[
+          ymin=0,
+          ymax=1,
+          axis x line=bottom,
+          enlarge x limits=0.1,
+          x axis line style={-},
+          ylabel={efficiency},
+          xlabel={number of cores},
+          title={Efficiency of parallelism for $n = 13, i = 6$},
+          ybar, % This makes the plot a bar chart
+          bar width=0.2cm, % Adjust bar width
+          % nodes near coords, % Display values on top of bars
+          xtick=data, % Set x-ticks to data points
+          symbolic x coords={1, 2, 4, 8, 16, 32}, % Specify the x-tick labels
+        ]
+        \addplot[
+          ybar,
+          fill=blue
+        ] coordinates {
+            (1, 1.000)
+            (2, 0.892)
+            (4, 0.877)
+            (8, 0.851)
+            (16, 0.803)
+            (32, 0.655)
+          };
+      \end{axis}
+    \end{tikzpicture}
+  \end{figure}
+
+  $\text{efficiency} = (\text{single-core time}) \div (\text{number of cores} \cdot \text{multi-core time})$ \\
+\end{frame}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  \centering
+
+  \input{../../article/figures/tikz_posets_per_level.tex}
+
+\end{frame}
+
+\section{Bidirectional Search}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  Bidirectional search
+
+\end{frame}
+
+\section{Results}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  \centering
+
+  {\color{red} Rot: Rückwärtssuche},
+  {\color{blue} Blau: Vorwärtssuche}
+
+  \input{../../article/figures/tikz_backward_forward_13_6}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{\insertsection}
+
+  \begin{table}
+    \centering
+    \begin{tabular}{c|cccccccc}
+      \backslashbox{$n$}{$i$} & 0  & 1  & 2  & 3  & 4  & 5  & 6  & 7  \\ \hline
+      1                       & 0                                     \\
+      2                       & 1                                     \\
+      3                       & 2  & 3                                \\
+      4                       & 3  & 4                                \\
+      5                       & 4  & 6  & 6                           \\
+      6                       & 5  & 7  & 8                           \\
+      7                       & 6  & 8  & 10 & 10                     \\
+      8                       & 7  & 9  & 11 & 12                     \\
+      9                       & 8  & 11 & 12 & 14 & 14                \\
+      10                      & 9  & 12 & 14 & 15 & 16                \\
+      11                      & 10 & 13 & 15 & 17 & 18 & 18           \\
+      12                      & 11 & 14 & 17 & 18 & 19 & 20           \\
+      13                      & 12 & 15 & 18 & 20 & 21 & 22 & 23      \\
+      14                      & 13 & 16 & 19 & 21 & 23 & 24 & 25      \\
+      15                      & 14 & 17 & 20 & 23 & 24 & 26 & 26 & 27 \\
+    \end{tabular}
+  \end{table}
+
+\end{frame}
 
 \thanksframe
