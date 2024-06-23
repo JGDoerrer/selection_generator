@@ -1,90 +1,55 @@
 \only<beamer>{\titleframe}
 
-\begin{frame}{Overview}
+\begin{frame}{Gliederung}
   \tableofcontents
 \end{frame}
 
-\sectionframe{Here Comes Section 1}
+% \begin{frame}{Second Frame}
+%   The second frame\dots it doesn't get any better.
 
-\section{Section 1}
+%   Here is an \texttt{itemize} list:
+%   \begin{itemize}
+%     \item
+%           First item
 
-\begin{frame}{First Frame}
-  This is the first frame.
-  It's not very exciting, but still it's the first frame.
+%     \item
+%           Second item
 
-  Slides should contain a descriptive text.
-  But not full sentences like these.
-\end{frame}
+%     \item
+%           Last item
+%   \end{itemize}
+%   Note the round dots before the items.
+% \end{frame}
 
-\begin{frame}{Second Frame}
-  The second frame\dots it doesn't get any better.
+% \begin{frame}{Another Frame}
+%   At the top, you can see the progress throughout the presentation.
+%   Each circle (round shapes -- yay!) stands for one frame.
 
-  Here is an \texttt{itemize} list:
-  \begin{itemize}
-    \item
-          First item
+%   Also, there is a progress bar beneath.
+% \end{frame}
 
-    \item
-          Second item
+% \begin{frame}{Second to Last Frame}
+%   Now we're in Section 3.
 
-    \item
-          Last item
-  \end{itemize}
-  Note the round dots before the items.
-\end{frame}
+%   Here is an \texttt{enumerate} list:
+%   \begin{enumerate}
+%     \item
+%           First item
 
-\sectionframe{This Is Section 2}
+%     \item
+%           Second item
 
-\begin{frame}{Another Frame}
-  At the top, you can see the progress throughout the presentation.
-  Each circle (round shapes -- yay!) stands for one frame.
+%     \item
+%           Last item
+%   \end{enumerate}
+%   Again note the round shapes\dots
+% \end{frame}
 
-  Also, there is a progress bar beneath.
-\end{frame}
+% \begin{frame}{Last Frame}
+%   This is the final frame.
+% \end{frame}
 
-\sectionframe{Now the Last Section}
-
-\section{Section 3}
-
-\begin{frame}{Second to Last Frame}
-  Now we're in Section 3.
-
-  Here is an \texttt{enumerate} list:
-  \begin{enumerate}
-    \item
-          First item
-
-    \item
-          Second item
-
-    \item
-          Last item
-  \end{enumerate}
-  Again note the round shapes\dots
-\end{frame}
-
-\begin{frame}{Last Frame}
-  This is the final frame.
-\end{frame}
-
-\begin{frame}
-  \titlepage
-\end{frame}
-
-\section{Outline}
-
-\begin{frame}
-  \frametitle{\insertsection}
-  \begin{enumerate}[1.]
-    \item Introduction
-    \item Fundamentals
-    \item Forward Search
-    \item Backward search
-    \item Results
-  \end{enumerate}
-\end{frame}
-
-\section{Introduction}
+\section{Einführung}
 \begin{frame}
   \frametitle{\insertsection}
 
@@ -238,12 +203,10 @@
 
 \end{frame}
 
-\section{Forward Search}
+\section{Vorwärtssuche}
+\sectionframe{Vorwärtssuche}
 
-\begin{frame}
-  \frametitle{\insertsection}
-
-
+\begin{frame}{Vorwärtssuche}
 
 \end{frame}
 
@@ -302,8 +265,8 @@
 
 \end{frame}
 
-\section{Backward Search}
-\sectionframe{Backward Search}
+\section{Rückwärtssuche}
+\sectionframe{Rückwärtssuche}
 
 \begin{frame}
   \frametitle{\insertsection}
@@ -313,7 +276,7 @@
 
   % $P_{\text{unordered} (1, 0)} = (1, 0, \emptyset)$
 
-  ...
+  % ...
 
 \end{frame}
 
@@ -332,7 +295,7 @@
 
   \begin{figure}[!b]
     \centering
-    \includegraphics[width=0.9\textwidth,height=0.8\textheight,keepaspectratio]{./figures/backward-searchtree-bound3.png}
+    \includegraphics[width=0.9\textwidth,height=0.67\textheight,keepaspectratio]{./figures/backward-searchtree-bound3.png}
     \caption{$n=4,i=1,\text{comparison bound}=3$}
     \label{fig:backward-searchtree-bound3}
   \end{figure}
