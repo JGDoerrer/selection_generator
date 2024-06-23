@@ -319,8 +319,10 @@
 \end{frame}
 
 \begin{frame}{\insertsection}
-  \begin{table}
+  \begin{table}[!t]
+    \renewcommand{\arraystretch}{0.9}
     \centering
+    \resizebox{0.9\textheight}{!}{%
     \begin{tabular}{c|cccccccc}
       \backslashbox{$n$}{$i$} & 0  & 1  & 2  & 3  & 4  & 5  & 6  & 7  \\ \hline
       1                       & 0                                     \\
@@ -338,8 +340,14 @@
       13                      & 12 & 15 & 18 & 20 & 21 & 22 & 23      \\
       14                      & 13 & 16 & 19 & 21 & 23 & 24 & 25      \\
       15                      & 14 & 17 & 20 & 23 & 24 & 26 & 26 & 27 \\
-    \end{tabular}
+    \end{tabular}%
+    }
   \end{table}
 \end{frame}
 
 \thanksframe
+
+% \begin{frame}{Quellen}
+%   \nocite{*}
+%   \printbibliography
+% \end{frame}
