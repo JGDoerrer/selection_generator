@@ -214,6 +214,31 @@
   % ...
 \end{frame}
 
+\begin{frame}{Vorgänger}
+  % wie berechne ich einen Vorgägner?
+\end{frame}
+
+\begin{frame}{some erros}
+  \centering
+  \input{../article/figures/tikz_problematic_case.tex}
+\end{frame}
+
+\begin{frame}{Kanonifizieren}
+  \begin{table}[!t]
+    \renewcommand{\arraystretch}{1.2}
+    \centering
+    \resizebox{\columnwidth}{!}{%
+      \begin{tabular}{c|cccccccc}
+        $n$ & \multicolumn{8}{c}{$i$}                                                          \\
+            & 0                       & 1      & 2     & 3     & 4     & 5     & 6     & 7     \\ \hline
+        13  & 0                       & 30.205 & 6.797 & 1.530 & 0.469 & 0.188 & 0.485 &       \\
+        14  & 0                       & 33.667 & 7.540 & 1.655 & 0.427 & 0.153 & 0.074 &       \\
+        15  & 0                       & 36.390 & 8.173 & 1.683 & 0.460 & 0.133 & 0.066 & 0.042 \\
+      \end{tabular}%
+    }
+  \end{table}
+\end{frame}
+
 \begin{frame}{\insertsection}
   % Idee: interaktiv an Tafel
   % Ebene k enthält alle Posets, die in k Vergleichen gelöst werden können und durch vorherigen Ebene(n) gebildet werden können
@@ -243,7 +268,7 @@
 
 \end{frame}
 
-\begin{frame}{\insertsection~--~Multithreading}
+\begin{frame}{Multithreading}
   % 1  core : 7h 2m 59s
   % 32 cores:   20m 11s
 
@@ -283,7 +308,7 @@
   $\text{efficiency} = (\text{single-core time}) \div (\text{number of cores} \cdot \text{multi-core time})$ \\
 \end{frame}
 
-\begin{frame}{\insertsection}
+\begin{frame}{Poset Verteilung}
   \begin{figure}[!b]
     \centering
     \input{../article/figures/tikz_posets_per_level.tex}
@@ -296,8 +321,7 @@
 \section{Bidirektionale Suche}
 \sectionframe{\insertsection}
 \begin{frame}{\insertsection}
-  Bidirectional search
-
+  % Idee
 \end{frame}
 
 \begin{frame}{\insertsection}
@@ -310,6 +334,8 @@
 
   {\color{red} Rot: Rückwärtssuche},
   {\color{blue} Blau: Vorwärtssuche}
+
+  % erkläre, warums net geht
 \end{frame}
 
 
