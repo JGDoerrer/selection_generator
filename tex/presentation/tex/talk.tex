@@ -1,0 +1,116 @@
+% pdfpc Seminar_Presentation.pdf -d 30 --disable-auto-grouping --notes=bottom
+\iftrue
+\documentclass[compress,11pt,aspectratio=169]{beamer}
+\else
+\documentclass[compress,11pt,aspectratio=169,notes]{beamer}
+
+\setbeameroption{show notes on second screen=bottom}
+\setbeamerfont{note page}{size=\normalsize}
+\setbeamertemplate{note page}{
+    \pagecolor{black}
+    \setlength{\leftmargini}{0pt}
+    \setbeamercolor{itemize item}{fg=white}
+    \setbeamercolor{normal text}{fg=white}
+    \usebeamercolor*{normal text}
+    \insertnote
+}
+\fi
+
+%\documentclass[compress,11pt,aspectratio=169]{beamer}
+
+% language and encodings
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+
+% TikZ
+\usepackage{tikz}
+
+% other packages
+\usepackage{graphicx}               % Bilder einbinden, Version fuer normales latex
+\usepackage{ifthen}                 % Zum Auskommentieren von Textteilen
+\usepackage{amssymb}                % Mathematische Buchstaben
+\usepackage{amsmath}                % Verbesserter Formelsatz
+\usepackage{booktabs}               % schönere Tabellen
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{urlcolor=black,citecolor=black}
+\usepackage{dsfont}
+\usepackage{float}
+\usepackage{listings}
+
+\usepackage[style=authoryear,
+            autocite=footnote,
+            backend=biber,
+            giveninits=true]{biblatex}
+\usepackage{csquotes}
+\addbibresource{biblio.bib}
+
+\DeclareNameAlias{sortname}{family-given}
+
+% Theme
+\iffalse
+    \usetheme{Singapore}
+
+    \setlength{\leftmargini}{0pt}
+    \setbeamersize{text margin left=7.5mm,text margin right=7.5mm}
+    
+    \setbeamertemplate{section in toc}[sections numbered]
+    %\setbeamertemplate{subsection in toc}[subsections numbered]
+\else
+    % Beamer theme - options:
+    % - navigationDotsLocation: specify location of the dots in the headline
+    %   - near: display the dots near the section names (default)
+    %   - below: display the dots below the section names
+    % - titlePageSpacing: vertical spacing between items on title page (default: 1.5em)
+    % - titlePageNumberOfAuthors: influence size and location of authors on title page
+    %   - few (default): use larger font size, display authors on the left
+    %   - many: use smaller font size, display authors on the right
+    % - thanksPageBigGraphicsScale: scale for the big graphics on the thanks page (default: 1)
+    % - titlePageUniversityLogo: location of university logo file on the title page
+    %   (default: ../gfx/logos/logo_us_white)
+    % - titlePageInstituteLogo: location of institute logo file on the title page - if empty, nothing is displayed
+    %   (default: empty)
+    % - titlePageDepartmentLogo: location of department logo file on the title page - if empty, nothing is displayed
+    %   (default: empty)
+    % - titlePageBigLogo: location of big logo file on the title page - if empty, nothing is displayed
+    %   (default: empty)
+    % - thanksPageBigGraphics: location of the big graphics on the thanks page
+    %   (default: ../gfx/tikz/gfx_title)
+    % - thanksPageInstituteLogo: location of institute logo file on the thanks page - if empty, nothing is displayed
+    %   (default: empty)
+    % - thanksPageDepartmentLogo: location of department logo file on the thanks page - if empty, nothing is displayed
+    %   (default: empty)
+    % - thanksPageBigLogo: location of big logo file on the thanks page - if empty, nothing is displayed
+    %   (default: empty)
+    \usetheme[
+        titlePageUniversityLogo=../gfx/logos/unistuttgart_logo_deutsch_cmyk_invertiert.png,
+        thanksPageBigGraphicsScale=0.175,
+        thanksPageBigGraphics=../gfx/C++_logo.png,
+%        thanksPageBigGraphics=../gfx/thanks,
+%        titlePageInstituteLogo=../gfx/logos/logo_ipvs.png,
+%        titlePageDepartmentLogo=../gfx/logos/logo_sgs.png,
+%        titlePageBigLogo=../gfx/logos/logo_simtech.png,
+%        thanksPageInstituteLogo=../gfx/logos/logo_ipvs.png,
+%        thanksPageDepartmentLogo=../gfx/logos/logo_sgs.png,
+%        thanksPageBigLogo=../gfx/logos/logo_simtech.png,
+        navigationDotsLocation=below,
+        %titlePageSpacing=0.6em,
+        titlePageNumberOfAuthors=many,
+    ]{Stuttgart}
+\fi
+
+\def\myverzeichnis{.}
+\numberwithin{equation}{section}
+
+\hyphenation{}
+
+\title{Selecting the `i'th largest of `n' elements}
+\subtitle{with the fewest possible comparisons.}
+\author{von Smercek,\\Dörrer, Gendle, Steding, Hofmann}
+\institute{{\bf Betreuer:} Florian Stober}
+\date{26. Juni 2023}
+
+\begin{document}
+\include{slides.tex}
+\end{document}

@@ -21,6 +21,8 @@ build
 *.fls
 *.pdf
 *.gz
+*.run.xml
+*.bcf
 
 ## presentation
 *.nav
