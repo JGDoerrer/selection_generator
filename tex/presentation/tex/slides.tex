@@ -4,56 +4,9 @@
   \tableofcontents
 \end{frame}
 
-% \begin{frame}{Second Frame}
-%   The second frame\dots it doesn't get any better.
-
-%   Here is an \texttt{itemize} list:
-%   \begin{itemize}
-%     \item
-%           First item
-
-%     \item
-%           Second item
-
-%     \item
-%           Last item
-%   \end{itemize}
-%   Note the round dots before the items.
-% \end{frame}
-
-% \begin{frame}{Another Frame}
-%   At the top, you can see the progress throughout the presentation.
-%   Each circle (round shapes -- yay!) stands for one frame.
-
-%   Also, there is a progress bar beneath.
-% \end{frame}
-
-% \begin{frame}{Second to Last Frame}
-%   Now we're in Section 3.
-
-%   Here is an \texttt{enumerate} list:
-%   \begin{enumerate}
-%     \item
-%           First item
-
-%     \item
-%           Second item
-
-%     \item
-%           Last item
-%   \end{enumerate}
-%   Again note the round shapes\dots
-% \end{frame}
-
-% \begin{frame}{Last Frame}
-%   This is the final frame.
-% \end{frame}
 
 \section{Einführung}
-\begin{frame}
-  \frametitle{\insertsection}
-
-
+\begin{frame}{\insertsection}
   \textit{Selection:} Select the $i$-th smallest element in a list with $n$ elements.
 
   \vspace{5mm}
@@ -75,19 +28,15 @@
   \end{tabular}
 \end{frame}
 
-\section{Poset}
 
-\begin{frame}
-  \frametitle{\insertsection}
-
+\section{Grundlagen}
+\sectionframe{\insertsection}
+\begin{frame}{\insertsection}
   $$ \Omega = \{ a,b,c,...\}, \quad |\Omega| = n $$
   $$P = (n,i,R), \quad R \subseteq \Omega^2$$
-
 \end{frame}
 
-\begin{frame}
-  \frametitle{\insertsection}
-
+\begin{frame}{\insertsection}
   \centering
   \begin{tikzpicture}
 
@@ -112,14 +61,10 @@
     a & > c \\
     c & > d
   \end{align*}
-
 \end{frame}
 
-\section{Compatible Solution}
-
-\begin{frame}
-  \frametitle{\insertsection}
-
+\subsection{Kompatiblen Lösungen}
+\begin{frame}{\insertsubsection}
   \centering
   \begin{tikzpicture}
 
@@ -147,9 +92,7 @@
 
 \end{frame}
 
-\begin{frame}
-  \frametitle{\insertsection}
-
+\begin{frame}{\insertsubsection}
   \centering
   \begin{tikzpicture}
 
@@ -203,16 +146,14 @@
 
 \end{frame}
 
-\section{Vorwärtssuche}
-\sectionframe{Vorwärtssuche}
 
-\begin{frame}{Vorwärtssuche}
+\section{Vorwärtssuche}
+\sectionframe{\insertsection}
+\begin{frame}{\insertsection}
 
 \end{frame}
 
-\begin{frame}
-  \frametitle{\insertsection}
-
+\begin{frame}{\insertsection}
   \centering
   \begin{tikzpicture}
     [
@@ -257,32 +198,23 @@
 \end{frame}
 
 \subsection{Multithreading}
-
-\begin{frame}
-  \frametitle{\insertsubsection}
-
-
+\begin{frame}{\insertsubsection}
 
 \end{frame}
 
+
 \section{Rückwärtssuche}
-\sectionframe{Rückwärtssuche}
-
-\begin{frame}
-  \frametitle{\insertsection}
-
+\sectionframe{\insertsection}
+\begin{frame}{\insertsection}
   % - backward search starts with the solved poset
   % - iteratively removes comparisons until the searched poset is found
 
   % $P_{\text{unordered} (1, 0)} = (1, 0, \emptyset)$
 
   % ...
-
 \end{frame}
 
-\begin{frame}
-  \frametitle{\insertsection}
-
+\begin{frame}{\insertsection}
   % Idee: interaktiv an Tafel
   % Ebene k enthält alle Posets, die in k Vergleichen gelöst werden können und durch vorherigen Ebene(n) gebildet werden können
   % ganze Pfeile: zeigen auf Poset in Ebene k - 1, das durch Entfernen eines Vergleichs resultiert
@@ -299,24 +231,19 @@
     \caption{$n=4,i=1,\text{comparison bound}=3$}
     \label{fig:backward-searchtree-bound3}
   \end{figure}
-
 \end{frame}
 
-\begin{frame}
-  \frametitle{\insertsection}
-
+\begin{frame}{\insertsection}
   \begin{figure}[!b]
     \centering
-    \includegraphics[width=0.9\textwidth,height=0.8\textheight,keepaspectratio]{./figures/backward-searchtree-bound4.png}
+    \includegraphics[width=0.9\textwidth,height=0.67\textheight,keepaspectratio]{./figures/backward-searchtree-bound4.png}
     \caption{$n=4,i=1,\text{comparison bound}=4$}
     \label{fig:backward-searchtree-bound4}
   \end{figure}
 
 \end{frame}
 
-\begin{frame}
-  \frametitle{\insertsection~--~Multithreading}
-
+\begin{frame}{\insertsection~--~Multithreading}
   % 1  core : 7h 2m 59s
   % 32 cores:   20m 11s
 
@@ -356,8 +283,7 @@
   $\text{efficiency} = (\text{single-core time}) \div (\text{number of cores} \cdot \text{multi-core time})$ \\
 \end{frame}
 
-\begin{frame}
-  \frametitle{\insertsection}
+\begin{frame}{\insertsection}
 
   \centering
 
@@ -365,32 +291,34 @@
 
 \end{frame}
 
-\section{Bidirectional Search}
 
-\begin{frame}
-  \frametitle{\insertsection}
-
+\section{Bidirektionale Suche}
+\sectionframe{\insertsection}
+\begin{frame}{\insertsection}
   Bidirectional search
 
 \end{frame}
 
-\section{Results}
-
-\begin{frame}
-  \frametitle{\insertsection}
-
+\begin{frame}{\insertsection}
   \centering
 
   {\color{red} Rot: Rückwärtssuche},
   {\color{blue} Blau: Vorwärtssuche}
 
   \input{../../article/figures/tikz_backward_forward_13_6}
-
 \end{frame}
 
-\begin{frame}
-  \frametitle{\insertsection}
 
+\section{Ergebnisse}
+\sectionframe{\insertsection}
+
+\begin{frame}{\insertsection}
+  % hier kommt fehler von oksanen hin (falsche Heuristik,, führt zu falschem wert)
+
+  % hier kommt faslche these von gasarch
+\end{frame}
+
+\begin{frame}{\insertsection}
   \begin{table}
     \centering
     \begin{tabular}{c|cccccccc}
@@ -412,7 +340,6 @@
       15                      & 14 & 17 & 20 & 23 & 24 & 26 & 26 & 27 \\
     \end{tabular}
   \end{table}
-
 \end{frame}
 
 \thanksframe
