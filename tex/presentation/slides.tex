@@ -15,15 +15,17 @@
   \vspace{2mm}
   \begin{tabular}{|p{6cm}|p{6cm}|}
     \hline
-    Gasarch, Kelly and Puth (1996)                                                                                        & Oksanen (2002) \\
+    Gasarch, Kelly and Puth (1996) & Oksanen (2002)   \\
     \hline
     \raggedright \begin{itemize}
                    \item [...]haben als erste Computersuche angewandt, um untere Schranken für das \textit{Selection}-Problem zu finden.
                    \item [...]nutzten für größere $n,i$ sog. \textit{pair-forming algorithms}
                  \end{itemize} &
-    \begin{itemize}
-      \item[...] stellte einen Computersuch-Algorithmus online, der die unteren Schranken von Gasarch et al. übertraf.
-    \end{itemize}
+     \begin{itemize}
+                   \item[...] stellte einen Computersuch-Algorithmus online, der die unteren Schranken von Gasarch et al. übertrifft.
+                 \end{itemize}
+                  
+          
   \end{tabular}
 \end{frame}
 
@@ -77,13 +79,21 @@
   \textit{Kosten eines Posets} $V(P)$ mit $P=(n,i,R)$ sind die optimale Anzahl an weiteren Vergleichen, die benötigt werden, um das $i$ kleinste Element zu bestimmen.
 \end{frame}
 
-\begin{frame}{Ein Lemmas}
+\begin{frame}{Ein Lemma}
     \textbf{Lemma 1:} Für ein Poset $P=(n,i,R)$ gilt $V(P) = V(P^{-1})$.
     \vspace{1mm}
 
     \textit{Beweis: Die Berechnung von $V(P)$ ergibt gleichzeitig einen Algorithmus, der in einen Entscheidungsbaum übersetzt werden kann. Vertausche alle Kinder, und derselbe Algorithmus führt auf die Lösung von $P^{-1}$.}
 
 \end{frame}
+
+\begin{frame}{Ein Beispiel mit Poset-Reduktion}
+  \begin{figure}
+    \input{figures/tikz_example}
+  \end{figure}
+  
+\end{frame}
+
 \begin{frame}{\insertsection}
   $$ \Omega = \{ a,b,c,...\}, \quad |\Omega| = n $$
   $$P = (n,i,R), \quad R \subseteq \Omega^2$$
