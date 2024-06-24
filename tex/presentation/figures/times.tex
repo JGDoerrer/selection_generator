@@ -1,0 +1,52 @@
+\begin{tikzpicture}
+  \begin{axis}[
+      % ymode=log,
+      axis x line = bottom,%x-Achse nur unten
+      % x dir=reverse,
+      enlarge x limits = .05,%x-Achse erweitern
+      x axis line style = {-},%kein Pfeil
+      % title = {\dots},
+      % ylabel={number of posets},
+      % xlabel={number of comparisons removed},
+      % only marks,
+      cycle list={{mark=x}},
+      legend pos=north west,
+    ]
+    \addlegendentry{forward}
+    \addplot+[cyan] table { %n=14,i=0
+        x  y
+        0  0.0
+        1  0.0
+        2  0.0
+        3  0.04
+        4  1.200
+        5  32.62
+        6  119.62
+        7  337.85
+      };
+    \addlegendentry{backward}
+    \addplot+[green] table {
+        x y
+        0 0.0
+        1 0.0
+        2 0.0
+        3 0.22
+        4 0.764
+        5 19.5
+        6 29.72
+        7 80.15
+      };
+    \addlegendentry{Oksanen}
+    \addplot+[magenta] table {
+        x y
+        0 0.0
+        1 0.0
+        2 0.0
+        3 0.455
+        4 29.667
+        5 120
+        6 120
+        7 120
+      };
+  \end{axis}
+\end{tikzpicture}

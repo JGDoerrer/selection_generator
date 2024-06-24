@@ -211,30 +211,30 @@
 
   \begin{itemize}
     \item<+-> Kompatible Lösungen
-          \begin{itemize}
-            \item Anzahl Vergleiche $\geq \log_2$(Anzahl Kompatible Lösungen)
-          \end{itemize}
+      \begin{itemize}
+        \item Anzahl Vergleiche $\geq \log_2$(Anzahl Kompatible Lösungen)
+      \end{itemize}
     \item<+-> Geschenkter Vergleich
-          \begin{figure}
-            \centering
-            \begin{tikzpicture}
-              \node[draw,circle] (1) {};
-              \node[draw,circle,below right of=1] (2) {};
-              \node[draw,circle,below left of=1] (3) {};
+      \begin{figure}
+        \centering
+        \begin{tikzpicture}
+          \node[draw,circle] (1) {};
+          \node[draw,circle,below right of=1] (2) {};
+          \node[draw,circle,below left of=1] (3) {};
 
-              \node[draw,circle,above of=1] (4) {};
-              \node[draw,circle,above right of=4] (5) {};
-              \node[draw,circle,above left of=4] (6) {};
+          \node[draw,circle,above of=1] (4) {};
+          \node[draw,circle,above right of=4] (5) {};
+          \node[draw,circle,above left of=4] (6) {};
 
-              \path[dashed] (1) edge (4);
+          \path[dashed] (1) edge (4);
 
-              \path[-]
-              (1) edge (2)
-              (1) edge (3)
-              (4) edge (5)
-              (4) edge (6);
-            \end{tikzpicture}
-          \end{figure}
+          \path[-]
+          (1) edge (2)
+          (1) edge (3)
+          (4) edge (5)
+          (4) edge (6);
+        \end{tikzpicture}
+      \end{figure}
   \end{itemize}
 
 \end{frame}
@@ -243,21 +243,78 @@
 \section{Rückwärtssuche}
 \sectionframe{\insertsection}
 \begin{frame}{\insertsection}
-  % - backward search starts with the solved poset
-  % - iteratively removes comparisons until the searched poset is found
-
-  % $P_{\text{unordered} (1, 0)} = (1, 0, \emptyset)$
-
-  % ...
+  \begin{itemize}
+    \item<+-> Eingabeparameter \texttt{n}, \texttt{i}, \texttt{upper\_bound}
+    \item<+-> entfernt Vergleiche in jedem Schritt
+    \item<+-> startet bei poset $(1, 0, \emptyset)$ % gelöstes poset an Tafel
+    \item<+-> berechnet iterativ alle in $k$ Schritten lösbaren posets % k Werte Tafel
+    \item<+-> terminiert, wenn poset $(n, i, \emptyset)$ gefunden % leeres Poset Tafel
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{Vorgänger}
-  % wie berechne ich einen Vorgägner?
+\begin{frame}{Vorgängerberechnung}
+  \begin{definition}[Vorgänger]
+    Poset $Q$ ist Vorgänger von poset $P$, wenn folgende Bedingungen erfüllt sind:
+    \begin{itemize}
+      \item<+-> $P$ und $Q$ sind normalisiert % Achtung: eindeutige Normalform
+      \item<+-> $Q$ wurde in keiner früheren Ebene gefunden % (otherwise it would be solvable in fewer comparisons)
+      \item<+-> durch Hinzufügen eines Vergleich $(i, j)$ in $Q$ resultiert $P$ % Achtung: anschließende Normaliserung
+      \item<+-> durch Hinzufügen von $(j, i)$ resultiert ein bereits bekanntes poset % und anschließende Normalisierung
+    \end{itemize}
+  \end{definition}
 \end{frame}
 
-\begin{frame}{some erros}
-  \centering
-  \input{../article/figures/tikz_problematic_case.tex}
+% \begin{frame}{Entfernen von Vergleichen}
+%   \centering
+%   \input{../article/figures/tikz_problematic_case.tex}
+% \end{frame}
+
+\begin{frame}{\insertsection}
+  % Idee: interaktiv an Tafel
+  % Ebene k enthält alle Posets, die in k Vergleichen gelöst werden können und durch vorherigen Ebene(n) gebildet werden können
+  % ganze Pfeile: zeigen auf Poset in Ebene k - 1, das durch Entfernen eines Vergleichs resultiert
+  % gestrichelte Pfeile: zeigen auf Poset, das resultiert Umkehrvergleich eingefügt wird (alle Ebenen kleiner k)
+  % Rückwärtssuche startet unten bei k = 0, einzigem "gelösten" Poset
+  % berechne Ebene k + 1 wie folgt:
+  %  - versuche zunächst einen Vergleich zu entfernen
+  %  - füge Element mit Vergleichen hinzu, sodass lösbarkeit nicht beeinfluss & entferne anschließend Vergleich
+  %  - 
+
+  \begin{figure}[!b]
+    \centering
+    \includegraphics[width=0.9\textwidth,height=0.67\textheight,keepaspectratio]{./figures/backward-searchtree-bound3.png}
+    \caption{$n=4,i=1,\text{upper\_bound}=3$}
+    \label{fig:backward-searchtree-bound3}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{\insertsection}
+  \begin{figure}[!b]
+    \centering
+    \includegraphics[width=0.9\textwidth,height=0.67\textheight,keepaspectratio]{./figures/backward-searchtree-bound4.png}
+    \caption{$n=4,i=1,\text{upper\_bound}=4$}
+    \label{fig:backward-searchtree-bound4}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{table}[!t]
+    \renewcommand{\arraystretch}{1.2}
+    \caption{Possible predecessors that must be calculated for $n = 7$ and $i = 3$. All predecessors for which the corresponding field is marked with `x' must be calculated.}
+    \label{table:n_i_values_calculated}
+    \centering
+    \begin{tabular}{c|cccc}
+      $n$ & \multicolumn{4}{c}{$i$}             \\
+          & 0                       & 1 & 2 & 3 \\ \hline
+      7   & -                       & - & - & x \\
+      6   & -                       & - & x & - \\
+      5   & -                       & x & x & - \\
+      4   & x                       & x & - & - \\
+      3   & x                       & x & - & - \\
+      2   & x                       & - & - & - \\
+      1   & x                       & - & - & - \\
+    \end{tabular}%
+  \end{table}
 \end{frame}
 
 \begin{frame}{Kanonifizieren}
@@ -276,70 +333,43 @@
   \end{table}
 \end{frame}
 
-\begin{frame}{\insertsection}
-  % Idee: interaktiv an Tafel
-  % Ebene k enthält alle Posets, die in k Vergleichen gelöst werden können und durch vorherigen Ebene(n) gebildet werden können
-  % ganze Pfeile: zeigen auf Poset in Ebene k - 1, das durch Entfernen eines Vergleichs resultiert
-  % gestrichelte Pfeile: zeigen auf Poset, das resultiert Umkehrvergleich eingefügt wird (alle Ebenen kleiner k)
-  % Rückwärtssuche startet unten bei k = 0, einzigem "gelösten" Poset
-  % berechne Ebene k + 1 wie folgt:
-  %  - versuche zunächst einen Vergleich zu entfernen
-  %  - füge Element mit Vergleichen hinzu, sodass lösbarkeit nicht beeinfluss & entferne anschließend Vergleich
-  %  - 
-
-  \begin{figure}[!b]
-    \centering
-    \includegraphics[width=0.9\textwidth,height=0.67\textheight,keepaspectratio]{./figures/backward-searchtree-bound3.png}
-    \caption{$n=4,i=1,\text{obere Schranke}=3$}
-    \label{fig:backward-searchtree-bound3}
-  \end{figure}
-\end{frame}
-
-\begin{frame}{\insertsection}
-  \begin{figure}[!b]
-    \centering
-    \includegraphics[width=0.9\textwidth,height=0.67\textheight,keepaspectratio]{./figures/backward-searchtree-bound4.png}
-    \caption{$n=4,i=1,\text{obere Schranke}=4$}
-    \label{fig:backward-searchtree-bound4}
-  \end{figure}
-
-\end{frame}
-
 \begin{frame}{Multithreading}
   % 1  core : 7h 2m 59s
   % 32 cores:   20m 11s
 
   \begin{figure}
     \centering
-    \begin{tikzpicture}
-      \begin{axis}[
-          ymin=0,
-          ymax=1,
-          axis x line=bottom,
-          enlarge x limits=0.1,
-          x axis line style={-},
-          ylabel={efficiency},
-          xlabel={number of cores},
-          title={Efficiency of parallelism for $n = 13, i = 6$},
-          ybar, % This makes the plot a bar chart
-          bar width=0.2cm, % Adjust bar width
-          % nodes near coords, % Display values on top of bars
-          xtick=data, % Set x-ticks to data points
-          symbolic x coords={1, 2, 4, 8, 16, 32}, % Specify the x-tick labels
-        ]
-        \addplot[
-          ybar,
-          fill=blue
-        ] coordinates {
-            (1, 1.000)
-            (2, 0.892)
-            (4, 0.877)
-            (8, 0.851)
-            (16, 0.803)
-            (32, 0.655)
-          };
-      \end{axis}
-    \end{tikzpicture}
+    \resizebox{0.8\textheight}{!}{%
+      \begin{tikzpicture}
+        \begin{axis}[
+            ymin=0,
+            ymax=1,
+            axis x line=bottom,
+            enlarge x limits=0.1,
+            x axis line style={-},
+            ylabel={Effizienz},
+            xlabel={Anzahl an Kernen},
+            title={Effizient für Parallelisation bei $n = 13, i = 6$},
+            ybar, % This makes the plot a bar chart
+            bar width=0.2cm, % Adjust bar width
+            % nodes near coords, % Display values on top of bars
+            xtick=data, % Set x-ticks to data points
+            symbolic x coords={1, 2, 4, 8, 16, 32}, % Specify the x-tick labels
+          ]
+          \addplot[
+            ybar,
+            fill=blue
+          ] coordinates {
+              (1, 1.000)
+              (2, 0.892)
+              (4, 0.877)
+              (8, 0.851)
+              (16, 0.803)
+              (32, 0.655)
+            };
+        \end{axis}
+      \end{tikzpicture}%
+    }
   \end{figure}
 
   $\text{efficiency} = (\text{single-core time}) \div (\text{number of cores} \cdot \text{multi-core time})$ \\
@@ -348,7 +378,9 @@
 \begin{frame}{Poset Verteilung}
   \begin{figure}[!b]
     \centering
-    \input{../article/figures/tikz_posets_per_level.tex}
+    \resizebox{\textheight}{!}{%
+      \input{figures/tikz_posets_per_level.tex}
+    }
     % \caption{Number of posets generated by the backward search for $n = 14$ depending on the number of comparisons for various $i$. Be aware of the logarithmic scale of the y-axis and that the reverse search does not add comparisons, but rather removes them.}
     % \label{fig:backward-posets-per-level}
   \end{figure}
@@ -378,11 +410,19 @@
 
 \section{Ergebnisse}
 \sectionframe{\insertsection}
+\begin{frame}{\insertsection}
+  \begin{figure}[!b]
+    \centering
+    \input{figures/times.tex} % for n = 15
+  \end{figure}
+\end{frame}
 
 \begin{frame}{\insertsection}
   % hier kommt fehler von oksanen hin (falsche Heuristik,, führt zu falschem wert)
 
   % hier kommt faslche these von gasarch
+
+  % hier kommt hin: Lemma 1 ist auch ein neues Ergebniss, dass weder Oksanen noch Gasarch rausgefunden haben (zumindest nach meinem Wissen; Julius)
 \end{frame}
 
 \begin{frame}{\insertsection}

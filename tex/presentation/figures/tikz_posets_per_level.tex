@@ -1,0 +1,192 @@
+\begin{tikzpicture}
+  \begin{axis}[
+      ymode=log,
+      axis x line = bottom,%x-Achse nur unten
+      % x dir=reverse,
+      enlarge x limits = .05,%x-Achse erweitern
+      x axis line style = {-},%kein Pfeil
+      % title = {\dots},
+      ylabel={Anzahl an posets},
+      xlabel={Anzahl an entfernten Vergleichen},
+      % only marks,
+      cycle list={{mark=x}},
+      legend pos=north east,
+    ]
+    \addlegendentry{$i = 0$}
+    \addplot+[cyan] table { %n=14,i=0
+        x  y
+        0  1
+        1  1
+        2  1
+        3  1
+        4  1
+        5  1
+        6  1
+        7  1
+        8  1
+        9  1
+        10 1
+        11 1
+        12 1
+        13 1
+      };
+    \addlegendentry{$i = 1$}
+    \addplot+[green] table { %n=14,i=1
+        x y
+        0  1
+        1  1
+        2  3
+        3  6
+        4  11
+        5  21
+        6  41
+        7  61
+        8  59
+        9  42
+        10 28
+        11 19
+        12 12
+        13 7
+        14 4
+        15 2
+        16 1
+      };
+    \addlegendentry{$i = 2$}
+    \addplot+[magenta] table { %n=14,i=2
+        x y
+        0  1
+        1  1
+        2  3
+        3  14
+        4  60
+        5  287
+        6  1385
+        7  4005
+        8  5510
+        9  4268
+        10 2284
+        11 1025
+        12 428
+        13 180
+        14 73
+        15 30
+        16 11
+        17 6
+        18 2
+        19 1
+      };
+    \addlegendentry{$i = 3$}
+    \addplot+[orange] table { %n=14,i=3
+        x y
+        0  1
+        1  1
+        2  3
+        3  16
+        4  175
+        5  2201
+        6  22900
+        7  103210
+        8  191627
+        9  174416
+        10 94785
+        11 37004
+        12 12173
+        13 3851
+        14 1211
+        15 392
+        16 124
+        17 41
+        18 13
+        19 4
+        20 2
+        21 1
+      };
+    \addlegendentry{$i = 4$}
+    \addplot+[yellow] table { %n=14,i=4
+        x y
+        0  1
+        1  1
+        2  3
+        3  16
+        4  323
+        5  10111
+        6  200521
+        7  1386176
+        8  3607272
+        9  4267576
+        10 2763862
+        11 1162696
+        12 367875
+        13 100552
+        14 26024
+        15 6745
+        16 1781
+        17 474
+        18 127
+        19 34
+        20 12
+        21 4
+        22 1
+        23 1
+      };
+    \addlegendentry{$i = 5$}
+    \addplot+[red] table { %n=14,i=5
+        x y
+        0  1
+        1  1
+        2  3
+        3  16
+        4  446
+        5  26921
+        6  780123
+        7  6588569
+        8  19882832
+        9  26416869
+        10 18631911
+        11 8243306
+        12 2630332
+        13 688904
+        14 164372
+        15 38334
+        16 8918
+        17 2084
+        18 518
+        19 130
+        20 36
+        21 11
+        22 4
+        23 1
+        24 1
+      };
+    \addlegendentry{$i = 6$}
+    \addplot+[blue] table { % n=14,i=6
+        x y
+        0  1
+        1  1
+        2  3
+        3  16
+        4  452
+        5  37236
+        6  1389385
+        7  14591680
+        8  53003482
+        9  82198656
+        10 65707713
+        11 31909980
+        12 10770689
+        13 2864659
+        14 665109
+        15 147573
+        16 32349
+        17 7214
+        18 1624
+        19 400
+        20 100
+        21 27
+        22 9
+        23 4
+        24 1
+        25 1
+      };
+  \end{axis}
+\end{tikzpicture}
