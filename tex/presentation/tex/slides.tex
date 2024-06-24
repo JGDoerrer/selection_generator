@@ -7,25 +7,33 @@
 
 \section{Einführung}
 \begin{frame}{\insertsection}
-  \textit{Selection:} Select the $i$-th smallest element in a list with $n$ elements.
+  \textit{Selection(n,i):} Finde das $i$ kleinste Element in einer Liste mit $n$ Elementen.
 
   \vspace{5mm}
-  Previous works:
+  Grundlegende Arbeiten:
 
-  \vspace{5mm}
-  \begin{tabular}{|p{5cm}|p{5cm}|}
+  \vspace{2mm}
+  \begin{tabular}{|p{6cm}|p{6cm}|}
     \hline
-    Gasarch, Kelly, and Puth                                               & Oksanen   \\
+    Gasarch, Kelly and Puth (1996) & Oksanen (2002)   \\
     \hline
     \raggedright \begin{itemize}
-                   \item Introduced computer search to find optimal selection algorithms.
-                   \item ...
+                   \item [...]haben als erste Computersuche angewandt, um untere Schranken für das \textit{Selection}-Problem zu finden.
+                   \item [...]nutzten für größere $n,i$ sog. \textit{pair-forming algorithms}
                  \end{itemize} &
-    \raggedright \begin{itemize}
-                   \item Published a computer search algorithm improving the previously known lower bounds found
-                         by Gasarch et. al.
+     \begin{itemize}
+                   \item[...] stellte einen Computersuch-Algorithmus online, der die unteren Schranken von Gasarch et al. übertraf.
                  \end{itemize}
+                  
+          
   \end{tabular}
+\end{frame}
+
+\begin{frame}{\insertsection}
+  \textbf{Aufgabenstellung} \\ 
+  \vspace{5mm}
+  Bestimme mit Computersuche $V_i^n$ - die Anzahl an Vergleichen, die ein optimaler Algorithmus im Worst Case benötigt, um das $i$ kleinste von $n$ Elementen zu finden.
+
 \end{frame}
 
 
