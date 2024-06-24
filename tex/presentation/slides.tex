@@ -15,17 +15,16 @@
   \vspace{2mm}
   \begin{tabular}{|p{6cm}|p{6cm}|}
     \hline
-    Gasarch, Kelly and Puth (1996) & Oksanen (2002)   \\
-    \hline
+    \multicolumn{1}{|c|}{Gasarch, Kelly and Puth (1996)} & \multicolumn{1}{c|}{Oksanen (2002)}   \\
+    \cline{1-2}
     \raggedright \begin{itemize}
                    \item [...]haben als erste Computersuche angewandt, um untere Schranken für das \textit{Selection}-Problem zu finden.
                    \item [...]nutzten für größere $n,i$ sog. \textit{pair-forming algorithms}
                  \end{itemize} &
      \begin{itemize}
                    \item[...] stellte einen Computersuch-Algorithmus online, der die unteren Schranken von Gasarch et al. übertraf.
-                 \end{itemize}
-                  
-          
+                 \end{itemize} \\
+    \cline{1-2}
   \end{tabular}
 \end{frame}
 
@@ -38,7 +37,54 @@
 
 
 \section{Grundlagen}
+
+\subsection{Partial Order Sets}
+
 \sectionframe{\insertsection}
+
+\begin{frame}{Zentrale Datenstruktur: Poset}
+  \textbf{Definition:}
+  \vspace{1mm}
+  \begin{itemize}
+    \item Sei $\Omega$ eine Menge mit paarweise verschiedenen Elementen mit $\vert \Omega \vert = n$.
+    \item $(n,i,R)$ bezeichnet eine Instanz des \textit{Selection}-Problems.  
+    \item $R \subseteq \Omega^2$ mit $(a,b) \in R \Leftrightarrow a \leq b$.
+  \end{itemize}
+  \vspace{2mm}
+   
+  \textbf{Dualität:} \\ 
+  \vspace{1mm}
+  Das Duale eines Posets $P = (n, i, R)$ ist das Poset $P^{-1} = \left(n, n-1-i, R'\right)$ mit $R' = \{ (u,v) \; \vert \; (v,u) \in R\}$
+
+  \vspace{2mm}
+  \textbf{Reduktion:} \\
+  \vspace{1mm}
+  Ein Poset heißt \textit{reduziert}, wenn es zu jedem Element höchstens $i$ viele kleinere Elemente gibt und höchstens $n-1-i$ viele größere Elemente.  
+\end{frame}
+  
+\begin{frame}{Zentrale Datenstruktur: Poset}
+  \textbf{Kanonische Form:} \\
+  \vspace{1mm}
+  Ein Poset heißt \textit{kanonifiziert}, wenn alle Elemente des Posets kanonisch angeordnet sind. Das heißt, dass alle möglichen Permutationen der Elemente auf das Poset abbilden.  
+
+  \vspace{2mm}
+  \textbf{Normalform:} \\
+  \vspace{1mm}
+  Ein reduziertes und kanonifiziertes Poset heißt \textit{normalisiert}.
+
+  \vspace{2mm}
+  \textbf{Optimale Kosten:} \\
+  \vspace{1mm}
+  \textit{Kosten eines Posets} $V(P)$ mit $P=(n,i,R)$ sind die optimale Anzahl an weiteren Vergleichen, die benötigt werden, um das $i$ kleinste Element zu bestimmen.
+\end{frame}
+
+\begin{frame}{Ein Lemmas}
+    \textbf{Lemma 1:} Für ein Poset $P=(n,i,R)$ gilt $V(P) = V(P^{-1})$.
+    \vspace{1mm}
+
+    \textit{Beweis: Die Berechnung von $V(P)$ ergibt gleichzeitig einen Algorithmus, der in einen Entscheidungsbaum übersetzt werden kann. Vertausche alle Kinder, und derselbe Algorithmus führt auf die Lösung von $P^{-1}$.}
+
+\end{frame}
 \begin{frame}{\insertsection}
   $$ \Omega = \{ a,b,c,...\}, \quad |\Omega| = n $$
   $$P = (n,i,R), \quad R \subseteq \Omega^2$$
