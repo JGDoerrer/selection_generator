@@ -15,15 +15,16 @@
   \vspace{2mm}
   \begin{tabular}{|p{6cm}|p{6cm}|}
     \hline
-    Gasarch, Kelly and Puth (1996)                                                                                        & Oksanen (2002) \\
-    \hline
+    \multicolumn{1}{|c|}{Gasarch, Kelly and Puth (1996)} & \multicolumn{1}{c|}{Oksanen (2002)}   \\
+    \cline{1-2}
     \raggedright \begin{itemize}
                    \item [...]haben als erste Computersuche angewandt, um untere Schranken für das \textit{Selection}-Problem zu finden.
                    \item [...]nutzten für größere $n,i$ sog. \textit{pair-forming algorithms}
                  \end{itemize} &
-    \begin{itemize}
-      \item[...] stellte einen Computersuch-Algorithmus online, der die unteren Schranken von Gasarch et al. übertrifft.
-    \end{itemize}
+     \begin{itemize}
+                   \item[...] stellte einen Computersuch-Algorithmus online, der die unteren Schranken von Gasarch et al. übertraf.
+                 \end{itemize} \\
+    \cline{1-2}
   \end{tabular}
 \end{frame}
 
@@ -50,11 +51,14 @@
     \item $R \subseteq \Omega^2$ mit $(a,b) \in R \Leftrightarrow a \leq b$.
   \end{itemize}
   \vspace{2mm}
+\end{frame}
 
+\begin{frame}{Zentrale Datenstruktur: Poset}
   \textbf{Dualität:} \\
   \vspace{1mm}
-  Das Duale eines Posets $P = (n, i, R)$ ist das Poset $P^{-1} = \left(n, n-1-i, R'\right)$ mit $R' = \{ (u,v) \; \vert \; (v,u) \in R\}$
-
+  Das Duale eines Posets $P = (n, i, R)$ ist das Poset $P^{-1} = \left(n, n-1-i, R'\right)$ mit $R' = \{ (u,v) \; \vert \; (v,u) \in R\}$.
+  
+  \pause
   \vspace{2mm}
   \textbf{Reduktion:} \\
   \vspace{1mm}
@@ -66,11 +70,13 @@
   \vspace{1mm}
   Ein Poset heißt \textit{kanonifiziert}, wenn alle Elemente des Posets kanonisch angeordnet sind. Das heißt, dass alle möglichen Permutationen der Elemente auf das Poset abbilden.
 
+  \pause
   \vspace{2mm}
   \textbf{Normalform:} \\
   \vspace{1mm}
   Ein reduziertes und kanonifiziertes Poset heißt \textit{normalisiert}.
 
+  \pause
   \vspace{2mm}
   \textbf{Optimale Kosten:} \\
   \vspace{1mm}
