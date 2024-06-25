@@ -15,15 +15,15 @@
   \vspace{2mm}
   \begin{tabular}{|p{6cm}|p{6cm}|}
     \hline
-    \multicolumn{1}{|c|}{Gasarch, Kelly and Puth (1996)} & \multicolumn{1}{c|}{Oksanen (2002)}   \\
+    \multicolumn{1}{|c|}{Gasarch, Kelly and Puth (1996)}                                                                  & \multicolumn{1}{c|}{Oksanen (2002)} \\
     \cline{1-2}
     \raggedright \begin{itemize}
                    \item [...]haben als erste Computersuche angewandt, um untere Schranken für das \textit{Selection}-Problem zu finden.
                    \item [...]nutzten für größere $n,i$ sog. \textit{pair-forming algorithms}
                  \end{itemize} &
-     \begin{itemize}
-                   \item[...] stellte einen Computersuch-Algorithmus online, der die unteren Schranken von Gasarch et al. übertraf.
-                 \end{itemize} \\
+    \begin{itemize}
+      \item[...] stellte einen Computersuch-Algorithmus online, der die unteren Schranken von Gasarch et al. übertraf.
+    \end{itemize}                                             \\
     \cline{1-2}
   \end{tabular}
 \end{frame}
@@ -57,7 +57,7 @@
   \textbf{Dualität:} \\
   \vspace{1mm}
   Das Duale eines Posets $P = (n, i, R)$ ist das Poset $P^{-1} = \left(n, n-1-i, R'\right)$ mit $R' = \{ (u,v) \; \vert \; (v,u) \in R\}$.
-  
+
   \pause
   \vspace{2mm}
   \textbf{Reduktion:} \\
@@ -476,14 +476,28 @@
 \sectionframe{\insertsection}
 \begin{frame}{\insertsection}
   % Idee
+
+  \begin{itemize}
+    \item<+-> Idee: Vorwärts- und Rückwärtssuche gleichzeitig starten
+    \item<+-> Problem:
+      \begin{itemize}
+        \item<+-> Cachezugriffe (analog Vorärtssuche)
+        \item<+-> Verteilungen der Vergleiche haben ungünstige Massen - siehe [Folie \ref{fig:massen}]
+        \item<+-> Rückwärtssuche kann keine Vergleiche ausschließen und die Vorwärtssuche nicht unterstützen
+      \end{itemize}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{\insertsection}
   \begin{figure}[!b]
     \centering
-    \input{../article/figures/tikz_backward_forward_13_6.tex}
-    % \caption{Number of posets depending on the number of comparisons for $n = 13$ and $i = 6$ (red: backward search, blue: forward search).}
-    % \label{fig:backward_forward_count_13_6}
+    \renewcommand{\arraystretch}{0.9}
+    \resizebox{0.85\textheight}{!}{%
+      \input{../article/figures/tikz_backward_forward_13_6.tex}
+      %\caption{$n = 13$ and $i = 6$}
+      % \label{fig:backward_forward_count_13_6}
+      \label{fig:massen}
+    }
   \end{figure}
 
   {\color{red} Rot: Rückwärtssuche},
@@ -494,21 +508,14 @@
 
 
 \section{Ergebnisse}
-\sectionframe{\insertsection}
-\begin{frame}{\insertsection}
-  \begin{figure}[!b]
-    \centering
-    \input{figures/times.tex} % for n = 15
-  \end{figure}
-\end{frame}
 
 \begin{frame}{\insertsection}
   \begin{itemize}
-    \item Bestätigung der Vergleiche von Oksanen
-    \item Generierung der Algorithmen für gefundene Anzahl an Vergleiche
-    \item Verifizierung der gefunden Algorithmen
-    \item Verbesserung der Schranke von Oksanen (e.g. $n=15$, $i=4$)
-    \item Weiterer untere Schranken für $n=15$ - siehe Tabelle [Folie \ref{tab:results}]
+    \item<+-> Bestätigung der Vergleiche von Oksanen
+    \item<+-> Generierung der Algorithmen für gefundene Anzahl an Vergleiche
+    \item<+-> Verifizierung der gefunden Algorithmen
+    \item<+-> Verbesserung der Schranke von Oksanen (e.g. $n=15$, $i=4$)
+    \item<+-> Weiterer untere Schranken für $n=15$ - siehe Tabelle [Folie \ref{tab:results}]
   \end{itemize}
   % hier kommt fehler von oksanen hin (falsche Heuristik,, führt zu falschem wert)
 
@@ -554,6 +561,37 @@
                   Vergleichen, gefunden wurde aber ein Algorithmus mit 19 Vergleichen.
           \end{itemize}
   \end{itemize}
+\end{frame}
+
+\begin{frame}
+
+  \begin{table}[!t]
+    \label{tab:times}
+    \renewcommand{\arraystretch}{1.0}
+    \centering
+    \resizebox{1.0\textheight}{!}{%
+      \begin{tabular}{c|c|l|l|l}
+        $n$ & $i$ & \textbf{Forward Search} & \textbf{Backward Search} & \textbf{Oksanen} \\
+        \hline
+        14  & 0   & 0.0s                    & 0.0s                     & 0.0s             \\
+        14  & 1   & 0.0s                    & 1.5s                     & 0.0s             \\
+        14  & 2   & 1.4s                    & 5.9s                     & 0.6s             \\
+        14  & 3   & 35.9s                   & 46.9s                    & 1m 47s           \\
+        14  & 4   & 17m 27s                 & 15m 33s                  & 6h 29m           \\
+        14  & 5   & 2h 40m                  & 1h 40m                   & 4d 10h           \\
+        14  & 6   & 14h 40m                 & 6h 27m                   & >5d              \\
+        \hline
+        15  & 0   & 0.0s                    & 0.0s                     & 0.0s             \\
+        15  & 1   & 0.1s                    & 4.0s                     & 0.0s             \\
+        15  & 2   & 2.8s                    & 25.9s                    & 1.4s             \\
+        15  & 3   & 2m 24s                  & 13m 11s                  & 27m 17s          \\
+        15  & 4   & 1h 12m                  & 45m 52s                  & 1d 5h 40m        \\
+        15  & 5   & 1d 8h 37m               & 19h 30m                  & >5d              \\
+        15  & 6   & 4d 23h 37m              & 1d 5h 43m                & >5d              \\
+        15  & 7   & 14d 1h 51m              & 3d 8h 9m                 & >5d              \\
+      \end{tabular}
+    }
+  \end{table}
 \end{frame}
 
 \thanksframe
