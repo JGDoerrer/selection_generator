@@ -43,6 +43,7 @@ pub fn start_search_backward(
                         i0,
                         max_comparisons - k,
                     );
+                    dbg!(&poset, &result);
                     next_level
                         .write()
                         .expect("cache shouldn't be poisoned")

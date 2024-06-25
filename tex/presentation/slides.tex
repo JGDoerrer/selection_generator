@@ -15,17 +15,15 @@
   \vspace{2mm}
   \begin{tabular}{|p{6cm}|p{6cm}|}
     \hline
-    Gasarch, Kelly and Puth (1996) & Oksanen (2002)   \\
+    Gasarch, Kelly and Puth (1996)                                                                                        & Oksanen (2002) \\
     \hline
     \raggedright \begin{itemize}
                    \item [...]haben als erste Computersuche angewandt, um untere Schranken für das \textit{Selection}-Problem zu finden.
                    \item [...]nutzten für größere $n,i$ sog. \textit{pair-forming algorithms}
                  \end{itemize} &
-     \begin{itemize}
-                   \item[...] stellte einen Computersuch-Algorithmus online, der die unteren Schranken von Gasarch et al. übertrifft.
-                 \end{itemize}
-                  
-          
+    \begin{itemize}
+      \item[...] stellte einen Computersuch-Algorithmus online, der die unteren Schranken von Gasarch et al. übertrifft.
+    \end{itemize}
   \end{tabular}
 \end{frame}
 
@@ -48,25 +46,25 @@
   \vspace{1mm}
   \begin{itemize}
     \item Sei $\Omega$ eine Menge mit paarweise verschiedenen Elementen mit $\vert \Omega \vert = n$.
-    \item $(n,i,R)$ bezeichnet eine Instanz des \textit{Selection}-Problems.  
+    \item $(n,i,R)$ bezeichnet eine Instanz des \textit{Selection}-Problems.
     \item $R \subseteq \Omega^2$ mit $(a,b) \in R \Leftrightarrow a \leq b$.
   \end{itemize}
   \vspace{2mm}
-   
-  \textbf{Dualität:} \\ 
+
+  \textbf{Dualität:} \\
   \vspace{1mm}
   Das Duale eines Posets $P = (n, i, R)$ ist das Poset $P^{-1} = \left(n, n-1-i, R'\right)$ mit $R' = \{ (u,v) \; \vert \; (v,u) \in R\}$
 
   \vspace{2mm}
   \textbf{Reduktion:} \\
   \vspace{1mm}
-  Ein Poset heißt \textit{reduziert}, wenn es zu jedem Element höchstens $i$ viele kleinere Elemente gibt und höchstens $n-1-i$ viele größere Elemente.  
+  Ein Poset heißt \textit{reduziert}, wenn es zu jedem Element höchstens $i$ viele kleinere Elemente gibt und höchstens $n-1-i$ viele größere Elemente.
 \end{frame}
-  
+
 \begin{frame}{Zentrale Datenstruktur: Poset}
   \textbf{Kanonische Form:} \\
   \vspace{1mm}
-  Ein Poset heißt \textit{kanonifiziert}, wenn alle Elemente des Posets kanonisch angeordnet sind. Das heißt, dass alle möglichen Permutationen der Elemente auf das Poset abbilden.  
+  Ein Poset heißt \textit{kanonifiziert}, wenn alle Elemente des Posets kanonisch angeordnet sind. Das heißt, dass alle möglichen Permutationen der Elemente auf das Poset abbilden.
 
   \vspace{2mm}
   \textbf{Normalform:} \\
@@ -80,10 +78,10 @@
 \end{frame}
 
 \begin{frame}{Ein Lemma}
-    \textbf{Lemma 1:} Für ein Poset $P=(n,i,R)$ gilt $V(P) = V(P^{-1})$.
-    \vspace{1mm}
+  \textbf{Lemma 1:} Für ein Poset $P=(n,i,R)$ gilt $V(P) = V(P^{-1})$.
+  \vspace{1mm}
 
-    \textit{Beweis: Die Berechnung von $V(P)$ ergibt gleichzeitig einen Algorithmus, der in einen Entscheidungsbaum übersetzt werden kann. Vertausche alle Kinder, und derselbe Algorithmus führt auf die Lösung von $P^{-1}$.}
+  \textit{Beweis: Die Berechnung von $V(P)$ ergibt gleichzeitig einen Algorithmus, der in einen Entscheidungsbaum übersetzt werden kann. Vertausche alle Kinder, und derselbe Algorithmus führt auf die Lösung von $P^{-1}$.}
 
 \end{frame}
 
@@ -91,7 +89,7 @@
   \begin{figure}
     \input{figures/tikz_example}
   \end{figure}
-  
+
 \end{frame}
 
 \begin{frame}{\insertsection}
@@ -335,12 +333,9 @@
   \end{definition}
 \end{frame}
 
-% \begin{frame}{Entfernen von Vergleichen}
-%   \centering
-%   \input{../article/figures/tikz_problematic_case.tex}
-% \end{frame}
+% nicht weiter, an dieser Stelle Beispiel
 
-\begin{frame}{\insertsection}
+\begin{frame}{Beispiel}
   % Idee: interaktiv an Tafel
   % Ebene k enthält alle Posets, die in k Vergleichen gelöst werden können und durch vorherigen Ebene(n) gebildet werden können
   % ganze Pfeile: zeigen auf Poset in Ebene k - 1, das durch Entfernen eines Vergleichs resultiert
@@ -354,25 +349,23 @@
   \begin{figure}[!b]
     \centering
     \includegraphics[width=0.9\textwidth,height=0.67\textheight,keepaspectratio]{./figures/backward-searchtree-bound3.png}
-    \caption{$n=4,i=1,\text{upper\_bound}=3$}
+    \caption{Suchbaum für $n=4,i=1,\text{upper\_bound}=3$}
     \label{fig:backward-searchtree-bound3}
   \end{figure}
 \end{frame}
 
-\begin{frame}{\insertsection}
+\begin{frame}{Beispiel}
   \begin{figure}[!b]
     \centering
     \includegraphics[width=0.9\textwidth,height=0.67\textheight,keepaspectratio]{./figures/backward-searchtree-bound4.png}
-    \caption{$n=4,i=1,\text{upper\_bound}=4$}
+    \caption{Suchbaum für $n=4,i=1,\text{upper\_bound}=4$}
     \label{fig:backward-searchtree-bound4}
   \end{figure}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Optimierung}
   \begin{table}[!t]
     \renewcommand{\arraystretch}{1.2}
-    \caption{Possible predecessors that must be calculated for $n = 7$ and $i = 3$. All predecessors for which the corresponding field is marked with `x' must be calculated.}
-    \label{table:n_i_values_calculated}
     \centering
     \begin{tabular}{c|cccc}
       $n$ & \multicolumn{4}{c}{$i$}             \\
@@ -385,24 +378,39 @@
       2   & x                       & - & - & - \\
       1   & x                       & - & - & - \\
     \end{tabular}%
+    \caption{Mögliche Vorgänger für $n = 7,i = 3$}
   \end{table}
 \end{frame}
 
-\begin{frame}{Kanonifizieren}
-  \begin{table}[!t]
-    \renewcommand{\arraystretch}{1.2}
-    \centering
-    \resizebox{\columnwidth}{!}{%
-      \begin{tabular}{c|cccccccc}
-        $n$ & \multicolumn{8}{c}{$i$}                                                          \\
-            & 0                       & 1      & 2     & 3     & 4     & 5     & 6     & 7     \\ \hline
-        13  & 0                       & 30.205 & 6.797 & 1.530 & 0.469 & 0.188 & 0.485 &       \\
-        14  & 0                       & 33.667 & 7.540 & 1.655 & 0.427 & 0.153 & 0.074 &       \\
-        15  & 0                       & 36.390 & 8.173 & 1.683 & 0.460 & 0.133 & 0.066 & 0.042 \\
-      \end{tabular}%
-    }
-  \end{table}
+\begin{frame}{Entfernen von Vergleichen}
+  \centering
+  \input{../article/figures/tikz_problematic_case.tex}
 \end{frame}
+
+\begin{frame}{Kanonifizieren}
+  \begin{itemize}
+    \item<+-> Kanonifizieren ist unerlässlich
+    \item<+-> nauty ist teuer
+    \item<+->
+    \item<+-> z.B. für $n=15,i=7$ wird nur in $0.042\%$ nauty verwendet
+  \end{itemize}
+\end{frame}
+
+% \begin{frame}{Kanonifizieren}
+%   \begin{table}[!t]
+%     \renewcommand{\arraystretch}{1.2}
+%     \centering
+%     \resizebox{\columnwidth}{!}{%
+%       \begin{tabular}{c|cccccccc}
+%         $n$ & \multicolumn{8}{c}{$i$}                                                          \\
+%             & 0                       & 1      & 2     & 3     & 4     & 5     & 6     & 7     \\ \hline
+%         13  & 0                       & 30.205 & 6.797 & 1.530 & 0.469 & 0.188 & 0.485 &       \\
+%         14  & 0                       & 33.667 & 7.540 & 1.655 & 0.427 & 0.153 & 0.074 &       \\
+%         15  & 0                       & 36.390 & 8.173 & 1.683 & 0.460 & 0.133 & 0.066 & 0.042 \\
+%       \end{tabular}%
+%     }
+%   \end{table}
+% \end{frame}
 
 \begin{frame}{Multithreading}
   % 1  core : 7h 2m 59s

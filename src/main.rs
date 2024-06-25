@@ -6,7 +6,7 @@ use clap::{
 };
 use hashbrown::HashMap;
 use pseudo_canonified_poset::PseudoCanonifiedPoset;
-use search_backward::iterative_deepening_backward;
+use search_backward::{iterative_deepening_backward, start_search_backward};
 use search_forward::Cost;
 use serde::{Deserialize, Serialize};
 use std::{
@@ -89,30 +89,39 @@ struct Args {
 }
 
 fn main() {
-    let args = Args::parse();
+    // let args = Args::parse();
 
-    if let Some(max_cores) = args.max_core {
-        rayon::ThreadPoolBuilder::new()
-            .num_threads(max_cores)
-            .build_global()
-            .unwrap();
-    }
+    // if let Some(max_cores) = args.max_core {
+    //     rayon::ThreadPoolBuilder::new()
+    //         .num_threads(max_cores)
+    //         .build_global()
+    //         .unwrap();
+    // }
 
-    // additional meta information
-    if args.verbose != 0 {
-        utils::print_git_info();
-        utils::print_lscpu();
-        utils::print_current_time();
-    }
+    // // additional meta information
+    // if args.verbose != 0 {
+    //     utils::print_git_info();
+    //     utils::print_lscpu();
+    //     utils::print_current_time();
+    // }
 
-    if matches!(args.search_mode, SearchMode::Bidirectional) {
-        assert!(args.max_core.is_some(), "You should specify the maximum number of cores via e.g. '--max-cores 4'. Otherwise the backward-search will consume all resources and the forward-search gets really slow. Hint: leave at least one core for the forward-search");
-    }
+    // if matches!(args.search_mode, SearchMode::Bidirectional) {
+    //     assert!(args.max_core.is_some(), "You should specify the maximum number of cores via e.g. '--max-cores 4'. Otherwise the backward-search will consume all resources and the forward-search gets really slow. Hint: leave at least one core for the forward-search");
+    // }
 
-    match args.search_mode {
-        SearchMode::Forward | SearchMode::Bidirectional => run_forward(&args),
-        SearchMode::Backward => run_backward(&args),
-    }
+    // match args.search_mode {
+    //     SearchMode::Forward | SearchMode::Bidirectional => run_forward(&args),
+    //     SearchMode::Backward => run_backward(&args),
+    // }
+
+    let n = 4;
+    let i = 1;
+    let bound = 3;
+    let interrupt = Arc::new(AtomicBool::new(false));
+
+    let result = start_search_backward(&interrupt, None, n, i, bound);
+
+    dbg!(result.is_some());
 }
 
 fn run_forward(args: &Args) {
