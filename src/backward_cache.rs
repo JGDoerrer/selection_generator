@@ -39,25 +39,27 @@ impl BackwardCache {
         let mut new_bucket: [[HashMap<PseudoCanonifiedPoset, (u8, u8)>; MAX_N]; MAX_N] =
             Default::default();
         for (poset, indices) in posets {
-            new_bucket[poset.n() as usize][poset.i() as usize]
+            assert_ne!(poset.n(), 0);
+            new_bucket[poset.n() as usize - 1][poset.i() as usize]
                 .insert(Self::to_canonified(poset), *indices);
         }
         self.buckets.push(new_bucket);
     }
 
     pub fn contains(&self, poset: &BackwardsPoset) -> bool {
+        assert_ne!(poset.n(), 0);
         let canonified = Self::to_canonified(poset);
-        self.buckets
-            .iter()
-            .rev()
-            .any(|bucket| bucket[poset.n() as usize][poset.i() as usize].contains_key(&canonified))
+        self.buckets.iter().rev().any(|bucket| {
+            bucket[poset.n() as usize - 1][poset.i() as usize].contains_key(&canonified)
+        })
     }
 
     pub fn get(&self, poset: &BackwardsPoset) -> (u8, u8) {
+        assert_ne!(poset.n(), 0);
         let canonified = Self::to_canonified(poset);
         for bucket in self.buckets.iter().rev() {
             if let Some(comparison_pair) =
-                bucket[poset.n() as usize][poset.i() as usize].get(&canonified)
+                bucket[poset.n() as usize - 1][poset.i() as usize].get(&canonified)
             {
                 return *comparison_pair;
             }

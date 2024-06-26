@@ -117,11 +117,14 @@ pub fn iterative_deepening_backward(
             println!();
             println!("{}", format_duration(start));
 
-            assert_eq!(
-                comparisons as usize, KNOWN_VALUES[n as usize][i as usize],
-                "Error: got {}, but expected {}",
-                comparisons, KNOWN_VALUES[n as usize][i as usize]
-            );
+            if (n as usize) < KNOWN_VALUES.len() && (i as usize) < KNOWN_VALUES[n as usize].len() {
+                assert_eq!(
+                    comparisons as usize, KNOWN_VALUES[n as usize][i as usize],
+                    "Error: got {}, but expected {}",
+                    comparisons, KNOWN_VALUES[n as usize][i as usize]
+                );
+            }
+
             return (comparisons, cache);
         }
     }
