@@ -98,38 +98,6 @@
 
 \end{frame}
 
-\begin{frame}{\insertsection}
-  $$ \Omega = \{ a,b,c,...\}, \quad |\Omega| = n $$
-  $$P = (n,i,R), \quad R \subseteq \Omega^2$$
-\end{frame}
-
-\begin{frame}{\insertsection}
-  \centering
-  \begin{tikzpicture}
-
-    \node[draw, circle] (a) {$a$}
-    child {
-        node[draw, circle] {$b$}
-      }
-    child {
-        node[draw, circle] (c) {$c$}
-        child {
-            node[draw, circle] {$d$}
-          }
-      }
-    ;
-
-    \node[draw, circle, right of=c, node distance=2cm] {$e$};
-
-  \end{tikzpicture}
-
-  \begin{align*}
-    a & > b \\
-    a & > c \\
-    c & > d
-  \end{align*}
-\end{frame}
-
 \subsection{Kompatible Lösungen}
 \begin{frame}{\insertsubsection}
   \centering
