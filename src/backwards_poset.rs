@@ -573,15 +573,21 @@ impl BackwardsPoset {
         indices: (u8, u8),
         poset_cache: &BackwardCache,
         removed: &mut HashSet<(Self, (u8, u8))>,
-    ) {
+    ) -> bool {
         let current = &mut current_bucket[poset.i as usize];
-        if !current.0.contains(&(poset, indices)) && !current.1.contains(&(poset, indices)) {
-            if poset_cache.contains(&poset.with_less_normalized(indices.1, indices.0)) {
-                removed.insert((poset, indices));
-                current.0.insert((poset, indices));
-            } else {
-                current.1.insert((poset, indices));
-            }
+        if current.0.contains(&(poset, indices)) {
+            return true;
+        }
+        if current.1.contains(&(poset, indices)) {
+            return false;
+        }
+        if poset_cache.contains(&poset.with_less_normalized(indices.1, indices.0)) {
+            removed.insert((poset, indices));
+            current.0.insert((poset, indices));
+            return true;
+        } else {
+            current.1.insert((poset, indices));
+            return false;
         }
     }
 
@@ -688,6 +694,57 @@ impl BackwardsPoset {
 
         result
     }
+    
+    /// Enumerates all posets, which by adding the edge i < j lead to self. That is all posets q
+    /// such that q.with_less(i, j) == self.
+    pub fn enumerate_potential_predecessors_for_comparison<F>(&self, i: u8, j: u8, mut callback: F)
+            where F: FnMut(&BackwardsPoset) -> bool {
+
+        #[derive(Copy, Clone)]
+        enum EdgeState { Unprocessed, Preserved, Removed(usize) }
+        let mut stack = Vec::new();
+        stack.push((i, j, EdgeState::Preserved));
+        let mut poset = *self;
+        let mut index = 0;
+        loop {
+            if index >= stack.len() {
+                index -= 1;
+            }
+            let (i, j, state) = stack[index];
+            match state { 
+                EdgeState::Unprocessed => {
+                    stack[index] = (i, j, EdgeState::Preserved);
+                    index += 1;
+                }
+                EdgeState::Preserved => {
+                    let prev_stack_len = stack.len();
+                    poset.set_less(i, j, false);
+                    stack[index] = (i, j, EdgeState::Removed(prev_stack_len));
+                    if !callback(&poset) {
+                        continue;
+                    }
+                    for k in 0..self.n {
+                        if poset.is_less(k, i) && poset.is_less(k, j) && !poset.is_redundant(k, j) {
+                            stack.push((k, j, EdgeState::Unprocessed));
+                        }
+                        if poset.is_less(j, k) && poset.is_less(i, k) && !poset.is_redundant(i, k) {
+                            stack.push((i, k, EdgeState::Unprocessed));
+                        }
+                    }
+                    index += 1;
+                }
+                EdgeState::Removed(prev_stack_len) => {
+                    poset.set_less(i, j, true);
+                    stack.truncate(prev_stack_len);
+                    stack[index] = (i, j, EdgeState::Unprocessed);
+                    if index == 0 {
+                        break;
+                    }
+                    index -= 1;
+                }
+            }
+        }
+    }
 
     pub fn remove_less(
         &self,
@@ -705,84 +762,27 @@ impl BackwardsPoset {
         debug_assert!(self.is_closed());
         // debug_assert!(self.is_canonified());
 
-        let mut result = HashSet::new();
         for i in 0..self.n {
             for j in 0..self.n {
                 if !self.is_less(i, j) || self.is_redundant(i, j) {
                     continue;
                 }
 
-                let mut poset_initial = *self;
-                poset_initial.set_less(i, j, false);
-
-                result.insert((poset_initial, i, j));
-
-                let mut queue = Vec::new();
-                queue.push(poset_initial);
-
-                while let Some(poset) = queue.pop() {
-                    for i1 in 0..self.n {
-                        for j1 in 0..self.n {
-                            if !poset.is_less(i1, j1) || poset.is_redundant(i1, j1)
-                            // || (j as i32 - i as i32).abs() >= (j1 as i32 - i1 as i32).abs()
-                            {
-                                continue;
-                            }
-
-                            let mut poset_next = poset;
-                            poset_next.set_less(i1, j1, false);
-
-                            if result.contains(&(poset_next, i, j))
-                                || *self != poset_next.with_less(i, j)
-                            {
-                                continue;
-                            }
-
-                            result.insert((poset_next, i, j));
-                            queue.push(poset_next);
-                        }
+                self.enumerate_potential_predecessors_for_comparison(i, j, |poset| {
+                    debug_assert!(!poset.can_reduce_any_element());
+                    if max_remaining_comparisons < poset.count_min_comparisons() {
+                        return true;
                     }
-                }
+                    let (canonified, indices) = poset.canonify_transform_indices();
+                    return Self::handle_poset(
+                        poset_buckets,
+                        canonified,
+                        Self::canonify_indices(canonified.n, indices, (i, j)),
+                        poset_cache,
+                        removed,
+                    );
+                });
             }
-        }
-
-        // // postcondition:
-        // for item in &result {
-        //   debug_assert!(item.i < item.n);
-        //   debug_assert!((item.n as usize) <= MAX_N);
-        //   debug_assert!(item.is_closed());
-        //   debug_assert!(item.is_canonified());
-        //   debug_assert!({
-        //     let mut is_possible = false;
-        //     'all_for: for i in 0..item.n {
-        //       for j in 0..item.n {
-        //         if i != j && !item.is_less(i, j) && !item.is_less(j, i) {
-        //           let mut temp = item.with_less(i, j);
-        //           temp.canonify();
-        //           if &temp == self {
-        //             is_possible = true;
-        //             break 'all_for;
-        //           }
-        //         }
-        //       }
-        //     }
-        //     is_possible
-        //   });
-        // }
-
-        for (item, i, j) in result {
-            debug_assert!(!item.can_reduce_any_element());
-            if max_remaining_comparisons < item.count_min_comparisons() {
-                continue;
-            }
-            let (canonified, indices) = item.canonify_transform_indices();
-            Self::handle_poset(
-                poset_buckets,
-                canonified,
-                Self::canonify_indices(canonified.n, indices, (i, j)),
-                poset_cache,
-                removed,
-            );
         }
     }
 
