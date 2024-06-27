@@ -87,15 +87,11 @@ impl BackwardsPoset {
 
     // add
     fn add_and_close_recursive(&mut self, i: u8, j: u8) {
-        self.set_less(i, j, true);
-
+        let mut j_and_larger = self.adjacency[j as usize];
+        j_and_larger.insert(j as usize);
         for k in 0..self.n {
-            if i != k && j != k {
-                if self.is_less(j, k) && !self.is_less(i, k) {
-                    self.add_and_close_recursive(i, k);
-                } else if self.is_less(k, i) && !self.is_less(k, j) {
-                    self.add_and_close_recursive(k, j);
-                }
+            if self.is_less(k, i) || k == i {
+                self.adjacency[k as usize] = self.adjacency[k as usize].union(j_and_larger);
             }
         }
     }
