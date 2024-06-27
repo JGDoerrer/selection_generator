@@ -171,11 +171,9 @@ impl BackwardsPoset {
         let mut greater = [0u8; MAX_N];
 
         for i in 0..self.n {
-            for j in 0..self.n {
-                if self.is_less(i, j) {
-                    less[j as usize] += 1;
-                    greater[i as usize] += 1;
-                }
+            greater[i as usize] = self.adjacency[i as usize].len() as u8;
+            for j in self.adjacency[i as usize] {
+                less[j] += 1;
             }
         }
 
