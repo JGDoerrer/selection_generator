@@ -85,17 +85,6 @@ impl BackwardsPoset {
         }
     }
 
-    // add
-    fn add_and_close_recursive(&mut self, i: u8, j: u8) {
-        let mut j_and_larger = self.adjacency[j as usize];
-        j_and_larger.insert(j as usize);
-        for k in 0..self.n {
-            if self.is_less(k, i) || k == i {
-                self.adjacency[k as usize] = self.adjacency[k as usize].union(j_and_larger);
-            }
-        }
-    }
-
     pub fn add_less(&mut self, i: u8, j: u8) {
         // precondition
         debug_assert!(self.i < self.n);
@@ -107,7 +96,13 @@ impl BackwardsPoset {
         // debug_assert!(self.is_closed());
 
         if !self.is_less(i, j) {
-            self.add_and_close_recursive(i, j);
+            let mut j_and_larger = self.adjacency[j as usize];
+            j_and_larger.insert(j as usize);
+            for k in 0..self.n {
+                if self.is_less(k, i) || k == i {
+                    self.adjacency[k as usize] = self.adjacency[k as usize].union(j_and_larger);
+                }
+            }
         }
 
         // postcondition
