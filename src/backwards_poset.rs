@@ -689,14 +689,19 @@ impl BackwardsPoset {
 
         result
     }
-    
-    /// Enumerates all posets, which by adding the edge i < j lead to self. That is all posets q
-    /// such that q.with_less(i, j) == self.
-    pub fn enumerate_potential_predecessors_for_comparison<F>(&self, i: u8, j: u8, mut callback: F)
-            where F: FnMut(&BackwardsPoset) -> bool {
 
+    /// Enumerates all posets, which by adding the edge `i < j` lead to self. That is all posets `q`
+    /// such that `q.with_less(i, j) == self`.
+    pub fn enumerate_potential_predecessors_for_comparison<F>(&self, i: u8, j: u8, mut callback: F)
+    where
+        F: FnMut(&BackwardsPoset) -> bool,
+    {
         #[derive(Copy, Clone)]
-        enum EdgeState { Unprocessed, Preserved, Removed(usize) }
+        enum EdgeState {
+            Unprocessed,
+            Preserved,
+            Removed(usize),
+        }
         let mut stack = Vec::new();
         stack.push((i, j, EdgeState::Preserved));
         let mut poset = *self;
@@ -706,7 +711,7 @@ impl BackwardsPoset {
                 index -= 1;
             }
             let (i, j, state) = stack[index];
-            match state { 
+            match state {
                 EdgeState::Unprocessed => {
                     stack[index] = (i, j, EdgeState::Preserved);
                     index += 1;
