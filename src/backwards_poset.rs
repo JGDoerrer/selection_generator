@@ -849,10 +849,12 @@ impl BackwardsPoset {
                 let new_poset = poset.with_less(index, poset.n - 1);
                 if new_poset.is_less(j, k)
                     || new_poset.is_less(k, j)
-                    || new_poset.can_reduce_any_element()
+                    || new_poset.can_reduce_element_greater(poset.n - 1)
                 {
                     continue;
                 }
+
+                debug_assert!(!new_poset.can_reduce_any_element());
 
                 swap_init.push_back((new_poset, index + 1, min_comparisons_done + 1));
 
@@ -978,10 +980,12 @@ impl BackwardsPoset {
                 let new_poset = poset.with_less(poset.n - 1, index);
                 if new_poset.is_less(j, k)
                     || new_poset.is_less(k, j)
-                    || new_poset.can_reduce_any_element()
+                    || new_poset.can_reduce_element_less(poset.n - 1)
                 {
                     continue;
                 }
+
+                debug_assert!(!new_poset.can_reduce_any_element());
 
                 swap_init.push_back((new_poset, index + 1, min_comparisons_done + 1));
 
