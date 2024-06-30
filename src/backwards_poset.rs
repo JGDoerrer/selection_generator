@@ -523,10 +523,21 @@ impl BackwardsPoset {
         debug_assert!(self.n as usize <= MAX_N);
         debug_assert!(self.is_closed());
 
-        let (less, greater) = self.calculate_relations();
+        for i in 0..self.n as usize {
+            if (self.n - 1) - self.i < self.adjacency[i].len() as u8 {
+                return true;
+            }
+        }
 
-        for i in 0..self.n {
-            if self.i < less[i as usize] || (self.n - 1) - self.i < greater[i as usize] {
+        let mut less = [0u8; MAX_N];
+        for i in 0..self.n as usize {
+            for j in self.adjacency[i] {
+                less[j] += 1;
+            }
+        }
+
+        for i in 0..self.n as usize {
+            if self.i < less[i] {
                 return true;
             }
         }
@@ -553,8 +564,8 @@ impl BackwardsPoset {
     pub fn count_min_comparisons(&self) -> usize {
         let mut counter = 0;
         for i in 0..self.n {
-            for j in 0..self.n {
-                if self.is_less(i, j) && !self.is_redundant(i, j) {
+            for j in self.adjacency[i as usize] {
+                if !self.is_redundant(i, j as u8) {
                     counter += 1;
                 }
             }
