@@ -181,14 +181,6 @@ impl BackwardsPoset {
         self.set_less(i1, j1, temp);
     }
 
-    fn swap(&mut self, i: u8, j: u8) {
-        for k in 0..self.n {
-            // if i != k && j != k {
-            self.swap_positions(i, k, j, k);
-            self.swap_positions(k, i, k, j);
-            // }
-        }
-    }
     fn can_be_swapped(&self, i: u8, j: u8) -> bool {
         for k in 0..self.n {
             if self.is_less(i, k) != self.is_less(j, k) || self.is_less(k, i) != self.is_less(k, j)
@@ -313,7 +305,7 @@ impl BackwardsPoset {
     ) -> (u8, u8) {
         let mut transformed = [0u8; MAX_N];
         for k in 0..n {
-            transformed[indices[k as usize] as usize] = k as u8;
+            transformed[indices[k as usize] as usize] = k;
         }
 
         if is_dual {
@@ -504,7 +496,7 @@ impl BackwardsPoset {
                     new_poset.set_less(
                         i,
                         j,
-                        self.is_less(new_indices[i as usize] as u8, new_indices[j as usize] as u8),
+                        self.is_less(new_indices[i as usize], new_indices[j as usize]),
                     );
                 }
             }
@@ -536,8 +528,8 @@ impl BackwardsPoset {
             }
         }
 
-        for i in 0..self.n as usize {
-            if self.i < less[i] {
+        for &i in less.iter().take(self.n as usize) {
+            if self.i < less[i as usize] {
                 return true;
             }
         }
@@ -581,17 +573,15 @@ impl BackwardsPoset {
     ) -> bool {
         let current = &mut current_bucket[poset.i as usize];
         if current.0.contains(&(poset, indices)) {
-            return true;
-        }
-        if current.1.contains(&(poset, indices)) {
-            return false;
-        }
-        if poset_cache.contains(&poset.with_less_normalized(indices.1, indices.0)) {
+            true
+        } else if current.1.contains(&(poset, indices)) {
+            false
+        } else if poset_cache.contains(&poset.with_less_normalized(indices.1, indices.0)) {
             current.0.insert((poset, indices));
-            return true;
+            true
         } else {
             current.1.insert((poset, indices));
-            return false;
+            false
         }
     }
 
@@ -791,13 +781,6 @@ impl BackwardsPoset {
             }
         }
     }
-
-    // fn assert_is_canonified(&self) -> bool {
-    //     let mut canon = self.clone();
-    //     canon.canonify();
-    //     assert_eq!(self, &canon);
-    //     true
-    // }
 
     fn can_reduce_element_larger(&self, element: u8) -> bool {
         let mut greater = 0u8;
