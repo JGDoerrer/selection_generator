@@ -928,13 +928,7 @@ impl BackwardsPoset {
     }
 
     fn can_reduce_element_less(&self, element: u8) -> bool {
-        let mut less = 0u8;
-        for k in 0..self.n {
-            if self.is_less(element, k) {
-                less += 1;
-            }
-        }
-        (self.n - 1) - self.i < less
+        ((self.n as usize - 1) - self.i as usize) < self.adjacency[element as usize].len()
     }
 
     pub fn enlarge_i_smaller_with_comparison(
