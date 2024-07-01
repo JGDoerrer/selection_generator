@@ -493,8 +493,7 @@ impl BackwardsPoset {
         let mut new_n = 0u8;
 
         for i in 0..self.n {
-            if self.i < less[i as usize] {
-            } else if (self.n - 1) - self.i < greater[i as usize] {
+            if self.i < less[i as usize] {} else if (self.n - 1) - self.i < greater[i as usize] {
                 n_less_dropped += 1;
             } else {
                 new_indices[new_n as usize] = i;
@@ -663,8 +662,8 @@ impl BackwardsPoset {
                         let condition = 2 * (i0 + 1) < n0 + 1;
                         if (condition && table[n0 as usize][i0 as usize + 1])
                             || (!condition
-                                && i0 < n0
-                                && table[n0 as usize][n0 as usize - i0 as usize - 1])
+                            && i0 < n0
+                            && table[n0 as usize][n0 as usize - i0 as usize - 1])
                         {
                             item.super_enlarge_nk(
                                 &mut next_level,
@@ -694,12 +693,11 @@ impl BackwardsPoset {
 
         result
     }
-    
+
     /// Enumerates all posets, which by adding the edge i < j lead to self. That is all posets q
     /// such that q.with_less(i, j) == self.
     pub fn enumerate_potential_predecessors_for_comparison<F>(&self, i: u8, j: u8, mut callback: F)
-            where F: FnMut(&BackwardsPoset) -> bool {
-
+        where F: FnMut(&BackwardsPoset) -> bool {
         #[derive(Copy, Clone)]
         enum EdgeState { Unprocessed, Preserved, Removed(usize) }
         let mut stack = Vec::new();
@@ -711,7 +709,7 @@ impl BackwardsPoset {
                 index -= 1;
             }
             let (i, j, state) = stack[index];
-            match state { 
+            match state {
                 EdgeState::Unprocessed => {
                     stack[index] = (i, j, EdgeState::Preserved);
                     index += 1;
@@ -814,50 +812,127 @@ impl BackwardsPoset {
         removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
         (k, j): (u8, u8),
     ) {
-        debug_assert!(!self.is_less(k, j) && !self.is_less(j, k));
+        // debug_assert!(!self.is_less(k, j) && !self.is_less(j, k));
+        // 
+        // let mut init_poset = Self::new(self.n + 1, self.i);
+        // for i in 0..self.n {
+        //     for j in 0..self.n {
+        //         init_poset.set_less(i, j, self.is_less(i, j));
+        //     }
+        // }
+        // 
+        // let mut unfiltered = HashSet::new();
+        // let mut swap_init = VecDeque::new();
+        // swap_init.push_back((init_poset, 0, self.count_min_comparisons()));
+        // while let Some((poset, number, min_comparisons_done)) = swap_init.pop_back() {
+        //     for index in number..(poset.n - 1) {
+        //         if poset.is_less(index, poset.n - 1)
+        //             || poset.is_less(poset.n - 1, index)
+        //             || max_remaining_comparisons < min_comparisons_done + 1
+        //         {
+        //             continue;
+        //         }
+        // 
+        //         let new_poset = poset.with_less(index, poset.n - 1);
+        //         if new_poset.is_less(j, k)
+        //             || new_poset.is_less(k, j)
+        //             || new_poset.can_reduce_any_element()
+        //         {
+        //             continue;
+        //         }
+        // 
+        //         swap_init.push_back((new_poset, index + 1, min_comparisons_done + 1));
+        // 
+        //         if new_poset
+        //             .with_less(k, j)
+        //             .can_reduce_element_greater(poset.n - 1)
+        //         {
+        //             unfiltered.insert(new_poset);
+        //         }
+        //     }
+        // }
 
-        let mut init_poset = Self::new(self.n + 1, self.i);
-        for i in 0..self.n {
-            for j in 0..self.n {
-                init_poset.set_less(i, j, self.is_less(i, j));
+        // for item in unfiltered {
+        //     let (canonified, indices) = item.canonify_transform_indices();
+        //     let new_indices = Self::canonify_indices(canonified.n, indices, (k, j));
+        //     Self::handle_poset(poset_buckets, canonified, new_indices, poset_cache, removed);
+        // }
+        self.enumerate_enlarged_n(|item| {
+            if !item.is_less(j, item.n - 1) {
+                return false;
             }
-        }
-
-        let mut unfiltered = HashSet::new();
-        let mut swap_init = VecDeque::new();
-        swap_init.push_back((init_poset, 0, self.count_min_comparisons()));
-        while let Some((poset, number, min_comparisons_done)) = swap_init.pop_back() {
-            for index in number..(poset.n - 1) {
-                if poset.is_less(index, poset.n - 1)
-                    || poset.is_less(poset.n - 1, index)
-                    || max_remaining_comparisons < min_comparisons_done + 1
-                {
-                    continue;
-                }
-
-                let new_poset = poset.with_less(index, poset.n - 1);
-                if new_poset.is_less(j, k)
-                    || new_poset.is_less(k, j)
-                    || new_poset.can_reduce_any_element()
-                {
-                    continue;
-                }
-
-                swap_init.push_back((new_poset, index + 1, min_comparisons_done + 1));
-
-                if new_poset
-                    .with_less(k, j)
-                    .can_reduce_element_greater(poset.n - 1)
-                {
-                    unfiltered.insert(new_poset);
-                }
+            if item.is_less(k, item.n - 1) {
+                return true;
             }
-        }
-
-        for item in unfiltered {
+            if !item
+                .with_less(k, j)
+                .can_reduce_element_greater(item.n - 1) {
+                return false;
+            }
+            if max_remaining_comparisons < item.count_min_comparisons() {
+                return true;
+            }
             let (canonified, indices) = item.canonify_transform_indices();
             let new_indices = Self::canonify_indices(canonified.n, indices, (k, j));
-            Self::handle_poset(poset_buckets, canonified, new_indices, poset_cache, removed);
+            return Self::handle_poset(poset_buckets, canonified, new_indices, poset_cache, removed);
+        });
+    }
+
+    pub fn enumerate_enlarged_n<F>(&self, mut callback: F)
+        where F: FnMut(&BackwardsPoset) -> bool {
+        let mut check = |upset: BitSet| {
+            if self.i < (self.n - upset.len() as u8) {
+                return true;
+            }
+            let mut poset = Self::new(self.n + 1, self.i);
+            for i in 0..self.n {
+                for j in 0..self.n {
+                    poset.set_less(i, j, self.is_less(i, j));
+                }
+                if !upset.contains(i as usize) {
+                    poset.set_less(i, self.n, true);
+                }
+            }
+            callback(&poset)
+        };
+
+        // compute upsets
+        let mut excluded = BitSet::empty();
+        for k in 0..self.n {
+            if self.n - self.i == self.number_of_smaller_elements(k) {
+                excluded.insert(k as usize);
+                excluded = excluded.union(self.adjacency[k as usize]);
+            }
+        }
+
+        if !check(excluded) {
+            return;
+        }
+
+        let mut upsets = Vec::new();
+        upsets.push(excluded);
+
+        for j in 0..self.n() as usize {
+            if excluded.contains(j) {
+                continue;
+            }
+
+            let greater_than_j = self.adjacency[j];
+
+            // try adding j to all previous subsets
+            for i in 0..upsets.len() {
+                let upset = upsets[i];
+
+                // test if adding j would make a valid upset
+                // we know, that there is no k with p[k] > p[j]
+                if greater_than_j.intersect(upset) == greater_than_j {
+                    let mut new_upset = upset;
+                    new_upset.insert(j);
+                    if check(new_upset) {
+                        upsets.push(new_upset);
+                    }
+                }
+            }
         }
     }
 
@@ -871,65 +946,80 @@ impl BackwardsPoset {
         poset_cache: &BackwardCache,
         removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
     ) {
-        let mut init_poset = Self::new(self.n + 1, self.i);
-        for i in 0..self.n {
-            for j in 0..self.n {
-                init_poset.set_less(i, j, self.is_less(i, j));
-            }
-        }
-
-        let mut enlarged = HashSet::new();
-        let mut swap_init = VecDeque::new();
-        swap_init.push_back((init_poset, 0));
-        while let Some((poset, number)) = swap_init.pop_back() {
-            for k in number..(poset.n - 1) {
-                if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
-                    let new_poset = poset.with_less(k, poset.n - 1);
-                    if !new_poset.can_reduce_element_greater(new_poset.n - 1) {
-                        swap_init.push_back((new_poset, k + 1));
-                    }
-                }
-            }
-            enlarged.insert(poset);
-        }
-
-        for item in &enlarged {
+        // let mut init_poset = Self::new(self.n + 1, self.i);
+        // for i in 0..self.n {
+        //     for j in 0..self.n {
+        //         init_poset.set_less(i, j, self.is_less(i, j));
+        //     }
+        // }
+        // 
+        // let mut enlarged = HashSet::new();
+        // let mut enlarged2 = HashSet::new();
+        // let mut swap_init = VecDeque::new();
+        // swap_init.push_back((init_poset, 0));
+        // while let Some((poset, number)) = swap_init.pop_back() {
+        //     for k in number..(poset.n - 1) {
+        //         if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
+        //             let new_poset = poset.with_less(k, poset.n - 1);
+        //             if !new_poset.can_reduce_element_greater(new_poset.n - 1) {
+        //                 swap_init.push_back((new_poset, k + 1));
+        //             }
+        //         }
+        //     }
+        //     enlarged.insert(poset);
+        // }
+        self.enumerate_enlarged_n(|item| {
+            // enlarged2.insert(item.clone());
             if max_remaining_comparisons < item.count_min_comparisons() {
-                continue;
+                return true;
             }
+            let mut result = false;
             let mut canonified = None;
             for k in 0..item.n - 1 {
-                if !item.is_less(k, item.n - 1)
-                    && !item.is_less(item.n - 1, k)
-                    && item
+                if !item.is_less(k, item.n - 1) {
+                    if item
                         .with_less(k, item.n - 1)
-                        .can_reduce_element_greater(item.n - 1)
-                {
-                    if canonified.is_none() {
-                        canonified = Some(item.canonify_transform_indices());
-                    }
-                    if let Some((canonified, indices)) = canonified {
-                        Self::handle_poset(
-                            poset_buckets,
-                            canonified,
-                            Self::canonify_indices(canonified.n, indices, (k, item.n - 1)),
-                            poset_cache,
-                            removed,
-                        );
+                        .can_reduce_element_greater(item.n - 1) {
+                        if canonified.is_none() {
+                            canonified = Some(item.canonify_transform_indices());
+                        }
+                        if let Some((canonified, indices)) = canonified {
+                            result |= Self::handle_poset(
+                                poset_buckets,
+                                canonified,
+                                Self::canonify_indices(canonified.n, indices, (k, item.n - 1)),
+                                poset_cache,
+                                removed,
+                            );
+                        }
+                    } else {
+                        result = true;
                     }
                 }
             }
-        }
+            return result;
+        });
+        // for poset in enlarged {
+        //     if !enlarged2.contains(&poset) {
+        //         println!("{:?}\n{:?}", self, poset);
+        //         panic!();
+        //     }
+        // }
     }
 
     fn can_reduce_element_less(&self, element: u8) -> bool {
+        let less = self.number_of_smaller_elements(element);
+        (self.n - 1) - self.i < less
+    }
+
+    fn number_of_smaller_elements(&self, element: u8) -> u8 {
         let mut less = 0u8;
         for k in 0..self.n {
             if self.is_less(element, k) {
                 less += 1;
             }
         }
-        (self.n - 1) - self.i < less
+        less
     }
 
     pub fn super_enlarge_nk(
@@ -1031,8 +1121,8 @@ impl BackwardsPoset {
                 if !item.is_less(item.n - 1, k)
                     && !item.is_less(k, item.n - 1)
                     && item
-                        .with_less(item.n - 1, k)
-                        .can_reduce_element_less(item.n - 1)
+                    .with_less(item.n - 1, k)
+                    .can_reduce_element_less(item.n - 1)
                 {
                     if canonified.is_none() {
                         canonified = Some(item.canonify_transform_indices());
