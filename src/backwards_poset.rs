@@ -595,6 +595,15 @@ impl BackwardsPoset {
         }
     }
 
+    #[inline]
+    pub fn need_value(table: &[[bool; MAX_N]; MAX_N], n: u8, i: u8) -> bool {
+        if 2 * i < n {
+            table[n as usize - 1][i as usize]
+        } else {
+            table[n as usize - 1][n as usize - i as usize - 1]
+        }
+    }
+
     #[allow(clippy::too_many_lines)]
     pub fn calculate_predecessors(
         &self,
@@ -627,14 +636,11 @@ impl BackwardsPoset {
 
             let mut next_level: [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N] =
                 Default::default();
-            if table[self.n as usize][self.i as usize] {
+            if Self::need_value(table, self.n + 1, self.i) {
                 self.enlarge_i_larger(&mut next_level, max_remaining_comparisons, poset_cache);
             }
 
-            let condition = 2 * (self.i + 1) < self.n + 1;
-            if (condition && table[self.n as usize][self.i as usize + 1])
-                || (!condition && table[self.n as usize][self.n as usize - self.i as usize - 1])
-            {
+            if Self::need_value(table, self.n + 1, self.i + 1) {
                 self.enlarge_i_smaller(&mut next_level, max_remaining_comparisons, poset_cache);
             }
 
@@ -651,7 +657,7 @@ impl BackwardsPoset {
             for n0 in self.n..n {
                 for i0 in self.i..=i {
                     for (poset, indices) in &current_level[i0 as usize].0 {
-                        if table[n0 as usize][i0 as usize] {
+                        if Self::need_value(table, n0 + 1, i0) {
                             poset.enlarge_i_larger_with_comparison(
                                 &mut next_level,
                                 max_remaining_comparisons,
@@ -660,12 +666,7 @@ impl BackwardsPoset {
                             );
                         }
 
-                        let condition = 2 * (i0 + 1) < n0 + 1;
-                        if (condition && table[n0 as usize][i0 as usize + 1])
-                            || (!condition
-                                && i0 < n0
-                                && table[n0 as usize][n0 as usize - i0 as usize - 1])
-                        {
+                        if Self::need_value(table, n0 + 1, i0 + 1) {
                             poset.enlarge_i_smaller_with_comparison(
                                 &mut next_level,
                                 max_remaining_comparisons,
