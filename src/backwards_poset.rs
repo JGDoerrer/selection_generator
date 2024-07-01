@@ -799,7 +799,7 @@ impl BackwardsPoset {
     //     true
     // }
 
-    fn can_reduce_element_greater(&self, element: u8) -> bool {
+    fn can_reduce_element_larger(&self, element: u8) -> bool {
         let mut greater = 0u8;
         for k in 0..self.n {
             if self.is_less(k, element) {
@@ -843,7 +843,7 @@ impl BackwardsPoset {
                 let new_poset = poset.with_less(index, poset.n - 1);
                 if new_poset.is_less(j, k)
                     || new_poset.is_less(k, j)
-                    || new_poset.can_reduce_element_greater(poset.n - 1)
+                    || new_poset.can_reduce_element_larger(poset.n - 1)
                 {
                     continue;
                 }
@@ -854,7 +854,7 @@ impl BackwardsPoset {
 
                 if new_poset
                     .with_less(k, j)
-                    .can_reduce_element_greater(poset.n - 1)
+                    .can_reduce_element_larger(poset.n - 1)
                 {
                     unfiltered.insert(new_poset);
                 }
@@ -891,7 +891,7 @@ impl BackwardsPoset {
             for k in number..(poset.n - 1) {
                 if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
                     let new_poset = poset.with_less(k, poset.n - 1);
-                    if !new_poset.can_reduce_element_greater(new_poset.n - 1) {
+                    if !new_poset.can_reduce_element_larger(new_poset.n - 1) {
                         swap_init.push_back((new_poset, k + 1));
                     }
                 }
@@ -909,7 +909,7 @@ impl BackwardsPoset {
                     && !item.is_less(item.n - 1, k)
                     && item
                         .with_less(k, item.n - 1)
-                        .can_reduce_element_greater(item.n - 1)
+                        .can_reduce_element_larger(item.n - 1)
                 {
                     if canonified.is_none() {
                         canonified = Some(item.canonify_transform_indices());
@@ -927,7 +927,7 @@ impl BackwardsPoset {
         }
     }
 
-    fn can_reduce_element_less(&self, element: u8) -> bool {
+    fn can_reduce_element_smaller(&self, element: u8) -> bool {
         ((self.n as usize - 1) - self.i as usize) < self.adjacency[element as usize].len()
     }
 
@@ -965,7 +965,7 @@ impl BackwardsPoset {
                 let new_poset = poset.with_less(poset.n - 1, index);
                 if new_poset.is_less(j, k)
                     || new_poset.is_less(k, j)
-                    || new_poset.can_reduce_element_less(poset.n - 1)
+                    || new_poset.can_reduce_element_smaller(poset.n - 1)
                 {
                     continue;
                 }
@@ -976,7 +976,7 @@ impl BackwardsPoset {
 
                 if new_poset
                     .with_less(k, j)
-                    .can_reduce_element_less(poset.n - 1)
+                    .can_reduce_element_smaller(poset.n - 1)
                 {
                     unfiltered.insert(new_poset);
                 }
@@ -1013,7 +1013,7 @@ impl BackwardsPoset {
             for k in number..(poset.n - 1) {
                 if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
                     let new_poset = poset.with_less(poset.n - 1, k);
-                    if !new_poset.can_reduce_element_less(new_poset.n - 1) {
+                    if !new_poset.can_reduce_element_smaller(new_poset.n - 1) {
                         swap_init.push_back((new_poset, k + 1));
                     }
                 }
@@ -1031,7 +1031,7 @@ impl BackwardsPoset {
                     && !item.is_less(k, item.n - 1)
                     && item
                         .with_less(item.n - 1, k)
-                        .can_reduce_element_less(item.n - 1)
+                        .can_reduce_element_smaller(item.n - 1)
                 {
                     if canonified.is_none() {
                         canonified = Some(item.canonify_transform_indices());
