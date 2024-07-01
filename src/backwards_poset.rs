@@ -599,7 +599,6 @@ impl BackwardsPoset {
     #[allow(clippy::too_many_lines)]
     pub fn calculate_predecessors(
         &self,
-        interrupt: &Arc<AtomicBool>,
         poset_cache: &BackwardCache,
         table: &[[bool; MAX_N]; MAX_N],
         n: u8,
@@ -622,10 +621,6 @@ impl BackwardsPoset {
         }
 
         if self.n != n || self.i != i {
-            if interrupt.load(Ordering::Relaxed) {
-                return HashMap::new();
-            }
-
             let mut next_level: [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N] =
                 Default::default();
             if Self::need_value(table, self.n + 1, self.i) {
@@ -634,10 +629,6 @@ impl BackwardsPoset {
 
             if Self::need_value(table, self.n + 1, self.i + 1) {
                 self.enlarge_i_smaller(&mut next_level, max_remaining_comparisons, poset_cache);
-            }
-
-            if interrupt.load(Ordering::Relaxed) {
-                return HashMap::new();
             }
 
             for n0 in self.n..n {
@@ -660,10 +651,6 @@ impl BackwardsPoset {
                                 *indices,
                             );
                         }
-                    }
-
-                    if interrupt.load(Ordering::Relaxed) {
-                        return HashMap::new();
                     }
                 }
 

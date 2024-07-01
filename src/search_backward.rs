@@ -36,7 +36,6 @@ pub fn start_search_backward(
             current_level.par_iter().for_each(|(poset, _)| {
                 if !interrupt.load(Ordering::Relaxed) {
                     let result = poset.calculate_predecessors(
-                        interrupt,
                         &cache,
                         &table,
                         n,
