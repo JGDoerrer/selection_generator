@@ -598,7 +598,7 @@ impl BackwardsPoset {
     }
 
     #[allow(clippy::too_many_lines)]
-    pub fn enlarge_and_remove_less(
+    pub fn calculate_predecessors(
         &self,
         interrupt: &Arc<AtomicBool>,
         poset_cache: &BackwardCache,
@@ -614,7 +614,7 @@ impl BackwardsPoset {
         let mut current_level: [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N] =
             Default::default();
         let mut removed = HashSet::new();
-        self.remove_less(
+        self.remove_comparison(
             &mut current_level,
             max_remaining_comparisons,
             poset_cache,
@@ -629,7 +629,7 @@ impl BackwardsPoset {
             let mut next_level: [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N] =
                 Default::default();
             if table[self.n as usize][self.i as usize] {
-                self.enlarge_n(
+                self.enlarge_i_larger(
                     &mut next_level,
                     max_remaining_comparisons,
                     poset_cache,
@@ -641,7 +641,7 @@ impl BackwardsPoset {
             if (condition && table[self.n as usize][self.i as usize + 1])
                 || (!condition && table[self.n as usize][self.n as usize - self.i as usize - 1])
             {
-                self.enlarge_nk(
+                self.enlarge_i_smaller(
                     &mut next_level,
                     max_remaining_comparisons,
                     poset_cache,
@@ -657,7 +657,7 @@ impl BackwardsPoset {
                 for i0 in self.i..=i {
                     for (item, indices) in &current_level[i0 as usize].0 {
                         if table[n0 as usize][i0 as usize] {
-                            item.super_enlarge_n(
+                            item.enlarge_i_larger_with_comparison(
                                 &mut next_level,
                                 max_remaining_comparisons,
                                 poset_cache,
@@ -672,7 +672,7 @@ impl BackwardsPoset {
                                 && i0 < n0
                                 && table[n0 as usize][n0 as usize - i0 as usize - 1])
                         {
-                            item.super_enlarge_nk(
+                            item.enlarge_i_smaller_with_comparison(
                                 &mut next_level,
                                 max_remaining_comparisons,
                                 poset_cache,
@@ -757,7 +757,7 @@ impl BackwardsPoset {
         }
     }
 
-    pub fn remove_less(
+    pub fn remove_comparison(
         &self,
         poset_buckets: &mut [(
             HashSet<(BackwardsPoset, (u8, u8))>,
@@ -814,7 +814,7 @@ impl BackwardsPoset {
         self.i < greater
     }
 
-    pub fn super_enlarge_n(
+    pub fn enlarge_i_larger_with_comparison(
         &self,
         poset_buckets: &mut [(
             HashSet<(BackwardsPoset, (u8, u8))>,
@@ -874,7 +874,7 @@ impl BackwardsPoset {
         }
     }
 
-    fn enlarge_n(
+    fn enlarge_i_larger(
         &self,
         poset_buckets: &mut [(
             HashSet<(BackwardsPoset, (u8, u8))>,
@@ -945,7 +945,7 @@ impl BackwardsPoset {
         (self.n - 1) - self.i < less
     }
 
-    pub fn super_enlarge_nk(
+    pub fn enlarge_i_smaller_with_comparison(
         &self,
         poset_buckets: &mut [(
             HashSet<(BackwardsPoset, (u8, u8))>,
@@ -1005,7 +1005,7 @@ impl BackwardsPoset {
         }
     }
 
-    fn enlarge_nk(
+    fn enlarge_i_smaller(
         &self,
         poset_buckets: &mut [(
             HashSet<(BackwardsPoset, (u8, u8))>,
@@ -1066,16 +1066,16 @@ impl BackwardsPoset {
         }
     }
 
-    pub fn rec_temp(table: &mut [[bool; MAX_N]; MAX_N], n: usize, i: usize) {
+    pub fn calculate_poset_table(table: &mut [[bool; MAX_N]; MAX_N], n: usize, i: usize) {
         table[n - 1][i] = true;
         if 1 <= n && 2 * i < n - 1 {
-            Self::rec_temp(table, n - 1, i);
+            Self::calculate_poset_table(table, n - 1, i);
         }
         if 1 <= n && 1 <= i && 2 * (i - 1) < n - 1 {
-            Self::rec_temp(table, n - 1, i - 1);
+            Self::calculate_poset_table(table, n - 1, i - 1);
         }
         if 1 <= n && i < n && 2 * (n - i - 1) < n - 1 {
-            Self::rec_temp(table, n - 1, n - i - 1);
+            Self::calculate_poset_table(table, n - 1, n - i - 1);
         }
     }
 

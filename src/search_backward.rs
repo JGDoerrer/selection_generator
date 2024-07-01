@@ -21,7 +21,7 @@ pub fn start_search_backward(
     max_comparisons: usize,
 ) -> Option<(u8, BackwardCache)> {
     let mut table = [[false; MAX_N]; MAX_N];
-    BackwardsPoset::rec_temp(&mut table, n0 as usize, i0 as usize);
+    BackwardsPoset::calculate_poset_table(&mut table, n0 as usize, i0 as usize);
 
     let mut cache = BackwardCache::new();
     let mut current_level = HashMap::new();
@@ -35,7 +35,7 @@ pub fn start_search_backward(
                 Arc::new(RwLock::new(HashMap::new()));
             current_level.par_iter().for_each(|(poset, _)| {
                 if !interrupt.load(Ordering::Relaxed) {
-                    let result = poset.enlarge_and_remove_less(
+                    let result = poset.calculate_predecessors(
                         interrupt,
                         &cache,
                         &table,
