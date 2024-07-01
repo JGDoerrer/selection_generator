@@ -16,12 +16,12 @@ pub static COUTNER_USE_NAUTY: CounterUsize = CounterUsize::new(0);
 pub fn start_search_backward(
     interrupt: &Arc<AtomicBool>,
     backward_search_state_opt: Option<&Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>>,
-    n0: u8,
-    i0: u8,
+    n: u8,
+    i: u8,
     max_comparisons: usize,
 ) -> Option<(u8, BackwardCache)> {
     let mut table = [[false; MAX_N]; MAX_N];
-    BackwardsPoset::calculate_poset_table(&mut table, n0 as usize, i0 as usize);
+    BackwardsPoset::calculate_poset_table(&mut table, n as usize, i as usize);
 
     let mut cache = BackwardCache::new();
     let mut current_level = HashMap::new();
@@ -39,8 +39,8 @@ pub fn start_search_backward(
                         interrupt,
                         &cache,
                         &table,
-                        n0,
-                        i0,
+                        n,
+                        i,
                         max_comparisons - k,
                     );
                     next_level
@@ -75,7 +75,7 @@ pub fn start_search_backward(
             cache.len(),         // total cached posets
         );
 
-        if current_level.contains_key(&BackwardsPoset::new(n0, i0)) {
+        if current_level.contains_key(&BackwardsPoset::new(n, i)) {
             return Some((k as u8, cache));
         } else if current_level.is_empty() || interrupt.load(Ordering::Relaxed) {
             return None;

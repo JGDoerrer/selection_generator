@@ -578,7 +578,6 @@ impl BackwardsPoset {
         poset: Self,
         indices: (u8, u8),
         poset_cache: &BackwardCache,
-        removed: &mut HashSet<(Self, (u8, u8))>,
     ) -> bool {
         let current = &mut current_bucket[poset.i as usize];
         if current.0.contains(&(poset, indices)) {
@@ -588,7 +587,6 @@ impl BackwardsPoset {
             return false;
         }
         if poset_cache.contains(&poset.with_less_normalized(indices.1, indices.0)) {
-            removed.insert((poset, indices));
             current.0.insert((poset, indices));
             return true;
         } else {
@@ -613,13 +611,14 @@ impl BackwardsPoset {
 
         let mut current_level: [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N] =
             Default::default();
-        let mut removed = HashSet::new();
-        self.remove_comparison(
-            &mut current_level,
-            max_remaining_comparisons,
-            poset_cache,
-            &mut removed,
-        );
+        self.remove_comparison(&mut current_level, max_remaining_comparisons, poset_cache);
+
+        let mut result = HashMap::new();
+        for level in current_level.iter().take(MAX_N) {
+            for &(poset, indices) in &level.0 {
+                result.insert(poset, indices);
+            }
+        }
 
         if self.n != n || self.i != i {
             if interrupt.load(Ordering::Relaxed) {
@@ -629,39 +628,34 @@ impl BackwardsPoset {
             let mut next_level: [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N] =
                 Default::default();
             if table[self.n as usize][self.i as usize] {
-                self.enlarge_i_larger(
-                    &mut next_level,
-                    max_remaining_comparisons,
-                    poset_cache,
-                    &mut removed,
-                );
+                self.enlarge_i_larger(&mut next_level, max_remaining_comparisons, poset_cache);
             }
 
             let condition = 2 * (self.i + 1) < self.n + 1;
             if (condition && table[self.n as usize][self.i as usize + 1])
                 || (!condition && table[self.n as usize][self.n as usize - self.i as usize - 1])
             {
-                self.enlarge_i_smaller(
-                    &mut next_level,
-                    max_remaining_comparisons,
-                    poset_cache,
-                    &mut removed,
-                );
+                self.enlarge_i_smaller(&mut next_level, max_remaining_comparisons, poset_cache);
             }
 
             if interrupt.load(Ordering::Relaxed) {
                 return HashMap::new();
             }
 
+            for level in next_level.iter().take(MAX_N) {
+                for &(poset, indices) in &level.0 {
+                    result.insert(poset, indices);
+                }
+            }
+
             for n0 in self.n..n {
                 for i0 in self.i..=i {
-                    for (item, indices) in &current_level[i0 as usize].0 {
+                    for (poset, indices) in &current_level[i0 as usize].0 {
                         if table[n0 as usize][i0 as usize] {
-                            item.enlarge_i_larger_with_comparison(
+                            poset.enlarge_i_larger_with_comparison(
                                 &mut next_level,
                                 max_remaining_comparisons,
                                 poset_cache,
-                                &mut removed,
                                 *indices,
                             );
                         }
@@ -672,11 +666,10 @@ impl BackwardsPoset {
                                 && i0 < n0
                                 && table[n0 as usize][n0 as usize - i0 as usize - 1])
                         {
-                            item.enlarge_i_smaller_with_comparison(
+                            poset.enlarge_i_smaller_with_comparison(
                                 &mut next_level,
                                 max_remaining_comparisons,
                                 poset_cache,
-                                &mut removed,
                                 *indices,
                             );
                         }
@@ -686,18 +679,19 @@ impl BackwardsPoset {
                         return HashMap::new();
                     }
                 }
+
+                for level in next_level.iter().take(MAX_N) {
+                    for &(poset, indices) in &level.0 {
+                        result.insert(poset, indices);
+                    }
+                }
+
                 current_level = next_level;
                 next_level = Default::default();
             }
         }
 
-        let mut result = HashMap::new();
-        for (item, indices) in removed {
-            if !poset_cache.contains(&item) {
-                result.insert(item, indices);
-            }
-        }
-
+        result.retain(|poset, _| !poset_cache.contains(poset));
         result
     }
 
@@ -765,7 +759,6 @@ impl BackwardsPoset {
         ); MAX_N],
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
-        removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
     ) {
         // precondition
         debug_assert!(self.i < self.n);
@@ -790,7 +783,6 @@ impl BackwardsPoset {
                         canonified,
                         Self::canonify_indices(canonified.n, indices, (i, j)),
                         poset_cache,
-                        removed,
                     );
                 });
             }
@@ -822,7 +814,6 @@ impl BackwardsPoset {
         ); MAX_N],
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
-        removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
         (k, j): (u8, u8),
     ) {
         debug_assert!(!self.is_less(k, j) && !self.is_less(j, k));
@@ -870,7 +861,7 @@ impl BackwardsPoset {
         for item in unfiltered {
             let (canonified, indices) = item.canonify_transform_indices();
             let new_indices = Self::canonify_indices(canonified.n, indices, (k, j));
-            Self::handle_poset(poset_buckets, canonified, new_indices, poset_cache, removed);
+            Self::handle_poset(poset_buckets, canonified, new_indices, poset_cache);
         }
     }
 
@@ -882,7 +873,6 @@ impl BackwardsPoset {
         ); MAX_N],
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
-        removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
     ) {
         let mut init_poset = Self::new(self.n + 1, self.i);
         for i in 0..self.n {
@@ -927,7 +917,6 @@ impl BackwardsPoset {
                             canonified,
                             Self::canonify_indices(canonified.n, indices, (k, item.n - 1)),
                             poset_cache,
-                            removed,
                         );
                     }
                 }
@@ -953,7 +942,6 @@ impl BackwardsPoset {
         ); MAX_N],
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
-        removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
         (k, j): (u8, u8),
     ) {
         debug_assert!(!self.is_less(k, j) && !self.is_less(j, k));
@@ -1001,7 +989,7 @@ impl BackwardsPoset {
         for item in unfiltered {
             let (canonified, indices) = item.canonify_transform_indices();
             let new_indices = Self::canonify_indices(canonified.n, indices, (k, j));
-            Self::handle_poset(poset_buckets, canonified, new_indices, poset_cache, removed);
+            Self::handle_poset(poset_buckets, canonified, new_indices, poset_cache);
         }
     }
 
@@ -1013,7 +1001,6 @@ impl BackwardsPoset {
         ); MAX_N],
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
-        removed: &mut HashSet<(BackwardsPoset, (u8, u8))>,
     ) {
         let mut init_poset = Self::new(self.n + 1, self.i + 1);
         for i in 0..self.n {
@@ -1058,7 +1045,6 @@ impl BackwardsPoset {
                             canonified,
                             Self::canonify_indices(canonified.n, indices, (item.n - 1, k)),
                             poset_cache,
-                            removed,
                         );
                     }
                 }
