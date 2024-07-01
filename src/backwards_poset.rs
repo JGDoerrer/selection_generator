@@ -599,8 +599,10 @@ impl BackwardsPoset {
     pub fn need_value(table: &[[bool; MAX_N]; MAX_N], n: u8, i: u8) -> bool {
         if 2 * i < n {
             table[n as usize - 1][i as usize]
-        } else {
+        } else if i < n {
             table[n as usize - 1][n as usize - i as usize - 1]
+        } else {
+            false
         }
     }
 
@@ -648,12 +650,6 @@ impl BackwardsPoset {
                 return HashMap::new();
             }
 
-            for level in next_level.iter().take(MAX_N) {
-                for &(poset, indices) in &level.0 {
-                    result.insert(poset, indices);
-                }
-            }
-
             for n0 in self.n..n {
                 for i0 in self.i..=i {
                     for (poset, indices) in &current_level[i0 as usize].0 {
@@ -689,6 +685,12 @@ impl BackwardsPoset {
 
                 current_level = next_level;
                 next_level = Default::default();
+            }
+
+            for level in next_level.iter().take(MAX_N) {
+                for &(poset, indices) in &level.0 {
+                    result.insert(poset, indices);
+                }
             }
         }
 
