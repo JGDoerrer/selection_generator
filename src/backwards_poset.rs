@@ -553,8 +553,8 @@ impl BackwardsPoset {
 
     // remove less
     fn is_redundant(&self, i: u8, j: u8) -> bool {
-        for k in 0..self.n {
-            if self.is_less(i, k) && self.is_less(k, j) {
+        for k in self.adjacency[i as usize] {
+            if self.is_less(k as u8, j) {
                 return true;
             }
         }
