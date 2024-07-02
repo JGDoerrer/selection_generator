@@ -1,4 +1,4 @@
-use crate::{constants::MAX_N, pseudo_canonified_poset::PseudoCanonifiedPoset};
+use crate::constants::MAX_N;
 use hashbrown::HashMap;
 use std::mem::size_of;
 
@@ -16,19 +16,16 @@ impl BackwardCache {
     }
 
     pub fn add_layer(&mut self, posets: &HashMap<BackwardsPoset, (u8, u8)>) {
-        if !self.buckets.is_empty() {
-            let k = self.buckets.len() - 1;
-            for n in 0..self.buckets[k].len() {
-                for i in 0..self.buckets[k][n].len() {
-                    self.buckets[k][n][i].shrink_to_fit();
-                }
-            }
-        }
         let mut new_bucket: [[HashMap<u128, (u8, u8)>; MAX_N]; MAX_N] = Default::default();
         for (poset, indices) in posets {
             debug_assert_ne!(poset.n(), 0);
             new_bucket[poset.n() as usize - 1][poset.i() as usize]
                 .insert(poset.pack_poset(), *indices);
+        }
+        for n in 0..new_bucket.len() {
+            for i in 0..new_bucket[n].len() {
+                new_bucket[n][i].shrink_to_fit();
+            }
         }
         self.buckets.push(new_bucket);
     }
