@@ -1,11 +1,11 @@
-use crate::{constants::MAX_N, poset::Poset, pseudo_canonified_poset::PseudoCanonifiedPoset};
+use crate::{constants::MAX_N, pseudo_canonified_poset::PseudoCanonifiedPoset};
 use hashbrown::HashMap;
 use std::mem::size_of;
 
 use crate::backwards_poset::BackwardsPoset;
 
 pub struct BackwardCache {
-    buckets: Vec<[[HashMap<PseudoCanonifiedPoset, (u8, u8)>; MAX_N]; MAX_N]>,
+    buckets: Vec<[[HashMap<u128, (u8, u8)>; MAX_N]; MAX_N]>,
 }
 
 impl BackwardCache {
@@ -13,18 +13,6 @@ impl BackwardCache {
         Self {
             buckets: Vec::new(),
         }
-    }
-
-    fn to_canonified(poset: &BackwardsPoset) -> PseudoCanonifiedPoset {
-        let mut canonified = PseudoCanonifiedPoset::new(poset.n(), poset.i());
-        for i in 0..poset.n() {
-            for j in 0..poset.n() {
-                if poset.is_less(i, j) {
-                    canonified.set_is_less(j, i);
-                }
-            }
-        }
-        canonified
     }
 
     pub fn add_layer(&mut self, posets: &HashMap<BackwardsPoset, (u8, u8)>) {
@@ -36,30 +24,30 @@ impl BackwardCache {
                 }
             }
         }
-        let mut new_bucket: [[HashMap<PseudoCanonifiedPoset, (u8, u8)>; MAX_N]; MAX_N] =
-            Default::default();
+        let mut new_bucket: [[HashMap<u128, (u8, u8)>; MAX_N]; MAX_N] = Default::default();
         for (poset, indices) in posets {
-            assert_ne!(poset.n(), 0);
+            debug_assert_ne!(poset.n(), 0);
             new_bucket[poset.n() as usize - 1][poset.i() as usize]
-                .insert(Self::to_canonified(poset), *indices);
+                .insert(poset.pack_poset(), *indices);
         }
         self.buckets.push(new_bucket);
     }
 
     pub fn contains(&self, poset: &BackwardsPoset) -> bool {
-        assert_ne!(poset.n(), 0);
-        let canonified = Self::to_canonified(poset);
-        self.buckets.iter().rev().any(|bucket| {
-            bucket[poset.n() as usize - 1][poset.i() as usize].contains_key(&canonified)
-        })
+        debug_assert_ne!(poset.n(), 0);
+        let packed = poset.pack_poset();
+        self.buckets
+            .iter()
+            .rev()
+            .any(|bucket| bucket[poset.n() as usize - 1][poset.i() as usize].contains_key(&packed))
     }
 
     pub fn get(&self, poset: &BackwardsPoset) -> (u8, u8) {
-        assert_ne!(poset.n(), 0);
-        let canonified = Self::to_canonified(poset);
+        debug_assert_ne!(poset.n(), 0);
+        let packed = poset.pack_poset();
         for bucket in self.buckets.iter().rev() {
             if let Some(comparison_pair) =
-                bucket[poset.n() as usize - 1][poset.i() as usize].get(&canonified)
+                bucket[poset.n() as usize - 1][poset.i() as usize].get(&packed)
             {
                 return *comparison_pair;
             }
@@ -72,9 +60,8 @@ impl BackwardCache {
         for k in 0..self.buckets.len() {
             for n in 0..self.buckets[k].len() {
                 for i in 0..self.buckets[k][n].len() {
-                    memory_size += size_of::<HashMap<PseudoCanonifiedPoset, (u8, u8)>>()
-                        + self.buckets[k][n][i].capacity()
-                            * size_of::<(PseudoCanonifiedPoset, (u8, u8))>();
+                    memory_size += size_of::<HashMap<u128, (u8, u8)>>()
+                        + self.buckets[k][n][i].capacity() * size_of::<(u128, (u8, u8))>();
                 }
             }
         }

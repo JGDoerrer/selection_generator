@@ -85,6 +85,17 @@ impl BackwardsPoset {
         }
     }
 
+    pub fn pack_poset(&self) -> u128 {
+        let mut result: u128 = Default::default();
+
+        for i in 0..self.n {
+            result <<= i;
+            result += self.adjacency[i as usize].bits() as u128;
+        }
+
+        result
+    }
+
     pub fn add_less(&mut self, i: u8, j: u8) {
         // precondition
         debug_assert!(self.i < self.n);
