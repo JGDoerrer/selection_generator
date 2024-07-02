@@ -52,7 +52,7 @@ impl BackwardCache {
         panic!();
     }
 
-    pub fn memory_size(&self) -> f64 {
+    pub fn memory_size(&self) -> u64 {
         let mut memory_size = 0;
         for k in 0..self.buckets.len() {
             for n in 0..self.buckets[k].len() {
@@ -62,7 +62,7 @@ impl BackwardCache {
                 }
             }
         }
-        memory_size as f64 / ((10usize).pow(9) as f64)
+        memory_size as u64
     }
 
     pub fn len(&self) -> usize {

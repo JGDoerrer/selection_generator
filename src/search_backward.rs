@@ -8,7 +8,7 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use crate::backward_cache::BackwardCache;
 use crate::backwards_poset::BackwardsPoset;
 use crate::constants::{KNOWN_VALUES, LOWER_BOUNDS, MAX_N, UPPER_BOUNDS};
-use crate::utils::format_duration;
+use crate::utils::{format_duration, format_memory};
 
 pub static COUTNER_USE_NOT_NAUTY: CounterUsize = CounterUsize::new(0);
 pub static COUTNER_USE_NAUTY: CounterUsize = CounterUsize::new(0);
@@ -35,13 +35,8 @@ pub fn start_search_backward(
                 Arc::new(RwLock::new(HashMap::new()));
             current_level.par_iter().for_each(|(poset, _)| {
                 if !interrupt.load(Ordering::Relaxed) {
-                    let result = poset.calculate_predecessors(
-                        &cache,
-                        &table,
-                        n,
-                        i,
-                        max_comparisons - k,
-                    );
+                    let result =
+                        poset.calculate_predecessors(&cache, &table, n, i, max_comparisons - k);
                     next_level
                         .write()
                         .expect("cache shouldn't be poisoned")
@@ -104,6 +99,16 @@ pub fn iterative_deepening_backward(
         if let Some((comparisons, cache)) = result {
             debug_assert!(comparisons as usize == bound);
 
+            let mut sys = sysinfo::System::new_all();
+            sys.refresh_all();
+
+            let mut used_memory = String::from("-");
+            if let Ok(pid) = sysinfo::get_current_pid() {
+                if let Some(process) = sys.process(pid) {
+                    used_memory = format_memory(process.memory());
+                }
+            }
+
             let ratio = 100.0 * COUTNER_USE_NAUTY.get() as f64
                 / 1.max(COUTNER_USE_NAUTY.get() + COUTNER_USE_NOT_NAUTY.get()) as f64;
             println!();
@@ -111,7 +116,10 @@ pub fn iterative_deepening_backward(
             println!("Comparisons: {comparisons}");
             println!();
             println!("Cache entries: {}", cache.len());
-            println!("Cache size: {:.3} Gigabyte", cache.memory_size());
+            println!(
+                "Cache size: {} (real: {used_memory}) Gigabyte",
+                format_memory(cache.memory_size()),
+            );
             println!("Nauty Ratio: {ratio:.3?}%");
             println!();
             println!("{}", format_duration(start));

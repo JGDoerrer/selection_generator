@@ -117,3 +117,7 @@ pub fn format_duration(start: Instant) -> String {
 
     format!("Duration: {days}d {hours}h {minutes}m {seconds}s")
 }
+
+pub fn format_memory(memory: u64) -> String {
+    format!("{:.3}", memory as f64 / ((10usize).pow(9) as f64))
+}
