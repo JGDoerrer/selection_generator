@@ -8,7 +8,6 @@ use hashbrown::HashMap;
 use pseudo_canonified_poset::PseudoCanonifiedPoset;
 use search_backward::iterative_deepening_backward;
 use search_forward::Cost;
-use serde::{Deserialize, Serialize};
 use std::{
     fs::{DirBuilder, OpenOptions},
     io::{BufWriter, Write},
@@ -150,6 +149,7 @@ fn run_forward(args: &Args) {
                     .unwrap();
 
                 let mut writer = BufWriter::new(file);
+                writeln!(writer, "#[allow(unused)]\npub const N: usize = {n};\n#[allow(unused)]\npub const I: usize = {i};\n\n#[allow(unused)]\npub fn run(input: [usize; {n}]) -> usize {{\n  select_0(input)\n}}\n\n").unwrap();
 
                 print_algorithm(
                     PseudoCanonifiedPoset::new(n, i),
@@ -210,6 +210,7 @@ fn run_backward(args: &Args) {
                     .unwrap();
 
                 let mut writer = BufWriter::new(file);
+                writeln!(writer, "#[allow(unused)]\npub const N: usize = {n};\n#[allow(unused)]\npub const I: usize = {i};\n\n#[allow(unused)]\npub fn run(input: [usize; {n}]) -> usize {{\n  select_0(input, false)\n}}\n\n").unwrap();
 
                 print_algorithm_backward(
                     BackwardsPoset::new(n, i),
@@ -540,78 +541,6 @@ where
     .unwrap();
     writeln!(writer, "    }}").unwrap();
     writeln!(writer, "}}").unwrap();
-
-    index
-}
-
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-pub struct BinaryItem {
-    index: usize,
-    less_index: usize,
-    greater_index: usize,
-    n: u8,
-    i: u8,
-    j: u8,
-    less_mapping: [u8; MAX_N],
-    greater_mapping: [u8; MAX_N],
-    less_is_dual: bool,
-    greater_is_dual: bool,
-}
-
-#[allow(clippy::too_many_lines)]
-fn print_algorithm_backward2<W>(
-    poset: BackwardsPoset,
-    writer: &mut BufWriter<W>,
-    comparisons: &BackwardCache,
-    done: &mut HashMap<BackwardsPoset, usize>,
-) -> usize
-where
-    W: Write,
-{
-    if let Some(index) = done.get(&poset) {
-        return *index;
-    }
-
-    let index = done.len();
-    done.insert(poset, index);
-
-    let binary_item = if poset.n() == 1 {
-        BinaryItem {
-            index,
-            less_index: 0,
-            greater_index: 0,
-            n: 1,
-            i: 0,
-            j: 0,
-            less_mapping: [0u8; MAX_N],
-            greater_mapping: [0u8; MAX_N],
-            less_is_dual: false,
-            greater_is_dual: false,
-        }
-    } else {
-        let (i, j) = comparisons.get(&poset);
-
-        let (less, (less_mapping, less_is_dual)) = poset.with_less_mapping(i, j);
-        let less_index = print_algorithm_backward2(less, writer, comparisons, done);
-
-        let (greater, (greater_mapping, greater_is_dual)) = poset.with_less_mapping(j, i);
-        let greater_index = print_algorithm_backward2(greater, writer, comparisons, done);
-
-        BinaryItem {
-            index,
-            less_index,
-            greater_index,
-            n: poset.n(),
-            i,
-            j,
-            less_mapping,
-            greater_mapping,
-            less_is_dual,
-            greater_is_dual,
-        }
-    };
-
-    bincode::serialize_into(writer, &binary_item).expect("Serialization failed");
 
     index
 }

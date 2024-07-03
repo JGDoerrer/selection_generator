@@ -61,6 +61,7 @@ pub fn advance_permutations2(
     true
 }
 
+#[allow(unused)]
 pub fn advance_permutations3(indices: &mut Vec<usize>, cycles: &mut [usize]) -> bool {
     let n = indices.len();
     let k = cycles.len();
@@ -72,21 +73,6 @@ pub fn advance_permutations3(indices: &mut Vec<usize>, cycles: &mut [usize]) -> 
             let si = n - cycles[i];
             indices.swap(i, si);
             cycles[i] -= 1;
-            return false;
-        }
-    }
-    true
-}
-
-#[allow(unused)]
-pub fn advance_combinations(indices: &mut [usize], n: usize) -> bool {
-    let k = indices.len();
-    for i in (0..k).rev() {
-        if indices[i] < n - k + i + 1 {
-            indices[i] += 1;
-            for j in i + 1..k {
-                indices[j] = indices[j - 1] + 1;
-            }
             return false;
         }
     }

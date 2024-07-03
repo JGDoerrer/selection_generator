@@ -25,7 +25,7 @@ impl Default for FreePoset {
 
 impl Poset for FreePoset {
     fn new(n: u8, i: u8) -> Self {
-        debug_assert!(n <= MAX_N as u8);
+        debug_assert!(n as usize <= MAX_N);
         debug_assert!(i < n);
 
         FreePoset {
@@ -141,6 +141,7 @@ impl FreePoset {
         canonified
     }
 
+    #[allow(unused)]
     #[inline]
     pub fn canonify(&mut self) {
         self.reduce_elements();
@@ -231,33 +232,6 @@ impl FreePoset {
         new_indices
     }
 
-    #[allow(unused)]
-    pub fn set_less(&mut self, i: u8, j: u8, value: bool) {
-        if value {
-            self.adjacency[i as usize].insert(j as usize);
-        } else {
-            self.adjacency[i as usize].remove(j as usize);
-        }
-    }
-
-    #[allow(unused)]
-    fn swap_positions(&mut self, i0: u8, j0: u8, i1: u8, j1: u8) {
-        let temp = self.is_less(i0, j0);
-        self.set_less(i0, j0, self.is_less(i1, j1));
-        self.set_less(i1, j1, temp);
-    }
-
-    #[allow(unused)]
-    fn swap(&mut self, i: u8, j: u8) {
-        for k in 0..self.n {
-            if !(i != k && j != k) {
-                continue;
-            }
-            self.swap_positions(i, k, j, k);
-            self.swap_positions(k, i, k, j);
-        }
-    }
-
     /// Removes elements, that are known to be too large/small
     #[inline]
     pub fn reduce_elements(&mut self) -> [usize; MAX_N] {
@@ -284,7 +258,7 @@ impl FreePoset {
             return new_indices;
         }
 
-        let mut new = FreePoset::new(new_n as u8, self.i - n_less_dropped);
+        let mut new = FreePoset::new(new_n, self.i - n_less_dropped);
 
         // make the new poset
         for i in 0..new.n {
@@ -359,7 +333,6 @@ impl FreePoset {
         result
     }
 
-    #[allow(unused)]
     fn canonify_nauty(&mut self) {
         let n = self.n as usize;
 
@@ -420,17 +393,6 @@ impl FreePoset {
         *self = new;
     }
 
-    /// adds i < j to the poset and normalize
-    #[allow(unused)]
-    #[inline]
-    pub fn add_less(&mut self, i: u8, j: u8) {
-        debug_assert!(!self.is_less(i, j));
-        debug_assert!(!self.is_less(j, i));
-
-        self.add_and_close(i, j);
-        self.canonify();
-    }
-
     /// returns a clone of the poset, with i < j added
     pub fn with_less(&self, i: u8, j: u8) -> PseudoCanonifiedPoset {
         let mut new = *self;
@@ -453,8 +415,8 @@ impl FreePoset {
 
         (new, mapping)
     }
+
     /// Assumes self is normalized
-    #[allow(unused)]
     pub fn dual(&self) -> Self {
         let mut dual = FreePoset::new(self.n, self.n - self.i - 1);
         for i in 0..self.n {
@@ -468,7 +430,6 @@ impl FreePoset {
         dual
     }
 
-    #[allow(unused)]
     pub fn num_compatible_solutions_upper_bound(&self) -> usize {
         let mut sum = 0;
         for i in 0..self.n {

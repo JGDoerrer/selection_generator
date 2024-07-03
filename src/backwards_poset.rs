@@ -3,16 +3,12 @@ use std::collections::VecDeque;
 use std::fmt::{Debug, Formatter, Result};
 use std::hash::Hash;
 use std::os::raw::c_int;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
 
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
 
 use crate::backward_cache::BackwardCache;
 use crate::bitset::BitSet;
 use crate::constants::MAX_N;
-use crate::free_poset::FreePoset;
-use crate::poset::Poset;
 use crate::search_backward::{COUTNER_USE_NAUTY, COUTNER_USE_NOT_NAUTY};
 
 type PosetLevel = [(
@@ -1058,18 +1054,6 @@ impl BackwardsPoset {
         }
 
         true
-    }
-
-    pub fn to_normal(&self) -> FreePoset {
-        let mut result = FreePoset::new(self.n, self.i);
-        for i in 0..self.n {
-            for j in 0..self.n {
-                if self.is_less(i, j) {
-                    result.set_less(i, j, true);
-                }
-            }
-        }
-        result
     }
 
     pub fn with_less_mapping(&self, i: u8, j: u8) -> (Self, ([u8; MAX_N], bool)) {

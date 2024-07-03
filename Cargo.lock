@@ -689,7 +689,6 @@ dependencies = [
  "indicatif",
  "nauty-Traces-sys",
  "rayon",
- "serde",
  "sysinfo",
 ]
 

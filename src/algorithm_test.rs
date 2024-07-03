@@ -1,20 +1,16 @@
+mod algorithm;
+
 #[cfg(test)]
 mod test {
-
     use indicatif::ProgressBar;
     use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
+    use crate::algorithm_test::algorithm::{run, I, N};
     use crate::utils::{advance_permutations, fac};
-
-    fn select_0([a, b]: [usize; 2]) -> usize {
-        a.min(b)
-    }
 
     #[test]
     fn test() {
-        const N: usize = 2;
-        const I: usize = 0;
-        const SPLITS: usize = 1;
+        const SPLITS: usize = if N < 3 { 1 } else { 3 };
 
         let mut numbers = [0; N];
         for i in 0..N {
@@ -39,7 +35,7 @@ mod test {
         let pb = ProgressBar::new(fac(N, 1) as u64 / 10000);
 
         starters.into_par_iter().for_each(|mut permutation| {
-            assert_eq!(select_0(permutation.clone()), I, "{permutation:?}");
+            assert_eq!(run(permutation.clone()), I, "{permutation:?}");
 
             let mut cycles = [0; N - SPLITS];
             for i in 0..N - SPLITS {
@@ -47,7 +43,7 @@ mod test {
             }
             let mut i: usize = 0;
             while !advance_permutations(&mut permutation[SPLITS..], &mut cycles) {
-                assert_eq!(select_0(permutation.clone()), I, "{permutation:?}");
+                assert_eq!(run(permutation.clone()), I, "{permutation:?}");
                 i += 1;
                 if i % 10000 == 0 {
                     pb.inc(1);

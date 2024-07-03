@@ -118,7 +118,7 @@ pub fn iterative_deepening_backward(
             println!("Cache entries: {}", cache.len());
             println!(
                 "Cache size: {} (real: {used_memory}) Gigabyte",
-                format_memory(cache.memory_size()),
+                format_memory(cache.memory_size() as u64),
             );
             println!("Nauty Ratio: {ratio:.3?}%");
             println!();

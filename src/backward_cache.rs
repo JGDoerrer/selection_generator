@@ -4,8 +4,10 @@ use std::mem::size_of;
 
 use crate::backwards_poset::BackwardsPoset;
 
+type Bucket = [[HashMap<u128, (u8, u8)>; MAX_N]; MAX_N];
+
 pub struct BackwardCache {
-    buckets: Vec<[[HashMap<u128, (u8, u8)>; MAX_N]; MAX_N]>,
+    buckets: Vec<Bucket>,
 }
 
 impl BackwardCache {
@@ -22,10 +24,8 @@ impl BackwardCache {
             new_bucket[poset.n() as usize - 1][poset.i() as usize]
                 .insert(poset.pack_poset(), *indices);
         }
-        for n in 0..new_bucket.len() {
-            for i in 0..new_bucket[n].len() {
-                new_bucket[n][i].shrink_to_fit();
-            }
+        for bucket in &mut new_bucket {
+            bucket.iter_mut().for_each(HashMap::shrink_to_fit);
         }
         self.buckets.push(new_bucket);
     }
@@ -52,25 +52,25 @@ impl BackwardCache {
         panic!();
     }
 
-    pub fn memory_size(&self) -> u64 {
+    pub fn memory_size(&self) -> usize {
         let mut memory_size = 0;
-        for k in 0..self.buckets.len() {
-            for n in 0..self.buckets[k].len() {
-                for i in 0..self.buckets[k][n].len() {
+        for bucket in &self.buckets {
+            for bucket_n in bucket {
+                for bucket_ni in bucket_n {
                     memory_size += size_of::<HashMap<u128, (u8, u8)>>()
-                        + self.buckets[k][n][i].capacity() * size_of::<(u128, (u8, u8))>();
+                        + bucket_ni.capacity() * size_of::<(u128, (u8, u8))>();
                 }
             }
         }
-        memory_size as u64
+        memory_size
     }
 
     pub fn len(&self) -> usize {
         let mut length = 0;
         for bucket in &self.buckets {
-            for n in 0..bucket.len() {
-                for i in 0..bucket[n].len() {
-                    length += bucket[n][i].len();
+            for bucket_n in bucket {
+                for bucket_ni in bucket_n {
+                    length += bucket_ni.len();
                 }
             }
         }
