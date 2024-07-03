@@ -15,6 +15,11 @@ use crate::free_poset::FreePoset;
 use crate::poset::Poset;
 use crate::search_backward::{COUTNER_USE_NAUTY, COUTNER_USE_NOT_NAUTY};
 
+type PosetLevel = [(
+    HashSet<(BackwardsPoset, (u8, u8))>,
+    HashSet<(BackwardsPoset, (u8, u8))>,
+); MAX_N];
+
 /// A partially ordered set with <
 #[derive(Clone, Copy, Hash, PartialEq, Eq)]
 pub struct BackwardsPoset {
@@ -577,7 +582,7 @@ impl BackwardsPoset {
     }
 
     fn handle_poset(
-        current_bucket: &mut [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N],
+        current_bucket: &mut PosetLevel,
         poset: Self,
         indices: (u8, u8),
         poset_cache: &BackwardCache,
@@ -620,8 +625,7 @@ impl BackwardsPoset {
         assert!(1 <= self.n);
         assert!(table[self.n as usize - 1][self.i as usize]);
 
-        let mut current_level: [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N] =
-            Default::default();
+        let mut current_level: PosetLevel = Default::default();
         self.remove_comparison(&mut current_level, max_remaining_comparisons, poset_cache);
 
         let mut result = HashMap::new();
@@ -632,8 +636,7 @@ impl BackwardsPoset {
         }
 
         if self.n != n || self.i != i {
-            let mut next_level: [(HashSet<(Self, (u8, u8))>, HashSet<(Self, (u8, u8))>); MAX_N] =
-                Default::default();
+            let mut next_level: PosetLevel = Default::default();
             if Self::need_value(table, self.n + 1, self.i) {
                 self.enlarge_i_larger(&mut next_level, max_remaining_comparisons, poset_cache);
             }
@@ -744,10 +747,7 @@ impl BackwardsPoset {
 
     pub fn remove_comparison(
         &self,
-        poset_buckets: &mut [(
-            HashSet<(BackwardsPoset, (u8, u8))>,
-            HashSet<(BackwardsPoset, (u8, u8))>,
-        ); MAX_N],
+        poset_buckets: &mut PosetLevel,
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
     ) {
@@ -792,10 +792,7 @@ impl BackwardsPoset {
 
     pub fn enlarge_i_larger_with_comparison(
         &self,
-        poset_buckets: &mut [(
-            HashSet<(BackwardsPoset, (u8, u8))>,
-            HashSet<(BackwardsPoset, (u8, u8))>,
-        ); MAX_N],
+        poset_buckets: &mut PosetLevel,
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
         (k, j): (u8, u8),
@@ -851,10 +848,7 @@ impl BackwardsPoset {
 
     fn enlarge_i_larger(
         &self,
-        poset_buckets: &mut [(
-            HashSet<(BackwardsPoset, (u8, u8))>,
-            HashSet<(BackwardsPoset, (u8, u8))>,
-        ); MAX_N],
+        poset_buckets: &mut PosetLevel,
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
     ) {
@@ -914,10 +908,7 @@ impl BackwardsPoset {
 
     pub fn enlarge_i_smaller_with_comparison(
         &self,
-        poset_buckets: &mut [(
-            HashSet<(BackwardsPoset, (u8, u8))>,
-            HashSet<(BackwardsPoset, (u8, u8))>,
-        ); MAX_N],
+        poset_buckets: &mut PosetLevel,
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
         (k, j): (u8, u8),
@@ -973,10 +964,7 @@ impl BackwardsPoset {
 
     fn enlarge_i_smaller(
         &self,
-        poset_buckets: &mut [(
-            HashSet<(BackwardsPoset, (u8, u8))>,
-            HashSet<(BackwardsPoset, (u8, u8))>,
-        ); MAX_N],
+        poset_buckets: &mut PosetLevel,
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
     ) {
