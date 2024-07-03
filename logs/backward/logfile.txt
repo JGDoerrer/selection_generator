@@ -1,17 +1,17 @@
 
 Branch: main
-SHA: 808d2e7
+SHA: 9c0d89a
 
 Thread(s) per core: 2
 Core(s) per socket: 12
 CPU max MHz: 2900.0000
 CPU min MHz: 1200.0000
 
-Current time: 2024-04-30 01:53:28
+Current time: 2024-07-02 15:03:01
 ===============
 n: 1, i: 0 needs at least 0 comparisons
-# 0: 1 in 23.633µs, total: 1
-Duration: 0d 0h 0m 0.000046377s
+# 0: 1 in 12.546µs, total: 1
+Duration: 0d 0h 0m 0.000038283s
 
 Congratulations. A solution was found!
 
@@ -22,14 +22,14 @@ Cache entries: 1
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000076688s
+Duration: 0d 0h 0m 0.000069917s
 
-generating algorithm Duration: 0d 0h 0m 0.000137814s
+generating algorithm Duration: 0d 0h 0m 0.000236468s
 ==============================================================
 n: 2, i: 0 needs at least 1 comparisons
-# 0: 1 in 4.086µs, total: 1
-# 1: 1 in 3.858ms, total: 2
-Duration: 0d 0h 0m 0.003876628s
+# 0: 1 in 3.413µs, total: 1
+# 1: 1 in 3.633ms, total: 2
+Duration: 0d 0h 0m 0.00365193s
 
 Congratulations. A solution was found!
 
@@ -40,15 +40,15 @@ Cache entries: 2
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.003899467s
+Duration: 0d 0h 0m 0.00367559s
 
-generating algorithm Duration: 0d 0h 0m 0.00006607s
+generating algorithm Duration: 0d 0h 0m 0.000083424s
 ==============================================================
 n: 3, i: 0 needs at least 2 comparisons
-# 0: 1 in 2.518µs, total: 1
-# 1: 1 in 11.190µs, total: 2
-# 2: 1 in 18.822µs, total: 3
-Duration: 0d 0h 0m 0.000042216s
+# 0: 1 in 3.177µs, total: 1
+# 1: 1 in 15.827µs, total: 2
+# 2: 1 in 26.503µs, total: 3
+Duration: 0d 0h 0m 0.000061201s
 
 Congratulations. A solution was found!
 
@@ -59,16 +59,16 @@ Cache entries: 3
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000055174s
+Duration: 0d 0h 0m 0.0000835s
 
-generating algorithm Duration: 0d 0h 0m 0.000044105s
+generating algorithm Duration: 0d 0h 0m 0.000086507s
 ==============================================================
 n: 3, i: 1 needs at least 3 comparisons
-# 0: 1 in 2.238µs, total: 1
-# 1: 1 in 13.273µs, total: 2
-# 2: 1 in 8.892µs, total: 3
-# 3: 1 in 11.128µs, total: 4
-Duration: 0d 0h 0m 0.000048223s
+# 0: 1 in 2.910µs, total: 1
+# 1: 1 in 19.480µs, total: 2
+# 2: 1 in 12.884µs, total: 3
+# 3: 1 in 15.697µs, total: 4
+Duration: 0d 0h 0m 0.000071384s
 
 Congratulations. A solution was found!
 
@@ -79,16 +79,16 @@ Cache entries: 4
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000062497s
+Duration: 0d 0h 0m 0.000093141s
 
-generating algorithm Duration: 0d 0h 0m 0.000038123s
+generating algorithm Duration: 0d 0h 0m 0.00007207s
 ==============================================================
 n: 4, i: 0 needs at least 3 comparisons
-# 0: 1 in 2.234µs, total: 1
-# 1: 1 in 9.548µs, total: 2
-# 2: 1 in 7.754µs, total: 3
-# 3: 1 in 8.678µs, total: 4
-Duration: 0d 0h 0m 0.000039936s
+# 0: 1 in 2.984µs, total: 1
+# 1: 1 in 13.680µs, total: 2
+# 2: 1 in 11.133µs, total: 3
+# 3: 1 in 12.540µs, total: 4
+Duration: 0d 0h 0m 0.000060731s
 
 Congratulations. A solution was found!
 
@@ -99,17 +99,17 @@ Cache entries: 4
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000053982s
+Duration: 0d 0h 0m 0.000082078s
 
-generating algorithm Duration: 0d 0h 0m 0.000034892s
+generating algorithm Duration: 0d 0h 0m 0.00006687s
 ==============================================================
 n: 4, i: 1 needs at least 4 comparisons
-# 0: 1 in 2.232µs, total: 1
-# 1: 1 in 11.886µs, total: 2
-# 2: 3 in 25.843µs, total: 5
-# 3: 2 in 28.852µs, total: 7
-# 4: 1 in 31.524µs, total: 8
-Duration: 0d 0h 0m 0.000118047s
+# 0: 1 in 2.663µs, total: 1
+# 1: 1 in 17.074µs, total: 2
+# 2: 3 in 33.150µs, total: 5
+# 3: 2 in 39.110µs, total: 7
+# 4: 1 in 44.610µs, total: 8
+Duration: 0d 0h 0m 0.000163564s
 
 Congratulations. A solution was found!
 
@@ -120,17 +120,17 @@ Cache entries: 8
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000132237s
+Duration: 0d 0h 0m 0.000185768s
 
-generating algorithm Duration: 0d 0h 0m 0.000046164s
+generating algorithm Duration: 0d 0h 0m 0.00009465s
 ==============================================================
 n: 5, i: 0 needs at least 4 comparisons
-# 0: 1 in 2.292µs, total: 1
-# 1: 1 in 9.127µs, total: 2
-# 2: 1 in 7.419µs, total: 3
-# 3: 1 in 9.745µs, total: 4
-# 4: 1 in 11.313µs, total: 5
-Duration: 0d 0h 0m 0.000055754s
+# 0: 1 in 2.893µs, total: 1
+# 1: 1 in 13.403µs, total: 2
+# 2: 1 in 10.903µs, total: 3
+# 3: 1 in 12.906µs, total: 4
+# 4: 1 in 15.543µs, total: 5
+Duration: 0d 0h 0m 0.000082178s
 
 Congratulations. A solution was found!
 
@@ -141,19 +141,19 @@ Cache entries: 5
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000070177s
+Duration: 0d 0h 0m 0.000105651s
 
-generating algorithm Duration: 0d 0h 0m 0.00003909s
+generating algorithm Duration: 0d 0h 0m 0.000073943s
 ==============================================================
 n: 5, i: 1 needs at least 6 comparisons
-# 0: 1 in 2.132µs, total: 1
-# 1: 1 in 11.462µs, total: 2
-# 2: 3 in 28.193µs, total: 5
-# 3: 5 in 89.570µs, total: 10
-# 4: 3 in 79.530µs, total: 13
-# 5: 1 in 31.198µs, total: 14
-# 6: 1 in 10.462µs, total: 15
-Duration: 0d 0h 0m 0.000280011s
+# 0: 1 in 2.663µs, total: 1
+# 1: 1 in 15.947µs, total: 2
+# 2: 3 in 34.287µs, total: 5
+# 3: 5 in 109.764µs, total: 10
+# 4: 3 in 102.040µs, total: 13
+# 5: 1 in 41.907µs, total: 14
+# 6: 1 in 15.727µs, total: 15
+Duration: 0d 0h 0m 0.000364185s
 
 Congratulations. A solution was found!
 
@@ -164,19 +164,19 @@ Cache entries: 15
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000296809s
+Duration: 0d 0h 0m 0.000388055s
 
-generating algorithm Duration: 0d 0h 0m 0.00005293s
+generating algorithm Duration: 0d 0h 0m 0.00009737s
 ==============================================================
 n: 5, i: 2 needs at least 6 comparisons
-# 0: 1 in 2.274µs, total: 1
-# 1: 1 in 12.602µs, total: 2
-# 2: 3 in 29.969µs, total: 5
-# 3: 4 in 79.798µs, total: 9
-# 4: 3 in 84.703µs, total: 12
-# 5: 1 in 27.011µs, total: 13
-# 6: 1 in 6.966µs, total: 14
-Duration: 0d 0h 0m 0.000270021s
+# 0: 1 in 3.070µs, total: 1
+# 1: 1 in 17.257µs, total: 2
+# 2: 3 in 35.524µs, total: 5
+# 3: 4 in 101.817µs, total: 9
+# 4: 3 in 111.001µs, total: 12
+# 5: 1 in 37.120µs, total: 13
+# 6: 1 in 10.606µs, total: 14
+Duration: 0d 0h 0m 0.000358438s
 
 Congratulations. A solution was found!
 
@@ -187,18 +187,18 @@ Cache entries: 14
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000286023s
+Duration: 0d 0h 0m 0.000384492s
 
-generating algorithm Duration: 0d 0h 0m 0.000057689s
+generating algorithm Duration: 0d 0h 0m 0.000103537s
 ==============================================================
 n: 6, i: 0 needs at least 5 comparisons
-# 0: 1 in 2.288µs, total: 1
-# 1: 1 in 9.670µs, total: 2
-# 2: 1 in 8.204µs, total: 3
-# 3: 1 in 10.154µs, total: 4
-# 4: 1 in 13.965µs, total: 5
-# 5: 1 in 13.166µs, total: 6
-Duration: 0d 0h 0m 0.000079085s
+# 0: 1 in 3.010µs, total: 1
+# 1: 1 in 13.777µs, total: 2
+# 2: 1 in 11.341µs, total: 3
+# 3: 1 in 13.130µs, total: 4
+# 4: 1 in 16.703µs, total: 5
+# 5: 1 in 17.993µs, total: 6
+Duration: 0d 0h 0m 0.000110047s
 
 Congratulations. A solution was found!
 
@@ -209,20 +209,20 @@ Cache entries: 6
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000095298s
+Duration: 0d 0h 0m 0.000134131s
 
-generating algorithm Duration: 0d 0h 0m 0.000044651s
+generating algorithm Duration: 0d 0h 0m 0.000081228s
 ==============================================================
 n: 6, i: 1 needs at least 7 comparisons
-# 0: 1 in 2.086µs, total: 1
-# 1: 1 in 12.376µs, total: 2
-# 2: 3 in 29.024µs, total: 5
-# 3: 6 in 125.939µs, total: 11
-# 4: 7 in 221.044µs, total: 18
-# 5: 3 in 121.971µs, total: 21
-# 6: 2 in 30.952µs, total: 23
-# 7: 1 in 12.507µs, total: 24
-Duration: 0d 0h 0m 0.000590053s
+# 0: 1 in 2.680µs, total: 1
+# 1: 1 in 17.174µs, total: 2
+# 2: 3 in 34.570µs, total: 5
+# 3: 6 in 155.994µs, total: 11
+# 4: 7 in 261.938µs, total: 18
+# 5: 3 in 151.680µs, total: 21
+# 6: 2 in 41.287µs, total: 23
+# 7: 1 in 18.144µs, total: 24
+Duration: 0d 0h 0m 0.000736374s
 
 Congratulations. A solution was found!
 
@@ -233,21 +233,21 @@ Cache entries: 24
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 1.905%
 
-Duration: 0d 0h 0m 0.00060775s
+Duration: 0d 0h 0m 0.000763397s
 
-generating algorithm Duration: 0d 0h 0m 0.000114685s
+generating algorithm Duration: 0d 0h 0m 0.000176381s
 ==============================================================
 n: 6, i: 2 needs at least 8 comparisons
-# 0: 1 in 2.520µs, total: 1
-# 1: 1 in 15.042µs, total: 2
-# 2: 3 in 40.470µs, total: 5
-# 3: 10 in 259.040µs, total: 15
-# 4: 14 in 705.403µs, total: 29
-# 5: 6 in 591.974µs, total: 35
-# 6: 4 in 166.593µs, total: 39
-# 7: 1 in 45.612µs, total: 40
-# 8: 1 in 67.449µs, total: 41
-Duration: 0d 0h 0m 0.001937131s
+# 0: 1 in 3.623µs, total: 1
+# 1: 1 in 21.280µs, total: 2
+# 2: 3 in 48.030µs, total: 5
+# 3: 10 in 275.248µs, total: 15
+# 4: 14 in 828.400µs, total: 29
+# 5: 6 in 439.192µs, total: 35
+# 6: 4 in 103.107µs, total: 39
+# 7: 1 in 28.635µs, total: 40
+# 8: 1 in 52.666µs, total: 41
+Duration: 0d 0h 0m 0.001851456s
 
 Congratulations. A solution was found!
 
@@ -256,21 +256,21 @@ Comparisons: 8
 
 Cache entries: 41
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 0.804%
+Nauty Ratio: 0.809%
 
-Duration: 0d 0h 0m 0.001955884s
+Duration: 0d 0h 0m 0.001867953s
 
-generating algorithm Duration: 0d 0h 0m 0.000096464s
+generating algorithm Duration: 0d 0h 0m 0.000090751s
 ==============================================================
 n: 7, i: 0 needs at least 6 comparisons
-# 0: 1 in 3.790µs, total: 1
-# 1: 1 in 10.640µs, total: 2
-# 2: 1 in 11.452µs, total: 3
-# 3: 1 in 11.025µs, total: 4
-# 4: 1 in 14.030µs, total: 5
-# 5: 1 in 18.548µs, total: 6
-# 6: 1 in 16.820µs, total: 7
-Duration: 0d 0h 0m 0.000113366s
+# 0: 1 in 2.660µs, total: 1
+# 1: 1 in 8.401µs, total: 2
+# 2: 1 in 8.444µs, total: 3
+# 3: 1 in 7.188µs, total: 4
+# 4: 1 in 8.624µs, total: 5
+# 5: 1 in 10.396µs, total: 6
+# 6: 1 in 10.615µs, total: 7
+Duration: 0d 0h 0m 0.000078758s
 
 Congratulations. A solution was found!
 
@@ -281,21 +281,21 @@ Cache entries: 7
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000131035s
+Duration: 0d 0h 0m 0.000092925s
 
-generating algorithm Duration: 0d 0h 0m 0.000054064s
+generating algorithm Duration: 0d 0h 0m 0.000054573s
 ==============================================================
 n: 7, i: 1 needs at least 8 comparisons
-# 0: 1 in 2.510µs, total: 1
-# 1: 1 in 13.544µs, total: 2
-# 2: 3 in 33.197µs, total: 5
-# 3: 6 in 122.447µs, total: 11
-# 4: 9 in 357.276µs, total: 20
-# 5: 7 in 444.822µs, total: 27
-# 6: 4 in 182.271µs, total: 31
-# 7: 2 in 52.214µs, total: 33
-# 8: 1 in 23.594µs, total: 34
-Duration: 0d 0h 0m 0.001272688s
+# 0: 1 in 1.785µs, total: 1
+# 1: 1 in 9.880µs, total: 2
+# 2: 3 in 20.439µs, total: 5
+# 3: 6 in 72.471µs, total: 11
+# 4: 9 in 211.201µs, total: 20
+# 5: 7 in 267.988µs, total: 27
+# 6: 4 in 108.241µs, total: 31
+# 7: 2 in 33.779µs, total: 33
+# 8: 1 in 18.481µs, total: 34
+Duration: 0d 0h 0m 0.000777718s
 
 Congratulations. A solution was found!
 
@@ -306,35 +306,35 @@ Cache entries: 34
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 4.645%
 
-Duration: 0d 0h 0m 0.001290792s
+Duration: 0d 0h 0m 0.000791768s
 
-generating algorithm Duration: 0d 0h 0m 0.000154307s
+generating algorithm Duration: 0d 0h 0m 0.000134137s
 ==============================================================
 n: 7, i: 2 needs at least 9 comparisons
-# 0: 1 in 2.830µs, total: 1
-# 1: 1 in 14.360µs, total: 2
-# 2: 3 in 41.468µs, total: 5
-# 3: 14 in 412.442µs, total: 19
-# 4: 27 in 1.376ms, total: 46
-# 5: 24 in 1.197ms, total: 70
-# 6: 11 in 737.391µs, total: 81
-# 7: 5 in 253.233µs, total: 86
-# 8: 1 in 68.898µs, total: 87
-# 9: 0 in 14.589µs, total: 87
-Duration: 0d 0h 0m 0.004165598s
+# 0: 1 in 2.244µs, total: 1
+# 1: 1 in 10.790µs, total: 2
+# 2: 3 in 24.630µs, total: 5
+# 3: 14 in 207.787µs, total: 19
+# 4: 27 in 908.605µs, total: 46
+# 5: 24 in 833.111µs, total: 70
+# 6: 11 in 619.937µs, total: 81
+# 7: 5 in 186.703µs, total: 86
+# 8: 1 in 48.284µs, total: 87
+# 9: 0 in 13.599µs, total: 87
+Duration: 0d 0h 0m 0.002909017s
 n: 7, i: 2 needs at least 10 comparisons
-# 0: 1 in 1.634µs, total: 1
-# 1: 1 in 10.386µs, total: 2
-# 2: 3 in 34.053µs, total: 5
-# 3: 14 in 346.991µs, total: 19
-# 4: 34 in 1.692ms, total: 53
-# 5: 35 in 1.630ms, total: 88
-# 6: 21 in 1.048ms, total: 109
-# 7: 10 in 557.498µs, total: 119
-# 8: 4 in 185.468µs, total: 123
-# 9: 1 in 26.133µs, total: 124
-# 10: 1 in 9.440µs, total: 125
-Duration: 0d 0h 0m 0.005598664s
+# 0: 1 in 1.660µs, total: 1
+# 1: 1 in 9.777µs, total: 2
+# 2: 3 in 24.884µs, total: 5
+# 3: 14 in 219.367µs, total: 19
+# 4: 34 in 1.228ms, total: 53
+# 5: 35 in 1.246ms, total: 88
+# 6: 21 in 718.825µs, total: 109
+# 7: 10 in 469.228µs, total: 119
+# 8: 4 in 200.004µs, total: 123
+# 9: 1 in 29.191µs, total: 124
+# 10: 1 in 13.995µs, total: 125
+Duration: 0d 0h 0m 0.004227618s
 
 Congratulations. A solution was found!
 
@@ -343,37 +343,37 @@ Comparisons: 10
 
 Cache entries: 125
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 1.693%
+Nauty Ratio: 1.681%
 
-Duration: 0d 0h 0m 0.009786168s
+Duration: 0d 0h 0m 0.007162023s
 
-generating algorithm Duration: 0d 0h 0m 0.000134951s
+generating algorithm Duration: 0d 0h 0m 0.000192223s
 ==============================================================
 n: 7, i: 3 needs at least 9 comparisons
-# 0: 1 in 2.450µs, total: 1
-# 1: 1 in 11.294µs, total: 2
-# 2: 3 in 33.254µs, total: 5
-# 3: 12 in 370.271µs, total: 17
-# 4: 21 in 1.288ms, total: 38
-# 5: 18 in 735.330µs, total: 56
-# 6: 9 in 495.742µs, total: 65
-# 7: 3 in 358.704µs, total: 68
-# 8: 1 in 98.448µs, total: 69
-# 9: 0 in 26.394µs, total: 69
-Duration: 0d 0h 0m 0.003487295s
+# 0: 1 in 2.820µs, total: 1
+# 1: 1 in 14.753µs, total: 2
+# 2: 3 in 34.033µs, total: 5
+# 3: 12 in 290.158µs, total: 17
+# 4: 21 in 1.023ms, total: 38
+# 5: 18 in 638.899µs, total: 56
+# 6: 9 in 394.971µs, total: 65
+# 7: 3 in 212.604µs, total: 68
+# 8: 1 in 48.422µs, total: 69
+# 9: 0 in 16.176µs, total: 69
+Duration: 0d 0h 0m 0.002730156s
 n: 7, i: 3 needs at least 10 comparisons
-# 0: 1 in 2.450µs, total: 1
-# 1: 1 in 15.578µs, total: 2
-# 2: 3 in 52.584µs, total: 5
-# 3: 12 in 605.647µs, total: 17
-# 4: 31 in 1.251ms, total: 48
-# 5: 29 in 977.699µs, total: 77
-# 6: 15 in 840.327µs, total: 92
-# 7: 7 in 810.637µs, total: 99
-# 8: 3 in 283.911µs, total: 102
-# 9: 1 in 61.445µs, total: 103
-# 10: 1 in 11.046µs, total: 104
-Duration: 0d 0h 0m 0.00499577s
+# 0: 1 in 2.137µs, total: 1
+# 1: 1 in 12.978µs, total: 2
+# 2: 3 in 33.762µs, total: 5
+# 3: 12 in 317.734µs, total: 17
+# 4: 31 in 1.527ms, total: 48
+# 5: 29 in 1.174ms, total: 77
+# 6: 15 in 433.457µs, total: 92
+# 7: 7 in 503.272µs, total: 99
+# 8: 3 in 196.265µs, total: 102
+# 9: 1 in 41.165µs, total: 103
+# 10: 1 in 8.663µs, total: 104
+Duration: 0d 0h 0m 0.004318378s
 
 Congratulations. A solution was found!
 
@@ -382,22 +382,22 @@ Comparisons: 10
 
 Cache entries: 104
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 1.174%
+Nauty Ratio: 1.154%
 
-Duration: 0d 0h 0m 0.008513329s
+Duration: 0d 0h 0m 0.007074396s
 
-generating algorithm Duration: 0d 0h 0m 0.000220006s
+generating algorithm Duration: 0d 0h 0m 0.000206159s
 ==============================================================
 n: 8, i: 0 needs at least 7 comparisons
-# 0: 1 in 3.592µs, total: 1
-# 1: 1 in 13.553µs, total: 2
-# 2: 1 in 14.305µs, total: 3
-# 3: 1 in 13.953µs, total: 4
-# 4: 1 in 18.652µs, total: 5
-# 5: 1 in 23.556µs, total: 6
-# 6: 1 in 30.438µs, total: 7
-# 7: 1 in 25.624µs, total: 8
-Duration: 0d 0h 0m 0.000183175s
+# 0: 1 in 2.653µs, total: 1
+# 1: 1 in 11.449µs, total: 2
+# 2: 1 in 12.364µs, total: 3
+# 3: 1 in 10.424µs, total: 4
+# 4: 1 in 12.360µs, total: 5
+# 5: 1 in 14.261µs, total: 6
+# 6: 1 in 18.002µs, total: 7
+# 7: 1 in 17.949µs, total: 8
+Duration: 0d 0h 0m 0.000135176s
 
 Congratulations. A solution was found!
 
@@ -408,22 +408,22 @@ Cache entries: 8
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000204244s
+Duration: 0d 0h 0m 0.000153713s
 
-generating algorithm Duration: 0d 0h 0m 0.000075126s
+generating algorithm Duration: 0d 0h 0m 0.000080327s
 ==============================================================
 n: 8, i: 1 needs at least 9 comparisons
-# 0: 1 in 2.948µs, total: 1
-# 1: 1 in 16.500µs, total: 2
-# 2: 3 in 42.635µs, total: 5
-# 3: 6 in 156.619µs, total: 11
-# 4: 10 in 543.295µs, total: 21
-# 5: 11 in 1.162ms, total: 32
-# 6: 7 in 1.128ms, total: 39
-# 7: 3 in 269.038µs, total: 42
-# 8: 2 in 54.535µs, total: 44
-# 9: 1 in 13.225µs, total: 45
-Duration: 0d 0h 0m 0.00344331s
+# 0: 1 in 2.178µs, total: 1
+# 1: 1 in 13.352µs, total: 2
+# 2: 3 in 28.799µs, total: 5
+# 3: 6 in 101.644µs, total: 11
+# 4: 10 in 352.700µs, total: 21
+# 5: 11 in 799.431µs, total: 32
+# 6: 7 in 822.355µs, total: 39
+# 7: 3 in 223.481µs, total: 42
+# 8: 2 in 51.857µs, total: 44
+# 9: 1 in 13.005µs, total: 45
+Duration: 0d 0h 0m 0.002460854s
 
 Congratulations. A solution was found!
 
@@ -434,24 +434,24 @@ Cache entries: 45
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 7.744%
 
-Duration: 0d 0h 0m 0.003462581s
+Duration: 0d 0h 0m 0.002481315s
 
-generating algorithm Duration: 0d 0h 0m 0.000109055s
+generating algorithm Duration: 0d 0h 0m 0.000136137s
 ==============================================================
 n: 8, i: 2 needs at least 11 comparisons
-# 0: 1 in 2.805µs, total: 1
-# 1: 1 in 13.823µs, total: 2
-# 2: 3 in 39.802µs, total: 5
-# 3: 14 in 483.233µs, total: 19
-# 4: 46 in 2.630ms, total: 65
-# 5: 78 in 4.356ms, total: 143
-# 6: 59 in 2.056ms, total: 202
-# 7: 29 in 1.856ms, total: 231
-# 8: 10 in 856.147µs, total: 241
-# 9: 4 in 438.554µs, total: 245
-# 10: 2 in 63.844µs, total: 247
-# 11: 1 in 43.032µs, total: 248
-Duration: 0d 0h 0m 0.012940308s
+# 0: 1 in 2.516µs, total: 1
+# 1: 1 in 14.329µs, total: 2
+# 2: 3 in 35.284µs, total: 5
+# 3: 14 in 377.600µs, total: 19
+# 4: 46 in 1.736ms, total: 65
+# 5: 78 in 2.515ms, total: 143
+# 6: 59 in 1.512ms, total: 202
+# 7: 29 in 1.205ms, total: 231
+# 8: 10 in 849.538µs, total: 241
+# 9: 4 in 206.641µs, total: 245
+# 10: 2 in 28.807µs, total: 247
+# 11: 1 in 19.293µs, total: 248
+Duration: 0d 0h 0m 0.008581906s
 
 Congratulations. A solution was found!
 
@@ -460,41 +460,41 @@ Comparisons: 11
 
 Cache entries: 248
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 2.564%
+Nauty Ratio: 2.566%
 
-Duration: 0d 0h 0m 0.012971076s
+Duration: 0d 0h 0m 0.0085994s
 
-generating algorithm Duration: 0d 0h 0m 0.000438567s
+generating algorithm Duration: 0d 0h 0m 0.0003489s
 ==============================================================
 n: 8, i: 3 needs at least 11 comparisons
-# 0: 1 in 3.778µs, total: 1
-# 1: 1 in 18.691µs, total: 2
-# 2: 3 in 61.636µs, total: 5
-# 3: 16 in 1.059ms, total: 21
-# 4: 70 in 4.181ms, total: 91
-# 5: 104 in 3.825ms, total: 195
-# 6: 70 in 3.868ms, total: 265
-# 7: 37 in 2.182ms, total: 302
-# 8: 12 in 1.113ms, total: 314
-# 9: 3 in 723.383µs, total: 317
-# 10: 2 in 205.982µs, total: 319
-# 11: 0 in 133.837µs, total: 319
-Duration: 0d 0h 0m 0.01749322s
+# 0: 1 in 3.476µs, total: 1
+# 1: 1 in 17.303µs, total: 2
+# 2: 3 in 40.150µs, total: 5
+# 3: 16 in 576.295µs, total: 21
+# 4: 70 in 2.736ms, total: 91
+# 5: 104 in 2.190ms, total: 195
+# 6: 70 in 2.627ms, total: 265
+# 7: 37 in 1.624ms, total: 302
+# 8: 12 in 906.401µs, total: 314
+# 9: 3 in 433.685µs, total: 317
+# 10: 2 in 116.548µs, total: 319
+# 11: 0 in 69.680µs, total: 319
+Duration: 0d 0h 0m 0.011439897s
 n: 8, i: 3 needs at least 12 comparisons
-# 0: 1 in 3.012µs, total: 1
-# 1: 1 in 21.473µs, total: 2
-# 2: 3 in 53.507µs, total: 5
-# 3: 16 in 985.101µs, total: 21
-# 4: 84 in 6.329ms, total: 105
-# 5: 169 in 5.806ms, total: 274
-# 6: 148 in 5.944ms, total: 422
-# 7: 74 in 3.483ms, total: 496
-# 8: 27 in 1.912ms, total: 523
-# 9: 8 in 907.602µs, total: 531
-# 10: 4 in 492.801µs, total: 535
-# 11: 1 in 204.006µs, total: 536
-# 12: 1 in 16.985µs, total: 537
-Duration: 0d 0h 0m 0.026275313s
+# 0: 1 in 2.882µs, total: 1
+# 1: 1 in 15.120µs, total: 2
+# 2: 3 in 30.160µs, total: 5
+# 3: 16 in 482.281µs, total: 21
+# 4: 84 in 3.412ms, total: 105
+# 5: 169 in 3.587ms, total: 274
+# 6: 148 in 3.313ms, total: 422
+# 7: 74 in 2.542ms, total: 496
+# 8: 27 in 1.437ms, total: 523
+# 9: 8 in 939.855µs, total: 531
+# 10: 4 in 380.296µs, total: 535
+# 11: 1 in 141.395µs, total: 536
+# 12: 1 in 16.520µs, total: 537
+Duration: 0d 0h 0m 0.01642804s
 
 Congratulations. A solution was found!
 
@@ -503,23 +503,23 @@ Comparisons: 12
 
 Cache entries: 537
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 1.541%
+Nauty Ratio: 1.529%
 
-Duration: 0d 0h 0m 0.043806914s
+Duration: 0d 0h 0m 0.027913025s
 
-generating algorithm Duration: 0d 0h 0m 0.000402779s
+generating algorithm Duration: 0d 0h 0m 0.000475877s
 ==============================================================
 n: 9, i: 0 needs at least 8 comparisons
-# 0: 1 in 4.529µs, total: 1
-# 1: 1 in 16.258µs, total: 2
-# 2: 1 in 13.788µs, total: 3
-# 3: 1 in 16.080µs, total: 4
-# 4: 1 in 21.540µs, total: 5
-# 5: 1 in 27.942µs, total: 6
-# 6: 1 in 36.503µs, total: 7
-# 7: 1 in 45.614µs, total: 8
-# 8: 1 in 37.994µs, total: 9
-Duration: 0d 0h 0m 0.000271881s
+# 0: 1 in 4.611µs, total: 1
+# 1: 1 in 20.400µs, total: 2
+# 2: 1 in 12.768µs, total: 3
+# 3: 1 in 14.214µs, total: 4
+# 4: 1 in 17.888µs, total: 5
+# 5: 1 in 20.331µs, total: 6
+# 6: 1 in 24.894µs, total: 7
+# 7: 1 in 29.816µs, total: 8
+# 8: 1 in 31.376µs, total: 9
+Duration: 0d 0h 0m 0.000230804s
 
 Congratulations. A solution was found!
 
@@ -530,24 +530,24 @@ Cache entries: 9
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000298912s
+Duration: 0d 0h 0m 0.000257846s
 
-generating algorithm Duration: 0d 0h 0m 0.000113795s
+generating algorithm Duration: 0d 0h 0m 0.000120096s
 ==============================================================
 n: 9, i: 1 needs at least 11 comparisons
-# 0: 1 in 3.523µs, total: 1
-# 1: 1 in 19.292µs, total: 2
-# 2: 3 in 45.323µs, total: 5
-# 3: 6 in 178.458µs, total: 11
-# 4: 11 in 731.025µs, total: 22
-# 5: 18 in 3.028ms, total: 40
-# 6: 17 in 3.623ms, total: 57
-# 7: 11 in 2.854ms, total: 68
-# 8: 6 in 1.708ms, total: 74
-# 9: 3 in 273.589µs, total: 77
-# 10: 1 in 59.329µs, total: 78
-# 11: 1 in 7.065µs, total: 79
-Duration: 0d 0h 0m 0.012611147s
+# 0: 1 in 2.994µs, total: 1
+# 1: 1 in 19.790µs, total: 2
+# 2: 3 in 36.629µs, total: 5
+# 3: 6 in 141.942µs, total: 11
+# 4: 11 in 561.549µs, total: 22
+# 5: 18 in 2.385ms, total: 40
+# 6: 17 in 3.010ms, total: 57
+# 7: 11 in 2.570ms, total: 68
+# 8: 6 in 1.576ms, total: 74
+# 9: 3 in 236.861µs, total: 77
+# 10: 1 in 48.923µs, total: 78
+# 11: 1 in 6.340µs, total: 79
+Duration: 0d 0h 0m 0.01067677s
 
 Congratulations. A solution was found!
 
@@ -558,25 +558,25 @@ Cache entries: 79
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 14.567%
 
-Duration: 0d 0h 0m 0.012631035s
+Duration: 0d 0h 0m 0.010709517s
 
-generating algorithm Duration: 0d 0h 0m 0.000364711s
+generating algorithm Duration: 0d 0h 0m 0.000483769s
 ==============================================================
 n: 9, i: 2 needs at least 12 comparisons
-# 0: 1 in 2.951µs, total: 1
-# 1: 1 in 13.858µs, total: 2
-# 2: 3 in 36.457µs, total: 5
-# 3: 14 in 459.899µs, total: 19
-# 4: 55 in 5.040ms, total: 74
-# 5: 120 in 5.702ms, total: 194
-# 6: 119 in 3.333ms, total: 313
-# 7: 67 in 3.661ms, total: 380
-# 8: 31 in 2.016ms, total: 411
-# 9: 12 in 1.059ms, total: 423
-# 10: 5 in 814.131µs, total: 428
-# 11: 2 in 122.640µs, total: 430
-# 12: 1 in 35.833µs, total: 431
-Duration: 0d 0h 0m 0.022409989s
+# 0: 1 in 2.947µs, total: 1
+# 1: 1 in 17.529µs, total: 2
+# 2: 3 in 34.920µs, total: 5
+# 3: 14 in 369.364µs, total: 19
+# 4: 55 in 2.371ms, total: 74
+# 5: 120 in 5.340ms, total: 194
+# 6: 119 in 3.060ms, total: 313
+# 7: 67 in 1.938ms, total: 380
+# 8: 31 in 1.476ms, total: 411
+# 9: 12 in 1.247ms, total: 423
+# 10: 5 in 553.766µs, total: 428
+# 11: 2 in 100.398µs, total: 430
+# 12: 1 in 31.760µs, total: 431
+Duration: 0d 0h 0m 0.016670022s
 
 Congratulations. A solution was found!
 
@@ -585,45 +585,45 @@ Comparisons: 12
 
 Cache entries: 431
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 3.484%
+Nauty Ratio: 3.494%
 
-Duration: 0d 0h 0m 0.022436744s
+Duration: 0d 0h 0m 0.016700337s
 
-generating algorithm Duration: 0d 0h 0m 0.000658161s
+generating algorithm Duration: 0d 0h 0m 0.000720558s
 ==============================================================
 n: 9, i: 3 needs at least 13 comparisons
-# 0: 1 in 4.666µs, total: 1
-# 1: 1 in 19.900µs, total: 2
-# 2: 3 in 54.773µs, total: 5
-# 3: 16 in 1.318ms, total: 21
-# 4: 124 in 10.714ms, total: 145
-# 5: 404 in 11.345ms, total: 549
-# 6: 464 in 12.466ms, total: 1013
-# 7: 288 in 6.419ms, total: 1301
-# 8: 113 in 3.564ms, total: 1414
-# 9: 39 in 1.932ms, total: 1453
-# 10: 14 in 1.001ms, total: 1467
-# 11: 5 in 467.732µs, total: 1472
-# 12: 1 in 252.028µs, total: 1473
-# 13: 0 in 51.813µs, total: 1473
-Duration: 0d 0h 0m 0.049746487s
+# 0: 1 in 4.334µs, total: 1
+# 1: 1 in 20.395µs, total: 2
+# 2: 3 in 43.286µs, total: 5
+# 3: 16 in 759.458µs, total: 21
+# 4: 124 in 6.187ms, total: 145
+# 5: 404 in 6.661ms, total: 549
+# 6: 464 in 7.275ms, total: 1013
+# 7: 288 in 3.801ms, total: 1301
+# 8: 113 in 2.294ms, total: 1414
+# 9: 39 in 2.126ms, total: 1453
+# 10: 14 in 845.029µs, total: 1467
+# 11: 5 in 347.428µs, total: 1472
+# 12: 1 in 193.541µs, total: 1473
+# 13: 0 in 42.970µs, total: 1473
+Duration: 0d 0h 0m 0.030776853s
 n: 9, i: 3 needs at least 14 comparisons
-# 0: 1 in 3.733µs, total: 1
-# 1: 1 in 14.722µs, total: 2
-# 2: 3 in 44.242µs, total: 5
-# 3: 16 in 1.028ms, total: 21
-# 4: 131 in 11.547ms, total: 152
-# 5: 539 in 11.148ms, total: 691
-# 6: 798 in 15.961ms, total: 1489
-# 7: 594 in 12.557ms, total: 2083
-# 8: 261 in 4.647ms, total: 2344
-# 9: 88 in 2.579ms, total: 2432
-# 10: 30 in 1.954ms, total: 2462
-# 11: 12 in 1.368ms, total: 2474
-# 12: 4 in 519.941µs, total: 2478
-# 13: 1 in 77.462µs, total: 2479
-# 14: 1 in 15.498µs, total: 2480
-Duration: 0d 0h 0m 0.06358977s
+# 0: 1 in 4.002µs, total: 1
+# 1: 1 in 17.742µs, total: 2
+# 2: 3 in 34.633µs, total: 5
+# 3: 16 in 596.694µs, total: 21
+# 4: 131 in 5.446ms, total: 152
+# 5: 539 in 9.512ms, total: 691
+# 6: 798 in 10.248ms, total: 1489
+# 7: 594 in 6.449ms, total: 2083
+# 8: 261 in 3.271ms, total: 2344
+# 9: 88 in 2.348ms, total: 2432
+# 10: 30 in 1.099ms, total: 2462
+# 11: 12 in 1.132ms, total: 2474
+# 12: 4 in 312.196µs, total: 2478
+# 13: 1 in 93.347µs, total: 2479
+# 14: 1 in 10.604µs, total: 2480
+Duration: 0d 0h 0m 0.04070795s
 
 Congratulations. A solution was found!
 
@@ -632,45 +632,45 @@ Comparisons: 14
 
 Cache entries: 2480
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 1.362%
+Nauty Ratio: 1.359%
 
-Duration: 0d 0h 0m 0.113364965s
+Duration: 0d 0h 0m 0.07151802s
 
-generating algorithm Duration: 0d 0h 0m 0.0014749s
+generating algorithm Duration: 0d 0h 0m 0.000600136s
 ==============================================================
 n: 9, i: 4 needs at least 13 comparisons
-# 0: 1 in 4.886µs, total: 1
-# 1: 1 in 16.972µs, total: 2
-# 2: 3 in 41.880µs, total: 5
-# 3: 16 in 958.964µs, total: 21
-# 4: 106 in 7.900ms, total: 127
-# 5: 317 in 10.659ms, total: 444
-# 6: 333 in 10.504ms, total: 777
-# 7: 195 in 5.915ms, total: 972
-# 8: 78 in 4.467ms, total: 1050
-# 9: 28 in 2.055ms, total: 1078
-# 10: 10 in 1.084ms, total: 1088
-# 11: 3 in 1.088ms, total: 1091
-# 12: 1 in 325.869µs, total: 1092
-# 13: 0 in 133.649µs, total: 1092
-Duration: 0d 0h 0m 0.04534825s
+# 0: 1 in 3.827µs, total: 1
+# 1: 1 in 34.107µs, total: 2
+# 2: 3 in 26.837µs, total: 5
+# 3: 16 in 390.252µs, total: 21
+# 4: 106 in 4.943ms, total: 127
+# 5: 317 in 5.362ms, total: 444
+# 6: 333 in 6.348ms, total: 777
+# 7: 195 in 2.985ms, total: 972
+# 8: 78 in 2.097ms, total: 1050
+# 9: 28 in 1.881ms, total: 1078
+# 10: 10 in 624.615µs, total: 1088
+# 11: 3 in 619.476µs, total: 1091
+# 12: 1 in 152.119µs, total: 1092
+# 13: 0 in 75.736µs, total: 1092
+Duration: 0d 0h 0m 0.025708236s
 n: 9, i: 4 needs at least 14 comparisons
-# 0: 1 in 3.889µs, total: 1
-# 1: 1 in 20.098µs, total: 2
-# 2: 3 in 80.175µs, total: 5
-# 3: 16 in 1.363ms, total: 21
-# 4: 115 in 10.842ms, total: 136
-# 5: 444 in 14.439ms, total: 580
-# 6: 610 in 15.604ms, total: 1190
-# 7: 428 in 10.673ms, total: 1618
-# 8: 186 in 3.920ms, total: 1804
-# 9: 61 in 2.803ms, total: 1865
-# 10: 21 in 1.516ms, total: 1886
-# 11: 7 in 1.974ms, total: 1893
-# 12: 3 in 601.198µs, total: 1896
-# 13: 1 in 158.655µs, total: 1897
-# 14: 1 in 18.827µs, total: 1898
-Duration: 0d 0h 0m 0.064163245s
+# 0: 1 in 4.580µs, total: 1
+# 1: 1 in 21.503µs, total: 2
+# 2: 3 in 41.810µs, total: 5
+# 3: 16 in 572.986µs, total: 21
+# 4: 115 in 6.732ms, total: 136
+# 5: 444 in 9.037ms, total: 580
+# 6: 610 in 9.387ms, total: 1190
+# 7: 428 in 5.652ms, total: 1618
+# 8: 186 in 2.892ms, total: 1804
+# 9: 61 in 2.006ms, total: 1865
+# 10: 21 in 1.061ms, total: 1886
+# 11: 7 in 1.377ms, total: 1893
+# 12: 3 in 473.016µs, total: 1896
+# 13: 1 in 93.540µs, total: 1897
+# 14: 1 in 19.029µs, total: 1898
+Duration: 0d 0h 0m 0.03952088s
 
 Congratulations. A solution was found!
 
@@ -679,24 +679,24 @@ Comparisons: 14
 
 Cache entries: 1898
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 1.013%
+Nauty Ratio: 0.985%
 
-Duration: 0d 0h 0m 0.10954203s
+Duration: 0d 0h 0m 0.06526168s
 
-generating algorithm Duration: 0d 0h 0m 0.001062541s
+generating algorithm Duration: 0d 0h 0m 0.001307244s
 ==============================================================
 n: 10, i: 0 needs at least 9 comparisons
-# 0: 1 in 4.260µs, total: 1
-# 1: 1 in 11.556µs, total: 2
-# 2: 1 in 9.509µs, total: 3
-# 3: 1 in 11.291µs, total: 4
-# 4: 1 in 14.747µs, total: 5
-# 5: 1 in 17.369µs, total: 6
-# 6: 1 in 23.592µs, total: 7
-# 7: 1 in 29.726µs, total: 8
-# 8: 1 in 40.776µs, total: 9
-# 9: 1 in 28.282µs, total: 10
-Duration: 0d 0h 0m 0.000230863s
+# 0: 1 in 3.818µs, total: 1
+# 1: 1 in 12.535µs, total: 2
+# 2: 1 in 18.102µs, total: 3
+# 3: 1 in 9.838µs, total: 4
+# 4: 1 in 18.198µs, total: 5
+# 5: 1 in 13.648µs, total: 6
+# 6: 1 in 16.510µs, total: 7
+# 7: 1 in 20.035µs, total: 8
+# 8: 1 in 37.128µs, total: 9
+# 9: 1 in 24.386µs, total: 10
+Duration: 0d 0h 0m 0.00023104s
 
 Congratulations. A solution was found!
 
@@ -707,25 +707,25 @@ Cache entries: 10
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.00024917s
+Duration: 0d 0h 0m 0.000248865s
 
-generating algorithm Duration: 0d 0h 0m 0.000084709s
+generating algorithm Duration: 0d 0h 0m 0.00009213s
 ==============================================================
 n: 10, i: 1 needs at least 12 comparisons
-# 0: 1 in 2.378µs, total: 1
-# 1: 1 in 12.624µs, total: 2
-# 2: 3 in 29.919µs, total: 5
-# 3: 6 in 120.602µs, total: 11
-# 4: 11 in 451.074µs, total: 22
-# 5: 20 in 2.208ms, total: 42
-# 6: 25 in 5.427ms, total: 67
-# 7: 18 in 10.502ms, total: 85
-# 8: 12 in 4.820ms, total: 97
-# 9: 6 in 2.206ms, total: 103
-# 10: 3 in 544.523µs, total: 106
-# 11: 2 in 80.403µs, total: 108
-# 12: 1 in 28.026µs, total: 109
-Duration: 0d 0h 0m 0.026554288s
+# 0: 1 in 2.131µs, total: 1
+# 1: 1 in 13.454µs, total: 2
+# 2: 3 in 24.354µs, total: 5
+# 3: 6 in 92.547µs, total: 11
+# 4: 11 in 372.982µs, total: 22
+# 5: 20 in 1.922ms, total: 42
+# 6: 25 in 5.528ms, total: 67
+# 7: 18 in 5.877ms, total: 85
+# 8: 12 in 6.850ms, total: 97
+# 9: 6 in 1.447ms, total: 103
+# 10: 3 in 382.991µs, total: 106
+# 11: 2 in 59.927µs, total: 108
+# 12: 1 in 41.003µs, total: 109
+Duration: 0d 0h 0m 0.022716194s
 
 Congratulations. A solution was found!
 
@@ -736,27 +736,27 @@ Cache entries: 109
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 18.452%
 
-Duration: 0d 0h 0m 0.026589544s
+Duration: 0d 0h 0m 0.02275076s
 
-generating algorithm Duration: 0d 0h 0m 0.001086708s
+generating algorithm Duration: 0d 0h 0m 0.001075138s
 ==============================================================
 n: 10, i: 2 needs at least 14 comparisons
-# 0: 1 in 5.600µs, total: 1
-# 1: 1 in 25.486µs, total: 2
-# 2: 3 in 67.460µs, total: 5
-# 3: 14 in 853.101µs, total: 19
-# 4: 59 in 4.475ms, total: 78
-# 5: 201 in 8.739ms, total: 279
-# 6: 349 in 15.257ms, total: 628
-# 7: 294 in 8.600ms, total: 922
-# 8: 160 in 7.187ms, total: 1082
-# 9: 66 in 6.630ms, total: 1148
-# 10: 27 in 3.316ms, total: 1175
-# 11: 9 in 2.017ms, total: 1184
-# 12: 4 in 1.371ms, total: 1188
-# 13: 1 in 129.383µs, total: 1189
-# 14: 1 in 20.327µs, total: 1190
-Duration: 0d 0h 0m 0.058862466s
+# 0: 1 in 4.300µs, total: 1
+# 1: 1 in 24.234µs, total: 2
+# 2: 3 in 50.443µs, total: 5
+# 3: 14 in 526.715µs, total: 19
+# 4: 59 in 4.719ms, total: 78
+# 5: 201 in 4.731ms, total: 279
+# 6: 349 in 4.405ms, total: 628
+# 7: 294 in 5.090ms, total: 922
+# 8: 160 in 4.797ms, total: 1082
+# 9: 66 in 4.962ms, total: 1148
+# 10: 27 in 2.126ms, total: 1175
+# 11: 9 in 2.252ms, total: 1184
+# 12: 4 in 553.323µs, total: 1188
+# 13: 1 in 46.794µs, total: 1189
+# 14: 1 in 7.594µs, total: 1190
+Duration: 0d 0h 0m 0.03445462s
 
 Congratulations. A solution was found!
 
@@ -765,30 +765,30 @@ Comparisons: 14
 
 Cache entries: 1190
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 4.267%
+Nauty Ratio: 4.285%
 
-Duration: 0d 0h 0m 0.058900613s
+Duration: 0d 0h 0m 0.034478944s
 
-generating algorithm Duration: 0d 0h 0m 0.002355813s
+generating algorithm Duration: 0d 0h 0m 0.000548465s
 ==============================================================
 n: 10, i: 3 needs at least 15 comparisons
-# 0: 1 in 18.910µs, total: 1
-# 1: 1 in 26.407µs, total: 2
-# 2: 3 in 71.673µs, total: 5
-# 3: 16 in 1.645ms, total: 21
-# 4: 157 in 15.399ms, total: 178
-# 5: 913 in 21.254ms, total: 1091
-# 6: 1922 in 30.206ms, total: 3013
-# 7: 1810 in 25.128ms, total: 4823
-# 8: 913 in 14.794ms, total: 5736
-# 9: 339 in 7.283ms, total: 6075
-# 10: 118 in 3.851ms, total: 6193
-# 11: 43 in 3.206ms, total: 6236
-# 12: 12 in 1.895ms, total: 6248
-# 13: 3 in 1.316ms, total: 6251
-# 14: 2 in 150.427µs, total: 6253
-# 15: 1 in 116.494µs, total: 6254
-Duration: 0d 0h 0m 0.1265473s
+# 0: 1 in 3.975µs, total: 1
+# 1: 1 in 17.296µs, total: 2
+# 2: 3 in 32.380µs, total: 5
+# 3: 16 in 533.776µs, total: 21
+# 4: 157 in 7.465ms, total: 178
+# 5: 913 in 14.932ms, total: 1091
+# 6: 1922 in 15.031ms, total: 3013
+# 7: 1810 in 14.039ms, total: 4823
+# 8: 913 in 9.383ms, total: 5736
+# 9: 339 in 5.008ms, total: 6075
+# 10: 118 in 3.472ms, total: 6193
+# 11: 43 in 2.802ms, total: 6236
+# 12: 12 in 1.778ms, total: 6248
+# 13: 3 in 952.416µs, total: 6251
+# 14: 2 in 103.571µs, total: 6253
+# 15: 1 in 118.083µs, total: 6254
+Duration: 0d 0h 0m 0.07584191s
 
 Congratulations. A solution was found!
 
@@ -797,49 +797,49 @@ Comparisons: 15
 
 Cache entries: 6254
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 1.385%
+Nauty Ratio: 1.382%
 
-Duration: 0d 0h 0m 0.126583s
+Duration: 0d 0h 0m 0.07587774s
 
-generating algorithm Duration: 0d 0h 0m 0.001138245s
+generating algorithm Duration: 0d 0h 0m 0.00096569s
 ==============================================================
 n: 10, i: 4 needs at least 15 comparisons
-# 0: 1 in 7.310µs, total: 1
-# 1: 1 in 26.968µs, total: 2
-# 2: 3 in 69.136µs, total: 5
-# 3: 16 in 1.605ms, total: 21
-# 4: 203 in 27.036ms, total: 224
-# 5: 1316 in 25.533ms, total: 1540
-# 6: 2584 in 38.626ms, total: 4124
-# 7: 2252 in 38.502ms, total: 6376
-# 8: 1093 in 22.397ms, total: 7469
-# 9: 393 in 8.882ms, total: 7862
-# 10: 132 in 4.781ms, total: 7994
-# 11: 48 in 3.684ms, total: 8042
-# 12: 13 in 2.292ms, total: 8055
-# 13: 3 in 3.061ms, total: 8058
-# 14: 2 in 1.007ms, total: 8060
-# 15: 0 in 776.264µs, total: 8060
-Duration: 0d 0h 0m 0.17848338s
+# 0: 1 in 9.534µs, total: 1
+# 1: 1 in 24.112µs, total: 2
+# 2: 3 in 50.037µs, total: 5
+# 3: 16 in 859.290µs, total: 21
+# 4: 203 in 12.516ms, total: 224
+# 5: 1316 in 16.069ms, total: 1540
+# 6: 2584 in 21.514ms, total: 4124
+# 7: 2252 in 18.439ms, total: 6376
+# 8: 1093 in 11.838ms, total: 7469
+# 9: 393 in 6.106ms, total: 7862
+# 10: 132 in 4.420ms, total: 7994
+# 11: 48 in 2.827ms, total: 8042
+# 12: 13 in 1.888ms, total: 8055
+# 13: 3 in 744.169µs, total: 8058
+# 14: 2 in 379.978µs, total: 8060
+# 15: 0 in 363.682µs, total: 8060
+Duration: 0d 0h 0m 0.09822637s
 n: 10, i: 4 needs at least 16 comparisons
-# 0: 1 in 5.363µs, total: 1
-# 1: 1 in 37.335µs, total: 2
-# 2: 3 in 66.321µs, total: 5
-# 3: 16 in 1.608ms, total: 21
-# 4: 213 in 28.464ms, total: 234
-# 5: 1735 in 47.946ms, total: 1969
-# 6: 4647 in 70.473ms, total: 6616
-# 7: 5102 in 73.753ms, total: 11718
-# 8: 2976 in 55.320ms, total: 14694
-# 9: 1121 in 24.221ms, total: 15815
-# 10: 367 in 12.575ms, total: 16182
-# 11: 114 in 6.218ms, total: 16296
-# 12: 32 in 5.035ms, total: 16328
-# 13: 8 in 2.666ms, total: 16336
-# 14: 4 in 845.389µs, total: 16340
-# 15: 1 in 483.763µs, total: 16341
-# 16: 1 in 23.170µs, total: 16342
-Duration: 0d 0h 0m 0.32992086s
+# 0: 1 in 5.253µs, total: 1
+# 1: 1 in 23.616µs, total: 2
+# 2: 3 in 50.523µs, total: 5
+# 3: 16 in 882.558µs, total: 21
+# 4: 213 in 12.491ms, total: 234
+# 5: 1735 in 18.592ms, total: 1969
+# 6: 4647 in 34.369ms, total: 6616
+# 7: 5102 in 41.917ms, total: 11718
+# 8: 2976 in 29.476ms, total: 14694
+# 9: 1121 in 13.156ms, total: 15815
+# 10: 367 in 11.911ms, total: 16182
+# 11: 114 in 6.232ms, total: 16296
+# 12: 32 in 4.326ms, total: 16328
+# 13: 8 in 2.046ms, total: 16336
+# 14: 4 in 738.216µs, total: 16340
+# 15: 1 in 374.489µs, total: 16341
+# 16: 1 in 68.478µs, total: 16342
+Duration: 0d 0h 0m 0.17684361s
 
 Congratulations. A solution was found!
 
@@ -848,25 +848,25 @@ Comparisons: 16
 
 Cache entries: 16342
 Cache size: 0.001 Gigabyte
-Nauty Ratio: 0.686%
+Nauty Ratio: 0.681%
 
-Duration: 0d 0h 0m 0.50843585s
+Duration: 0d 0h 0m 0.27510858s
 
-generating algorithm Duration: 0d 0h 0m 0.001090443s
+generating algorithm Duration: 0d 0h 0m 0.001653536s
 ==============================================================
 n: 11, i: 0 needs at least 10 comparisons
-# 0: 1 in 4.318µs, total: 1
-# 1: 1 in 14.070µs, total: 2
-# 2: 1 in 13.397µs, total: 3
-# 3: 1 in 9.220µs, total: 4
-# 4: 1 in 12.626µs, total: 5
-# 5: 1 in 16.389µs, total: 6
-# 6: 1 in 21.117µs, total: 7
-# 7: 1 in 26.393µs, total: 8
-# 8: 1 in 53.081µs, total: 9
-# 9: 1 in 45.554µs, total: 10
-# 10: 1 in 30.241µs, total: 11
-Duration: 0d 0h 0m 0.000288653s
+# 0: 1 in 5.015µs, total: 1
+# 1: 1 in 17.152µs, total: 2
+# 2: 1 in 15.470µs, total: 3
+# 3: 1 in 12.160µs, total: 4
+# 4: 1 in 14.592µs, total: 5
+# 5: 1 in 16.870µs, total: 6
+# 6: 1 in 21.132µs, total: 7
+# 7: 1 in 25.131µs, total: 8
+# 8: 1 in 43.640µs, total: 9
+# 9: 1 in 37.663µs, total: 10
+# 10: 1 in 34.451µs, total: 11
+Duration: 0d 0h 0m 0.000301567s
 
 Congratulations. A solution was found!
 
@@ -877,26 +877,26 @@ Cache entries: 11
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000305603s
+Duration: 0d 0h 0m 0.000325704s
 
-generating algorithm Duration: 0d 0h 0m 0.000081075s
+generating algorithm Duration: 0d 0h 0m 0.000129109s
 ==============================================================
 n: 11, i: 1 needs at least 13 comparisons
-# 0: 1 in 2.362µs, total: 1
-# 1: 1 in 12.623µs, total: 2
-# 2: 3 in 28.076µs, total: 5
-# 3: 6 in 102.909µs, total: 11
-# 4: 11 in 401.125µs, total: 22
-# 5: 21 in 2.072ms, total: 43
-# 6: 31 in 11.838ms, total: 74
-# 7: 28 in 12.838ms, total: 102
-# 8: 19 in 8.495ms, total: 121
-# 9: 12 in 11.513ms, total: 133
-# 10: 6 in 8.871ms, total: 139
-# 11: 4 in 403.656µs, total: 143
-# 12: 2 in 94.041µs, total: 145
-# 13: 1 in 16.735µs, total: 146
-Duration: 0d 0h 0m 0.05678036s
+# 0: 1 in 2.650µs, total: 1
+# 1: 1 in 16.835µs, total: 2
+# 2: 3 in 33.918µs, total: 5
+# 3: 6 in 116.993µs, total: 11
+# 4: 11 in 461.687µs, total: 22
+# 5: 21 in 2.412ms, total: 43
+# 6: 31 in 11.613ms, total: 74
+# 7: 28 in 15.908ms, total: 102
+# 8: 19 in 7.561ms, total: 121
+# 9: 12 in 10.462ms, total: 133
+# 10: 6 in 8.803ms, total: 139
+# 11: 4 in 455.385µs, total: 143
+# 12: 2 in 111.434µs, total: 145
+# 13: 1 in 27.944µs, total: 146
+Duration: 0d 0h 0m 0.0581106s
 
 Congratulations. A solution was found!
 
@@ -907,28 +907,28 @@ Cache entries: 146
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 22.441%
 
-Duration: 0d 0h 0m 0.056798153s
+Duration: 0d 0h 0m 0.058127988s
 
-generating algorithm Duration: 0d 0h 0m 0.000689238s
+generating algorithm Duration: 0d 0h 0m 0.000627606s
 ==============================================================
 n: 11, i: 2 needs at least 15 comparisons
-# 0: 1 in 2.695µs, total: 1
-# 1: 1 in 13.239µs, total: 2
-# 2: 3 in 34.891µs, total: 5
-# 3: 14 in 421.005µs, total: 19
-# 4: 59 in 5.085ms, total: 78
-# 5: 239 in 17.586ms, total: 317
-# 6: 546 in 14.410ms, total: 863
-# 7: 615 in 17.348ms, total: 1478
-# 8: 374 in 11.965ms, total: 1852
-# 9: 173 in 11.295ms, total: 2025
-# 10: 69 in 10.104ms, total: 2094
-# 11: 29 in 8.867ms, total: 2123
-# 12: 13 in 3.562ms, total: 2136
-# 13: 5 in 1.378ms, total: 2141
-# 14: 2 in 152.607µs, total: 2143
-# 15: 1 in 34.215µs, total: 2144
-Duration: 0d 0h 0m 0.10241972s
+# 0: 1 in 2.048µs, total: 1
+# 1: 1 in 11.126µs, total: 2
+# 2: 3 in 22.312µs, total: 5
+# 3: 14 in 272.010µs, total: 19
+# 4: 59 in 2.599ms, total: 78
+# 5: 239 in 14.979ms, total: 317
+# 6: 546 in 12.127ms, total: 863
+# 7: 615 in 12.360ms, total: 1478
+# 8: 374 in 11.028ms, total: 1852
+# 9: 173 in 10.784ms, total: 2025
+# 10: 69 in 8.490ms, total: 2094
+# 11: 29 in 5.982ms, total: 2123
+# 12: 13 in 3.029ms, total: 2136
+# 13: 5 in 731.637µs, total: 2141
+# 14: 2 in 67.172µs, total: 2143
+# 15: 1 in 38.441µs, total: 2144
+Duration: 0d 0h 0m 0.082691185s
 
 Congratulations. A solution was found!
 
@@ -937,51 +937,51 @@ Comparisons: 15
 
 Cache entries: 2144
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 5.096%
+Nauty Ratio: 5.114%
 
-Duration: 0d 0h 0m 0.10244962s
+Duration: 0d 0h 0m 0.08270754s
 
-generating algorithm Duration: 0d 0h 0m 0.001762022s
+generating algorithm Duration: 0d 0h 0m 0.017943228s
 ==============================================================
 n: 11, i: 3 needs at least 16 comparisons
-# 0: 1 in 4.125µs, total: 1
-# 1: 1 in 14.011µs, total: 2
-# 2: 3 in 37.850µs, total: 5
-# 3: 16 in 789.883µs, total: 21
-# 4: 173 in 27.249ms, total: 194
-# 5: 1278 in 37.171ms, total: 1472
-# 6: 3721 in 49.491ms, total: 5193
-# 7: 4439 in 64.459ms, total: 9632
-# 8: 2736 in 50.989ms, total: 12368
-# 9: 1122 in 26.542ms, total: 13490
-# 10: 402 in 19.746ms, total: 13892
-# 11: 130 in 12.114ms, total: 14022
-# 12: 42 in 5.172ms, total: 14064
-# 13: 12 in 3.132ms, total: 14076
-# 14: 5 in 2.839ms, total: 14081
-# 15: 1 in 1.591ms, total: 14082
-# 16: 0 in 149.151µs, total: 14082
-Duration: 0d 0h 0m 0.30179855s
+# 0: 1 in 3.295µs, total: 1
+# 1: 1 in 12.970µs, total: 2
+# 2: 3 in 43.924µs, total: 5
+# 3: 16 in 433.241µs, total: 21
+# 4: 173 in 7.991ms, total: 194
+# 5: 1278 in 16.617ms, total: 1472
+# 6: 3721 in 34.691ms, total: 5193
+# 7: 4439 in 34.096ms, total: 9632
+# 8: 2736 in 30.283ms, total: 12368
+# 9: 1122 in 16.618ms, total: 13490
+# 10: 402 in 12.757ms, total: 13892
+# 11: 130 in 11.433ms, total: 14022
+# 12: 42 in 5.474ms, total: 14064
+# 13: 12 in 2.683ms, total: 14076
+# 14: 5 in 1.498ms, total: 14081
+# 15: 1 in 795.654µs, total: 14082
+# 16: 0 in 98.233µs, total: 14082
+Duration: 0d 0h 0m 0.17584755s
 n: 11, i: 3 needs at least 17 comparisons
-# 0: 1 in 6.094µs, total: 1
-# 1: 1 in 36.691µs, total: 2
-# 2: 3 in 68.598µs, total: 5
-# 3: 16 in 1.509ms, total: 21
-# 4: 174 in 22.421ms, total: 195
-# 5: 1480 in 50.306ms, total: 1675
-# 6: 5529 in 77.133ms, total: 7204
-# 7: 8495 in 125.873ms, total: 15699
-# 8: 6341 in 126.051ms, total: 22040
-# 9: 2889 in 77.552ms, total: 24929
-# 10: 1048 in 34.610ms, total: 25977
-# 11: 347 in 19.653ms, total: 26324
-# 12: 104 in 15.534ms, total: 26428
-# 13: 30 in 7.507ms, total: 26458
-# 14: 12 in 3.616ms, total: 26470
-# 15: 4 in 2.511ms, total: 26474
-# 16: 1 in 234.291µs, total: 26475
-# 17: 1 in 16.511µs, total: 26476
-Duration: 0d 0h 0m 0.56484395s
+# 0: 1 in 5.777µs, total: 1
+# 1: 1 in 23.448µs, total: 2
+# 2: 3 in 48.176µs, total: 5
+# 3: 16 in 882.809µs, total: 21
+# 4: 174 in 12.469ms, total: 195
+# 5: 1480 in 23.203ms, total: 1675
+# 6: 5529 in 41.386ms, total: 7204
+# 7: 8495 in 67.067ms, total: 15699
+# 8: 6341 in 65.234ms, total: 22040
+# 9: 2889 in 51.583ms, total: 24929
+# 10: 1048 in 25.598ms, total: 25977
+# 11: 347 in 16.551ms, total: 26324
+# 12: 104 in 15.343ms, total: 26428
+# 13: 30 in 6.315ms, total: 26458
+# 14: 12 in 3.845ms, total: 26470
+# 15: 4 in 1.550ms, total: 26474
+# 16: 1 in 155.250µs, total: 26475
+# 17: 1 in 13.884µs, total: 26476
+Duration: 0d 0h 0m 0.33150467s
 
 Congratulations. A solution was found!
 
@@ -990,53 +990,53 @@ Comparisons: 17
 
 Cache entries: 26476
 Cache size: 0.001 Gigabyte
-Nauty Ratio: 1.389%
+Nauty Ratio: 1.383%
 
-Duration: 0d 0h 0m 0.8666941s
+Duration: 0d 0h 0m 0.5074007s
 
-generating algorithm Duration: 0d 0h 0m 0.004188874s
+generating algorithm Duration: 0d 0h 0m 0.003739069s
 ==============================================================
 n: 11, i: 4 needs at least 17 comparisons
-# 0: 1 in 24.927µs, total: 1
-# 1: 1 in 30.744µs, total: 2
-# 2: 3 in 74.161µs, total: 5
-# 3: 16 in 1.760ms, total: 21
-# 4: 277 in 44.282ms, total: 298
-# 5: 3358 in 84.391ms, total: 3656
-# 6: 12873 in 197.978ms, total: 16529
-# 7: 18329 in 305.855ms, total: 34858
-# 8: 12720 in 244.009ms, total: 47578
-# 9: 5418 in 131.545ms, total: 52996
-# 10: 1838 in 51.772ms, total: 54834
-# 11: 573 in 26.526ms, total: 55407
-# 12: 157 in 12.466ms, total: 55564
-# 13: 46 in 8.032ms, total: 55610
-# 14: 16 in 4.064ms, total: 55626
-# 15: 5 in 2.549ms, total: 55631
-# 16: 1 in 1.850ms, total: 55632
-# 17: 0 in 315.311µs, total: 55632
-Duration: 0d 0h 0m 1.1178149s
+# 0: 1 in 6.716µs, total: 1
+# 1: 1 in 25.757µs, total: 2
+# 2: 3 in 51.237µs, total: 5
+# 3: 16 in 935.031µs, total: 21
+# 4: 277 in 20.049ms, total: 298
+# 5: 3358 in 32.543ms, total: 3656
+# 6: 12873 in 107.193ms, total: 16529
+# 7: 18329 in 141.205ms, total: 34858
+# 8: 12720 in 123.712ms, total: 47578
+# 9: 5418 in 67.410ms, total: 52996
+# 10: 1838 in 26.226ms, total: 54834
+# 11: 573 in 16.341ms, total: 55407
+# 12: 157 in 10.909ms, total: 55564
+# 13: 46 in 4.219ms, total: 55610
+# 14: 16 in 2.541ms, total: 55626
+# 15: 5 in 1.349ms, total: 55631
+# 16: 1 in 1.000ms, total: 55632
+# 17: 0 in 214.197µs, total: 55632
+Duration: 0d 0h 0m 0.5565151s
 n: 11, i: 4 needs at least 18 comparisons
-# 0: 1 in 5.710µs, total: 1
-# 1: 1 in 26.613µs, total: 2
-# 2: 3 in 74.960µs, total: 5
-# 3: 16 in 1.548ms, total: 21
-# 4: 281 in 43.169ms, total: 302
-# 5: 3957 in 113.231ms, total: 4259
-# 6: 19946 in 321.429ms, total: 24205
-# 7: 36635 in 603.710ms, total: 60840
-# 8: 31131 in 599.848ms, total: 91971
-# 9: 15000 in 340.504ms, total: 106971
-# 10: 5309 in 140.342ms, total: 112280
-# 11: 1565 in 47.188ms, total: 113845
-# 12: 429 in 21.561ms, total: 114274
-# 13: 118 in 20.707ms, total: 114392
-# 14: 36 in 8.025ms, total: 114428
-# 15: 11 in 6.162ms, total: 114439
-# 16: 4 in 2.538ms, total: 114443
-# 17: 1 in 382.769µs, total: 114444
-# 18: 1 in 18.323µs, total: 114445
-Duration: 0d 0h 0m 2.2707005s
+# 0: 1 in 7.070µs, total: 1
+# 1: 1 in 29.356µs, total: 2
+# 2: 3 in 52.224µs, total: 5
+# 3: 16 in 933.908µs, total: 21
+# 4: 281 in 20.669ms, total: 302
+# 5: 3957 in 37.893ms, total: 4259
+# 6: 19946 in 126.228ms, total: 24205
+# 7: 36635 in 268.849ms, total: 60840
+# 8: 31131 in 295.151ms, total: 91971
+# 9: 15000 in 174.274ms, total: 106971
+# 10: 5309 in 77.590ms, total: 112280
+# 11: 1565 in 29.039ms, total: 113845
+# 12: 429 in 17.249ms, total: 114274
+# 13: 118 in 22.196ms, total: 114392
+# 14: 36 in 5.123ms, total: 114428
+# 15: 11 in 4.243ms, total: 114439
+# 16: 4 in 1.327ms, total: 114443
+# 17: 1 in 258.152µs, total: 114444
+# 18: 1 in 15.704µs, total: 114445
+Duration: 0d 0h 0m 1.081344s
 
 Congratulations. A solution was found!
 
@@ -1044,54 +1044,54 @@ n: 11, i: 4
 Comparisons: 18
 
 Cache entries: 114445
-Cache size: 0.004 Gigabyte
-Nauty Ratio: 0.539%
+Cache size: 0.005 Gigabyte
+Nauty Ratio: 0.535%
 
-Duration: 0d 0h 0m 3.3885849s
+Duration: 0d 0h 0m 1.6379339s
 
-generating algorithm Duration: 0d 0h 0m 0.003192495s
+generating algorithm Duration: 0d 0h 0m 0.003679235s
 ==============================================================
 n: 11, i: 5 needs at least 17 comparisons
-# 0: 1 in 17.976µs, total: 1
-# 1: 1 in 20.464µs, total: 2
-# 2: 3 in 49.122µs, total: 5
-# 3: 16 in 1.050ms, total: 21
-# 4: 244 in 55.031ms, total: 265
-# 5: 2698 in 77.611ms, total: 2963
-# 6: 9474 in 167.469ms, total: 12437
-# 7: 12904 in 231.774ms, total: 25341
-# 8: 8626 in 191.446ms, total: 33967
-# 9: 3543 in 101.784ms, total: 37510
-# 10: 1176 in 37.875ms, total: 38686
-# 11: 362 in 19.775ms, total: 39048
-# 12: 102 in 12.254ms, total: 39150
-# 13: 30 in 8.786ms, total: 39180
-# 14: 10 in 3.753ms, total: 39190
-# 15: 3 in 2.608ms, total: 39193
-# 16: 1 in 986.859µs, total: 39194
-# 17: 0 in 411.238µs, total: 39194
-Duration: 0d 0h 0m 0.9129196s
+# 0: 1 in 7.141µs, total: 1
+# 1: 1 in 27.003µs, total: 2
+# 2: 3 in 61.573µs, total: 5
+# 3: 16 in 896.015µs, total: 21
+# 4: 244 in 19.945ms, total: 265
+# 5: 2698 in 37.534ms, total: 2963
+# 6: 9474 in 74.695ms, total: 12437
+# 7: 12904 in 110.538ms, total: 25341
+# 8: 8626 in 98.803ms, total: 33967
+# 9: 3543 in 50.536ms, total: 37510
+# 10: 1176 in 23.313ms, total: 38686
+# 11: 362 in 18.414ms, total: 39048
+# 12: 102 in 13.190ms, total: 39150
+# 13: 30 in 4.924ms, total: 39180
+# 14: 10 in 2.366ms, total: 39190
+# 15: 3 in 2.037ms, total: 39193
+# 16: 1 in 719.454µs, total: 39194
+# 17: 0 in 273.427µs, total: 39194
+Duration: 0d 0h 0m 0.4585426s
 n: 11, i: 5 needs at least 18 comparisons
-# 0: 1 in 3.058µs, total: 1
-# 1: 1 in 17.393µs, total: 2
-# 2: 3 in 44.891µs, total: 5
-# 3: 16 in 996.686µs, total: 21
-# 4: 246 in 44.007ms, total: 267
-# 5: 3203 in 136.919ms, total: 3470
-# 6: 14993 in 303.128ms, total: 18463
-# 7: 25935 in 475.805ms, total: 44398
-# 8: 21274 in 483.744ms, total: 65672
-# 9: 9941 in 276.213ms, total: 75613
-# 10: 3441 in 110.900ms, total: 79054
-# 11: 999 in 45.633ms, total: 80053
-# 12: 268 in 18.282ms, total: 80321
-# 13: 72 in 12.097ms, total: 80393
-# 14: 21 in 11.615ms, total: 80414
-# 15: 7 in 5.873ms, total: 80421
-# 16: 3 in 3.115ms, total: 80424
-# 17: 1 in 845.797µs, total: 80425
-# 18: 1 in 28.337µs, total: 80426
-Duration: 0d 0h 0m 1.9294684s
+# 0: 1 in 4.909µs, total: 1
+# 1: 1 in 24.234µs, total: 2
+# 2: 3 in 47.562µs, total: 5
+# 3: 16 in 863.260µs, total: 21
+# 4: 246 in 17.449ms, total: 267
+# 5: 3203 in 49.316ms, total: 3470
+# 6: 14993 in 125.694ms, total: 18463
+# 7: 25935 in 231.144ms, total: 44398
+# 8: 21274 in 240.477ms, total: 65672
+# 9: 9941 in 140.341ms, total: 75613
+# 10: 3441 in 61.602ms, total: 79054
+# 11: 999 in 24.591ms, total: 80053
+# 12: 268 in 11.130ms, total: 80321
+# 13: 72 in 9.191ms, total: 80393
+# 14: 21 in 12.188ms, total: 80414
+# 15: 7 in 6.045ms, total: 80421
+# 16: 3 in 2.039ms, total: 80424
+# 17: 1 in 358.685µs, total: 80425
+# 18: 1 in 20.810µs, total: 80426
+Duration: 0d 0h 0m 0.9327488s
 
 Congratulations. A solution was found!
 
@@ -1099,27 +1099,27 @@ n: 11, i: 5
 Comparisons: 18
 
 Cache entries: 80426
-Cache size: 0.003 Gigabyte
-Nauty Ratio: 0.392%
+Cache size: 0.004 Gigabyte
+Nauty Ratio: 0.389%
 
-Duration: 0d 0h 0m 2.84244s
+Duration: 0d 0h 0m 1.3913463s
 
-generating algorithm Duration: 0d 0h 0m 0.00240629s
+generating algorithm Duration: 0d 0h 0m 0.002958471s
 ==============================================================
 n: 12, i: 0 needs at least 11 comparisons
-# 0: 1 in 5.993µs, total: 1
-# 1: 1 in 16.621µs, total: 2
-# 2: 1 in 12.533µs, total: 3
-# 3: 1 in 12.485µs, total: 4
-# 4: 1 in 24.918µs, total: 5
-# 5: 1 in 20.869µs, total: 6
-# 6: 1 in 26.485µs, total: 7
-# 7: 1 in 37.315µs, total: 8
-# 8: 1 in 48.170µs, total: 9
-# 9: 1 in 59.582µs, total: 10
-# 10: 1 in 74.727µs, total: 11
-# 11: 1 in 46.714µs, total: 12
-Duration: 0d 0h 0m 0.000444914s
+# 0: 1 in 5.857µs, total: 1
+# 1: 1 in 16.720µs, total: 2
+# 2: 1 in 16.542µs, total: 3
+# 3: 1 in 11.863µs, total: 4
+# 4: 1 in 17.941µs, total: 5
+# 5: 1 in 16.901µs, total: 6
+# 6: 1 in 19.800µs, total: 7
+# 7: 1 in 22.900µs, total: 8
+# 8: 1 in 47.506µs, total: 9
+# 9: 1 in 34.112µs, total: 10
+# 10: 1 in 39.485µs, total: 11
+# 11: 1 in 36.815µs, total: 12
+Duration: 0d 0h 0m 0.000347787s
 
 Congratulations. A solution was found!
 
@@ -1130,27 +1130,27 @@ Cache entries: 12
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000468888s
+Duration: 0d 0h 0m 0.000370587s
 
-generating algorithm Duration: 0d 0h 0m 0.000113206s
+generating algorithm Duration: 0d 0h 0m 0.000131782s
 ==============================================================
 n: 12, i: 1 needs at least 14 comparisons
-# 0: 1 in 2.911µs, total: 1
-# 1: 1 in 16.217µs, total: 2
-# 2: 3 in 37.400µs, total: 5
-# 3: 6 in 133.191µs, total: 11
-# 4: 11 in 539.368µs, total: 22
-# 5: 21 in 2.752ms, total: 43
-# 6: 36 in 11.236ms, total: 79
-# 7: 39 in 24.185ms, total: 118
-# 8: 29 in 50.846ms, total: 147
-# 9: 18 in 22.709ms, total: 165
-# 10: 12 in 20.169ms, total: 177
-# 11: 7 in 4.174ms, total: 184
-# 12: 4 in 922.745µs, total: 188
-# 13: 2 in 231.444µs, total: 190
-# 14: 1 in 37.117µs, total: 191
-Duration: 0d 0h 0m 0.13811682s
+# 0: 1 in 2.380µs, total: 1
+# 1: 1 in 15.320µs, total: 2
+# 2: 3 in 30.340µs, total: 5
+# 3: 6 in 105.757µs, total: 11
+# 4: 11 in 413.093µs, total: 22
+# 5: 21 in 2.360ms, total: 43
+# 6: 36 in 15.703ms, total: 79
+# 7: 39 in 24.922ms, total: 118
+# 8: 29 in 51.942ms, total: 147
+# 9: 18 in 35.358ms, total: 165
+# 10: 12 in 22.192ms, total: 177
+# 11: 7 in 12.914ms, total: 184
+# 12: 4 in 773.923µs, total: 188
+# 13: 2 in 143.452µs, total: 190
+# 14: 1 in 22.914µs, total: 191
+Duration: 0d 0h 0m 0.16704099s
 
 Congratulations. A solution was found!
 
@@ -1161,49 +1161,49 @@ Cache entries: 191
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 26.558%
 
-Duration: 0d 0h 0m 0.13815075s
+Duration: 0d 0h 0m 0.1670694s
 
-generating algorithm Duration: 0d 0h 0m 0.004483003s
+generating algorithm Duration: 0d 0h 0m 0.002368216s
 ==============================================================
 n: 12, i: 2 needs at least 16 comparisons
-# 0: 1 in 3.563µs, total: 1
-# 1: 1 in 17.048µs, total: 2
-# 2: 3 in 43.186µs, total: 5
-# 3: 14 in 511.461µs, total: 19
-# 4: 60 in 8.409ms, total: 79
-# 5: 262 in 14.013ms, total: 341
-# 6: 781 in 31.327ms, total: 1122
-# 7: 1081 in 39.490ms, total: 2203
-# 8: 812 in 39.255ms, total: 3015
-# 9: 397 in 23.536ms, total: 3412
-# 10: 174 in 20.196ms, total: 3586
-# 11: 66 in 19.560ms, total: 3652
-# 12: 31 in 7.674ms, total: 3683
-# 13: 11 in 3.506ms, total: 3694
-# 14: 4 in 3.798ms, total: 3698
-# 15: 1 in 269.628µs, total: 3699
-# 16: 0 in 76.401µs, total: 3699
-Duration: 0d 0h 0m 0.21192466s
+# 0: 1 in 2.513µs, total: 1
+# 1: 1 in 11.349µs, total: 2
+# 2: 3 in 38.006µs, total: 5
+# 3: 14 in 260.129µs, total: 19
+# 4: 60 in 2.626ms, total: 79
+# 5: 262 in 10.985ms, total: 341
+# 6: 781 in 24.591ms, total: 1122
+# 7: 1081 in 34.314ms, total: 2203
+# 8: 812 in 39.102ms, total: 3015
+# 9: 397 in 18.791ms, total: 3412
+# 10: 174 in 33.538ms, total: 3586
+# 11: 66 in 17.682ms, total: 3652
+# 12: 31 in 7.040ms, total: 3683
+# 13: 11 in 3.334ms, total: 3694
+# 14: 4 in 1.258ms, total: 3698
+# 15: 1 in 112.706µs, total: 3699
+# 16: 0 in 33.931µs, total: 3699
+Duration: 0d 0h 0m 0.19392923s
 n: 12, i: 2 needs at least 17 comparisons
-# 0: 1 in 6.097µs, total: 1
-# 1: 1 in 26.270µs, total: 2
-# 2: 3 in 71.596µs, total: 5
-# 3: 14 in 861.318µs, total: 19
-# 4: 60 in 5.299ms, total: 79
-# 5: 275 in 21.503ms, total: 354
-# 6: 960 in 37.996ms, total: 1314
-# 7: 1735 in 87.520ms, total: 3049
-# 8: 1545 in 75.749ms, total: 4594
-# 9: 870 in 79.756ms, total: 5464
-# 10: 386 in 54.321ms, total: 5850
-# 11: 159 in 53.847ms, total: 6009
-# 12: 65 in 35.492ms, total: 6074
-# 13: 27 in 19.748ms, total: 6101
-# 14: 10 in 4.505ms, total: 6111
-# 15: 4 in 1.571ms, total: 6115
-# 16: 1 in 145.057µs, total: 6116
-# 17: 1 in 17.264µs, total: 6117
-Duration: 0d 0h 0m 0.4786094s
+# 0: 1 in 4.249µs, total: 1
+# 1: 1 in 17.122µs, total: 2
+# 2: 3 in 37.080µs, total: 5
+# 3: 14 in 337.409µs, total: 19
+# 4: 60 in 3.907ms, total: 79
+# 5: 275 in 14.685ms, total: 354
+# 6: 960 in 28.450ms, total: 1314
+# 7: 1735 in 72.494ms, total: 3049
+# 8: 1545 in 63.782ms, total: 4594
+# 9: 870 in 71.955ms, total: 5464
+# 10: 386 in 52.422ms, total: 5850
+# 11: 159 in 52.232ms, total: 6009
+# 12: 65 in 32.768ms, total: 6074
+# 13: 27 in 13.081ms, total: 6101
+# 14: 10 in 6.163ms, total: 6111
+# 15: 4 in 1.269ms, total: 6115
+# 16: 1 in 125.804µs, total: 6116
+# 17: 1 in 14.697µs, total: 6117
+Duration: 0d 0h 0m 0.41396067s
 
 Congratulations. A solution was found!
 
@@ -1212,33 +1212,33 @@ Comparisons: 17
 
 Cache entries: 6117
 Cache size: 0.000 Gigabyte
-Nauty Ratio: 5.962%
+Nauty Ratio: 5.972%
 
-Duration: 0d 0h 0m 0.6905928s
+Duration: 0d 0h 0m 0.6079353s
 
-generating algorithm Duration: 0d 0h 0m 0.004762622s
+generating algorithm Duration: 0d 0h 0m 0.00505028s
 ==============================================================
 n: 12, i: 3 needs at least 18 comparisons
-# 0: 1 in 5.049µs, total: 1
-# 1: 1 in 18.720µs, total: 2
-# 2: 3 in 45.407µs, total: 5
-# 3: 16 in 930.557µs, total: 21
-# 4: 175 in 23.482ms, total: 196
-# 5: 1803 in 82.334ms, total: 1999
-# 6: 9234 in 144.139ms, total: 11233
-# 7: 18593 in 315.838ms, total: 29826
-# 8: 17189 in 392.854ms, total: 47015
-# 9: 9099 in 283.231ms, total: 56114
-# 10: 3525 in 153.728ms, total: 59639
-# 11: 1170 in 65.476ms, total: 60809
-# 12: 375 in 37.746ms, total: 61184
-# 13: 117 in 25.390ms, total: 61301
-# 14: 42 in 11.414ms, total: 61343
-# 15: 14 in 10.645ms, total: 61357
-# 16: 4 in 3.980ms, total: 61361
-# 17: 2 in 512.299µs, total: 61363
-# 18: 1 in 246.527µs, total: 61364
-Duration: 0d 0h 0m 1.5523062s
+# 0: 1 in 4.593µs, total: 1
+# 1: 1 in 17.918µs, total: 2
+# 2: 3 in 36.292µs, total: 5
+# 3: 16 in 534.226µs, total: 21
+# 4: 175 in 16.345ms, total: 196
+# 5: 1803 in 37.500ms, total: 1999
+# 6: 9234 in 75.455ms, total: 11233
+# 7: 18593 in 154.885ms, total: 29826
+# 8: 17189 in 209.081ms, total: 47015
+# 9: 9099 in 189.152ms, total: 56114
+# 10: 3525 in 115.744ms, total: 59639
+# 11: 1170 in 51.087ms, total: 60809
+# 12: 375 in 37.222ms, total: 61184
+# 13: 117 in 26.219ms, total: 61301
+# 14: 42 in 11.384ms, total: 61343
+# 15: 14 in 7.045ms, total: 61357
+# 16: 4 in 1.743ms, total: 61361
+# 17: 2 in 273.119µs, total: 61363
+# 18: 1 in 165.588µs, total: 61364
+Duration: 0d 0h 0m 0.93416154s
 
 Congratulations. A solution was found!
 
@@ -1246,35 +1246,35 @@ n: 12, i: 3
 Comparisons: 18
 
 Cache entries: 61364
-Cache size: 0.002 Gigabyte
-Nauty Ratio: 1.490%
+Cache size: 0.003 Gigabyte
+Nauty Ratio: 1.487%
 
-Duration: 0d 0h 0m 1.5523523s
+Duration: 0d 0h 0m 0.93420064s
 
-generating algorithm Duration: 0d 0h 0m 0.008686174s
+generating algorithm Duration: 0d 0h 0m 0.00963842s
 ==============================================================
 n: 12, i: 4 needs at least 19 comparisons
-# 0: 1 in 4.274µs, total: 1
-# 1: 1 in 17.377µs, total: 2
-# 2: 3 in 38.784µs, total: 5
-# 3: 16 in 834.778µs, total: 21
-# 4: 313 in 59.424ms, total: 334
-# 5: 6035 in 178.928ms, total: 6369
-# 6: 42518 in 729.640ms, total: 48887
-# 7: 101809 in 1.894s, total: 150696
-# 8: 105816 in 2.420s, total: 256512
-# 9: 59955 in 1.702s, total: 316467
-# 10: 23029 in 782.939ms, total: 339496
-# 11: 7159 in 346.110ms, total: 346655
-# 12: 1970 in 110.749ms, total: 348625
-# 13: 545 in 69.098ms, total: 349170
-# 14: 154 in 27.832ms, total: 349324
-# 15: 48 in 13.745ms, total: 349372
-# 16: 15 in 8.779ms, total: 349387
-# 17: 4 in 3.983ms, total: 349391
-# 18: 2 in 3.012ms, total: 349393
-# 19: 1 in 546.643µs, total: 349394
-Duration: 0d 0h 0m 8.351564s
+# 0: 1 in 18.083µs, total: 1
+# 1: 1 in 14.589µs, total: 2
+# 2: 3 in 27.521µs, total: 5
+# 3: 16 in 426.579µs, total: 21
+# 4: 313 in 25.984ms, total: 334
+# 5: 6035 in 70.849ms, total: 6369
+# 6: 42518 in 271.076ms, total: 48887
+# 7: 101809 in 780.685ms, total: 150696
+# 8: 105816 in 1.069s, total: 256512
+# 9: 59955 in 803.509ms, total: 316467
+# 10: 23029 in 393.997ms, total: 339496
+# 11: 7159 in 206.127ms, total: 346655
+# 12: 1970 in 71.860ms, total: 348625
+# 13: 545 in 60.107ms, total: 349170
+# 14: 154 in 23.656ms, total: 349324
+# 15: 48 in 12.841ms, total: 349372
+# 16: 15 in 4.256ms, total: 349387
+# 17: 4 in 2.226ms, total: 349391
+# 18: 2 in 1.123ms, total: 349393
+# 19: 1 in 278.501µs, total: 349394
+Duration: 0d 0h 0m 3.7983584s
 
 Congratulations. A solution was found!
 
@@ -1282,58 +1282,58 @@ n: 12, i: 4
 Comparisons: 19
 
 Cache entries: 349394
-Cache size: 0.011 Gigabyte
-Nauty Ratio: 0.503%
+Cache size: 0.015 Gigabyte
+Nauty Ratio: 0.500%
 
-Duration: 0d 0h 0m 8.351608s
+Duration: 0d 0h 0m 3.7984056s
 
-generating algorithm Duration: 0d 0h 0m 0.003577757s
+generating algorithm Duration: 0d 0h 0m 0.003626156s
 ==============================================================
 n: 12, i: 5 needs at least 19 comparisons
-# 0: 1 in 5.842µs, total: 1
-# 1: 1 in 19.360µs, total: 2
-# 2: 3 in 49.805µs, total: 5
-# 3: 16 in 975.660µs, total: 21
-# 4: 364 in 93.356ms, total: 385
-# 5: 8298 in 374.306ms, total: 8683
-# 6: 58067 in 1.200s, total: 66750
-# 7: 128935 in 2.944s, total: 195685
-# 8: 125853 in 3.531s, total: 321538
-# 9: 67641 in 2.391s, total: 389179
-# 10: 24777 in 1.078s, total: 413956
-# 11: 7445 in 401.954ms, total: 421401
-# 12: 2037 in 125.260ms, total: 423438
-# 13: 550 in 79.265ms, total: 423988
-# 14: 151 in 36.703ms, total: 424139
-# 15: 49 in 13.979ms, total: 424188
-# 16: 13 in 10.583ms, total: 424201
-# 17: 3 in 6.933ms, total: 424204
-# 18: 2 in 4.384ms, total: 424206
-# 19: 0 in 3.271ms, total: 424206
-Duration: 0d 0h 0m 12.297068s
+# 0: 1 in 6.305µs, total: 1
+# 1: 1 in 22.945µs, total: 2
+# 2: 3 in 45.295µs, total: 5
+# 3: 16 in 718.751µs, total: 21
+# 4: 364 in 32.395ms, total: 385
+# 5: 8298 in 112.746ms, total: 8683
+# 6: 58067 in 453.865ms, total: 66750
+# 7: 128935 in 1.184s, total: 195685
+# 8: 125853 in 1.518s, total: 321538
+# 9: 67641 in 1.078s, total: 389179
+# 10: 24777 in 493.562ms, total: 413956
+# 11: 7445 in 253.872ms, total: 421401
+# 12: 2037 in 71.623ms, total: 423438
+# 13: 550 in 57.454ms, total: 423988
+# 14: 151 in 26.113ms, total: 424139
+# 15: 49 in 9.461ms, total: 424188
+# 16: 13 in 5.755ms, total: 424201
+# 17: 3 in 6.358ms, total: 424204
+# 18: 2 in 1.411ms, total: 424206
+# 19: 0 in 1.097ms, total: 424206
+Duration: 0d 0h 0m 5.308983s
 n: 12, i: 5 needs at least 20 comparisons
-# 0: 1 in 6.070µs, total: 1
-# 1: 1 in 30.351µs, total: 2
-# 2: 3 in 66.542µs, total: 5
-# 3: 16 in 1.398ms, total: 21
-# 4: 365 in 99.078ms, total: 386
-# 5: 9509 in 476.490ms, total: 9895
-# 6: 88920 in 2.106s, total: 98815
-# 7: 259021 in 6.004s, total: 357836
-# 8: 318522 in 8.774s, total: 676358
-# 9: 202924 in 6.880s, total: 879282
-# 10: 82456 in 3.382s, total: 961738
-# 11: 25372 in 1.232s, total: 987110
-# 12: 6848 in 481.458ms, total: 993958
-# 13: 1770 in 146.146ms, total: 995728
-# 14: 461 in 64.726ms, total: 996189
-# 15: 130 in 24.729ms, total: 996319
-# 16: 36 in 18.258ms, total: 996355
-# 17: 9 in 9.947ms, total: 996364
-# 18: 4 in 5.891ms, total: 996368
-# 19: 1 in 4.184ms, total: 996369
-# 20: 1 in 17.890µs, total: 996370
-Duration: 0d 0h 0m 29.71063s
+# 0: 1 in 4.604µs, total: 1
+# 1: 1 in 18.362µs, total: 2
+# 2: 3 in 36.228µs, total: 5
+# 3: 16 in 564.646µs, total: 21
+# 4: 365 in 32.801ms, total: 386
+# 5: 9509 in 152.092ms, total: 9895
+# 6: 88920 in 676.979ms, total: 98815
+# 7: 259021 in 2.310s, total: 357836
+# 8: 318522 in 3.818s, total: 676358
+# 9: 202924 in 3.077s, total: 879282
+# 10: 82456 in 1.569s, total: 961738
+# 11: 25372 in 607.148ms, total: 987110
+# 12: 6848 in 277.408ms, total: 993958
+# 13: 1770 in 105.610ms, total: 995728
+# 14: 461 in 61.743ms, total: 996189
+# 15: 130 in 22.186ms, total: 996319
+# 16: 36 in 12.953ms, total: 996355
+# 17: 9 in 6.440ms, total: 996364
+# 18: 4 in 2.887ms, total: 996368
+# 19: 1 in 1.724ms, total: 996369
+# 20: 1 in 14.264µs, total: 996370
+Duration: 0d 0h 0m 12.735352s
 
 Congratulations. A solution was found!
 
@@ -1341,28 +1341,28 @@ n: 12, i: 5
 Comparisons: 20
 
 Cache entries: 996370
-Cache size: 0.033 Gigabyte
-Nauty Ratio: 0.252%
+Cache size: 0.048 Gigabyte
+Nauty Ratio: 0.249%
 
-Duration: 0d 0h 0m 42.007763s
+Duration: 0d 0h 0m 18.044392s
 
-generating algorithm Duration: 0d 0h 0m 0.002212299s
+generating algorithm Duration: 0d 0h 0m 0.002713769s
 ==============================================================
 n: 13, i: 0 needs at least 12 comparisons
-# 0: 1 in 19.737µs, total: 1
-# 1: 1 in 12.566µs, total: 2
-# 2: 1 in 12.523µs, total: 3
-# 3: 1 in 25.795µs, total: 4
-# 4: 1 in 36.511µs, total: 5
-# 5: 1 in 16.585µs, total: 6
-# 6: 1 in 20.904µs, total: 7
-# 7: 1 in 26.940µs, total: 8
-# 8: 1 in 36.680µs, total: 9
-# 9: 1 in 44.741µs, total: 10
-# 10: 1 in 56.754µs, total: 11
-# 11: 1 in 69.669µs, total: 12
-# 12: 1 in 41.782µs, total: 13
-Duration: 0d 0h 0m 0.000470898s
+# 0: 1 in 4.155µs, total: 1
+# 1: 1 in 12.183µs, total: 2
+# 2: 1 in 11.396µs, total: 3
+# 3: 1 in 7.763µs, total: 4
+# 4: 1 in 15.225µs, total: 5
+# 5: 1 in 12.022µs, total: 6
+# 6: 1 in 13.727µs, total: 7
+# 7: 1 in 31.616µs, total: 8
+# 8: 1 in 21.038µs, total: 9
+# 9: 1 in 23.334µs, total: 10
+# 10: 1 in 28.833µs, total: 11
+# 11: 1 in 33.004µs, total: 12
+# 12: 1 in 30.487µs, total: 13
+Duration: 0d 0h 0m 0.000306293s
 
 Congratulations. A solution was found!
 
@@ -1373,28 +1373,28 @@ Cache entries: 13
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.00049123s
+Duration: 0d 0h 0m 0.000324394s
 
-generating algorithm Duration: 0d 0h 0m 0.000110957s
+generating algorithm Duration: 0d 0h 0m 0.000140268s
 ==============================================================
 n: 13, i: 1 needs at least 15 comparisons
-# 0: 1 in 2.569µs, total: 1
-# 1: 1 in 12.854µs, total: 2
-# 2: 3 in 29.131µs, total: 5
-# 3: 6 in 103.306µs, total: 11
-# 4: 11 in 415.599µs, total: 22
-# 5: 21 in 2.074ms, total: 43
-# 6: 39 in 11.862ms, total: 82
-# 7: 50 in 53.956ms, total: 132
-# 8: 42 in 127.582ms, total: 174
-# 9: 28 in 157.695ms, total: 202
-# 10: 18 in 81.399ms, total: 220
-# 11: 12 in 32.475ms, total: 232
-# 12: 6 in 18.667ms, total: 238
-# 13: 4 in 763.795µs, total: 242
-# 14: 2 in 185.827µs, total: 244
-# 15: 1 in 20.987µs, total: 245
-Duration: 0d 0h 0m 0.4874013s
+# 0: 1 in 1.963µs, total: 1
+# 1: 1 in 11.985µs, total: 2
+# 2: 3 in 22.598µs, total: 5
+# 3: 6 in 77.194µs, total: 11
+# 4: 11 in 299.866µs, total: 22
+# 5: 21 in 1.691ms, total: 43
+# 6: 39 in 16.979ms, total: 82
+# 7: 50 in 65.680ms, total: 132
+# 8: 42 in 123.654ms, total: 174
+# 9: 28 in 150.666ms, total: 202
+# 10: 18 in 80.224ms, total: 220
+# 11: 12 in 34.014ms, total: 232
+# 12: 6 in 15.381ms, total: 238
+# 13: 4 in 615.441µs, total: 242
+# 14: 2 in 130.016µs, total: 244
+# 15: 1 in 15.603µs, total: 245
+Duration: 0d 0h 0m 0.48961917s
 
 Congratulations. A solution was found!
 
@@ -1405,31 +1405,31 @@ Cache entries: 245
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 30.205%
 
-Duration: 0d 0h 0m 0.4874203s
+Duration: 0d 0h 0m 0.489637s
 
-generating algorithm Duration: 0d 0h 0m 0.03476246s
+generating algorithm Duration: 0d 0h 0m 0.023266103s
 ==============================================================
 n: 13, i: 2 needs at least 18 comparisons
-# 0: 1 in 3.073µs, total: 1
-# 1: 1 in 13.388µs, total: 2
-# 2: 3 in 48.798µs, total: 5
-# 3: 14 in 427.469µs, total: 19
-# 4: 60 in 4.084ms, total: 79
-# 5: 282 in 17.059ms, total: 361
-# 6: 1211 in 69.691ms, total: 1572
-# 7: 2714 in 141.678ms, total: 4286
-# 8: 3043 in 273.840ms, total: 7329
-# 9: 1966 in 258.229ms, total: 9295
-# 10: 964 in 313.864ms, total: 10259
-# 11: 398 in 160.970ms, total: 10657
-# 12: 173 in 126.104ms, total: 10830
-# 13: 69 in 66.782ms, total: 10899
-# 14: 29 in 33.583ms, total: 10928
-# 15: 9 in 10.500ms, total: 10937
-# 16: 4 in 1.853ms, total: 10941
-# 17: 2 in 232.391µs, total: 10943
-# 18: 1 in 110.687µs, total: 10944
-Duration: 0d 0h 0m 1.4792917s
+# 0: 1 in 2.346µs, total: 1
+# 1: 1 in 11.287µs, total: 2
+# 2: 3 in 40.433µs, total: 5
+# 3: 14 in 262.014µs, total: 19
+# 4: 60 in 2.806ms, total: 79
+# 5: 282 in 15.994ms, total: 361
+# 6: 1211 in 66.356ms, total: 1572
+# 7: 2714 in 98.969ms, total: 4286
+# 8: 3043 in 239.220ms, total: 7329
+# 9: 1966 in 242.401ms, total: 9295
+# 10: 964 in 214.980ms, total: 10259
+# 11: 398 in 133.008ms, total: 10657
+# 12: 173 in 122.953ms, total: 10830
+# 13: 69 in 61.570ms, total: 10899
+# 14: 29 in 32.113ms, total: 10928
+# 15: 9 in 10.379ms, total: 10937
+# 16: 4 in 1.307ms, total: 10941
+# 17: 2 in 130.851µs, total: 10943
+# 18: 1 in 88.577µs, total: 10944
+Duration: 0d 0h 0m 1.242808s
 
 Congratulations. A solution was found!
 
@@ -1438,57 +1438,57 @@ Comparisons: 18
 
 Cache entries: 10944
 Cache size: 0.001 Gigabyte
-Nauty Ratio: 6.797%
+Nauty Ratio: 6.808%
 
-Duration: 0d 0h 0m 1.4793321s
+Duration: 0d 0h 0m 1.2428468s
 
-generating algorithm Duration: 0d 0h 0m 0.006633722s
+generating algorithm Duration: 0d 0h 0m 0.010169314s
 ==============================================================
 n: 13, i: 3 needs at least 19 comparisons
-# 0: 1 in 7.057µs, total: 1
-# 1: 1 in 29.767µs, total: 2
-# 2: 3 in 73.826µs, total: 5
-# 3: 16 in 1.542ms, total: 21
-# 4: 175 in 24.665ms, total: 196
-# 5: 2019 in 106.407ms, total: 2215
-# 6: 13769 in 243.380ms, total: 15984
-# 7: 36650 in 799.491ms, total: 52634
-# 8: 42245 in 1.110s, total: 94879
-# 9: 26585 in 1.144s, total: 121464
-# 10: 11367 in 843.460ms, total: 132831
-# 11: 3972 in 418.022ms, total: 136803
-# 12: 1259 in 171.798ms, total: 138062
-# 13: 397 in 120.891ms, total: 138459
-# 14: 128 in 45.334ms, total: 138587
-# 15: 43 in 19.047ms, total: 138630
-# 16: 14 in 5.785ms, total: 138644
-# 17: 6 in 6.708ms, total: 138650
-# 18: 1 in 6.949ms, total: 138651
-# 19: 0 in 308.425µs, total: 138651
-Duration: 0d 0h 0m 5.06842s
+# 0: 1 in 3.818µs, total: 1
+# 1: 1 in 14.829µs, total: 2
+# 2: 3 in 29.361µs, total: 5
+# 3: 16 in 442.368µs, total: 21
+# 4: 175 in 17.512ms, total: 196
+# 5: 2019 in 41.947ms, total: 2215
+# 6: 13769 in 131.014ms, total: 15984
+# 7: 36650 in 423.573ms, total: 52634
+# 8: 42245 in 569.583ms, total: 94879
+# 9: 26585 in 708.218ms, total: 121464
+# 10: 11367 in 599.294ms, total: 132831
+# 11: 3972 in 333.448ms, total: 136803
+# 12: 1259 in 131.239ms, total: 138062
+# 13: 397 in 88.060ms, total: 138459
+# 14: 128 in 43.325ms, total: 138587
+# 15: 43 in 14.937ms, total: 138630
+# 16: 14 in 5.452ms, total: 138644
+# 17: 6 in 1.675ms, total: 138650
+# 18: 1 in 2.538ms, total: 138651
+# 19: 0 in 158.006µs, total: 138651
+Duration: 0d 0h 0m 3.1127992s
 n: 13, i: 3 needs at least 20 comparisons
-# 0: 1 in 5.957µs, total: 1
-# 1: 1 in 27.436µs, total: 2
-# 2: 3 in 78.234µs, total: 5
-# 3: 16 in 1.632ms, total: 21
-# 4: 175 in 26.343ms, total: 196
-# 5: 2110 in 110.389ms, total: 2306
-# 6: 17421 in 340.642ms, total: 19727
-# 7: 59192 in 1.266s, total: 78919
-# 8: 86141 in 2.845s, total: 165060
-# 9: 64764 in 2.481s, total: 229824
-# 10: 30751 in 1.913s, total: 260575
-# 11: 11099 in 962.696ms, total: 271674
-# 12: 3551 in 590.068ms, total: 275225
-# 13: 1115 in 255.383ms, total: 276340
-# 14: 359 in 146.743ms, total: 276699
-# 15: 114 in 73.246ms, total: 276813
-# 16: 38 in 15.907ms, total: 276851
-# 17: 14 in 7.935ms, total: 276865
-# 18: 4 in 3.686ms, total: 276869
-# 19: 1 in 294.647µs, total: 276870
-# 20: 1 in 18.694µs, total: 276871
-Duration: 0d 0h 0m 11.041057s
+# 0: 1 in 5.678µs, total: 1
+# 1: 1 in 22.351µs, total: 2
+# 2: 3 in 48.134µs, total: 5
+# 3: 16 in 723.717µs, total: 21
+# 4: 175 in 14.761ms, total: 196
+# 5: 2110 in 46.640ms, total: 2306
+# 6: 17421 in 168.786ms, total: 19727
+# 7: 59192 in 624.679ms, total: 78919
+# 8: 86141 in 1.742s, total: 165060
+# 9: 64764 in 1.439s, total: 229824
+# 10: 30751 in 1.362s, total: 260575
+# 11: 11099 in 731.409ms, total: 271674
+# 12: 3551 in 504.768ms, total: 275225
+# 13: 1115 in 264.407ms, total: 276340
+# 14: 359 in 156.439ms, total: 276699
+# 15: 114 in 90.155ms, total: 276813
+# 16: 38 in 16.871ms, total: 276851
+# 17: 14 in 9.912ms, total: 276865
+# 18: 4 in 3.900ms, total: 276869
+# 19: 1 in 282.648µs, total: 276870
+# 20: 1 in 16.020µs, total: 276871
+Duration: 0d 0h 0m 7.177924s
 
 Congratulations. A solution was found!
 
@@ -1496,60 +1496,60 @@ n: 13, i: 3
 Comparisons: 20
 
 Cache entries: 276871
-Cache size: 0.009 Gigabyte
-Nauty Ratio: 1.530%
+Cache size: 0.013 Gigabyte
+Nauty Ratio: 1.526%
 
-Duration: 0d 0h 0m 16.109539s
+Duration: 0d 0h 0m 10.290782s
 
-generating algorithm Duration: 0d 0h 0m 0.06049216s
+generating algorithm Duration: 0d 0h 0m 0.06294471s
 ==============================================================
 n: 13, i: 4 needs at least 20 comparisons
-# 0: 1 in 4.354µs, total: 1
-# 1: 1 in 15.133µs, total: 2
-# 2: 3 in 35.502µs, total: 5
-# 3: 16 in 841.031µs, total: 21
-# 4: 323 in 70.045ms, total: 344
-# 5: 7878 in 299.021ms, total: 8222
-# 6: 77049 in 1.461s, total: 85271
-# 7: 240790 in 5.196s, total: 326061
-# 8: 310606 in 8.590s, total: 636667
-# 9: 207288 in 7.222s, total: 843955
-# 10: 88514 in 3.982s, total: 932469
-# 11: 28871 in 1.713s, total: 961340
-# 12: 8311 in 752.542ms, total: 969651
-# 13: 2306 in 259.964ms, total: 971957
-# 14: 657 in 110.442ms, total: 972614
-# 15: 187 in 57.278ms, total: 972801
-# 16: 57 in 16.276ms, total: 972858
-# 17: 14 in 9.921ms, total: 972872
-# 18: 5 in 9.098ms, total: 972877
-# 19: 1 in 8.693ms, total: 972878
-# 20: 0 in 404.133µs, total: 972878
-Duration: 0d 0h 0m 29.764278s
+# 0: 1 in 3.449µs, total: 1
+# 1: 1 in 29.011µs, total: 2
+# 2: 3 in 24.723µs, total: 5
+# 3: 16 in 464.529µs, total: 21
+# 4: 323 in 28.597ms, total: 344
+# 5: 7878 in 108.746ms, total: 8222
+# 6: 77049 in 580.542ms, total: 85271
+# 7: 240790 in 2.083s, total: 326061
+# 8: 310606 in 3.610s, total: 636667
+# 9: 207288 in 3.194s, total: 843955
+# 10: 88514 in 1.963s, total: 932469
+# 11: 28871 in 915.387ms, total: 961340
+# 12: 8311 in 515.137ms, total: 969651
+# 13: 2306 in 191.786ms, total: 971957
+# 14: 657 in 111.374ms, total: 972614
+# 15: 187 in 47.390ms, total: 972801
+# 16: 57 in 17.052ms, total: 972858
+# 17: 14 in 6.300ms, total: 972872
+# 18: 5 in 3.843ms, total: 972877
+# 19: 1 in 3.427ms, total: 972878
+# 20: 0 in 455.612µs, total: 972878
+Duration: 0d 0h 0m 13.388508s
 n: 13, i: 4 needs at least 21 comparisons
-# 0: 1 in 4.608µs, total: 1
-# 1: 1 in 14.032µs, total: 2
-# 2: 3 in 55.346µs, total: 5
-# 3: 16 in 800.125µs, total: 21
-# 4: 323 in 71.360ms, total: 344
-# 5: 8486 in 342.795ms, total: 8830
-# 6: 104001 in 2.179s, total: 112831
-# 7: 422605 in 9.465s, total: 535436
-# 8: 685670 in 18.677s, total: 1221106
-# 9: 550976 in 19.255s, total: 1772082
-# 10: 265263 in 11.328s, total: 2037345
-# 11: 91793 in 5.463s, total: 2129138
-# 12: 26319 in 2.162s, total: 2155457
-# 13: 7107 in 955.311ms, total: 2162564
-# 14: 1891 in 315.277ms, total: 2164455
-# 15: 526 in 142.159ms, total: 2164981
-# 16: 148 in 70.365ms, total: 2165129
-# 17: 40 in 18.836ms, total: 2165169
-# 18: 11 in 15.506ms, total: 2165180
-# 19: 3 in 4.235ms, total: 2165183
-# 20: 1 in 429.052µs, total: 2165184
-# 21: 1 in 24.018µs, total: 2165185
-Duration: 0d 0h 1m 10.4661255s
+# 0: 1 in 4.345µs, total: 1
+# 1: 1 in 13.530µs, total: 2
+# 2: 3 in 40.585µs, total: 5
+# 3: 16 in 478.975µs, total: 21
+# 4: 323 in 32.068ms, total: 344
+# 5: 8486 in 122.942ms, total: 8830
+# 6: 104001 in 788.757ms, total: 112831
+# 7: 422605 in 3.571s, total: 535436
+# 8: 685670 in 7.565s, total: 1221106
+# 9: 550976 in 8.319s, total: 1772082
+# 10: 265263 in 5.195s, total: 2037345
+# 11: 91793 in 2.905s, total: 2129138
+# 12: 26319 in 1.442s, total: 2155457
+# 13: 7107 in 698.247ms, total: 2162564
+# 14: 1891 in 247.923ms, total: 2164455
+# 15: 526 in 130.075ms, total: 2164981
+# 16: 148 in 81.988ms, total: 2165129
+# 17: 40 in 19.003ms, total: 2165169
+# 18: 11 in 13.578ms, total: 2165180
+# 19: 3 in 5.047ms, total: 2165183
+# 20: 1 in 503.192µs, total: 2165184
+# 21: 1 in 16.613µs, total: 2165185
+Duration: 0d 0h 0m 31.138878s
 
 Congratulations. A solution was found!
 
@@ -1557,62 +1557,62 @@ n: 13, i: 4
 Comparisons: 21
 
 Cache entries: 2165185
-Cache size: 0.071 Gigabyte
-Nauty Ratio: 0.469%
+Cache size: 0.103 Gigabyte
+Nauty Ratio: 0.467%
 
-Duration: 0d 0h 1m 40.230446s
+Duration: 0d 0h 0m 44.52744s
 
-generating algorithm Duration: 0d 0h 0m 0.008009668s
+generating algorithm Duration: 0d 0h 0m 0.008208167s
 ==============================================================
 n: 13, i: 5 needs at least 21 comparisons
-# 0: 1 in 4.605µs, total: 1
-# 1: 1 in 14.128µs, total: 2
-# 2: 3 in 49.371µs, total: 5
-# 3: 16 in 793.822µs, total: 21
-# 4: 425 in 142.373ms, total: 446
-# 5: 16842 in 717.629ms, total: 17288
-# 6: 225805 in 5.924s, total: 243093
-# 7: 861163 in 23.050s, total: 1104256
-# 8: 1301722 in 41.931s, total: 2405978
-# 9: 979224 in 40.301s, total: 3385202
-# 10: 444937 in 22.395s, total: 3830139
-# 11: 146737 in 9.218s, total: 3976876
-# 12: 40462 in 3.098s, total: 4017338
-# 13: 10508 in 1.065s, total: 4027846
-# 14: 2691 in 334.637ms, total: 4030537
-# 15: 730 in 254.474ms, total: 4031267
-# 16: 188 in 58.923ms, total: 4031455
-# 17: 50 in 21.908ms, total: 4031505
-# 18: 15 in 13.475ms, total: 4031520
-# 19: 4 in 6.101ms, total: 4031524
-# 20: 1 in 7.198ms, total: 4031525
-# 21: 0 in 893.316µs, total: 4031525
-Duration: 0d 0h 2m 28.553284s
+# 0: 1 in 4.978µs, total: 1
+# 1: 1 in 14.014µs, total: 2
+# 2: 3 in 26.650µs, total: 5
+# 3: 16 in 481.281µs, total: 21
+# 4: 425 in 39.626ms, total: 446
+# 5: 16842 in 227.469ms, total: 17288
+# 6: 225805 in 1.792s, total: 243093
+# 7: 861163 in 7.916s, total: 1104256
+# 8: 1301722 in 15.804s, total: 2405978
+# 9: 979224 in 16.073s, total: 3385202
+# 10: 444937 in 9.326s, total: 3830139
+# 11: 146737 in 4.198s, total: 3976876
+# 12: 40462 in 1.538s, total: 4017338
+# 13: 10508 in 664.945ms, total: 4027846
+# 14: 2691 in 214.830ms, total: 4030537
+# 15: 730 in 275.713ms, total: 4031267
+# 16: 188 in 45.463ms, total: 4031455
+# 17: 50 in 14.399ms, total: 4031505
+# 18: 15 in 7.512ms, total: 4031520
+# 19: 4 in 4.441ms, total: 4031524
+# 20: 1 in 3.622ms, total: 4031525
+# 21: 0 in 935.221µs, total: 4031525
+Duration: 0d 0h 0m 58.16772s
 n: 13, i: 5 needs at least 22 comparisons
-# 0: 1 in 4.334µs, total: 1
-# 1: 1 in 13.964µs, total: 2
-# 2: 3 in 41.803µs, total: 5
-# 3: 16 in 810.931µs, total: 21
-# 4: 425 in 148.666ms, total: 446
-# 5: 18246 in 907.629ms, total: 18692
-# 6: 310677 in 8.570s, total: 329369
-# 7: 1545376 in 43.544s, total: 1874745
-# 8: 2960442 in 94.616s, total: 4835187
-# 9: 2703528 in 104.852s, total: 7538715
-# 10: 1414495 in 67.917s, total: 8953210
-# 11: 506441 in 29.086s, total: 9459651
-# 12: 143196 in 10.652s, total: 9602847
-# 13: 36191 in 3.694s, total: 9639038
-# 14: 8860 in 1.519s, total: 9647898
-# 15: 2190 in 411.416ms, total: 9650088
-# 16: 545 in 156.639ms, total: 9650633
-# 17: 135 in 51.280ms, total: 9650768
-# 18: 37 in 26.373ms, total: 9650805
-# 19: 10 in 11.072ms, total: 9650815
-# 20: 4 in 9.361ms, total: 9650819
-# 21: 1 in 1.006ms, total: 9650820
-# 22: 1 in 11.760µs, total: 9650821
-Duration: 0d 0h 6m 6.174286s
+# 0: 1 in 7.920µs, total: 1
+# 1: 1 in 23.040µs, total: 2
+# 2: 3 in 51.909µs, total: 5
+# 3: 16 in 441.694µs, total: 21
+# 4: 425 in 40.382ms, total: 446
+# 5: 18246 in 227.847ms, total: 18692
+# 6: 310677 in 2.423s, total: 329369
+# 7: 1545376 in 13.701s, total: 1874745
+# 8: 2960442 in 34.916s, total: 4835187
+# 9: 2703528 in 41.581s, total: 7538715
+# 10: 1414495 in 28.485s, total: 8953210
+# 11: 506441 in 12.901s, total: 9459651
+# 12: 143196 in 5.793s, total: 9602847
+# 13: 36191 in 1.957s, total: 9639038
+# 14: 8860 in 1.159s, total: 9647898
+# 15: 2190 in 371.866ms, total: 9650088
+# 16: 545 in 142.086ms, total: 9650633
+# 17: 135 in 50.556ms, total: 9650768
+# 18: 37 in 19.195ms, total: 9650805
+# 19: 10 in 12.853ms, total: 9650815
+# 20: 4 in 4.814ms, total: 9650819
+# 21: 1 in 977.731µs, total: 9650820
+# 22: 1 in 21.016µs, total: 9650821
+Duration: 0d 0h 2m 23.789001s
 
 Congratulations. A solution was found!
 
@@ -1620,87 +1620,87 @@ n: 13, i: 5
 Comparisons: 22
 
 Cache entries: 9650821
-Cache size: 0.364 Gigabyte
-Nauty Ratio: 0.188%
+Cache size: 0.530 Gigabyte
+Nauty Ratio: 0.185%
 
-Duration: 0d 0h 8m 34.7276s
+Duration: 0d 0h 3m 21.956818s
 
-generating algorithm Duration: 0d 0h 0m 0.015656907s
+generating algorithm Duration: 0d 0h 0m 0.017074158s
 ==============================================================
 n: 13, i: 6 needs at least 21 comparisons
-# 0: 1 in 5.119µs, total: 1
-# 1: 1 in 15.532µs, total: 2
-# 2: 3 in 33.536µs, total: 5
-# 3: 16 in 811.886µs, total: 21
-# 4: 381 in 144.482ms, total: 402
-# 5: 13472 in 1.022s, total: 13874
-# 6: 168172 in 5.243s, total: 182046
-# 7: 610049 in 18.481s, total: 792095
-# 8: 893827 in 31.923s, total: 1685922
-# 9: 656107 in 29.470s, total: 2342029
-# 10: 292064 in 16.214s, total: 2634093
-# 11: 94096 in 6.536s, total: 2728189
-# 12: 25303 in 2.189s, total: 2753492
-# 13: 6399 in 684.913ms, total: 2759891
-# 14: 1587 in 225.638ms, total: 2761478
-# 15: 428 in 236.068ms, total: 2761906
-# 16: 110 in 43.885ms, total: 2762016
-# 17: 32 in 22.613ms, total: 2762048
-# 18: 10 in 13.431ms, total: 2762058
-# 19: 3 in 13.711ms, total: 2762061
-# 20: 1 in 3.315ms, total: 2762062
-# 21: 0 in 1.509ms, total: 2762062
-Duration: 0d 0h 1m 52.472824s
+# 0: 1 in 11.171µs, total: 1
+# 1: 1 in 22.306µs, total: 2
+# 2: 3 in 47.235µs, total: 5
+# 3: 16 in 460.419µs, total: 21
+# 4: 381 in 36.137ms, total: 402
+# 5: 13472 in 293.625ms, total: 13874
+# 6: 168172 in 1.596s, total: 182046
+# 7: 610049 in 6.698s, total: 792095
+# 8: 893827 in 12.337s, total: 1685922
+# 9: 656107 in 11.998s, total: 2342029
+# 10: 292064 in 6.770s, total: 2634093
+# 11: 94096 in 2.895s, total: 2728189
+# 12: 25303 in 1.084s, total: 2753492
+# 13: 6399 in 395.114ms, total: 2759891
+# 14: 1587 in 188.759ms, total: 2761478
+# 15: 428 in 211.886ms, total: 2761906
+# 16: 110 in 34.033ms, total: 2762016
+# 17: 32 in 16.007ms, total: 2762048
+# 18: 10 in 5.420ms, total: 2762058
+# 19: 3 in 6.528ms, total: 2762061
+# 20: 1 in 1.903ms, total: 2762062
+# 21: 0 in 769.185µs, total: 2762062
+Duration: 0d 0h 0m 44.581295s
 n: 13, i: 6 needs at least 22 comparisons
-# 0: 1 in 3.793µs, total: 1
-# 1: 1 in 14.816µs, total: 2
-# 2: 3 in 50.147µs, total: 5
-# 3: 16 in 799.533µs, total: 21
-# 4: 381 in 144.080ms, total: 402
-# 5: 14591 in 1.143s, total: 14993
-# 6: 231605 in 8.282s, total: 246598
-# 7: 1094812 in 36.526s, total: 1341410
-# 8: 2020393 in 75.874s, total: 3361803
-# 9: 1791994 in 80.850s, total: 5153797
-# 10: 914165 in 50.976s, total: 6067962
-# 11: 320411 in 21.553s, total: 6388373
-# 12: 88647 in 7.577s, total: 6477020
-# 13: 22075 in 2.381s, total: 6499095
-# 14: 5349 in 1.203s, total: 6504444
-# 15: 1318 in 341.517ms, total: 6505762
-# 16: 324 in 126.792ms, total: 6506086
-# 17: 80 in 54.147ms, total: 6506166
-# 18: 20 in 29.780ms, total: 6506186
-# 19: 5 in 10.335ms, total: 6506191
-# 20: 2 in 8.124ms, total: 6506193
-# 21: 0 in 3.602ms, total: 6506193
-Duration: 0d 0h 4m 47.099945s
+# 0: 1 in 5.247µs, total: 1
+# 1: 1 in 13.891µs, total: 2
+# 2: 3 in 44.520µs, total: 5
+# 3: 16 in 472.133µs, total: 21
+# 4: 381 in 40.063ms, total: 402
+# 5: 14591 in 251.828ms, total: 14993
+# 6: 231605 in 2.306s, total: 246598
+# 7: 1094812 in 12.165s, total: 1341410
+# 8: 2020393 in 29.015s, total: 3361803
+# 9: 1791994 in 32.632s, total: 5153797
+# 10: 914165 in 21.704s, total: 6067962
+# 11: 320411 in 9.554s, total: 6388373
+# 12: 88647 in 3.740s, total: 6477020
+# 13: 22075 in 1.372s, total: 6499095
+# 14: 5349 in 990.918ms, total: 6504444
+# 15: 1318 in 279.987ms, total: 6505762
+# 16: 324 in 128.941ms, total: 6506086
+# 17: 80 in 43.815ms, total: 6506166
+# 18: 20 in 26.804ms, total: 6506186
+# 19: 5 in 11.696ms, total: 6506191
+# 20: 2 in 3.005ms, total: 6506193
+# 21: 0 in 1.272ms, total: 6506193
+Duration: 0d 0h 1m 54.304398s
 n: 13, i: 6 needs at least 23 comparisons
-# 0: 1 in 5.060µs, total: 1
-# 1: 1 in 16.754µs, total: 2
-# 2: 3 in 55.581µs, total: 5
-# 3: 16 in 850.165µs, total: 21
-# 4: 381 in 149.119ms, total: 402
-# 5: 15227 in 1.350s, total: 15629
-# 6: 290138 in 11.873s, total: 305767
-# 7: 1750707 in 65.509s, total: 2056474
-# 8: 4058631 in 160.720s, total: 6115105
-# 9: 4368185 in 199.247s, total: 10483290
-# 10: 2592437 in 142.101s, total: 13075727
-# 11: 1006071 in 68.038s, total: 14081798
-# 12: 291970 in 23.241s, total: 14373768
-# 13: 72346 in 8.542s, total: 14446114
-# 14: 16728 in 2.590s, total: 14462842
-# 15: 3898 in 1.134s, total: 14466740
-# 16: 893 in 406.585ms, total: 14467633
-# 17: 227 in 221.469ms, total: 14467860
-# 18: 58 in 77.095ms, total: 14467918
-# 19: 17 in 42.394ms, total: 14467935
-# 20: 6 in 11.887ms, total: 14467941
-# 21: 2 in 6.498ms, total: 14467943
-# 22: 1 in 79.447µs, total: 14467944
-# 23: 1 in 28.326µs, total: 14467945
-Duration: 0d 0h 11m 25.260132s
+# 0: 1 in 7.398µs, total: 1
+# 1: 1 in 19.847µs, total: 2
+# 2: 3 in 44.683µs, total: 5
+# 3: 16 in 474.372µs, total: 21
+# 4: 381 in 37.161ms, total: 402
+# 5: 15227 in 348.690ms, total: 15629
+# 6: 290138 in 2.843s, total: 305767
+# 7: 1750707 in 20.224s, total: 2056474
+# 8: 4058631 in 58.748s, total: 6115105
+# 9: 4368185 in 82.316s, total: 10483290
+# 10: 2592437 in 61.557s, total: 13075727
+# 11: 1006071 in 31.812s, total: 14081798
+# 12: 291970 in 11.204s, total: 14373768
+# 13: 72346 in 5.076s, total: 14446114
+# 14: 16728 in 1.759s, total: 14462842
+# 15: 3898 in 887.138ms, total: 14466740
+# 16: 893 in 325.252ms, total: 14467633
+# 17: 227 in 187.409ms, total: 14467860
+# 18: 58 in 74.489ms, total: 14467918
+# 19: 17 in 40.980ms, total: 14467935
+# 20: 6 in 10.300ms, total: 14467941
+# 21: 2 in 3.857ms, total: 14467943
+# 22: 1 in 69.764µs, total: 14467944
+# 23: 1 in 35.040µs, total: 14467945
+Duration: 0d 0h 4m 37.45572s
 
 Congratulations. A solution was found!
 
@@ -1708,29 +1708,29 @@ n: 13, i: 6
 Comparisons: 23
 
 Cache entries: 14467945
-Cache size: 0.502 Gigabyte
-Nauty Ratio: 0.116%
+Cache size: 0.730 Gigabyte
+Nauty Ratio: 0.114%
 
-Duration: 0d 0h 18m 4.833008s
+Duration: 0d 0h 7m 16.341492s
 
-generating algorithm Duration: 0d 0h 0m 0.014770792s
+generating algorithm Duration: 0d 0h 0m 0.05520147s
 ==============================================================
 n: 14, i: 0 needs at least 13 comparisons
-# 0: 1 in 5.558µs, total: 1
-# 1: 1 in 12.560µs, total: 2
-# 2: 1 in 11.215µs, total: 3
-# 3: 1 in 8.717µs, total: 4
-# 4: 1 in 35.802µs, total: 5
-# 5: 1 in 31.823µs, total: 6
-# 6: 1 in 20.168µs, total: 7
-# 7: 1 in 25.082µs, total: 8
-# 8: 1 in 35.325µs, total: 9
-# 9: 1 in 46.695µs, total: 10
-# 10: 1 in 55.408µs, total: 11
-# 11: 1 in 67.510µs, total: 12
-# 12: 1 in 83.563µs, total: 13
-# 13: 1 in 48.385µs, total: 14
-Duration: 0d 0h 0m 0.000541581s
+# 0: 1 in 10.577µs, total: 1
+# 1: 1 in 19.905µs, total: 2
+# 2: 1 in 10.180µs, total: 3
+# 3: 1 in 7.765µs, total: 4
+# 4: 1 in 14.969µs, total: 5
+# 5: 1 in 27.281µs, total: 6
+# 6: 1 in 13.657µs, total: 7
+# 7: 1 in 31.705µs, total: 8
+# 8: 1 in 44.174µs, total: 9
+# 9: 1 in 24.251µs, total: 10
+# 10: 1 in 28.374µs, total: 11
+# 11: 1 in 33.294µs, total: 12
+# 12: 1 in 49.631µs, total: 13
+# 13: 1 in 36.845µs, total: 14
+Duration: 0d 0h 0m 0.000409718s
 
 Congratulations. A solution was found!
 
@@ -1741,29 +1741,29 @@ Cache entries: 14
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000564993s
+Duration: 0d 0h 0m 0.000433624s
 
-generating algorithm Duration: 0d 0h 0m 0.000133615s
+generating algorithm Duration: 0d 0h 0m 0.000163648s
 ==============================================================
 n: 14, i: 1 needs at least 16 comparisons
-# 0: 1 in 2.514µs, total: 1
-# 1: 1 in 12.512µs, total: 2
-# 2: 3 in 27.812µs, total: 5
-# 3: 6 in 100.370µs, total: 11
-# 4: 11 in 397.381µs, total: 22
-# 5: 21 in 1.882ms, total: 43
-# 6: 41 in 16.944ms, total: 84
-# 7: 61 in 123.088ms, total: 145
-# 8: 59 in 235.621ms, total: 204
-# 9: 42 in 387.778ms, total: 246
-# 10: 28 in 466.478ms, total: 274
-# 11: 19 in 218.250ms, total: 293
-# 12: 12 in 57.142ms, total: 305
-# 13: 7 in 27.143ms, total: 312
-# 14: 4 in 874.221µs, total: 316
-# 15: 2 in 155.528µs, total: 318
-# 16: 1 in 29.654µs, total: 319
-Duration: 0d 0h 0m 1.5360842s
+# 0: 1 in 1.982µs, total: 1
+# 1: 1 in 12.070µs, total: 2
+# 2: 3 in 22.465µs, total: 5
+# 3: 6 in 79.078µs, total: 11
+# 4: 11 in 290.587µs, total: 22
+# 5: 21 in 1.646ms, total: 43
+# 6: 41 in 15.068ms, total: 84
+# 7: 61 in 121.284ms, total: 145
+# 8: 59 in 173.106ms, total: 204
+# 9: 42 in 365.714ms, total: 246
+# 10: 28 in 466.489ms, total: 274
+# 11: 19 in 131.434ms, total: 293
+# 12: 12 in 46.411ms, total: 305
+# 13: 7 in 23.521ms, total: 312
+# 14: 4 in 806.386µs, total: 316
+# 15: 2 in 144.595µs, total: 318
+# 16: 1 in 24.920µs, total: 319
+Duration: 0d 0h 0m 1.3462145s
 
 Congratulations. A solution was found!
 
@@ -1774,32 +1774,32 @@ Cache entries: 319
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 33.667%
 
-Duration: 0d 0h 0m 1.5361023s
+Duration: 0d 0h 0m 1.3462325s
 
-generating algorithm Duration: 0d 0h 0m 0.09147979s
+generating algorithm Duration: 0d 0h 0m 0.10338068s
 ==============================================================
 n: 14, i: 2 needs at least 19 comparisons
-# 0: 1 in 2.936µs, total: 1
-# 1: 1 in 12.628µs, total: 2
-# 2: 3 in 46.425µs, total: 5
-# 3: 14 in 388.795µs, total: 19
-# 4: 60 in 3.859ms, total: 79
-# 5: 287 in 26.051ms, total: 366
-# 6: 1385 in 136.185ms, total: 1751
-# 7: 4005 in 554.872ms, total: 5756
-# 8: 5510 in 666.126ms, total: 11266
-# 9: 4268 in 1.515s, total: 15534
-# 10: 2284 in 1.133s, total: 17818
-# 11: 1025 in 785.410ms, total: 18843
-# 12: 428 in 380.597ms, total: 19271
-# 13: 180 in 360.695ms, total: 19451
-# 14: 73 in 238.440ms, total: 19524
-# 15: 30 in 48.262ms, total: 19554
-# 16: 11 in 20.201ms, total: 19565
-# 17: 6 in 2.450ms, total: 19571
-# 18: 2 in 477.235µs, total: 19573
-# 19: 1 in 131.221µs, total: 19574
-Duration: 0d 0h 0m 5.872125s
+# 0: 1 in 2.592µs, total: 1
+# 1: 1 in 11.822µs, total: 2
+# 2: 3 in 22.998µs, total: 5
+# 3: 14 in 274.648µs, total: 19
+# 4: 60 in 2.812ms, total: 79
+# 5: 287 in 21.039ms, total: 366
+# 6: 1385 in 85.966ms, total: 1751
+# 7: 4005 in 430.824ms, total: 5756
+# 8: 5510 in 571.921ms, total: 11266
+# 9: 4268 in 1.312s, total: 15534
+# 10: 2284 in 1.007s, total: 17818
+# 11: 1025 in 742.164ms, total: 18843
+# 12: 428 in 420.842ms, total: 19271
+# 13: 180 in 320.587ms, total: 19451
+# 14: 73 in 160.475ms, total: 19524
+# 15: 30 in 43.171ms, total: 19554
+# 16: 11 in 12.516ms, total: 19565
+# 17: 6 in 2.012ms, total: 19571
+# 18: 2 in 305.118µs, total: 19573
+# 19: 1 in 93.597µs, total: 19574
+Duration: 0d 0h 0m 5.1345286s
 
 Congratulations. A solution was found!
 
@@ -1808,36 +1808,36 @@ Comparisons: 19
 
 Cache entries: 19574
 Cache size: 0.001 Gigabyte
-Nauty Ratio: 7.540%
+Nauty Ratio: 7.552%
 
-Duration: 0d 0h 0m 5.8721704s
+Duration: 0d 0h 0m 5.134583s
 
-generating algorithm Duration: 0d 0h 0m 0.002525791s
+generating algorithm Duration: 0d 0h 0m 0.002743903s
 ==============================================================
 n: 14, i: 3 needs at least 21 comparisons
-# 0: 1 in 6.920µs, total: 1
-# 1: 1 in 29.447µs, total: 2
-# 2: 3 in 74.294µs, total: 5
-# 3: 16 in 1.638ms, total: 21
-# 4: 175 in 26.667ms, total: 196
-# 5: 2201 in 130.217ms, total: 2397
-# 6: 22900 in 624.790ms, total: 25297
-# 7: 103210 in 3.053s, total: 128507
-# 8: 191627 in 7.133s, total: 320134
-# 9: 174416 in 12.970s, total: 494550
-# 10: 94785 in 9.128s, total: 589335
-# 11: 37004 in 7.093s, total: 626339
-# 12: 12173 in 3.660s, total: 638512
-# 13: 3851 in 1.914s, total: 642363
-# 14: 1211 in 623.248ms, total: 643574
-# 15: 392 in 288.231ms, total: 643966
-# 16: 124 in 152.578ms, total: 644090
-# 17: 41 in 38.446ms, total: 644131
-# 18: 13 in 20.568ms, total: 644144
-# 19: 4 in 12.002ms, total: 644148
-# 20: 2 in 271.098µs, total: 644150
-# 21: 1 in 203.724µs, total: 644151
-Duration: 0d 0h 0m 46.870464s
+# 0: 1 in 6.910µs, total: 1
+# 1: 1 in 28.767µs, total: 2
+# 2: 3 in 58.684µs, total: 5
+# 3: 16 in 953.351µs, total: 21
+# 4: 175 in 18.129ms, total: 196
+# 5: 2201 in 80.745ms, total: 2397
+# 6: 22900 in 409.025ms, total: 25297
+# 7: 103210 in 1.637s, total: 128507
+# 8: 191627 in 4.008s, total: 320134
+# 9: 174416 in 8.730s, total: 494550
+# 10: 94785 in 6.584s, total: 589335
+# 11: 37004 in 5.550s, total: 626339
+# 12: 12173 in 3.170s, total: 638512
+# 13: 3851 in 1.529s, total: 642363
+# 14: 1211 in 705.244ms, total: 643574
+# 15: 392 in 326.506ms, total: 643966
+# 16: 124 in 145.802ms, total: 644090
+# 17: 41 in 32.994ms, total: 644131
+# 18: 13 in 16.813ms, total: 644144
+# 19: 4 in 7.220ms, total: 644148
+# 20: 2 in 307.335µs, total: 644150
+# 21: 1 in 299.031µs, total: 644151
+Duration: 0d 0h 0m 32.952415s
 
 Congratulations. A solution was found!
 
@@ -1845,64 +1845,64 @@ n: 14, i: 3
 Comparisons: 21
 
 Cache entries: 644151
-Cache size: 0.020 Gigabyte
-Nauty Ratio: 1.655%
+Cache size: 0.029 Gigabyte
+Nauty Ratio: 1.651%
 
-Duration: 0d 0h 0m 46.870495s
+Duration: 0d 0h 0m 32.95246s
 
-generating algorithm Duration: 0d 0h 0m 0.015563722s
+generating algorithm Duration: 0d 0h 0m 0.010383008s
 ==============================================================
 n: 14, i: 4 needs at least 22 comparisons
-# 0: 1 in 6.729µs, total: 1
-# 1: 1 in 21.184µs, total: 2
-# 2: 3 in 42.140µs, total: 5
-# 3: 16 in 787.669µs, total: 21
-# 4: 323 in 72.372ms, total: 344
-# 5: 9790 in 496.109ms, total: 10134
-# 6: 163423 in 4.054s, total: 173557
-# 7: 882563 in 23.058s, total: 1056120
-# 8: 1810253 in 59.683s, total: 2866373
-# 9: 1748270 in 73.943s, total: 4614643
-# 10: 969057 in 56.488s, total: 5583700
-# 11: 367773 in 28.286s, total: 5951473
-# 12: 111418 in 14.736s, total: 6062891
-# 13: 30559 in 5.765s, total: 6093450
-# 14: 8215 in 2.963s, total: 6101665
-# 15: 2193 in 854.766ms, total: 6103858
-# 16: 611 in 399.879ms, total: 6104469
-# 17: 158 in 95.538ms, total: 6104627
-# 18: 46 in 31.462ms, total: 6104673
-# 19: 12 in 21.238ms, total: 6104685
-# 20: 5 in 11.622ms, total: 6104690
-# 21: 1 in 6.329ms, total: 6104691
-# 22: 0 in 532.564µs, total: 6104691
-Duration: 0d 0h 4m 30.975677s
+# 0: 1 in 4.097µs, total: 1
+# 1: 1 in 20.678µs, total: 2
+# 2: 3 in 40.907µs, total: 5
+# 3: 16 in 445.333µs, total: 21
+# 4: 323 in 27.801ms, total: 344
+# 5: 9790 in 216.071ms, total: 10134
+# 6: 163423 in 1.510s, total: 173557
+# 7: 882563 in 8.409s, total: 1056120
+# 8: 1810253 in 23.493s, total: 2866373
+# 9: 1748270 in 31.767s, total: 4614643
+# 10: 969057 in 26.096s, total: 5583700
+# 11: 367773 in 14.143s, total: 5951473
+# 12: 111418 in 9.130s, total: 6062891
+# 13: 30559 in 4.205s, total: 6093450
+# 14: 8215 in 2.363s, total: 6101665
+# 15: 2193 in 765.098ms, total: 6103858
+# 16: 611 in 384.288ms, total: 6104469
+# 17: 158 in 90.084ms, total: 6104627
+# 18: 46 in 31.930ms, total: 6104673
+# 19: 12 in 13.928ms, total: 6104685
+# 20: 5 in 7.008ms, total: 6104690
+# 21: 1 in 3.821ms, total: 6104691
+# 22: 0 in 325.592µs, total: 6104691
+Duration: 0d 0h 2m 2.686432s
 n: 14, i: 4 needs at least 23 comparisons
-# 0: 1 in 4.608µs, total: 1
-# 1: 1 in 15.802µs, total: 2
-# 2: 3 in 35.051µs, total: 5
-# 3: 16 in 757.434µs, total: 21
-# 4: 323 in 74.870ms, total: 344
-# 5: 10111 in 600.691ms, total: 10455
-# 6: 200521 in 5.627s, total: 210976
-# 7: 1386176 in 39.333s, total: 1597152
-# 8: 3607272 in 119.546s, total: 5204424
-# 9: 4267576 in 177.948s, total: 9472000
-# 10: 2763862 in 146.576s, total: 12235862
-# 11: 1162696 in 98.044s, total: 13398558
-# 12: 367875 in 40.124s, total: 13766433
-# 13: 100552 in 20.079s, total: 13866985
-# 14: 26024 in 8.136s, total: 13893009
-# 15: 6745 in 3.577s, total: 13899754
-# 16: 1781 in 1.090s, total: 13901535
-# 17: 474 in 481.501ms, total: 13902009
-# 18: 127 in 169.821ms, total: 13902136
-# 19: 34 in 50.098ms, total: 13902170
-# 20: 12 in 11.279ms, total: 13902182
-# 21: 4 in 7.530ms, total: 13902186
-# 22: 1 in 607.986µs, total: 13902187
-# 23: 1 in 9.602µs, total: 13902188
-Duration: 0d 0h 11m 1.4776611s
+# 0: 1 in 6.068µs, total: 1
+# 1: 1 in 14.297µs, total: 2
+# 2: 3 in 27.086µs, total: 5
+# 3: 16 in 446.142µs, total: 21
+# 4: 323 in 27.471ms, total: 344
+# 5: 10111 in 331.463ms, total: 10455
+# 6: 200521 in 2.204s, total: 210976
+# 7: 1386176 in 13.386s, total: 1597152
+# 8: 3607272 in 44.546s, total: 5204424
+# 9: 4267576 in 72.504s, total: 9472000
+# 10: 2763862 in 63.262s, total: 12235862
+# 11: 1162696 in 51.291s, total: 13398558
+# 12: 367875 in 24.074s, total: 13766433
+# 13: 100552 in 15.135s, total: 13866985
+# 14: 26024 in 6.518s, total: 13893009
+# 15: 6745 in 3.370s, total: 13899754
+# 16: 1781 in 1.029s, total: 13901535
+# 17: 474 in 502.691ms, total: 13902009
+# 18: 127 in 171.952ms, total: 13902136
+# 19: 34 in 37.605ms, total: 13902170
+# 20: 12 in 12.346ms, total: 13902182
+# 21: 4 in 3.665ms, total: 13902186
+# 22: 1 in 451.169µs, total: 13902187
+# 23: 1 in 8.899µs, total: 13902188
+Duration: 0d 0h 4m 58.40622s
 
 Congratulations. A solution was found!
 
@@ -1910,66 +1910,66 @@ n: 14, i: 4
 Comparisons: 23
 
 Cache entries: 13902188
-Cache size: 0.430 Gigabyte
-Nauty Ratio: 0.427%
+Cache size: 0.625 Gigabyte
+Nauty Ratio: 0.425%
 
-Duration: 0d 0h 15m 32.45337s
+Duration: 0d 0h 7m 1.0926819s
 
-generating algorithm Duration: 0d 0h 0m 0.18200248s
+generating algorithm Duration: 0d 0h 0m 0.18774103s
 ==============================================================
 n: 14, i: 5 needs at least 23 comparisons
-# 0: 1 in 6.219µs, total: 1
-# 1: 1 in 15.166µs, total: 2
-# 2: 3 in 61.434µs, total: 5
-# 3: 16 in 800.212µs, total: 21
-# 4: 446 in 184.980ms, total: 467
-# 5: 25865 in 1.450s, total: 26332
-# 6: 620661 in 20.006s, total: 646993
-# 7: 4085493 in 132.493s, total: 4732486
-# 8: 9714884 in 369.428s, total: 14447370
-# 9: 10549372 in 504.004s, total: 24996742
-# 10: 6329578 in 383.888s, total: 31326320
-# 11: 2498387 in 201.253s, total: 33824707
-# 12: 746980 in 73.763s, total: 34571687
-# 13: 193192 in 26.606s, total: 34764879
-# 14: 47008 in 9.108s, total: 34811887
-# 15: 11524 in 3.528s, total: 34823411
-# 16: 2841 in 1.032s, total: 34826252
-# 17: 712 in 400.451ms, total: 34826964
-# 18: 184 in 120.725ms, total: 34827148
-# 19: 49 in 50.164ms, total: 34827197
-# 20: 15 in 29.625ms, total: 34827212
-# 21: 4 in 17.847ms, total: 34827216
-# 22: 1 in 11.649ms, total: 34827217
-# 23: 0 in 1.092ms, total: 34827217
-Duration: 0d 0h 28m 47.435303s
+# 0: 1 in 11.165µs, total: 1
+# 1: 1 in 21.780µs, total: 2
+# 2: 3 in 52.608µs, total: 5
+# 3: 16 in 517.423µs, total: 21
+# 4: 446 in 56.423ms, total: 467
+# 5: 25865 in 413.531ms, total: 26332
+# 6: 620661 in 5.010s, total: 646993
+# 7: 4085493 in 39.955s, total: 4732486
+# 8: 9714884 in 127.499s, total: 14447370
+# 9: 10549372 in 186.347s, total: 24996742
+# 10: 6329578 in 148.518s, total: 31326320
+# 11: 2498387 in 84.035s, total: 33824707
+# 12: 746980 in 33.417s, total: 34571687
+# 13: 193192 in 14.249s, total: 34764879
+# 14: 47008 in 5.667s, total: 34811887
+# 15: 11524 in 2.873s, total: 34823411
+# 16: 2841 in 823.487ms, total: 34826252
+# 17: 712 in 390.645ms, total: 34826964
+# 18: 184 in 106.364ms, total: 34827148
+# 19: 49 in 27.720ms, total: 34827197
+# 20: 15 in 14.214ms, total: 34827212
+# 21: 4 in 9.775ms, total: 34827216
+# 22: 1 in 5.985ms, total: 34827217
+# 23: 0 in 1.500ms, total: 34827217
+Duration: 0d 0h 10m 49.6026s
 n: 14, i: 5 needs at least 24 comparisons
-# 0: 1 in 7.934µs, total: 1
-# 1: 1 in 19.390µs, total: 2
-# 2: 3 in 52.381µs, total: 5
-# 3: 16 in 802.230µs, total: 21
-# 4: 446 in 184.650ms, total: 467
-# 5: 26921 in 1.959s, total: 27388
-# 6: 780123 in 27.823s, total: 807511
-# 7: 6588569 in 223.976s, total: 7396080
-# 8: 19882832 in 756.310s, total: 27278912
-# 9: 26416869 in 1220.061s, total: 53695781
-# 10: 18631911 in 1068.982s, total: 72327692
-# 11: 8243306 in 589.243s, total: 80570998
-# 12: 2630332 in 250.565s, total: 83201330
-# 13: 688904 in 82.504s, total: 83890234
-# 14: 164372 in 34.092s, total: 84054606
-# 15: 38334 in 10.824s, total: 84092940
-# 16: 8918 in 3.884s, total: 84101858
-# 17: 2084 in 1.114s, total: 84103942
-# 18: 518 in 423.764ms, total: 84104460
-# 19: 130 in 140.216ms, total: 84104590
-# 20: 36 in 32.652ms, total: 84104626
-# 21: 11 in 18.525ms, total: 84104637
-# 22: 4 in 13.775ms, total: 84104641
-# 23: 1 in 1.103ms, total: 84104642
-# 24: 1 in 11.044µs, total: 84104643
-Duration: 0d 1h 11m 12.154297s
+# 0: 1 in 12.458µs, total: 1
+# 1: 1 in 26.735µs, total: 2
+# 2: 3 in 51.450µs, total: 5
+# 3: 16 in 461.632µs, total: 21
+# 4: 446 in 56.608ms, total: 467
+# 5: 26921 in 411.328ms, total: 27388
+# 6: 780123 in 6.567s, total: 807511
+# 7: 6588569 in 61.964s, total: 7396080
+# 8: 19882832 in 255.260s, total: 27278912
+# 9: 26416869 in 450.543s, total: 53695781
+# 10: 18631911 in 419.997s, total: 72327692
+# 11: 8243306 in 236.614s, total: 80570998
+# 12: 2630332 in 114.104s, total: 83201330
+# 13: 688904 in 42.881s, total: 83890234
+# 14: 164372 in 23.559s, total: 84054606
+# 15: 38334 in 7.962s, total: 84092940
+# 16: 8918 in 3.263s, total: 84101858
+# 17: 2084 in 974.588ms, total: 84103942
+# 18: 518 in 417.311ms, total: 84104460
+# 19: 130 in 174.998ms, total: 84104590
+# 20: 36 in 30.708ms, total: 84104626
+# 21: 11 in 10.369ms, total: 84104637
+# 22: 4 in 7.258ms, total: 84104641
+# 23: 1 in 1.583ms, total: 84104642
+# 24: 1 in 29.441µs, total: 84104643
+Duration: 0d 0h 27m 4.8009033s
 
 Congratulations. A solution was found!
 
@@ -1977,68 +1977,68 @@ n: 14, i: 5
 Comparisons: 24
 
 Cache entries: 84104643
-Cache size: 2.676 Gigabyte
-Nauty Ratio: 0.153%
+Cache size: 3.893 Gigabyte
+Nauty Ratio: 0.151%
 
-Duration: 0d 1h 39m 59.589844s
+Duration: 0d 0h 37m 54.403564s
 
-generating algorithm Duration: 0d 0h 0m 0.03643208s
+generating algorithm Duration: 0d 0h 0m 0.04204491s
 ==============================================================
 n: 14, i: 6 needs at least 24 comparisons
-# 0: 1 in 12.564µs, total: 1
-# 1: 1 in 23.132µs, total: 2
-# 2: 3 in 62.163µs, total: 5
-# 3: 16 in 821.300µs, total: 21
-# 4: 452 in 271.041ms, total: 473
-# 5: 36110 in 3.349s, total: 36583
-# 6: 1129776 in 53.896s, total: 1166359
-# 7: 9212736 in 400.946s, total: 10379095
-# 8: 26196028 in 1228.946s, total: 36575123
-# 9: 32874673 in 1889.816s, total: 69449796
-# 10: 22094568 in 1599.314s, total: 91544364
-# 11: 9390407 in 856.176s, total: 100934771
-# 12: 2908318 in 341.570s, total: 103843089
-# 13: 745596 in 108.979s, total: 104588685
-# 14: 174546 in 34.340s, total: 104763231
-# 15: 40257 in 10.683s, total: 104803488
-# 16: 9256 in 4.040s, total: 104812744
-# 17: 2145 in 1.039s, total: 104814889
-# 18: 515 in 514.905ms, total: 104815404
-# 19: 127 in 95.521ms, total: 104815531
-# 20: 33 in 33.049ms, total: 104815564
-# 21: 8 in 29.780ms, total: 104815572
-# 22: 3 in 19.605ms, total: 104815575
-# 23: 1 in 7.106ms, total: 104815576
-# 24: 0 in 4.394ms, total: 104815576
-Duration: 0d 1h 48m 54.240234s
+# 0: 1 in 14.872µs, total: 1
+# 1: 1 in 25.599µs, total: 2
+# 2: 3 in 65.421µs, total: 5
+# 3: 16 in 518.554µs, total: 21
+# 4: 452 in 60.239ms, total: 473
+# 5: 36110 in 690.937ms, total: 36583
+# 6: 1129776 in 11.421s, total: 1166359
+# 7: 9212736 in 104.012s, total: 10379095
+# 8: 26196028 in 385.167s, total: 36575123
+# 9: 32874673 in 662.240s, total: 69449796
+# 10: 22094568 in 587.099s, total: 91544364
+# 11: 9390407 in 322.257s, total: 100934771
+# 12: 2908318 in 141.782s, total: 103843089
+# 13: 745596 in 49.688s, total: 104588685
+# 14: 174546 in 19.003s, total: 104763231
+# 15: 40257 in 7.184s, total: 104803488
+# 16: 9256 in 3.161s, total: 104812744
+# 17: 2145 in 907.756ms, total: 104814889
+# 18: 515 in 345.235ms, total: 104815404
+# 19: 127 in 85.897ms, total: 104815531
+# 20: 33 in 29.314ms, total: 104815564
+# 21: 8 in 14.649ms, total: 104815572
+# 22: 3 in 10.840ms, total: 104815575
+# 23: 1 in 3.723ms, total: 104815576
+# 24: 0 in 2.739ms, total: 104815576
+Duration: 0d 0h 38m 15.734375s
 n: 14, i: 6 needs at least 25 comparisons
-# 0: 1 in 20.087µs, total: 1
-# 1: 1 in 27.155µs, total: 2
-# 2: 3 in 50.914µs, total: 5
-# 3: 16 in 816.423µs, total: 21
-# 4: 452 in 274.393ms, total: 473
-# 5: 37236 in 4.224s, total: 37709
-# 6: 1389385 in 80.965s, total: 1427094
-# 7: 14591680 in 703.347s, total: 16018774
-# 8: 53003482 in 2559.495s, total: 69022256
-# 9: 82198656 in 4565.681s, total: 151220912
-# 10: 65707713 in 4449.145s, total: 216928625
-# 11: 31909980 in 2643.105s, total: 248838605
-# 12: 10770689 in 1087.843s, total: 259609294
-# 13: 2864659 in 388.283s, total: 262473953
-# 14: 665109 in 112.107s, total: 263139062
-# 15: 147573 in 42.167s, total: 263286635
-# 16: 32349 in 12.843s, total: 263318984
-# 17: 7214 in 4.776s, total: 263326198
-# 18: 1624 in 1.297s, total: 263327822
-# 19: 400 in 761.007ms, total: 263328222
-# 20: 100 in 150.105ms, total: 263328322
-# 21: 27 in 49.403ms, total: 263328349
-# 22: 9 in 14.629ms, total: 263328358
-# 23: 4 in 12.605ms, total: 263328362
-# 24: 1 in 4.501ms, total: 263328363
-# 25: 1 in 11.864µs, total: 263328364
-Duration: 0d 4h 37m 36.54883s
+# 0: 1 in 13.728µs, total: 1
+# 1: 1 in 31.225µs, total: 2
+# 2: 3 in 51.951µs, total: 5
+# 3: 16 in 519.068µs, total: 21
+# 4: 452 in 60.775ms, total: 473
+# 5: 37236 in 718.117ms, total: 37709
+# 6: 1389385 in 15.021s, total: 1427094
+# 7: 14591680 in 164.039s, total: 16018774
+# 8: 53003482 in 757.411s, total: 69022256
+# 9: 82198656 in 1568.932s, total: 151220912
+# 10: 65707713 in 1664.888s, total: 216928625
+# 11: 31909980 in 1035.927s, total: 248838605
+# 12: 10770689 in 436.073s, total: 259609294
+# 13: 2864659 in 184.173s, total: 262473953
+# 14: 665109 in 59.404s, total: 263139062
+# 15: 147573 in 28.825s, total: 263286635
+# 16: 32349 in 9.793s, total: 263318984
+# 17: 7214 in 4.292s, total: 263326198
+# 18: 1624 in 1.213s, total: 263327822
+# 19: 400 in 678.346ms, total: 263328222
+# 20: 100 in 139.232ms, total: 263328322
+# 21: 27 in 43.385ms, total: 263328349
+# 22: 9 in 12.269ms, total: 263328358
+# 23: 4 in 7.840ms, total: 263328362
+# 24: 1 in 2.242ms, total: 263328363
+# 25: 1 in 11.966µs, total: 263328364
+Duration: 0d 1h 38m 51.654785s
 
 Congratulations. A solution was found!
 
@@ -2046,30 +2046,30 @@ n: 14, i: 6
 Comparisons: 25
 
 Cache entries: 263328364
-Cache size: 9.148 Gigabyte
-Nauty Ratio: 0.074%
+Cache size: 13.306 Gigabyte
+Nauty Ratio: 0.073%
 
-Duration: 0d 6h 26m 30.789063s
+Duration: 0d 2h 17m 7.388672s
 
-generating algorithm Duration: 0d 0h 0m 0.1911259s
+generating algorithm Duration: 0d 0h 0m 0.13217857s
 ==============================================================
 n: 15, i: 0 needs at least 14 comparisons
-# 0: 1 in 12.443µs, total: 1
-# 1: 1 in 20.760µs, total: 2
-# 2: 1 in 11.205µs, total: 3
-# 3: 1 in 8.822µs, total: 4
-# 4: 1 in 18.851µs, total: 5
-# 5: 1 in 14.962µs, total: 6
-# 6: 1 in 35.698µs, total: 7
-# 7: 1 in 43.069µs, total: 8
-# 8: 1 in 50.243µs, total: 9
-# 9: 1 in 45.371µs, total: 10
-# 10: 1 in 57.108µs, total: 11
-# 11: 1 in 70.398µs, total: 12
-# 12: 1 in 99.936µs, total: 13
-# 13: 1 in 102.794µs, total: 14
-# 14: 1 in 54.995µs, total: 15
-Duration: 0d 0h 0m 0.000709332s
+# 0: 1 in 14.781µs, total: 1
+# 1: 1 in 26.538µs, total: 2
+# 2: 1 in 11.372µs, total: 3
+# 3: 1 in 23.139µs, total: 4
+# 4: 1 in 26.970µs, total: 5
+# 5: 1 in 12.088µs, total: 6
+# 6: 1 in 13.743µs, total: 7
+# 7: 1 in 16.288µs, total: 8
+# 8: 1 in 21.276µs, total: 9
+# 9: 1 in 23.519µs, total: 10
+# 10: 1 in 27.811µs, total: 11
+# 11: 1 in 32.729µs, total: 12
+# 12: 1 in 38.003µs, total: 13
+# 13: 1 in 45.644µs, total: 14
+# 14: 1 in 41.184µs, total: 15
+Duration: 0d 0h 0m 0.000437492s
 
 Congratulations. A solution was found!
 
@@ -2080,30 +2080,30 @@ Cache entries: 15
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 0.000%
 
-Duration: 0d 0h 0m 0.000742163s
+Duration: 0d 0h 0m 0.000470804s
 
-generating algorithm Duration: 0d 0h 0m 0.000193155s
+generating algorithm Duration: 0d 0h 0m 0.000200903s
 ==============================================================
 n: 15, i: 1 needs at least 17 comparisons
-# 0: 1 in 2.637µs, total: 1
-# 1: 1 in 14.145µs, total: 2
-# 2: 3 in 29.523µs, total: 5
-# 3: 6 in 113.083µs, total: 11
-# 4: 11 in 403.749µs, total: 22
-# 5: 21 in 2.058ms, total: 43
-# 6: 41 in 14.383ms, total: 84
-# 7: 69 in 193.964ms, total: 153
-# 8: 77 in 403.726ms, total: 230
-# 9: 62 in 872.903ms, total: 292
-# 10: 42 in 889.444ms, total: 334
-# 11: 29 in 1.188s, total: 363
-# 12: 18 in 314.945ms, total: 381
-# 13: 12 in 86.181ms, total: 393
-# 14: 7 in 40.636ms, total: 400
-# 15: 4 in 1.135ms, total: 404
-# 16: 2 in 193.591µs, total: 406
-# 17: 1 in 24.400µs, total: 407
-Duration: 0d 0h 0m 4.0079474s
+# 0: 1 in 5.857µs, total: 1
+# 1: 1 in 29.023µs, total: 2
+# 2: 3 in 48.463µs, total: 5
+# 3: 6 in 175.651µs, total: 11
+# 4: 11 in 632.310µs, total: 22
+# 5: 21 in 3.575ms, total: 43
+# 6: 41 in 17.195ms, total: 84
+# 7: 69 in 190.221ms, total: 153
+# 8: 77 in 394.490ms, total: 230
+# 9: 62 in 890.105ms, total: 292
+# 10: 42 in 757.074ms, total: 334
+# 11: 29 in 1.232s, total: 363
+# 12: 18 in 319.243ms, total: 381
+# 13: 12 in 80.466ms, total: 393
+# 14: 7 in 31.667ms, total: 400
+# 15: 4 in 928.408µs, total: 404
+# 16: 2 in 140.154µs, total: 406
+# 17: 1 in 24.678µs, total: 407
+Duration: 0d 0h 0m 3.9178758s
 
 Congratulations. A solution was found!
 
@@ -2114,33 +2114,33 @@ Cache entries: 407
 Cache size: 0.000 Gigabyte
 Nauty Ratio: 36.390%
 
-Duration: 0d 0h 0m 4.0079684s
+Duration: 0d 0h 0m 3.9179063s
 
-generating algorithm Duration: 0d 0h 0m 0.111379385s
+generating algorithm Duration: 0d 0h 0m 0.111253425s
 ==============================================================
 n: 15, i: 2 needs at least 20 comparisons
-# 0: 1 in 3.010µs, total: 1
-# 1: 1 in 12.920µs, total: 2
-# 2: 3 in 47.539µs, total: 5
-# 3: 14 in 428.727µs, total: 19
-# 4: 60 in 3.930ms, total: 79
-# 5: 288 in 25.971ms, total: 367
-# 6: 1537 in 176.260ms, total: 1904
-# 7: 5415 in 805.880ms, total: 7319
-# 8: 9500 in 3.490s, total: 16819
-# 9: 8622 in 3.172s, total: 25441
-# 10: 5208 in 6.750s, total: 30649
-# 11: 2408 in 5.354s, total: 33057
-# 12: 1050 in 3.309s, total: 34107
-# 13: 435 in 1.381s, total: 34542
-# 14: 187 in 936.646ms, total: 34729
-# 15: 71 in 415.582ms, total: 34800
-# 16: 32 in 63.700ms, total: 34832
-# 17: 14 in 23.064ms, total: 34846
-# 18: 6 in 2.401ms, total: 34852
-# 19: 2 in 568.159µs, total: 34854
-# 20: 1 in 155.737µs, total: 34855
-Duration: 0d 0h 0m 25.910965s
+# 0: 1 in 5.240µs, total: 1
+# 1: 1 in 20.331µs, total: 2
+# 2: 3 in 36.639µs, total: 5
+# 3: 14 in 564.851µs, total: 19
+# 4: 60 in 3.025ms, total: 79
+# 5: 288 in 21.979ms, total: 367
+# 6: 1537 in 162.956ms, total: 1904
+# 7: 5415 in 641.535ms, total: 7319
+# 8: 9500 in 3.673s, total: 16819
+# 9: 8622 in 2.906s, total: 25441
+# 10: 5208 in 6.257s, total: 30649
+# 11: 2408 in 4.677s, total: 33057
+# 12: 1050 in 3.544s, total: 34107
+# 13: 435 in 1.285s, total: 34542
+# 14: 187 in 784.361ms, total: 34729
+# 15: 71 in 429.192ms, total: 34800
+# 16: 32 in 94.066ms, total: 34832
+# 17: 14 in 15.717ms, total: 34846
+# 18: 6 in 2.152ms, total: 34852
+# 19: 2 in 262.792µs, total: 34854
+# 20: 1 in 62.425µs, total: 34855
+Duration: 0d 0h 0m 24.497753s
 
 Congratulations. A solution was found!
 
@@ -2148,64 +2148,64 @@ n: 15, i: 2
 Comparisons: 20
 
 Cache entries: 34855
-Cache size: 0.001 Gigabyte
-Nauty Ratio: 8.173%
+Cache size: 0.002 Gigabyte
+Nauty Ratio: 8.184%
 
-Duration: 0d 0h 0m 25.911015s
+Duration: 0d 0h 0m 24.497812s
 
-generating algorithm Duration: 0d 0h 0m 0.5554455s
+generating algorithm Duration: 0d 0h 0m 0.38059556s
 ==============================================================
 n: 15, i: 3 needs at least 22 comparisons
-# 0: 1 in 5.741µs, total: 1
-# 1: 1 in 31.070µs, total: 2
-# 2: 3 in 53.321µs, total: 5
-# 3: 16 in 741.870µs, total: 21
-# 4: 175 in 23.545ms, total: 196
-# 5: 2242 in 181.500ms, total: 2438
-# 6: 27924 in 1.177s, total: 30362
-# 7: 165601 in 6.258s, total: 195963
-# 8: 393611 in 23.014s, total: 589574
-# 9: 436213 in 34.061s, total: 1025787
-# 10: 274935 in 64.568s, total: 1300722
-# 11: 117750 in 37.352s, total: 1418472
-# 12: 40915 in 32.871s, total: 1459387
-# 13: 13100 in 12.652s, total: 1472487
-# 14: 4100 in 5.705s, total: 1476587
-# 15: 1273 in 2.325s, total: 1477860
-# 16: 406 in 1.089s, total: 1478266
-# 17: 125 in 175.626ms, total: 1478391
-# 18: 42 in 51.289ms, total: 1478433
-# 19: 13 in 23.104ms, total: 1478446
-# 20: 4 in 19.686ms, total: 1478450
-# 21: 1 in 712.910µs, total: 1478451
-# 22: 0 in 291.073µs, total: 1478451
-Duration: 0d 0h 3m 41.549652s
+# 0: 1 in 5.048µs, total: 1
+# 1: 1 in 31.310µs, total: 2
+# 2: 3 in 29.719µs, total: 5
+# 3: 16 in 573.434µs, total: 21
+# 4: 175 in 16.775ms, total: 196
+# 5: 2242 in 114.661ms, total: 2438
+# 6: 27924 in 917.767ms, total: 30362
+# 7: 165601 in 4.441s, total: 195963
+# 8: 393611 in 15.272s, total: 589574
+# 9: 436213 in 22.968s, total: 1025787
+# 10: 274935 in 57.890s, total: 1300722
+# 11: 117750 in 32.425s, total: 1418472
+# 12: 40915 in 30.368s, total: 1459387
+# 13: 13100 in 11.691s, total: 1472487
+# 14: 4100 in 5.284s, total: 1476587
+# 15: 1273 in 2.540s, total: 1477860
+# 16: 406 in 991.508ms, total: 1478266
+# 17: 125 in 211.998ms, total: 1478391
+# 18: 42 in 42.962ms, total: 1478433
+# 19: 13 in 13.640ms, total: 1478446
+# 20: 4 in 10.608ms, total: 1478450
+# 21: 1 in 467.457µs, total: 1478451
+# 22: 0 in 203.728µs, total: 1478451
+Duration: 0d 0h 3m 5.205185s
 n: 15, i: 3 needs at least 23 comparisons
-# 0: 1 in 21.133µs, total: 1
-# 1: 1 in 14.552µs, total: 2
-# 2: 3 in 37.690µs, total: 5
-# 3: 16 in 759.058µs, total: 21
-# 4: 175 in 19.957ms, total: 196
-# 5: 2259 in 207.327ms, total: 2455
-# 6: 31178 in 1.323s, total: 33633
-# 7: 231049 in 10.826s, total: 264682
-# 8: 695039 in 41.209s, total: 959721
-# 9: 950498 in 92.204s, total: 1910219
-# 10: 705662 in 110.906s, total: 2615881
-# 11: 336450 in 158.131s, total: 2952331
-# 12: 122272 in 69.553s, total: 3074603
-# 13: 39137 in 45.395s, total: 3113740
-# 14: 11997 in 25.639s, total: 3125737
-# 15: 3687 in 9.363s, total: 3129424
-# 16: 1135 in 3.275s, total: 3130559
-# 17: 350 in 951.553ms, total: 3130909
-# 18: 113 in 290.451ms, total: 3131022
-# 19: 37 in 56.327ms, total: 3131059
-# 20: 13 in 18.157ms, total: 3131072
-# 21: 4 in 2.328ms, total: 3131076
-# 22: 1 in 390.282µs, total: 3131077
-# 23: 1 in 13.778µs, total: 3131078
-Duration: 0d 0h 9m 29.371277s
+# 0: 1 in 4.170µs, total: 1
+# 1: 1 in 13.943µs, total: 2
+# 2: 3 in 43.806µs, total: 5
+# 3: 16 in 436.318µs, total: 21
+# 4: 175 in 10.873ms, total: 196
+# 5: 2259 in 155.574ms, total: 2455
+# 6: 31178 in 1.057s, total: 33633
+# 7: 231049 in 7.026s, total: 264682
+# 8: 695039 in 36.349s, total: 959721
+# 9: 950498 in 67.338s, total: 1910219
+# 10: 705662 in 86.941s, total: 2615881
+# 11: 336450 in 143.648s, total: 2952331
+# 12: 122272 in 57.788s, total: 3074603
+# 13: 39137 in 41.086s, total: 3113740
+# 14: 11997 in 21.806s, total: 3125737
+# 15: 3687 in 8.775s, total: 3129424
+# 16: 1135 in 3.161s, total: 3130559
+# 17: 350 in 1.011s, total: 3130909
+# 18: 113 in 460.313ms, total: 3131022
+# 19: 37 in 87.009ms, total: 3131059
+# 20: 13 in 17.408ms, total: 3131072
+# 21: 4 in 3.104ms, total: 3131076
+# 22: 1 in 442.386µs, total: 3131077
+# 23: 1 in 18.623µs, total: 3131078
+Duration: 0d 0h 7m 56.72101s
 
 Congratulations. A solution was found!
 
@@ -2213,40 +2213,40 @@ n: 15, i: 3
 Comparisons: 23
 
 Cache entries: 3131078
-Cache size: 0.101 Gigabyte
-Nauty Ratio: 1.683%
+Cache size: 0.147 Gigabyte
+Nauty Ratio: 1.678%
 
-Duration: 0d 0h 13m 10.9210205s
+Duration: 0d 0h 11m 1.9262695s
 
-generating algorithm Duration: 0d 0h 0m 0.3909783s
+generating algorithm Duration: 0d 0h 0m 0.042576876s
 ==============================================================
 n: 15, i: 4 needs at least 24 comparisons
-# 0: 1 in 5.475µs, total: 1
-# 1: 1 in 17.569µs, total: 2
-# 2: 3 in 36.876µs, total: 5
-# 3: 16 in 785.979µs, total: 21
-# 4: 323 in 75.714ms, total: 344
-# 5: 10779 in 862.773ms, total: 11123
-# 6: 277884 in 10.388s, total: 289007
-# 7: 2589782 in 88.354s, total: 2878789
-# 8: 8631840 in 355.871s, total: 11510629
-# 9: 12450910 in 639.277s, total: 23961539
-# 10: 9462251 in 669.580s, total: 33423790
-# 11: 4483209 in 435.584s, total: 37906999
-# 12: 1538316 in 302.840s, total: 39445315
-# 13: 438038 in 125.873s, total: 39883353
-# 14: 115236 in 81.107s, total: 39998589
-# 15: 29586 in 28.142s, total: 40028175
-# 16: 7727 in 10.288s, total: 40035902
-# 17: 1981 in 2.415s, total: 40037883
-# 18: 541 in 931.937ms, total: 40038424
-# 19: 145 in 204.119ms, total: 40038569
-# 20: 47 in 85.078ms, total: 40038616
-# 21: 13 in 30.907ms, total: 40038629
-# 22: 3 in 22.038ms, total: 40038632
-# 23: 2 in 670.894µs, total: 40038634
-# 24: 1 in 740.320µs, total: 40038635
-Duration: 0d 0h 45m 51.93628s
+# 0: 1 in 6.341µs, total: 1
+# 1: 1 in 32.657µs, total: 2
+# 2: 3 in 44.901µs, total: 5
+# 3: 16 in 451.589µs, total: 21
+# 4: 323 in 27.695ms, total: 344
+# 5: 10779 in 416.906ms, total: 11123
+# 6: 277884 in 4.527s, total: 289007
+# 7: 2589782 in 29.787s, total: 2878789
+# 8: 8631840 in 139.259s, total: 11510629
+# 9: 12450910 in 255.825s, total: 23961539
+# 10: 9462251 in 299.461s, total: 33423790
+# 11: 4483209 in 210.326s, total: 37906999
+# 12: 1538316 in 200.426s, total: 39445315
+# 13: 438038 in 87.861s, total: 39883353
+# 14: 115236 in 66.797s, total: 39998589
+# 15: 29586 in 23.457s, total: 40028175
+# 16: 7727 in 9.775s, total: 40035902
+# 17: 1981 in 2.165s, total: 40037883
+# 18: 541 in 989.686ms, total: 40038424
+# 19: 145 in 244.704ms, total: 40038569
+# 20: 47 in 68.525ms, total: 40038616
+# 21: 13 in 21.342ms, total: 40038629
+# 22: 3 in 9.905ms, total: 40038632
+# 23: 2 in 1.010ms, total: 40038634
+# 24: 1 in 963.731µs, total: 40038635
+Duration: 0d 0h 22m 11.447632s
 
 Congratulations. A solution was found!
 
@@ -2254,70 +2254,70 @@ n: 15, i: 4
 Comparisons: 24
 
 Cache entries: 40038635
-Cache size: 1.229 Gigabyte
-Nauty Ratio: 0.460%
+Cache size: 1.787 Gigabyte
+Nauty Ratio: 0.459%
 
-Duration: 0d 0h 45m 51.93628s
+Duration: 0d 0h 22m 11.447632s
 
-generating algorithm Duration: 0d 0h 0m 0.004210279s
+generating algorithm Duration: 0d 0h 0m 1.8510766s
 ==============================================================
 n: 15, i: 5 needs at least 25 comparisons
-# 0: 1 in 13.357µs, total: 1
-# 1: 1 in 3.800ms, total: 2
-# 2: 3 in 82.791µs, total: 5
-# 3: 16 in 1.781ms, total: 21
-# 4: 446 in 195.488ms, total: 467
-# 5: 32900 in 2.808s, total: 33367
-# 6: 1318190 in 56.571s, total: 1351557
-# 7: 15021678 in 594.556s, total: 16373235
-# 8: 57028328 in 2526.233s, total: 73401563
-# 9: 91158975 in 5082.831s, total: 164560538
-# 10: 74836949 in 5401.792s, total: 239397487
-# 11: 37309477 in 3533.833s, total: 276706964
-# 12: 12966995 in 1625.876s, total: 289673959
-# 13: 3577826 in 706.020s, total: 293251785
-# 14: 870837 in 236.826s, total: 294122622
-# 15: 203326 in 98.713s, total: 294325948
-# 16: 47302 in 31.596s, total: 294373250
-# 17: 11118 in 11.250s, total: 294384368
-# 18: 2649 in 2.854s, total: 294387017
-# 19: 658 in 862.001ms, total: 294387675
-# 20: 169 in 195.647ms, total: 294387844
-# 21: 44 in 71.374ms, total: 294387888
-# 22: 10 in 35.050ms, total: 294387898
-# 23: 3 in 15.374ms, total: 294387901
-# 24: 1 in 12.055ms, total: 294387902
-# 25: 0 in 1.613ms, total: 294387902
-Duration: 0d 5h 31m 54.421875s
+# 0: 1 in 16.536µs, total: 1
+# 1: 1 in 34.186µs, total: 2
+# 2: 3 in 62.516µs, total: 5
+# 3: 16 in 453.590µs, total: 21
+# 4: 446 in 57.578ms, total: 467
+# 5: 32900 in 639.724ms, total: 33367
+# 6: 1318190 in 13.866s, total: 1351557
+# 7: 15021678 in 160.193s, total: 16373235
+# 8: 57028328 in 779.332s, total: 73401563
+# 9: 91158975 in 1742.655s, total: 164560538
+# 10: 74836949 in 1976.932s, total: 239397487
+# 11: 37309477 in 1384.561s, total: 276706964
+# 12: 12966995 in 687.354s, total: 289673959
+# 13: 3577826 in 373.000s, total: 293251785
+# 14: 870837 in 141.367s, total: 294122622
+# 15: 203326 in 75.968s, total: 294325948
+# 16: 47302 in 25.239s, total: 294373250
+# 17: 11118 in 10.018s, total: 294384368
+# 18: 2649 in 2.623s, total: 294387017
+# 19: 658 in 783.584ms, total: 294387675
+# 20: 169 in 201.915ms, total: 294387844
+# 21: 44 in 63.462ms, total: 294387888
+# 22: 10 in 14.877ms, total: 294387898
+# 23: 3 in 10.383ms, total: 294387901
+# 24: 1 in 4.505ms, total: 294387902
+# 25: 0 in 958.606µs, total: 294387902
+Duration: 0d 2h 2m 56.720215s
 n: 15, i: 5 needs at least 26 comparisons
-# 0: 1 in 9.644µs, total: 1
-# 1: 1 in 24.739µs, total: 2
-# 2: 3 in 71.432µs, total: 5
-# 3: 16 in 840.695µs, total: 21
-# 4: 446 in 189.676ms, total: 467
-# 5: 33470 in 2.951s, total: 33937
-# 6: 1544219 in 77.212s, total: 1578156
-# 7: 22187751 in 963.751s, total: 23765907
-# 8: 106924915 in 4853.044s, total: 130690822
-# 9: 211061384 in 11326.126s, total: 341752206
-# 10: 206791674 in 14008.185s, total: 548543880
-# 11: 118411174 in 10456.523s, total: 666955054
-# 12: 45368428 in 5175.799s, total: 712323482
-# 13: 13164590 in 2002.925s, total: 725488072
-# 14: 3230600 in 934.969s, total: 728718672
-# 15: 736057 in 299.723s, total: 729454729
-# 16: 164521 in 138.935s, total: 729619250
-# 17: 36797 in 43.234s, total: 729656047
-# 18: 8405 in 18.019s, total: 729664452
-# 19: 1979 in 2.939s, total: 729666431
-# 20: 493 in 1.277s, total: 729666924
-# 21: 128 in 299.186ms, total: 729667052
-# 22: 34 in 66.154ms, total: 729667086
-# 23: 10 in 12.693ms, total: 729667096
-# 24: 4 in 19.828ms, total: 729667100
-# 25: 1 in 1.651ms, total: 729667101
-# 26: 1 in 25.980µs, total: 729667102
-Duration: 0d 13h 58m 26.203125s
+# 0: 1 in 14.084µs, total: 1
+# 1: 1 in 41.017µs, total: 2
+# 2: 3 in 64.659µs, total: 5
+# 3: 16 in 517.133µs, total: 21
+# 4: 446 in 71.886ms, total: 467
+# 5: 33470 in 659.154ms, total: 33937
+# 6: 1544219 in 16.142s, total: 1578156
+# 7: 22187751 in 232.435s, total: 23765907
+# 8: 106924915 in 1437.992s, total: 130690822
+# 9: 211061384 in 3822.037s, total: 341752206
+# 10: 206791674 in 5139.107s, total: 548543880
+# 11: 118411174 in 4079.925s, total: 666955054
+# 12: 45368428 in 2208.572s, total: 712323482
+# 13: 13164590 in 930.593s, total: 725488072
+# 14: 3230600 in 596.778s, total: 728718672
+# 15: 736057 in 215.957s, total: 729454729
+# 16: 164521 in 118.449s, total: 729619250
+# 17: 36797 in 39.883s, total: 729656047
+# 18: 8405 in 17.283s, total: 729664452
+# 19: 1979 in 2.904s, total: 729666431
+# 20: 493 in 1.054s, total: 729666924
+# 21: 128 in 246.502ms, total: 729667052
+# 22: 34 in 56.675ms, total: 729667086
+# 23: 10 in 16.024ms, total: 729667096
+# 24: 4 in 10.620ms, total: 729667100
+# 25: 1 in 979.106µs, total: 729667101
+# 26: 1 in 9.425µs, total: 729667102
+Duration: 0d 5h 14m 20.175781s
 
 Congratulations. A solution was found!
 
@@ -2325,12 +2325,12 @@ n: 15, i: 5
 Comparisons: 26
 
 Cache entries: 729667102
-Cache size: 25.048 Gigabyte
-Nauty Ratio: 0.133%
+Cache size: 36.433 Gigabyte
+Nauty Ratio: 0.132%
 
-Duration: 0d 19h 30m 20.625s
+Duration: 0d 7h 17m 16.896484s
 
-generating algorithm Duration: 0d 0h 0m 0.005639161s
+generating algorithm Duration: 0d 0h 0m 0.29666892s
 ==============================================================
 n: 15, i: 6 needs at least 26 comparisons
 # 0: 1 in 12.883µs, total: 1
@@ -2447,3 +2447,277 @@ Nauty Ratio: 0.042%
 Duration: 3d 8h 8m 32.59375s
 
 generating algorithm Duration: 0d 0h 0m 0.062239826s
+==============================================================
+n: 16, i: 0 needs at least 15 comparisons
+# 0: 1 in 14.407µs, total: 1
+# 1: 1 in 3.761ms, total: 2
+# 2: 1 in 46.438µs, total: 3
+# 3: 1 in 30.980µs, total: 4
+# 4: 1 in 44.130µs, total: 5
+# 5: 1 in 31.128µs, total: 6
+# 6: 1 in 37.762µs, total: 7
+# 7: 1 in 44.020µs, total: 8
+# 8: 1 in 61.945µs, total: 9
+# 9: 1 in 74.793µs, total: 10
+# 10: 1 in 92.756µs, total: 11
+# 11: 1 in 114.653µs, total: 12
+# 12: 1 in 140.025µs, total: 13
+# 13: 1 in 170.531µs, total: 14
+# 14: 1 in 208.536µs, total: 15
+# 15: 1 in 107.735µs, total: 16
+Duration: 0d 0h 0m 0.005102897s
+
+Congratulations. A solution was found!
+
+n: 16, i: 0
+Comparisons: 15
+
+Cache entries: 16
+Cache size: 0.000 Gigabyte
+Nauty Ratio: 0.000%
+
+Duration: 0d 0h 0m 0.005139372s
+
+generating algorithm Duration: 0d 0h 0m 0.000482116s
+==============================================================
+n: 16, i: 1 needs at least 18 comparisons
+# 0: 1 in 3.535µs, total: 1
+# 1: 1 in 18.300µs, total: 2
+# 2: 3 in 42.880µs, total: 5
+# 3: 6 in 170.741µs, total: 11
+# 4: 11 in 634.285µs, total: 22
+# 5: 21 in 3.315ms, total: 43
+# 6: 41 in 13.485ms, total: 84
+# 7: 75 in 201.281ms, total: 159
+# 8: 98 in 1.948s, total: 257
+# 9: 87 in 1.719s, total: 344
+# 10: 63 in 3.396s, total: 407
+# 11: 43 in 2.586s, total: 450
+# 12: 28 in 1.679s, total: 478
+# 13: 18 in 463.678ms, total: 496
+# 14: 12 in 197.415ms, total: 508
+# 15: 6 in 64.274ms, total: 514
+# 16: 3 in 1.389ms, total: 517
+# 17: 2 in 191.964µs, total: 519
+# 18: 1 in 28.538µs, total: 520
+Duration: 0d 0h 0m 12.274318s
+
+Congratulations. A solution was found!
+
+n: 16, i: 1
+Comparisons: 18
+
+Cache entries: 520
+Cache size: 0.000 Gigabyte
+Nauty Ratio: 39.407%
+
+Duration: 0d 0h 0m 12.274342s
+
+generating algorithm Duration: 0d 0h 0m 0.069252305s
+==============================================================
+n: 16, i: 2 needs at least 21 comparisons
+# 0: 1 in 4.935µs, total: 1
+# 1: 1 in 11.854µs, total: 2
+# 2: 3 in 45.251µs, total: 5
+# 3: 14 in 447.592µs, total: 19
+# 4: 60 in 3.808ms, total: 79
+# 5: 289 in 25.399ms, total: 368
+# 6: 1617 in 1.243s, total: 1985
+# 7: 6999 in 2.355s, total: 8984
+# 8: 15177 in 7.547s, total: 24161
+# 9: 16643 in 23.772s, total: 40804
+# 10: 11391 in 17.114s, total: 52195
+# 11: 5765 in 28.008s, total: 57960
+# 12: 2486 in 18.025s, total: 60446
+# 13: 1066 in 8.666s, total: 61512
+# 14: 454 in 3.755s, total: 61966
+# 15: 194 in 1.503s, total: 62160
+# 16: 80 in 592.090ms, total: 62240
+# 17: 38 in 109.652ms, total: 62278
+# 18: 14 in 39.332ms, total: 62292
+# 19: 6 in 2.173ms, total: 62298
+# 20: 2 in 734.109µs, total: 62300
+# 21: 1 in 217.141µs, total: 62301
+Duration: 0d 0h 1m 52.761925s
+
+Congratulations. A solution was found!
+
+n: 16, i: 2
+Comparisons: 21
+
+Cache entries: 62301
+Cache size: 0.002 Gigabyte
+Nauty Ratio: 8.794%
+
+Duration: 0d 0h 1m 52.76197s
+
+generating algorithm Duration: 0d 0h 0m 0.54630864s
+==============================================================
+n: 16, i: 3 needs at least 24 comparisons
+# 0: 1 in 3.690µs, total: 1
+# 1: 1 in 31.057µs, total: 2
+# 2: 3 in 53.843µs, total: 5
+# 3: 16 in 740.399µs, total: 21
+# 4: 175 in 26.558ms, total: 196
+# 5: 2266 in 257.342ms, total: 2462
+# 6: 34873 in 3.876s, total: 37335
+# 7: 334516 in 30.728s, total: 371851
+# 8: 1295847 in 149.075s, total: 1667698
+# 9: 2188380 in 495.399s, total: 3856078
+# 10: 1923128 in 636.560s, total: 5779206
+# 11: 1037290 in 653.072s, total: 6816496
+# 12: 407788 in 872.841s, total: 7224284
+# 13: 134814 in 309.509s, total: 7359098
+# 14: 41680 in 193.061s, total: 7400778
+# 15: 12731 in 68.832s, total: 7413509
+# 16: 3927 in 24.792s, total: 7417436
+# 17: 1196 in 8.711s, total: 7418632
+# 18: 397 in 2.022s, total: 7419029
+# 19: 124 in 795.440ms, total: 7419153
+# 20: 42 in 98.335ms, total: 7419195
+# 21: 10 in 39.692ms, total: 7419205
+# 22: 4 in 5.598ms, total: 7419209
+# 23: 2 in 829.384µs, total: 7419211
+# 24: 1 in 759.767µs, total: 7419212
+Duration: 0d 0h 57m 29.70337s
+
+Congratulations. A solution was found!
+
+n: 16, i: 3
+Comparisons: 24
+
+Cache entries: 7419212
+Cache size: 0.241 Gigabyte
+Nauty Ratio: 1.802%
+
+Duration: 0d 0h 57m 29.70337s
+
+generating algorithm Duration: 0d 0h 0m 0.8073686s
+==============================================================
+n: 16, i: 4 needs at least 25 comparisons
+# 0: 1 in 14.760µs, total: 1
+# 1: 1 in 3.810ms, total: 2
+# 2: 3 in 52.236µs, total: 5
+# 3: 16 in 865.364µs, total: 21
+# 4: 323 in 43.136ms, total: 344
+# 5: 11083 in 649.878ms, total: 11427
+# 6: 351502 in 9.228s, total: 362929
+# 7: 4420510 in 99.826s, total: 4783439
+# 8: 18928917 in 499.906s, total: 23712356
+# 9: 33510363 in 1372.627s, total: 57222719
+# 10: 30040393 in 1627.013s, total: 87263112
+# 11: 16182887 in 1589.237s, total: 103445999
+# 12: 6072698 in 936.649s, total: 109518697
+# 13: 1819786 in 923.074s, total: 111338483
+# 14: 487068 in 401.201s, total: 111825551
+# 15: 125834 in 255.189s, total: 111951385
+# 16: 32617 in 81.303s, total: 111984002
+# 17: 8492 in 26.383s, total: 111992494
+# 18: 2255 in 8.194s, total: 111994749
+# 19: 590 in 2.550s, total: 111995339
+# 20: 161 in 302.251ms, total: 111995500
+# 21: 46 in 87.620ms, total: 111995546
+# 22: 12 in 57.965ms, total: 111995558
+# 23: 5 in 26.816ms, total: 111995563
+# 24: 1 in 29.873ms, total: 111995564
+# 25: 0 in 1.121ms, total: 111995564
+Duration: 0d 2h 10m 34.026855s
+n: 16, i: 4 needs at least 26 comparisons
+# 0: 1 in 8.515µs, total: 1
+# 1: 1 in 45.119µs, total: 2
+# 2: 3 in 52.626µs, total: 5
+# 3: 16 in 629.432µs, total: 21
+# 4: 323 in 37.583ms, total: 344
+# 5: 11135 in 671.146ms, total: 11479
+# 6: 394237 in 12.544s, total: 405716
+# 7: 6213312 in 147.966s, total: 6619028
+# 8: 33949167 in 971.212s, total: 40568195
+# 9: 74770122 in 2611.881s, total: 115338317
+# 10: 80472649 in 4251.354s, total: 195810966
+# 11: 49973386 in 3995.143s, total: 245784352
+# 12: 20670417 in 3318.919s, total: 266454769
+# 13: 6498367 in 2054.940s, total: 272953136
+# 14: 1749979 in 2217.423s, total: 274703115
+# 15: 441277 in 751.455s, total: 275144392
+# 16: 110406 in 370.773s, total: 275254798
+# 17: 27547 in 109.267s, total: 275282345
+# 18: 7115 in 37.593s, total: 275289460
+# 19: 1838 in 7.261s, total: 275291298
+# 20: 513 in 2.038s, total: 275291811
+# 21: 138 in 408.515ms, total: 275291949
+# 22: 40 in 88.386ms, total: 275291989
+# 23: 12 in 32.308ms, total: 275292001
+# 24: 4 in 36.608ms, total: 275292005
+# 25: 1 in 1.103ms, total: 275292006
+# 26: 1 in 15.760µs, total: 275292007
+Duration: 0d 5h 47m 41.046875s
+
+Congratulations. A solution was found!
+
+n: 16, i: 4
+Comparisons: 26
+
+Cache entries: 275292007
+Cache size: 8.896 Gigabyte
+Nauty Ratio: 0.467%
+
+Duration: 0d 7h 58m 15.074219s
+
+generating algorithm Duration: 0d 0h 0m 0.17770255s
+==============================================================
+n: 16, i: 5 needs at least 27 comparisons
+# 0: 1 in 13.835µs, total: 1
+# 1: 1 in 22.413µs, total: 2
+# 2: 3 in 55.932µs, total: 5
+# 3: 16 in 538.129µs, total: 21
+# 4: 446 in 84.926ms, total: 467
+# 5: 37048 in 2.155s, total: 37515
+# 6: 2278971 in 55.459s, total: 2316486
+# 7: 44933390 in 961.401s, total: 47249876
+# 8: 276650046 in 6459.499s, total: 323899922
+# 9: 665162651 in 20135.495s, total: 989062573
+# 10: 766484040 in 31084.046s, total: 1755546613
+# 11: 501304630 in 29590.358s, total: 2256851243
+# 12: 213232683 in 19045.982s, total: 2470083926
+# 13: 66666165 in 10043.550s, total: 2536750091
+# 14: 17098708 in 4059.463s, total: 2553848799
+# 15: 3969529 in 2608.548s, total: 2557818328
+# 16: 890894 in 925.799s, total: 2558709222
+# 17: 199453 in 449.008s, total: 2558908675
+# 18: 44895 in 120.647s, total: 2558953570
+# 19: 10438 in 33.109s, total: 2558964008
+# 20: 2481 in 7.055s, total: 2558966489
+# 21: 611 in 2.051s, total: 2558967100
+# 22: 152 in 412.524ms, total: 2558967252
+# 23: 43 in 127.571ms, total: 2558967295
+# 24: 12 in 52.327ms, total: 2558967307
+# 25: 3 in 42.275ms, total: 2558967310
+# 26: 2 in 2.071ms, total: 2558967312
+# 27: 1 in 2.467ms, total: 2558967313
+Duration: 1d 10h 53m 4.3515625s
+
+Congratulations. A solution was found!
+
+n: 16, i: 5
+Comparisons: 27
+
+Cache entries: 2558967313
+Cache size: 79.799 Gigabyte
+Nauty Ratio: 0.144%
+
+Duration: 1d 10h 53m 4.3515625s
+
+generating algorithm Duration: 0d 0h 0m 1.5428009s
+==============================================================
+n: 16, i: 6 needs at least 27 comparisons
+# 0: 1 in 13.800µs, total: 1
+# 1: 1 in 24.066µs, total: 2
+# 2: 3 in 50.901µs, total: 5
+# 3: 16 in 537.957µs, total: 21
+# 4: 478 in 144.678ms, total: 499
+# 5: 80790 in 4.609s, total: 81289
+# 6: 6296817 in 165.227s, total: 6378106
+# 7: 120848286 in 2769.539s, total: 127226392
+# 8: 678935736 in 17511.251s, total: 806162128
+# 9: 1495867061 in 50175.719s, total: 2302029189
+# 10: 1601708197 in 72375.110s, total: 3903737386
