@@ -58,7 +58,7 @@
 
 \title{\Large Lower Bounds for the Number of Comparisons in Selection\relatedversion}
 
-\author{Josua Dörrer, Konrad Gendle, Johanna Hofmann, Julius von Smercek, Andreas Steding, Florian Stober}
+\author{Josua Dörrer, Konrad Gendle, Johanna Hofmann \\ Julius von Smercek, Andreas Steding, Florian Stober}
 
 \date{}
 
@@ -72,7 +72,7 @@
 
 % Default Copyright Statement
 \fancyfoot[R]{\scriptsize{Copyright \textcopyright\ 20XX by SIAM\\
-Unauthorized reproduction of this article is prohibited}}
+    Unauthorized reproduction of this article is prohibited}}
 
 % Depending on which copyright you agree to when you sign the copyright form, the copyright
 % can be changed to one of the following after commenting out the default copyright statement
@@ -88,20 +88,20 @@ Unauthorized reproduction of this article is prohibited}}
 %\setcounter{page}{1}%Leave this line commented out.
 
 \begin{abstract} \small\baselineskip=9pt This research project aims to find worst case optimal comparison algorithms for selecting the i-th smallest of n elements of
-a set for n up to 15 with computer search.
-Explicitly, we apply computer search to determine the optimal worst-case number of comparisons for selecting a single element from a set of initially unordered elements.
-Our method comprises the three main approaches forward search, backward search and bidirectional search.
-Additionally, we harness the notion of compatible solutions in all of the three searches.
-For the forward search approach besides pruning, poset canonification and heuristics, multithreading was applied successfully.
-In backward search the greatest challenge is posed by the task of calculating the predecessors.
-This was tackled by a four-step procedure that can be performed within reasonable time and storage costs.
+  a set for n up to 15 with computer search.
+  Explicitly, we apply computer search to determine the optimal worst-case number of comparisons for selecting a single element from a set of initially unordered elements.
+  Our method comprises the three main approaches forward search, backward search and bidirectional search.
+  Additionally, we harness the notion of compatible solutions in all of the three searches.
+  For the forward search approach besides pruning, poset canonification and heuristics, multithreading was applied successfully.
+  In backward search the greatest challenge is posed by the task of calculating the predecessors.
+  This was tackled by a four-step procedure that can be performed within reasonable time and storage costs.
 
-Time measurements showed that the backward search performed slightly faster for  smaller $n$ and $i$. For higher values, up to $n=15$ and $i=7$ the backward search consumed only about $24\%$ of the time taken by the forward search.
-Overall, we could not only confirm solutions of previous research but also improve the lower bound for $n=15$ and $i=4$ by one comparison.
-Furthermore, we can disprove the conjecture that “pair-forming algorithms”, in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
-For $n = 12$ and $i = 4$, this assumption
-gives a bound of 20 comparisons, which does not correspond
-to the optimal bound of 19 comparisons.
+  Time measurements showed that the backward search performed slightly faster for  smaller $n$ and $i$. For higher values, up to $n=15$ and $i=7$ the backward search consumed only about $24\%$ of the time taken by the forward search.
+  Overall, we could not only confirm solutions of previous research but also improve the lower bound for $n=15$ and $i=4$ by one comparison.
+  Furthermore, we can disprove the conjecture that “pair-forming algorithms”, in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
+  For $n = 12$ and $i = 4$, this assumption
+  gives a bound of 20 comparisons, which does not correspond
+  to the optimal bound of 19 comparisons.
 
 \end{abstract}
 
@@ -112,7 +112,7 @@ The  problem of selecting the $i$-th smallest element in a
 list of $n$ elements is a well-known problem in computer science called
 \textit{selection}. Explicitly, we concern ourselves with the optimal worst-case
 selection of a single element from a set of initially unordered unique elements,
-measuring the cost as the number of comparisons made. 
+measuring the cost as the number of comparisons made.
 
 Searching for optimal solutions is considerably difficult and the tightest known
 lower bounds obtained by mathematical means soon exceed what is attainable by
@@ -137,14 +137,14 @@ So buckle up.
 A first approach to solve
 this can be achieved by sorting the list at first and selecting the $i$-th
 element. However, this approach has a time complexity of $\mathcal{O}(n \cdot
-\log n)$. Putting more thought into this problem one can find algorithms like
+  \log n)$. Putting more thought into this problem one can find algorithms like
 the median of medians \cite{Schoening1993} or PICK
 \cite{Blum1972} and reduce the time complexity to $\mathcal{O}(n)$.
 Optimal algorithms are known for any $n$ when $i$ is either one or two, but
 there is a significant performance gap finding the median $i = \nicefrac{n}{2}$
 from the best known algorithm with a time complexity of $2.95n$ described in
 \cite{dor1999selecting} to the tightest known minimum of $2 \cdot n -
-\smallO(n)$.
+  \smallO(n)$.
 
 The time complexity of $\mathcal{O}(n)$ of the mentioned algorithms is
 inevitable, because the input to these algorithm is a list of values in
@@ -160,8 +160,8 @@ $n+\min(i,n-i)-\mathcal{O}(1)$ comparisons \cite{cunto1989}, thus matching the
 average case of the Floyd-Rivest algorithm up to its $\smallO(n)$ term. For
 deterministic algorithms it has also been shown that
 \begin{eqnarray*}
-&\left (1 + H(i/n) \right ) \cdot n + \Omega(\sqrt n) \\
-&\text{with~} H(x) = x \cdot \log_2 \frac{1}{x} + (1-x) \log_2 \frac{1}{1-x}
+  &\left (1 + H(i/n) \right ) \cdot n + \Omega(\sqrt n) \\
+  &\text{with~} H(x) = x \cdot \log_2 \frac{1}{x} + (1-x) \log_2 \frac{1}{1-x}
 \end{eqnarray*}
 comparisons are required. An upper bound is been proposed by Blum, in the paper
 \textit{Time Bounds for Selection}. \cite{Blum1972} It stated that no more than
@@ -191,12 +191,12 @@ That means we assume $|\Omega_R| = n$.
 
 \todo[inline]{The following definitions could be text.}
 \begin{definition}[Dual poset] \label{definition:dual_poset}
-The dual of a poset $P = (n, i, R)$ is the poset $P^{-1} = (n, n - 1 - i, R')$ with $R' = \{(u,v) \mid (v,u) \in R\}$.
+  The dual of a poset $P = (n, i, R)$ is the poset $P^{-1} = (n, n - 1 - i, R')$ with $R' = \{(u,v) \mid (v,u) \in R\}$.
 \end{definition}
 
 \begin{definition}[Reduced] \label{definition:reduced_poset}
-A poset is \textbf{reduced} if all its elements have at most $i$ elements smaller than themselves and at most $n - 1 - i$ larger than themselves.
-Hence, all elements can still be the $i$-th smallest.
+  A poset is \textbf{reduced} if all its elements have at most $i$ elements smaller than themselves and at most $n - 1 - i$ larger than themselves.
+  Hence, all elements can still be the $i$-th smallest.
 \end{definition}
 
 \subsection{Selection Algorithms.}
@@ -206,14 +206,14 @@ The root node is labeled with $(n, i, \emptyset)$.
 The leaf nodes are labeled with posets that have a unique element $u$, such that, there are $i-1$ elements smaller than $u$, and $n- i$ elements larger than $u$.
 That is, $u$ ist the $i$0th smalles element.
 
-The selection algorithm associates to each inner node $P$ a comparison $\{u,v\}$, meaning that the algorithm compares $u$ with $v$ as its next step.  
+The selection algorithm associates to each inner node $P$ a comparison $\{u,v\}$, meaning that the algorithm compares $u$ with $v$ as its next step.
 The two children $\pchild{P}{u}{v}$ and $\pchild{P}{v}{u}$ correspond to the two possible outcomes of the comparison $u \preceq v$ and $u \succeq v$.
 The number of comparisons required by the algorithm (in the worst case) is the maximum length of a path from the root to some leaf.
 
 
 \subsection{Minimum Number of Comparisons}
 
-\todo[inline]{This def could be text. How does it compare to the notation of knuth?}
+\todo[inline]{This def could be text. How does it compare to the notation of knuth?} % V_i(n); V(P) Notation von Knuth
 \begin{definition}[Optimal Cost]
   The cost $V(P)$ of the poset $P = (n, i, R)$ is the optimal number of further comparisons needed to perform the selection.
 
@@ -232,15 +232,15 @@ The number of comparisons required by the algorithm (in the worst case) is the m
 
 
 \begin{lemma} \label{lemma:previous_next_poset}
-If $k$ is a lower bound for selecting $i$ of $n$, then selecting $i$ of $n + 1$ must take at least $k + 1$ comparisons.
+  If $k$ is a lower bound for selecting $i$ of $n$, then selecting $i$ of $n + 1$ must take at least $k + 1$ comparisons.
 \end{lemma}
 
 \begin{proof}
-Assume some algorithm exists that selects $i$ of $n + 1$ in $k$ comparisons.
-It must have two elements it compares first.
-If we input a by definition largest element in place of one of them the algorithm must still return the correct $i$-th largest of the remaining $n$ elements.
-But because this element is larger by definition, the first comparison may be skipped, thus reducing the number of comparisons by at least $1$.
-Thus taking out all occurrences of that element will yield an algorithm for $i$ of $n$ in $k - 1$ comparisons, which contradicts the condition of $k$ being a lower bound.
+  Assume some algorithm exists that selects $i$ of $n + 1$ in $k$ comparisons.
+  It must have two elements it compares first.
+  If we input a by definition largest element in place of one of them the algorithm must still return the correct $i$-th largest of the remaining $n$ elements.
+  But because this element is larger by definition, the first comparison may be skipped, thus reducing the number of comparisons by at least $1$.
+  Thus taking out all occurrences of that element will yield an algorithm for $i$ of $n$ in $k - 1$ comparisons, which contradicts the condition of $k$ being a lower bound.
 \end{proof}
 
 \subsection{Compatible Solutions}
@@ -257,7 +257,7 @@ By definition of the problem, we seek an element that is larger than $n-i$ eleme
   Then $p$ may be above as well as below $e$, which can't be the solution in both cases.
 \end{proof}
 
-\begin{definition}[Compatible Solution]
+\begin{definition}[Compatible Solution] % hier p+uv
   As such we can define a \textbf{compatible solution} $Q = (n, i, S)$ of a poset $P = (n, i, R)$, to be solved and agreeing with $P$, that is $(a, b)\in S\implies (b, a)\notin R$.
 
   Furthermore, $Q$ has no comparisons other than the $n - 1$ needed to prove the solution and the ones resulting from application of transitivity to the former.
@@ -287,7 +287,7 @@ Let $\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$ be the set of all
 \end{theorem}
 
 \begin{proof}
-\todo[inline]{Proof can be much shorter if we do away with the induction, and argue with the height of a binary tree.}
+  \todo[inline]{Proof can be much shorter if we do away with the induction, and argue with the height of a binary tree.}
   If $P$ is already solved, $|\mathcal{C}(P)|=1$, and $\log_2(1)=0$.
 
   If not, we must make at least one more comparison $a, b$.
@@ -332,19 +332,19 @@ Furthermore, we explain how we harness the notion of compatible solutions with r
 \todo[inline]{I put this here for now. Maybe we can have a subsection Datastructures and Isomorphism testing?}
 
 \begin{definition}[Canonified]
-A poset is \textbf{canonified} if it matches the following conditions making it unique among all posets isomorphic to it:
-\begin{itemize}
-\item all elements in the poset are arranged canonically, i.e. all permutations of these elements must map to this poset
-\item
-If $i = n - 1 - i$ applies, the dual poset is formed, both are canonified and deterministically decided which of the two posets corresponds to the canonified representation.
-This is also described in more detail in Section~\ref{sec:backward:normal_form}
-\end{itemize}
+  A poset is \textbf{canonified} if it matches the following conditions making it unique among all posets isomorphic to it:
+  \begin{itemize}
+    \item all elements in the poset are arranged canonically, i.e. all permutations of these elements must map to this poset
+    \item
+          If $i = n - 1 - i$ applies, the dual poset is formed, both are canonified and deterministically decided which of the two posets corresponds to the canonified representation.
+          This is also described in more detail in Section~\ref{sec:backward:normal_form}
+  \end{itemize}
 
-Some parts of this paper use a best effort approximation for this to increase speed, the results are then called \textbf{pseudo canonified}.
+  Some parts of this paper use a best effort approximation for this to increase speed, the results are then called \textbf{pseudo canonified}.
 \end{definition}
 
 \begin{definition}[Normal]
-A \textbf{normal} poset is reduced and canonified.
+  A \textbf{normal} poset is reduced and canonified.
 \end{definition}
 
 \subsection{Forward Search}\label{chapter:forward_search}
@@ -359,7 +359,7 @@ This premise is implemented by a minimax algorithm as shown in Figure~\ref{fig:m
 
 We can drastically speed up this exploration by caching previous results, even with a simple usage based ejection policy. Since the search always imposes an upper bound for the number of comparisons to allow this also includes yet unsolved posets, for which we note the currently known minimum.
 
-\subsubsection{Pruning Decisions}
+\subsubsection{Pruning Decisions} % hier einfach schreiben: wir machen alpha-beta pruning
 The minimax search algorithm allows for cutting off unpromising branches.
 For this means, the following strategies are applied.
 
@@ -408,7 +408,7 @@ As a result, some posets that are isomorphic occupy several cache entries, but c
 We used multiple heuristics to estimate if a poset is solvable in a given number of comparisons.
 These heuristics are used to reject posets that are not solvable in the given number of comparisons.
 Other than caching, no strategies to preemptively prove solvability within some bound were employed.
-This means that the following heuristics must only provably be not too pessimistic.\todo{?}
+This means that the following heuristics must only provably be not too pessimistic.\todo{?} % das sollte hoch
 
 The first heuristic uses the number of compatible solutions.
 We use the fact, proven in Theorem \ref{theorem:compatible_log}, that the $\log_2$ of the number of compatible solutions is a lower bound for the cost of a poset.
@@ -435,7 +435,7 @@ The second heuristic attempts to reduce the size of the searched subtree by addi
 Explicitly, it searches for unordered elements $i$ and $j$ such that $i$ has as many elements less than it as possible and $j$ as many as possible greater and adds $i < j$ to the poset.
 If there is no $i$ with at least two elements less than it or no $j$ with at least 2 greater, the algorithm aborts the heuristic and resumes regular search.
 Otherwise, the new poset is then searched for a solution using the forward search described above without reducing the number of allowed comparisons.
-If the new poset is found to be solvable in the given number of comparisons, we estimate that the original poset is also solvable.\todo{?}
+% If the new poset is found to be solvable in the given number of comparisons, we estimate that the original poset is also solvable.\todo{?}
 If the new poset is not solvable, we estimate the original is not solvable either.
 This heuristic can be slightly improved by maximizing the number of elements smaller than the maximal element and greater than the minimal element.
 This is admissible because having a comparison added `for free' does not make the poset harder to solve.
@@ -473,7 +473,7 @@ See the git branch \textit{multi-threaded} for the last state.
 
 To develop the backward search, primarily the backward search from \cite{stober2022lower} was taken as orientation, since it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen \cite{Oksanen}.
 
-The backward search starts with the solved poset and iteratively removes comparisons until the searched\todo{?} poset is found.
+The backward search starts with the solved poset and iteratively removes comparisons until the unordered poset is found.
 It should be noted that if a comparison is removed from the poset $P = (n, i, R)$ resulting in the poset $P' = (n, i, R \setminus (u, v))$,
 the poset $Q = (n, i, R \setminus (u, v) \cup (v, u))$\todo{ugly formula} should already be in a canonified form in the cache.
 This means that $Q$ has already been discovered in the search.
@@ -608,7 +608,7 @@ The computation of a predecessor for a given poset $P = (n_P, i_P, R_P)$ proceed
       Thus, $u$ and $v$ cannot be reduced simultaneously.
     \end{proof}
 
-\todo[inline]{We need the other lemma here too.}
+    \todo[inline]{We need the other lemma here too.}
 
     As proven in Lemma~\ref{lemma:remove_only_last_element_edge}, it suffices to compare the new element solely with the existing ones.
 
@@ -621,7 +621,7 @@ The computation of a predecessor for a given poset $P = (n_P, i_P, R_P)$ proceed
     Additionally, by adding the comparison $u < v$, as in the first and second steps, and subsequently normalizing, the resulting poset $P$ should be obtained anew.
 
   \item[4.]
-\todo[inline]{This isn't really the last, step, is it? This is an optimization that we apply at every step.}
+    \todo[inline]{This isn't really the last, step, is it? This is an optimization that we apply at every step.}
     In the final step, the minimum number of comparisons that must be removed until the unordered poset is reached is calculated for each predecessor.
     This number corresponds to the edges in the corresponding Hasse diagram.
     Based on known theoretical upper bounds, all posets containing too many comparisons can be discarded, as they cannot lead to an unordered poset with the remaining comparisons and therefore cannot be considered in the forward search.
@@ -648,8 +648,7 @@ First, determine whether $i < n - 1 - i$ holds.
 If not, replace the poset with its dual.
 According to Lemma~\ref{lemma:dual_poset_allowed}, the solvability of the poset remains unchanged.
 
-Finally, the posets elements are arranged canonically.
-For this purpose, the poset is represented as a directed graph with respect to its Hasse diagram.\todo{?}
+Finally, the posets elements are arranged canonically. % TODO: nauty in textttt
 The canonic labelling of the elements is provided by nauty\todo{Wie schreiben wir nauty}, which is a program in \texttt{C} for the calculation of graph automorphism groups \cite[Practical Graph Isomorphism]{MCKAY201494}.
 With this canonical labelling, the poset can be represented canonically.
 
@@ -659,9 +658,13 @@ In this case, it is impossible to decide whether $P$ or $P^{-1}$ corresponds to 
 \begin{figure}[!b]
   \centering
   \input{figures/tikz_backward_canonify_problematic.tex}
-  \caption{Problematic case where Nauty cannot distinguish between the two posets, despite them being each other's duals. However, according to Lemma~\ref{lemma:dual_poset_allowed} they can be transformed into each other.\todo[inline]{Nauty cannot distinguish?}}
+  \caption{Problematic case where nauty cannot distinguish between the two posets, despite them being each other's duals. However, according to Lemma~\ref{lemma:dual_poset_allowed} they can be transformed into each other.\todo[inline]{Nauty cannot distinguish?}} % KEIN FEHLER, da gerichteter Graph
   \label{fig:backward_canonify_problematic}
 \end{figure}
+
+% schreibe irgenwo: Hasse-Diagram oben größer, unten kleiner; Pfeile implizit
+
+% Irgendwo sollte etwas mit Kongruent, nicht Aufgabe von nauty, da dual
 
 In Figure~\ref{fig:backward_canonify_problematic}, the posets as Hasse diagram appear different despite being each other's duals.
 To resolve this ambiguity, the dual poset is computed and canonified for each poset where $i = n - 1 - i$ holds true.
@@ -674,14 +677,14 @@ The manual canonification works as follows:
 First, compute the in- and out-degree for each node.
 Then assign a hash value to each node based on these degrees, considering the recursive topological structure of adjacent nodes up to a specified depth limit.
 
-Next, sort the nodes according to their hash values.
-If all hash values are unique, the graph finally attains\todo{?} its unique normal form.
-For two nodes with identical attributes\todo{?}, it is attempted to swap them.
+Next, sort the nodes according to their hash values. % node vs vertex, einheitlich!
+If all hash values are unique, the graph finally reaches\todo{?} its unique normal form. % umschrieben
+For two nodes with identical hash values, it is attempted to swap them.
 If the internal representation remains unchanged after swapping, the poset is considered uniquely canonified, since both graphs map to the same internal representation.
 If the internal representations differ, the graph is treated as follows:
 Let there be $l$ pairs of nodes with identical attributes.
 The algorithm iterates through all possible permutations.
-E.g. for the first pair, there are two options: either the nodes are swapped or they remain unchanged.
+E.g. for the first pair, there are two options: either the nodes are swapped or they remain unchanged. % besser formulieren, strukturieren -> Fallunterschiedung expliziter (Fall I, Fall II), aber kein Triple
 Given the realistic assumption that $l$ is small, all $2^l$ permutations can be efficiently iterated.
 With the aim of obtaining values for $n = 15$, it follows that there are at most $7$ pairs, hence $l \leq 7$ always holds.
 Finally, one permutation is deterministically selected based on its internal representation, as in the case of the dual poset.
@@ -854,6 +857,8 @@ Nevertheless, bidirectional search has great potential that can be exploited thr
 
 \section{Results}
 
+% Warum ist unser Programm korrekt -> unabh. vor- und rück suche., Algo-Test, ...
+
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
   \caption{The minimum number of comparisons needed to select the $i$-th smallest of $n$ elements.}
@@ -890,39 +895,39 @@ We then checked the algorithm on each of the $n!$ permutations to make sure it i
   \label{table:search_algorithms}
   \centering
   \begin{tabular}{c|c|l|l|l}
-    $n$ & $i$ & \textbf{Forward Search} & \textbf{Backward Search} & \textbf{Oksanen} \\
+    $n$ & $i$ & \textbf{Forward} & \textbf{Backward} & \textbf{Oksanen} \\
     \hline
-    12  & 0   & 0.0s                    & 0.0s                     & 0.0s             \\
-    12  & 1   & 0.0s                    & 0.1s                     & 0.0s             \\
-    12  & 2   & 0.4s                    & 0.7s                     & 0.0s             \\
-    12  & 3   & 3.5s                    & 1.6s                     & 21.4s*           \\
-    12  & 4   & 36.1s                   & 8.4s                     & 4m 59s*          \\
-    12  & 5   & 1m 30s                  & 42.0s                    & 1.9s*            \\
+    12  & 0   & 0.0s             & 0.0s              & 0.0s             \\
+    12  & 1   & 0.0s             & 0.1s              & 0.0s             \\
+    12  & 2   & 0.4s             & 0.7s              & 0.0s             \\
+    12  & 3   & 3.5s             & 1.6s              & 21.4s*           \\
+    12  & 4   & 36.1s            & 8.4s              & 4m 59s*          \\
+    12  & 5   & 1m 30s           & 42.0s             & 1.9s*            \\
     \hline
-    13  & 0   & 0.0s                    & 0.0s                     & 0.0s             \\
-    13  & 1   & 0.0s                    & 0.5s                     & 0.0s             \\
-    13  & 2   & 0.8s                    & 1.5s                     & 0.2s             \\
-    13  & 3   & 13.8s                   & 16.1s                    & 55.4s            \\
-    13  & 4   & 3m 42s                  & 1m 40s                   & 26m 36s          \\
-    13  & 5   & 17m 10s                 & 8m 35s                   & 3h 25m           \\
-    13  & 6   & 59m 20s                 & 18m 5s                   & 16h 10m          \\
+    13  & 0   & 0.0s             & 0.0s              & 0.0s             \\
+    13  & 1   & 0.0s             & 0.5s              & 0.0s             \\
+    13  & 2   & 0.8s             & 1.5s              & 0.2s             \\
+    13  & 3   & 13.8s            & 16.1s             & 55.4s            \\
+    13  & 4   & 3m 42s           & 1m 40s            & 26m 36s          \\
+    13  & 5   & 17m 10s          & 8m 35s            & 3h 25m           \\
+    13  & 6   & 59m 20s          & 18m 5s            & 16h 10m          \\
     \hline
-    14  & 0   & 0.0s                    & 0.0s                     & 0.0s             \\
-    14  & 1   & 0.0s                    & 1.5s                     & 0.0s             \\
-    14  & 2   & 1.4s                    & 5.9s                     & 0.6s             \\
-    14  & 3   & 35.9s                   & 46.9s                    & 1m 47s           \\
-    14  & 4   & 17m 27s                 & 15m 33s                  & 6h 29m           \\
-    14  & 5   & 2h 40m                  & 1h 40m                   & 4d 10h           \\
-    14  & 6   & 14h 40m                 & 6h 27m                   & >5d              \\
+    14  & 0   & 0.0s             & 0.0s              & 0.0s             \\
+    14  & 1   & 0.0s             & 1.5s              & 0.0s             \\
+    14  & 2   & 1.4s             & 5.9s              & 0.6s             \\
+    14  & 3   & 35.9s            & 46.9s             & 1m 47s           \\
+    14  & 4   & 17m 27s          & 15m 33s           & 6h 29m           \\
+    14  & 5   & 2h 40m           & 1h 40m            & 4d 10h           \\
+    14  & 6   & 14h 40m          & 6h 27m            & >5d              \\
     \hline
-    15  & 0   & 0.0s                    & 0.0s                     & 0.0s             \\
-    15  & 1   & 0.1s                    & 4.0s                     & 0.0s             \\
-    15  & 2   & 2.8s                    & 25.9s                    & 1.4s             \\
-    15  & 3   & 2m 24s                  & 13m 11s                  & 27m 17s          \\
-    15  & 4   & 1h 12m                  & 45m 52s                  & 1d 5h 40m        \\
-    15  & 5   & 1d 8h 37m               & 19h 30m                  & >5d              \\
-    15  & 6   & 4d 23h 37m              & 1d 5h 43m                & >5d              \\
-    15  & 7   & 14d 1h 51m              & 3d 8h 9m                 & >5d              \\
+    15  & 0   & 0.0s             & 0.0s              & 0.0s             \\
+    15  & 1   & 0.1s             & 4.0s              & 0.0s             \\
+    15  & 2   & 2.8s             & 25.9s             & 1.4s             \\
+    15  & 3   & 2m 24s           & 13m 11s           & 27m 17s          \\
+    15  & 4   & 1h 12m           & 45m 52s           & 1d 5h 40m        \\
+    15  & 5   & 1d 8h 37m        & 19h 30m           & >5d              \\
+    15  & 6   & 4d 23h 37m       & 1d 5h 43m         & >5d              \\
+    15  & 7   & 14d 1h 51m       & 3d 8h 9m          & >5d              \\
   \end{tabular}
 \end{table}
 
@@ -1029,7 +1034,7 @@ The latest version of our software can be found on github (\url{https://github.c
 \section*{Acknowledgments}
 
 \bibliography{biblio.bib}
-  
+
 \end{document}
 
 % End of ltexpprt.tex 
