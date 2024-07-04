@@ -27,6 +27,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{todonotes}
+\usepackage{cleveref}
 
 % Commands
 \newcommand\smallO{
@@ -41,7 +42,9 @@
 \newcommand\ie{i.e\@., }
 \newcommand{\sse}{\subseteq}
 \newcommand{\pchild}[3]{{#1}\kern-1pt{+}{#2}{#3}}
+\newcommand{\dual}[1]{{#1}^{D}}
 \newtheorem{definition}{Definition}[section]
+\newtheorem{observation}{Observation}[section]
 
 
 \bibliographystyle{plainurl}
@@ -178,18 +181,17 @@ By a slight abuse of notation, we denote the poset by $R$ as well.
 Where necessary, we write $\Omega_R$ for the underlying set.
 Throughout this paper $\Omega$ is finite.
 Two posets $P$ and $Q$ are \emph{isomorphic} if there is a bijective mapping $\varphi: \Omega_P \to \Omega_Q$ such that $(u, v) \in R \iff (\varphi(u), \varphi(v)) \in Q$ for all $u, v \in \Omega$.
-The \emph{dual} of a poset $R$ is obtained by reversing the direction of all edges, \ie $R^{-1} = \set{(v,u)}{(u,v) \in R}$.
+The \emph{dual} of a poset $R$ is obtained by reversing the direction of all edges, \ie $\dual{R} = \set{(v,u)}{(u,v) \in R}$.
 Given a poset $P$, its \emph{Hasse diagram} $H$ is given by the smallest subset $H \sse \Omega \times \Omega$ such that $P$ is the reflexive, transitive closure of $H$.
+We denote by $\pchild{P}{a}{b}$ the transitive closure of $P \cup \{(a, b)\}$.
 
 
 \subsection{The Selection Problem.}
 The selection problem is, given a poset $R$ and an integer $i$, to determine the the $i$-th smallest of the $n$ elements in $\Omega_R$ where we already know the relations $R$.
-Since in this paper we only look at posets in the context of the selection problem, we extend the definition of a poset, to include a rank $i$.
-That is, a poset is a tupel $(n, i, R)$ where $n = |\Omega_R|$.
-The notion of isomorphism extends naturally to this extended definition of a poset.
-For the dual we have $(n, i, R)^{-1} = (n, n-i+1, R^{-1})$.
-We say that two poset $R$ and $Q$ are \emph{congruent} if $P$ is isomorphic to $Q$ or $Q^{-1}$.
-A poset is \emph{reduced} if for each element there are at most $i-1$ smaller elements and at most $n - i$ larger elements.
+We denote an instance of the \emph{selection problem} by $(R, i)$.
+The notion of isomorphism extends naturally to selection problems.
+For the dual we have $\dual{(R, i)} = (\dual{R}, n-i+1)$.
+The problem $(R, i)$ is \emph{reduced} if for each element there are at most $i-1$ smaller elements and at most $n - i$ larger elements.
 Hence, each element can still be the $i$-th smallest.
 
 \todo[inline]{I changed $i$-th largest to $i$-th smallest.}
@@ -198,10 +200,10 @@ Hence, each element can still be the $i$-th smallest.
 
 \subsection{Selection Algorithms.}
 A selection algorithm is a binary decision tree.
-Each node is labeled with a poset.
-The root node is labeled with $(n, i, \emptyset)$.
-The leaf nodes are labeled with posets that have a unique element $a$, such that, there are $i-1$ elements smaller than $a$, and $n- i$ elements larger than $a$.
-That is, $a$ ist the $i$-th smallest element.
+Each node is labeled with a selection problem.
+The root node is labeled with $(\emptyset_n, i)$ where $\emptyset_n$ is the poset on $n$ elemets without any relations.
+The leaf nodes are labeled with \emph{solved} problems, that is tupels $(R, i)$ that have a unique element $a \in \Omega_R$, such that, there are $i-1$ elements smaller than $a$, and $n- i$ elements larger than $a$.
+Hence, $a$ ist the $i$-th smallest element.
 
 The selection algorithm associates to each inner node $P$ a comparison $\{a,b\}$, meaning that the algorithm compares $a$ with $b$ as its next step.
 The two children $\pchild{P}{a}{b}$ and $\pchild{P}{b}{a}$ correspond to the two possible outcomes of the comparison $a \preceq b$ and $b \succeq a$.
@@ -217,70 +219,67 @@ The number of comparisons required by the algorithm (in the worst case) is the m
   We measure this pessimistically, meaning that among all possible outcomes of those further comparisons we assume the most expensive ones.
 \end{definition}
 
-\begin{lemma} \label{lemma:dual_poset_allowed}
-  For a given poset $P = (n, i, R)$ it holds $V(P) = V(P^{-1})$
-\end{lemma}
 
-\begin{proof}
-  Given $V(P)$, we know that we can construct an algorithm that solves $P$ in exactly that many comparisons, i.e. it determines the element with exactly $i - 1$ less and exactly $n - i$ greater than itself.
-
-  Since $n$ and $i$ are fixed, this algorithm can be converted into a binary decision tree and by swapping all the children, the new algorithm must now select the element such that $n - i$ are smaller and $i - 1$ are larger than it while assuming an inverted $R$, which is the solution for $P^{-1}$.
-\end{proof}
-
+By $V_i(n)$ we denote the minimum number of comparisons which suffice to select the $i$-th smallest out of $n$ elements in the worst-case.
+We prove the following transfer lemma for lower bounds, showing that if $k$ is a lower bound for selecting $i$ of $n$, then selecting $i$ of $n + 1$ must take at least $k + 1$ comparisons.
 
 \begin{lemma} \label{lemma:previous_next_poset}
-  If $k$ is a lower bound for selecting $i$ of $n$, then selecting $i$ of $n + 1$ must take at least $k + 1$ comparisons.
+$V_i(n+1) \ge V_i(n) + 1$.
 \end{lemma}
 
 \begin{proof}
-  Assume some algorithm exists that selects $i$ of $n + 1$ in $k$ comparisons.
-  It must have two elements it compares first.
-  If we input a by definition largest element in place of one of them the algorithm must still return the correct $i$-th largest of the remaining $n$ elements.
-  But because this element is larger by definition, the first comparison may be skipped, thus reducing the number of comparisons by at least $1$.
-  Thus taking out all occurrences of that element will yield an algorithm for $i$ of $n$ in $k - 1$ comparisons, which contradicts the condition of $k$ being a lower bound.
+There is an algorithm that selects the $i$-th smallest of $n + 1$ elements using $k = V_i(n+1)$ comparisons.
+We now construct an algorithm that selects the $i$-th smallest of $n$ elements using at most $k$ comparisons.
+Let $a$ and $b$ be the two elements compared first by the algorithm for $n + 1$ elements.
+In the input of the algorithm we put for a a new element $\omega$ that is larger than any other element.
+The algorithm still returns the $i$-th largest of the remaining $n$ elements.
+Any comparison involving $a = \omega$ can be skipped, because we already know the outcome -- $\omega$ is larger.
+In particular, the first comparison is skipped, reducing the number of comparisons by at least $1$.
+Thus we obtain an algorithm for selecting the $i$-th smallest of $n$ elements using $k - 1$ comparisons.
+\end{proof}
+
+Note that the bound in \Cref{lemma:previous_next_poset}\todo{use cleveref everywhere} is tight, as can be seen by $V_1(n) = n-1$\todo{cite, or mention in related work}.
+An easy corollary to the lemma is $V_{i+1}(n+1) \ge V_i(n) + 1$.
+This follows immediately using the next lemma.
+
+By $V_i(P)$ we denote the minimum number of comparisons which suffice to select the $i$-th smallest element of the poset $P$ in the worst-case.
+$V_i(n)$ is the special case $V_i(\emptyset_n)$.
+We prove the following lemma showing the cost of selection does not change when considering the dual problem.
+
+\begin{lemma} \label{lemma:dual_poset_allowed}
+  $V_i(P) = V_{n-i+1}(\dual{P})$
+\end{lemma}
+
+\begin{proof}
+  Given $V_i(P)$, we know that there an algorithm that determines the $i$-th smallest element in $P$ using exactly that many comparisons.
+  We view this algorithm as a binary decision tree and by swapping all the children, we obtain an algorithm for selecting the $i$-th largest element in $\dual{P}$, which is also the $(n-i+1)$-th smallest element of $\dual{P}$.
 \end{proof}
 
 \subsection{Compatible Solutions}
-By definition of the problem, we seek an element that is larger than $n-i$ elements and smaller than $i - 1$ elements.
 
-\todo[inline]{The following lemma could be text.}
-\begin{lemma}\label{lemma:partition}
-  Solving a poset requires knowing the explicit elements making up these two sets.
-\end{lemma}
+Suppose we have a solved poset $P$ with a unique $i$-th smallest element $e$.
+Then we know precisely the set of elements that are smaller than $e$ as well as the set of elements that are larger than $e$.
+This observation leads us to the notion of compatible solutions, which is a partition of a poset into three sets: the set containing the $i$-th smallest element, the set of $i-1$ smaller elements and the set of $n-i$ larger elements.
 
-\begin{proof}
-  Suppose we have determined the element $e$ to be the solution, and an element $p$ unordered with $e$.
-
-  Then $p$ may be above as well as below $e$, which can't be the solution in both cases.
-\end{proof}
-
-\begin{definition}[Compatible Solution] % hier p+uv
-  As such we can define a \textbf{compatible solution} $Q = (n, i, S)$ of a poset $P = (n, i, R)$, to be solved and agreeing with $P$, that is $(a, b)\in S\implies (b, a)\notin R$.
-
-  Furthermore, $Q$ has no comparisons other than the $n - 1$ needed to prove the solution and the ones resulting from application of transitivity to the former.
+\begin{definition}%[Compatible Solution]
+  The solved problem $(S, i)$ is a \textbf{compatible solution} of the problem $(R, i)$ if $(a, b)\in S\implies (b, a)\notin R$ and $S$ has no relations other than the $n - 1$ relations involving the $i$-th smallest element and the ones resulting from application of transitivity to the former.
 \end{definition}
 
-With Lemma~\ref{lemma:partition}, a solved poset has exactly one compatible solution.
+Clearly a solved problem has exactly one compatible solution.
+Let
+\begin{equation*}
+\mathcal{C}(P, i) = \{(S, i) \mid (S, i) \text{ is compatible with } (P, i) \}
+\end{equation*}
+be the set of all solutions compatible with $(P, i)$.
+Observe that, given two elements unrelated in $P$, every solution compatible with $(P, i)$ is compatible with at least one of $(\pchild{P}{a}{b}, i)$ and $(\pchild{P}{b}{a}, i)$ and thus
+\begin{equation}\label{lemma:compatible_union}
+\mathcal{C}(P, i) = \mathcal{C}(\pchild{P}{a}{b}, i) \cup \mathcal{C}(\pchild{P}{b}{a}, i)\,\text{.}
+\end{equation}
 
-Let $\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$ be the set of all solutions compatible with $P$.
-
-\todo[inline]{The following could be an observation, then skip the proof.}
-\begin{lemma}\label{lemma:compatible_union}
-  For a poset $P = (n, i, R)$ and $a, b$ with $(a, b), (b, a)\notin R$ it holds $\mathcal{C}(P) = \mathcal{C}(n, i, R \, \cup \{(a, b)\}) \cup \mathcal{C}(n, i, R\cup \{(b, a)\})$.
-\end{lemma}
-
-\begin{proof}
-  Let $Q = (n, i, S)\in \mathcal{C}(P)$.
-  Then for all $c, d$ other than $a, b$ it must hold that $(c, d)\in S\implies (d,c)\notin R\cup \{(a, b)\}$ and $(c, d)\in S\implies (d, c)\notin R\cup \{(b, c)\}$.
-
-  So if $(a, b)\in S$ then $Q\in\mathcal{C}(n, i, R\cup \{(a, b)\})$, if $(b, a)\in S$ then $Q\in\mathcal{C}(n, i, R\cup \{(b, a)\})$
-  and if $a, b$ are unordered in $Q$, it is in both.
-
-  The reverse also holds because $(c, d)\notin R\cup \{(a, b)\}\implies (c, d)\notin R$, same for $R\cup \{(b, a)\}$.
-\end{proof}
+We use the concept of compatible solutions to derive a lower bound on the number of comparisons required to select the $i$-th smallest element of a poset $P$.
 
 \begin{theorem}\label{theorem:compatible_log}
-  A poset $P=(n,i,R)$ cannot be solvable in less than $\lceil\log_2(|\mathcal{C}(P)|)\rceil$ comparisons in the worst case.
+  Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil\log_2(|\mathcal{C}(P, i)|)\rceil$ comparisons in the worst case.
 \end{theorem}
 
 \begin{proof}
