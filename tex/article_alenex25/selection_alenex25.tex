@@ -178,36 +178,33 @@ By a slight abuse of notation, we denote the poset by $R$ as well.
 Where necessary, we write $\Omega_R$ for the underlying set.
 Throughout this paper $\Omega$ is finite.
 Two posets $P$ and $Q$ are \emph{isomorphic} if there is a bijective mapping $\varphi: \Omega_P \to \Omega_Q$ such that $(u, v) \in R \iff (\varphi(u), \varphi(v)) \in Q$ for all $u, v \in \Omega$.
-The \emph{dual} of a poset is obtained by reversing the direction of all edges, \ie $\set{(v,u)}{(u,v) \in R}$.
+The \emph{dual} of a poset $R$ is obtained by reversing the direction of all edges, \ie $R^{-1} = \set{(v,u)}{(u,v) \in R}$.
 Given a poset $P$, its \emph{Hasse diagram} $H$ is given by the smallest subset $H \sse \Omega \times \Omega$ such that $P$ is the reflexive, transitive closure of $H$.
 
 
 \subsection{The Selection Problem.}
-An instance of the selection problem is a tupel $(n, i, R)$ denoting the problem of finding the $i$-th smallest of the $n$ elements in $\Omega_R$ where we already know the relations $R$.
-That means we assume $|\Omega_R| = n$.
-\todo[inline]{Do we call the tupel a poset too, or should we have a different name?}
+The selection problem is, given a poset $R$ and an integer $i$, to determine the the $i$-th smallest of the $n$ elements in $\Omega_R$ where we already know the relations $R$.
+Since in this paper we only look at posets in the context of the selection problem, we extend the definition of a poset, to include a rank $i$.
+That is, a poset is a tupel $(n, i, R)$ where $n = |\Omega_R|$.
+The notion of isomorphism extends naturally to this extended definition of a poset.
+For the dual we have $(n, i, R)^{-1} = (n, n-i+1, R^{-1})$.
+We say that two poset $R$ and $Q$ are \emph{congruent} if $P$ is isomorphic to $Q$ or $Q^{-1}$.
+A poset is \emph{reduced} if for each element there are at most $i-1$ smaller elements and at most $n - i$ larger elements.
+Hence, each element can still be the $i$-th smallest.
+
 \todo[inline]{I changed $i$-th largest to $i$-th smallest.}
 \todo[inline]{Can we have $i$ start at 1 in the paper?}
 
-\todo[inline]{The following definitions could be text.}
-\begin{definition}[Dual poset] \label{definition:dual_poset}
-  The dual of a poset $P = (n, i, R)$ is the poset $P^{-1} = (n, n - 1 - i, R')$ with $R' = \{(u,v) \mid (v,u) \in R\}$.
-\end{definition}
-
-\begin{definition}[Reduced] \label{definition:reduced_poset}
-  A poset is \textbf{reduced} if all its elements have at most $i$ elements smaller than themselves and at most $n - 1 - i$ larger than themselves.
-  Hence, all elements can still be the $i$-th smallest.
-\end{definition}
 
 \subsection{Selection Algorithms.}
 A selection algorithm is a binary decision tree.
 Each node is labeled with a poset.
 The root node is labeled with $(n, i, \emptyset)$.
-The leaf nodes are labeled with posets that have a unique element $u$, such that, there are $i-1$ elements smaller than $u$, and $n- i$ elements larger than $u$.
-That is, $u$ ist the $i$0th smalles element.
+The leaf nodes are labeled with posets that have a unique element $a$, such that, there are $i-1$ elements smaller than $a$, and $n- i$ elements larger than $a$.
+That is, $a$ ist the $i$-th smallest element.
 
-The selection algorithm associates to each inner node $P$ a comparison $\{u,v\}$, meaning that the algorithm compares $u$ with $v$ as its next step.
-The two children $\pchild{P}{u}{v}$ and $\pchild{P}{v}{u}$ correspond to the two possible outcomes of the comparison $u \preceq v$ and $u \succeq v$.
+The selection algorithm associates to each inner node $P$ a comparison $\{a,b\}$, meaning that the algorithm compares $a$ with $b$ as its next step.
+The two children $\pchild{P}{a}{b}$ and $\pchild{P}{b}{a}$ correspond to the two possible outcomes of the comparison $a \preceq b$ and $b \succeq a$.
 The number of comparisons required by the algorithm (in the worst case) is the maximum length of a path from the root to some leaf.
 
 
