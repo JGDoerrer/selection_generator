@@ -283,23 +283,9 @@ We use the concept of compatible solutions to derive a lower bound on the number
 \end{theorem}
 
 \begin{proof}
-  \todo[inline]{Proof can be much shorter if we do away with the induction, and argue with the height of a binary tree.}
-  If $P$ is already solved, $|\mathcal{C}(P)|=1$, and $\log_2(1)=0$.
-
-  If not, we must make at least one more comparison $a, b$.
-
-  From Lemma~\ref{lemma:compatible_union} we also know that
-  $$|\mathcal{C}(P)| \leq |\mathcal{C}((n,i,R\cup \{(a, b)\}))| + |\mathcal{C}((n,i,R\cup \{(b, a)\}))|$$
-
-  Since this is a pessimistic measure, we must assume that the result of the comparison results in the one with more compatible solutions.
-  Without loss of generality we assume that to be $(a, b)$.
-  Then
-
-  $$\frac{|\mathcal{C}(P)|}{2}\leq |\mathcal{C}((n,i,R\cup \{(a, b)\}))|$$
-
-  Repeated application of this over multiple comparisons results in $\frac{|\mathcal{C}(P)|}{2^j}$ as the lower bound for the amount of compatible solutions after $j$ comparisons.
-
-  Since $|\mathcal{C}(P)|\leq 2^j$ must be satisfied for the solution, $j\geq\log_2(|\mathcal{C}(P)|)$
+  Assume we have an optimal algorithm for selecting the $i$-th smallest element of a poset $P$.
+  From \eqref{lemma:compatible_union} it follows that for every $(S, i)$ there is at least one leaf in the decision tree labelled with $\{(S, i)\}$.
+  Hence, there are at least $|\mathcal{C}(P, i)|$ leaves and thus the height of the tree is at least $\lceil\log_2(|\mathcal{C}(P, i)|)\rceil$.
 \end{proof}
 
 
@@ -320,10 +306,11 @@ This is also the optimal algorithm for $i = 2$ and $n = 5$.
 
 
 \section{Methods and Tools}
-In this section we describe our three main approaches -- forward search, backward search and bidirectional search.
-Furthermore, we explain how we harness the notion of compatible solutions with respect to all of the three search approaches.
-\todo[inline]{Remove bidirectional search?}
-
+In this section we describe our two main approaches to determining $V_i(n)$: the forward search and the backward search.
+The forward search is the same approach that has already been used by Oksanen~\cite{Oksanen2006}.
+We push it further using a pruning technique based on compatible solutions.
+The backward search is a different approach, that has not been applied to the problem of selection before.
+It allows us to go even further in computing optimal selection algorithms.
 
 \todo[inline]{I put this here for now. Maybe we can have a subsection Datastructures and Isomorphism testing?}
 
@@ -343,12 +330,20 @@ Furthermore, we explain how we harness the notion of compatible solutions with r
   A \textbf{normal} poset is reduced and canonified.
 \end{definition}
 
-\subsection{Forward Search}\label{chapter:forward_search}
-\todo[inline]{Similar to Oksanen, we use a minimax algorithm to computet the cose $V(n, i, P)$...}
-The forward search starts with an unordered poset $P=(n,i,\emptyset)$, and recursively determines solvability of a given poset within some bound by exhaustively searching the results of all possible comparisons to be made unless it is already solved or we determine that it cannot be solved within the alloted number of comparisons by some solvability-check.
+\todo[inline]{Correctness reduced}
 
-Between the two possible outcomes of a comparison we assume the worse, but since an algorithm is free to choose which elements to compare we are looking for the most useful comparison, the one that yields result posets cheapest to solve themselves\todo{?}, still in terms of worst case outcome.
-The algorithms output by the search program are built by saving the comparison that lead to this cheapest to solve result.
+\subsection{Forward Search}\label{chapter:forward_search}
+The forward search is the same algorithm used by Oksanen~\cite{Oksanen2006} and Gasarch et.\ al\@.~\cite{Gasarch1996}.
+We describe the basic algorithm first, and then the optimizations and pruning techniques we applied, including a novel pruning criteria based on compatible solutions.
+
+The forward search starts with an unordered poset, and recursively determines the cost of selecting the $i$-th smallest element of a poset $P$.
+Between the two possible outcomes of a comparison we assume the worse, but since an algorithm is free to choose which elements to compare we are looking for the comparison with the lowest cost still in terms of worst case outcome.
+Thus, the cost $V_i(P)$ can be expressed as follows:
+\begin{equation}
+  V_i(P) = \min_{a,b \in \Omega_P} \max \left\{ \,V_i(\pchild{P}{a}{b}),\, V_i(\pchild{P}{b}{a})\,\right\}\,\text{.}
+\end{equation}
+
+The algorithms output by the search program are built by saving for each poset the comparison that lead to the cheapest result.
 
 To limit memory cost and allow further pruning we traverse the search tree depth first, reducing the maximum number of comparisons alloted\todo{?} to child posets to one less than the current best result found.
 This premise is implemented by a minimax algorithm as shown in Figure~\ref{fig:minimax_search}.
@@ -401,6 +396,7 @@ As a result, some posets that are isomorphic occupy several cache entries, but c
 
 \subsubsection{Heuristics}
 
+\todo[inline]{Iterative deepening}
 We used multiple heuristics to estimate if a poset is solvable in a given number of comparisons.
 These heuristics are used to reject posets that are not solvable in the given number of comparisons.
 Other than caching, no strategies to preemptively prove solvability within some bound were employed.
