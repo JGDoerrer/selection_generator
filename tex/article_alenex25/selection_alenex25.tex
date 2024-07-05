@@ -43,6 +43,7 @@
 \newcommand{\sse}{\subseteq}
 \newcommand{\pchild}[3]{{#1}\kern-1pt{+}{#2}{#3}}
 \newcommand{\dual}[1]{{#1}^{D}}
+\newcommand{\reduced}[1]{\operatorname{red}{#1}}
 \newtheorem{definition}{Definition}[section]
 \newtheorem{observation}{Observation}[section]
 
@@ -461,16 +462,20 @@ See the git branch \textit{multi-threaded} for the last state.
 
 \subsection{Backward Search} \label{sec:backward}
 
-\subsubsection{Idea}
+%\subsubsection{Idea}
 
 To develop the backward search, primarily the backward search from \cite{stober2022lower} was taken as orientation, since it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen \cite{Oksanen}.
 
-The backward search starts with the solved poset and iteratively removes comparisons until the unordered poset is found.
-It should be noted that if a comparison is removed from the poset $P = (n, i, R)$ resulting in the poset $P' = (n, i, R \setminus (u, v))$,
-the poset $Q = (n, i, R \setminus (u, v) \cup (v, u))$\todo{ugly formula} should already be in a canonified form in the cache.
-This means that $Q$ has already been discovered in the search.
+The backward search starts with the set of solved selection problems, and iteratively removes comparisons until the unordered poset is found.
+Now, the set of solved problems, even if we restrict ourselves to a fixed cardinality $n$ and rank $i$, will be quite large.
+We solve this by only enumerating reduced problems.
+With that restriction the starting point of the backward search is $(\emptyset_1, 1)$.
 
-Thus, the number of iterations taken until a poset is added to the cache equals the number of worst case comparisons needed to solve it, which means that the search terminates once $(n, i, \emptyset)$ with the desired $n$ and $i$ is found.
+%It should be noted that if a comparison is removed from the poset $P = (n, i, R)$ resulting in the poset $P' = (n, i, R \setminus (u, v))$,
+%the poset $Q = (n, i, R \setminus (u, v) \cup (v, u))$\todo{ugly formula} should already be in a canonified form in the cache.
+%This means that $Q$ has already been discovered in the search.
+%
+%Thus, the number of iterations taken until a poset is added to the cache equals the number of worst case comparisons needed to solve it, which means that the search terminates once $(n, i, \emptyset)$ with the desired $n$ and $i$ is found.
 
 % The argument for correctness is that the number of comparisons for which we have found all posets solvable within them equals the number of iterations of the search.
 % If for a given poset and a comparison within it we have already discovered both results then their cost must be less than the current number of iterations.
@@ -481,29 +486,34 @@ Thus, the number of iterations taken until a poset is added to the cache equals 
 
 \subsubsection{Algorithm} \label{sec:backward:algorithm}
 The input parameters for the backward search are denoted by $n$ and $i$, like in the forward search.
-The backward search starts with the smallest solved poset $P_{\text{unordered} (1, 0)} = (1, 0, \emptyset)$ and iteratively computes all posets solvable within $k = 1, 2, 3, \dots$ comparisons until the unordered poset $P_{\text{unordered} (n, i)} = (n, i, \emptyset)$ is encountered.
+The backward search starts with the solved problem $(\emptyset_1, 1)$ and iteratively computes all posets solvable using $k = 1, 2, 3, \dots$ comparisons -- until the unordered poset $(\emptyset_n, i)$ is encountered.
 
-Let $A_k$ denote the set of all posets solvable in $k$ comparisons.
-For all $n$ and $i$, we have $A_0 = \{ (1, 0, \emptyset) \}$.
+Let $A_k$ denote the set of all reduced selection problems solvable using $k$ comparisons.
+For all $n$ and $i$, we have $A_0 = \{ (\emptyset_1, 1) \}$.
 
-The backward search begins with $A_0$ and iteratively computes, for each poset in the set $A_k$, the corresponding predecessors, which form the set $A_{k + 1}$.
-If $(n, i, \emptyset) \in A_l$, then $l$ comparisons are the lower bound to determine the $i$-th smallest element of an $n$-element list.
+The backward search begins with $A_0$ and iteratively computes, for each problem in $A_k$, the corresponding predecessors, which form the set $A_{k + 1}$.
+If $(\emptyset_n, i) \in A_l$, then $l$ comparisons are the lower bound to determine the $i$-th smallest element of an $n$-element list.
 
 
 \subsubsection{Predecessor calculation} \label{sec:backward:predecessor_calculation}
 
-\todo[inline]{Swap definition with lemma}
+We begin with a formal definition of a predecessor.
+
 \begin{definition}[Predecessor] \label{definition:predecessor_calculation}
-  Poset $Q$ is the predecessor of poset $P$ if the following conditions hold:
-  \begin{itemize}
-    \item poset $P$ and $Q$ are both normalized
-    \item poset $Q$ was not found in any previous round (otherwise it would be solvable in fewer comparisons)
-    \item There exists a comparison\todo{Hasse arc} $(i, j)$ whose adding in $Q$ and subsequent normalization results in the poset $P$ and adding the reverse comparison $(j, i)$ and subsequent normalization results in an already found poset
-  \end{itemize}
+  The problem $(Q, j)$ is a \emph{predecessor} of $(P, i)$ if there is a comparison $(a, b)$, such that
+  \begin{enumerate}
+    \item $(P, i) = \reduced(\pchild{Q}{a}{b}, j)$ and
+    \item $V_j(\pchild{Q}{a}{b}) \le V_i(P)$ and
+    \item $V_j(Q) \neq V_i(P)$.
+  \end{enumerate}
 \end{definition}
 
+Any problem $(Q, j)$ satisfying the first condition of the above definition ist called a \emph{potential predecessor}.
+In fact the first step to enumerating the predecessors will be to enumerate the potential predecessors.
+The second step will be checking the second and third conditions.
+
 \begin{lemma} \label{lemma:predecessor_calculation}
-  If poset $P$ is solvable in $k$ comparisons and $Q$ is a predecessor of poset $P$, poset $Q$ is solvable in $k + 1$ comparisons.
+  If $(P, i)$ is solvable in $k$ comparisons and $(Q, j)$ is a predecessor of $(P, i)$, then $(Q, j)$ is solvable in $k + 1$ comparisons.
 \end{lemma}
 
 \begin{proof} \label{proof:predecessor_calculation}
@@ -514,38 +524,15 @@ If $(n, i, \emptyset) \in A_l$, then $l$ comparisons are the lower bound to dete
   Thus, this path is solvable in at most $k + 1$ comparisons.
 \end{proof}
 
+Storing only reduced problems poses a significant challenge to predecessor enumeration.
+Let us illustrate this by looking at a poset $(P, i)$ and its predecessor $(Q, j)$.
+We know there is a comparison $(a,b)$ such that $(P, i) = \reduced(\pchild{Q}{a}{b}, j)$.
+However it is possible, that the edge $(a, b)$ is not in $P$, because either $a$ or $b$ could have been removed when reducing the problem.
+The question is, how can we undo a comparison, that we cannot see?
+Then, even if the reduction does not remove $a$ and $b$, there is still could be other elements that are removed.
+There the challenge is to figure out how many they are and what relations they have.
+
 In the following, it is shown how a predecessor is calculated for a given poset $P = (n_P, i_P, R_P)$.
-
-\todo[inline]{I would probably put the following explanation of the "table optimization" in a separate Implementation details/ optimizations section.}
-As there are potentially many predecessors that cannot contribute to the solution, they are only calculated up to a maximum limit of $n_P$ elements. This is possible because a predecessor always has more or the same number of elements.
-
-Furthermore, not all predecessors are calculated, as some cannot contribute to a solution.
-As illustrated in Table~\ref{table:n_i_values_calculated}, the search with $n = 7$ and $i = 3$ only considers predecessors that have an `x' in the corresponding row or column. As the addition of a comparison can reduce $n$ by a maximum of $1$ and therefore $i$ by a maximum of $1$, all other predecessors can be ignored as they can never be used.
-For example, no poset with $n = 6$ and $i = 1$ can result in a poset of size $n = 7, i = 3$ by adding a comparison.
-
-The table can be calculated by marking initial $n, i$ with an `x' and then marking recursive the entries for $n - 1, i$ and $n - 1, i - 1$ with an `x', as in each step the new element could be smaller or larger than the i-smallest element.
-
-For Table~\ref{table:n_i_values_calculated}, this means that $n = 6, i = 2$ and $n = 6, i = 3$ should be marked.
-It must be noted that $n = 6, i = 3$ does not exist, as the dual poset would be formed at this point.
-In this case, only $n = 6, i = 2$ is marked with an `x'.
-
-\begin{table}[!t]
-  \renewcommand{\arraystretch}{1.2}
-  \caption{Possible predecessors that must be calculated for $n = 7$ and $i = 3$. All predecessors for which the corresponding field is marked with `x' must be calculated.}
-  \label{table:n_i_values_calculated}
-  \centering
-  \begin{tabular}{c|cccc}
-    $n$ & \multicolumn{4}{c}{$i$}             \\
-        & 0                       & 1 & 2 & 3 \\ \hline
-    7   & -                       & - & - & x \\
-    6   & -                       & - & x & - \\
-    5   & -                       & x & x & - \\
-    4   & x                       & x & - & - \\
-    3   & x                       & x & - & - \\
-    2   & x                       & - & - & - \\
-    1   & x                       & - & - & - \\
-  \end{tabular}%
-\end{table}
 
 The computation of a predecessor for a given poset $P = (n_P, i_P, R_P)$ proceeds in four steps:
 \todo[inline]{Have a short itemize, describing each step in one sentence, before going into the details for each step.}
@@ -704,6 +691,38 @@ For small values of $i$, the high percentage of nauty calls is not critical, as 
 
 \subsubsection{Optimization}
 
+\paragraph{The table thingy}
+As there are potentially many predecessors that cannot contribute to the solution, they are only calculated up to a maximum limit of $n_P$ elements. This is possible because a predecessor always has more or the same number of elements.
+
+Furthermore, not all predecessors are calculated, as some cannot contribute to a solution.
+As illustrated in Table~\ref{table:n_i_values_calculated}, the search with $n = 7$ and $i = 3$ only considers predecessors that have an `x' in the corresponding row or column. As the addition of a comparison can reduce $n$ by a maximum of $1$ and therefore $i$ by a maximum of $1$, all other predecessors can be ignored as they can never be used.
+For example, no poset with $n = 6$ and $i = 1$ can result in a poset of size $n = 7, i = 3$ by adding a comparison.
+
+The table can be calculated by marking initial $n, i$ with an `x' and then marking recursive the entries for $n - 1, i$ and $n - 1, i - 1$ with an `x', as in each step the new element could be smaller or larger than the i-smallest element.
+
+For Table~\ref{table:n_i_values_calculated}, this means that $n = 6, i = 2$ and $n = 6, i = 3$ should be marked.
+It must be noted that $n = 6, i = 3$ does not exist, as the dual poset would be formed at this point.
+In this case, only $n = 6, i = 2$ is marked with an `x'.
+
+\begin{table}[!t]
+\renewcommand{\arraystretch}{1.2}
+\caption{Possible predecessors that must be calculated for $n = 7$ and $i = 3$. All predecessors for which the corresponding field is marked with `x' must be calculated.}
+\label{table:n_i_values_calculated}
+\centering
+\begin{tabular}{c|cccc}
+$n$ & \multicolumn{4}{c}{$i$}             \\
+& 0                       & 1 & 2 & 3 \\ \hline
+7   & -                       & - & - & x \\
+6   & -                       & - & x & - \\
+5   & -                       & x & x & - \\
+4   & x                       & x & - & - \\
+3   & x                       & x & - & - \\
+2   & x                       & - & - & - \\
+1   & x                       & - & - & - \\
+\end{tabular}%
+\end{table}
+
+\paragraph{Iterative deepening}
 As the theoretical upper bounds are too high in practice, the program uses an iterative deepening approach.
 It starts with an upper bound that corresponds to the theoretical lower bound, derived by Lemma~\ref{lemma:previous_next_poset} from the smaller values for $n$ and increases this bound iteratively until a solution is finally found.
 As it is not possible to save which posets are lost due to the guessed upper bound without considerable effort, the backward search is restarted several times.
