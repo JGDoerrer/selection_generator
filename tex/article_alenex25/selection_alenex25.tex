@@ -44,6 +44,8 @@
 \newcommand{\pchild}[3]{{#1}\kern-1pt{+}{#2}{#3}}
 \newcommand{\dual}[1]{{#1}^{D}}
 \newcommand{\reduced}[1]{\operatorname{red}{#1}}
+\newcommand{\less}[2]{\operatorname{less}_{#1}(#2)}
+\newcommand{\greater}[2]{\operatorname{greater}_{#1}(#2)}
 \newtheorem{definition}{Definition}[section]
 \newtheorem{observation}{Observation}[section]
 
@@ -185,6 +187,12 @@ Two posets $P$ and $Q$ are \emph{isomorphic} if there is a bijective mapping $\v
 The \emph{dual} of a poset $R$ is obtained by reversing the direction of all edges, \ie $\dual{R} = \set{(v,u)}{(u,v) \in R}$.
 Given a poset $P$, its \emph{Hasse diagram} $H$ is given by the smallest subset $H \sse \Omega \times \Omega$ such that $P$ is the reflexive, transitive closure of $H$.
 We denote by $\pchild{P}{a}{b}$ the transitive closure of $P \cup \{(a, b)\}$.
+\todo[inline]{define less/ greater here. Probably best to define them as sets.
+
+Let $\less{P}{v}$ denote the number of elements smaller than $v$ in poset $P$.
+Let $\greater{P}{u}$ denote the number of elements greater than $u$ in poset $P$.
+}
+
 
 
 \subsection{The Selection Problem.}
@@ -532,6 +540,77 @@ The question is, how can we undo a comparison, that we cannot see?
 Then, even if the reduction does not remove $a$ and $b$, there is still could be other elements that are removed.
 There the challenge is to figure out how many they are and what relations they have.
 
+To address these challenges we will first show, that after adding a comparison $(a, b)$ at most one of $\{a, b\}$ will be removed by the reduction.
+
+\begin{lemma} \label{lemma:remove_only_last_element_edge}
+Let $(P, i)$ be a reduced problem.
+Let $(Q, j) = \reduced{(\pchild{P}{a}{b}, i)}$.
+Then, $Q \cap \{a ,b \} \neq \emptyset$.
+\end{lemma}
+
+\begin{proof}
+As $(P, i)$ ist reduced, we have $|\less{P}{c}| \le i - 1$ and $|\greater{P}{c}| \le n - i$, where $n = |\Omega_P|$, for every $c \in P$, in particular this also holds for $a$ and $b$.
+Let $P' = \pchild{P}{a}{b}$ and assume $Q \cap \{a ,b \} = \emptyset$.
+Observe that $\less{P'}{a} = \less{P}{a} \le i-1$ and $\greater{P'}{b} = \greater{P}{b} \le n - i$.
+Thus for $a$ and $b$ to be reduced, we must have $\greater{P'}{a} \ge n - i + 1$ and $\less{P'}{b} \ge i$.
+Note that there are no elements inbetween $a$ and $b$, as they are incomparable in $P$ and there is an Hasse arc between them in $P'$.
+Hence $\greater{P'}{a} \cap \less{P'}{b} = \emptyset$, leading to the contradiction $n = |\Omega_{P'}| \ge |\greater{P'}{a} \cup \less{P'}{b}| \ge n + 1$.
+\end{proof}
+
+
+ \begin{lemma}
+   Sei $P = (n_P, i_P, R_P)$ ein reduziertes poset.
+   Sei $Q = (n_Q, i_Q, R_Q)$ ein reduziertes poset das man aus $P$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält.
+   Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen mit.
+   Sei $i_Q \leq i_{P'} \leq i_P$.
+
+   Dann gilt für alle $V' \subseteq V \setminus \{ u, v \}$:
+   Das poset $P' = (n_P - |V'|, i_{P'}, \{ (a, b) \in R_P \mid a, b \notin V' \})$ ist reduziert und durch hinzufügen des Vergleichs $u < v$ und anschließendem Reduzieren erhält man $Q$ aus $P'$.
+ \end{lemma}
+
+ \begin{proof}
+   Da $P$ reduziert ist, gilt für jedes Element $x$: $less_P[x] \leq i_P$ und $greater_P[x] \leq n_P - 1 - i_P$
+
+   Zeige zunächst, dass $P'$ reduziert ist.
+
+   Für $V' = \emptyset$ gilt $P' = P$ und $P'$ ist somit reduziert.
+
+   Sei $V' = \{ x \}$.
+   Dann gilt $P' = (n_P - 1, i_{P'}, \{ (a, b) \in R_P \mid a \neq x, b \neq x \})$ mit $i_{P'} \in \{ i_P, (n_P - 1) - 1 - i_P, i_P - 1, (n_P - 1) - 1 - (i_P - 1) \}$.
+
+   Wenn $i_{P'} = i_P$, dann gilt:
+   \begin{itemize}
+     \item $i_P < n_P - 1 - i_P$ % eig. <=
+     \item für alle Elemente $x$: $less_{P'}[x] \leq less_P[x] \leq i_P \iff less_{P'}[x] \leq i_{P'}$
+     \item für alle Elemente $x$: $greater_{P'}[x] \leq greater_P[x] \leq n_P - 1 - i_P \iff greater_{P'}[x] - 1 \leq (n_{P'} - 1) - 1 - i_{P'}$
+   \end{itemize}
+
+   Wenn $i_P > n_P - 1 - i_P$:
+   Wenn $i_{P'} = (n_P - 1) - 1 - i_P$, dann $(n_P - 1) - 1 - i_P < i_P$ und somit LESS problematisch
+
+
+   Wenn $i_{P'} = i_P - 1$, dann gilt immernoch $n_P - 1 - i_P = (n_P - 1) - 1 - (i_P - 1)$, d.h. greater gleich, aber LESS problematisch
+
+   Wenn $i_{P'} = (n_P - 1) - 1 - (i_P - 1)$, dann $...$ und somit GREATER problematisch
+
+   Da nur ein Element entfernt wird, gilt:
+   $less_P'[x] = less_P[x]$ oder $less_P[x] - 1$
+   $greater_P'[x] = greater_P[x]$ oder $greater_P[x] - 1$
+
+   o.b.d.a gilt $less_P[z] \leq i_P$. Damit Element $z$ wegreduziert werden kann, muss $i_P' < less_P'[z]$ gelten.
+   mit $less_P'[z] = less_P[z]$: $i_{P'} < less_P[z] \leq i_P$. Lösungen: $less_P[z] = i_P$, $less_P[z] = i_P - 1$
+   mit $less_P'[z] = less_P[z] - 1$: $i_{P'} + 1 < less_P[z] \leq i_P$. Lösungen:
+   % D.h. $less_P'[z] = less_P[z]$, also $less_P[z] = i_P' + 1$ und somit $i_P' + 1 = i_P$ => $i_P' = i_P - 1$
+
+
+   Weil wir nur Entfernen von Elementen zulassen, die durch das Hinzufügen von $u < v$ rausfliegen, müssen diese in Verbindung mit $u$ oder $v$ stehen.
+   (hier müsste man noch untersuchen unter welchen umständen es dazu kommen kann, dass ein nicht mit denen geordnetes element rausfliegt weil $n$ und $i$ sich durch das entfernen anderer ändern).
+
+   Damit verändern sich $less$ und $greater$ von $u$ und $v$ parallel zu den $n$ und $i$ von $P$ zu $P'$ und sie sind damit nicht aus $P'$ eliminiert.
+   Andersherum ist zu zeigen dass obwohl die Elemente aus $V \setminus V'$ durch das Entfernen potentiell $less$ und $greater$ verlieren, $n$ und $i$ so verändert sein müssen, dass sie trotzdem rausfliegen.
+   Hier wissen wir, dass alle Elemente kleiner $u$ $greater[v] + 1$ greater dazubekommen haben und das die aus $V$ über die Grenze gebracht hat, umgekehrt für $v$ mit $n_{P'} = n_P - |V'|$ und eventuellen Einschränkungen für $i$ sollte dann begründbar sein, dass sie auch in $P'$ über die Grenze kommen wenn $u < v$. dazukommt
+ \end{proof}
+
 In the following, it is shown how a predecessor is calculated for a given poset $P = (n_P, i_P, R_P)$.
 
 The computation of a predecessor for a given poset $P = (n_P, i_P, R_P)$ proceeds in four steps:
@@ -569,25 +648,6 @@ The computation of a predecessor for a given poset $P = (n_P, i_P, R_P)$ proceed
     It is crucial to ensure that the new element cannot be immediately reduced and that no existing elements can be reduced either.
     Furthermore, there must exist a comparison $u < v$ such that the addition of this comparison results in the poset $P$ again.
 
-    \begin{lemma} \label{lemma:remove_only_last_element_edge}
-      Let $P = (n_P, i_P, R_P)$ be a reduced poset.
-      Let $Q$ be a reduced poset obtained from $P$ by adding the comparison $u < v$.
-      Then, $Q$ contains either the element $u$ or $v$, but both elements cannot be reduced simultaneously.
-    \end{lemma}
-
-    \begin{proof}
-      Let $less_P[v]$ denote the number of elements smaller than $v$ in poset $P$.
-      Let $greater_P[u]$ denote the number of elements greater than $u$ in poset $P$.
-      For both $u$ and $v$ to be non-reducible in poset $P$, it must hold that $less_P[v] \leq i_P$ and $greater_P[u] \leq n_P - 1 - i_P$ (see Definition~\ref{definition:reduced_poset}).
-      When the comparison $u < v$ is added to poset $P$, the resulting poset $Q$ satisfies $less_Q[v] = less_P[v] + 1$ and $greater_Q[u] = greater_P[u] + 1$.
-      For $u$ and $v$ to be reducible in poset $Q$, it must hold that $less_Q[v] > i_P$ and $greater_Q[u] > n_P - 1 - i_P$, which means $less_P[v] = i_P$ and $greater_P[u] = n_P - 1 - i_P$.
-      Consequently, $less_Q[v] = i_P + 1$ and $greater_Q[u] = n_P - i_P$.
-      Since the poset $Q$ has at most $n_P$ elements before reduction, and $u < v$, it must satisfy $less_Q[v] + greater_Q[u] \leq n_P$.
-      However, $less_Q[v] + greater_Q[u] = i_P + 1 + n_P - i_P = n_P + 1$.
-      Thus, $u$ and $v$ cannot be reduced simultaneously.
-    \end{proof}
-
-    \todo[inline]{We need the other lemma here too.}
 
     As proven in Lemma~\ref{lemma:remove_only_last_element_edge}, it suffices to compare the new element solely with the existing ones.
 
@@ -808,62 +868,6 @@ For these reasons, the bidirectional search is slower than the pure forward sear
 
 Nevertheless, bidirectional search has great potential that can be exploited through further research.
 
-% TODO: lemma einbauen
-
-% 2. Zu zeigen: hinzunahem von $u < v$ & reduzieren => Q
-
-% \begin{lemma}
-%   Sei $P = (n_P, i_P, R_P)$ ein reduziertes poset.
-%   Sei $Q = (n_Q, i_Q, R_Q)$ ein reduziertes poset das man aus $P$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält.
-%   Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen mit.
-%   Sei $i_Q \leq i_{P'} \leq i_P$.
-
-%   Dann gilt für alle $V' \subseteq V \setminus \{ u, v \}$:
-%   Das poset $P' = (n_P - |V'|, i_{P'}, \{ (a, b) \in R_P \mid a, b \notin V' \})$ ist reduziert und durch hinzufügen des Vergleichs $u < v$ und anschließendem Reduzieren erhält man $Q$ aus $P'$.
-% \end{lemma}
-
-% \begin{proof}
-%   Da $P$ reduziert ist, gilt für jedes Element $x$: $less_P[x] \leq i_P$ und $greater_P[x] \leq n_P - 1 - i_P$
-
-%   Zeige zunächst, dass $P'$ reduziert ist.
-
-%   Für $V' = \emptyset$ gilt $P' = P$ und $P'$ ist somit reduziert.
-
-%   Sei $V' = \{ x \}$.
-%   Dann gilt $P' = (n_P - 1, i_{P'}, \{ (a, b) \in R_P \mid a \neq x, b \neq x \})$ mit $i_{P'} \in \{ i_P, (n_P - 1) - 1 - i_P, i_P - 1, (n_P - 1) - 1 - (i_P - 1) \}$.
-
-%   Wenn $i_{P'} = i_P$, dann gilt:
-%   \begin{itemize}
-%     \item $i_P < n_P - 1 - i_P$ % eig. <=
-%     \item für alle Elemente $x$: $less_{P'}[x] \leq less_P[x] \leq i_P \iff less_{P'}[x] \leq i_{P'}$
-%     \item für alle Elemente $x$: $greater_{P'}[x] \leq greater_P[x] \leq n_P - 1 - i_P \iff greater_{P'}[x] - 1 \leq (n_{P'} - 1) - 1 - i_{P'}$
-%   \end{itemize}
-
-%   Wenn $i_P > n_P - 1 - i_P$:
-%   Wenn $i_{P'} = (n_P - 1) - 1 - i_P$, dann $(n_P - 1) - 1 - i_P < i_P$ und somit LESS problematisch
-
-
-%   Wenn $i_{P'} = i_P - 1$, dann gilt immernoch $n_P - 1 - i_P = (n_P - 1) - 1 - (i_P - 1)$, d.h. greater gleich, aber LESS problematisch
-
-%   Wenn $i_{P'} = (n_P - 1) - 1 - (i_P - 1)$, dann $...$ und somit GREATER problematisch
-
-%   Da nur ein Element entfernt wird, gilt:
-%   $less_P'[x] = less_P[x]$ oder $less_P[x] - 1$
-%   $greater_P'[x] = greater_P[x]$ oder $greater_P[x] - 1$
-
-%   o.b.d.a gilt $less_P[z] \leq i_P$. Damit Element $z$ wegreduziert werden kann, muss $i_P' < less_P'[z]$ gelten.
-%   mit $less_P'[z] = less_P[z]$: $i_{P'} < less_P[z] \leq i_P$. Lösungen: $less_P[z] = i_P$, $less_P[z] = i_P - 1$
-%   mit $less_P'[z] = less_P[z] - 1$: $i_{P'} + 1 < less_P[z] \leq i_P$. Lösungen:
-%   % D.h. $less_P'[z] = less_P[z]$, also $less_P[z] = i_P' + 1$ und somit $i_P' + 1 = i_P$ => $i_P' = i_P - 1$
-
-
-%   Weil wir nur Entfernen von Elementen zulassen, die durch das Hinzufügen von $u < v$ rausfliegen, müssen diese in Verbindung mit $u$ oder $v$ stehen.
-%   (hier müsste man noch untersuchen unter welchen umständen es dazu kommen kann, dass ein nicht mit denen geordnetes element rausfliegt weil $n$ und $i$ sich durch das entfernen anderer ändern).
-
-%   Damit verändern sich $less$ und $greater$ von $u$ und $v$ parallel zu den $n$ und $i$ von $P$ zu $P'$ und sie sind damit nicht aus $P'$ eliminiert.
-%   Andersherum ist zu zeigen dass obwohl die Elemente aus $V \setminus V'$ durch das Entfernen potentiell $less$ und $greater$ verlieren, $n$ und $i$ so verändert sein müssen, dass sie trotzdem rausfliegen.
-%   Hier wissen wir, dass alle Elemente kleiner $u$ $greater[v] + 1$ greater dazubekommen haben und das die aus $V$ über die Grenze gebracht hat, umgekehrt für $v$ mit $n_{P'} = n_P - |V'|$ und eventuellen Einschränkungen für $i$ sollte dann begründbar sein, dass sie auch in $P'$ über die Grenze kommen wenn $u < v$. dazukommt
-% \end{proof}
 
 
 \section{Results}
