@@ -189,8 +189,8 @@ Given a poset $P$, its \emph{Hasse diagram} $H$ is given by the smallest subset 
 We denote by $\pchild{P}{a}{b}$ the transitive closure of $P \cup \{(a, b)\}$.
 \todo[inline]{define less/ greater here. Probably best to define them as sets.
 
-Let $\less{P}{v}$ denote the number of elements smaller than $v$ in poset $P$.
-Let $\greater{P}{u}$ denote the number of elements greater than $u$ in poset $P$.
+  Let $\less{P}{v}$ denote the number of elements smaller than $v$ in poset $P$.
+  Let $\greater{P}{u}$ denote the number of elements greater than $u$ in poset $P$.
 }
 
 
@@ -233,18 +233,18 @@ By $V_i(n)$ we denote the minimum number of comparisons which suffice to select 
 We prove the following transfer lemma for lower bounds, showing that if $k$ is a lower bound for selecting $i$ of $n$, then selecting $i$ of $n + 1$ must take at least $k + 1$ comparisons.
 
 \begin{lemma} \label{lemma:previous_next_poset}
-$V_i(n+1) \ge V_i(n) + 1$.
+  $V_i(n+1) \ge V_i(n) + 1$.
 \end{lemma}
 
 \begin{proof}
-There is an algorithm that selects the $i$-th smallest of $n + 1$ elements using $k = V_i(n+1)$ comparisons.
-We now construct an algorithm that selects the $i$-th smallest of $n$ elements using at most $k$ comparisons.
-Let $a$ and $b$ be the two elements compared first by the algorithm for $n + 1$ elements.
-In the input of the algorithm we put for a a new element $\omega$ that is larger than any other element.
-The algorithm still returns the $i$-th largest of the remaining $n$ elements.
-Any comparison involving $a = \omega$ can be skipped, because we already know the outcome -- $\omega$ is larger.
-In particular, the first comparison is skipped, reducing the number of comparisons by at least $1$.
-Thus we obtain an algorithm for selecting the $i$-th smallest of $n$ elements using $k - 1$ comparisons.
+  There is an algorithm that selects the $i$-th smallest of $n + 1$ elements using $k = V_i(n+1)$ comparisons.
+  We now construct an algorithm that selects the $i$-th smallest of $n$ elements using at most $k$ comparisons.
+  Let $a$ and $b$ be the two elements compared first by the algorithm for $n + 1$ elements.
+  In the input of the algorithm we put for a a new element $\omega$ that is larger than any other element.
+  The algorithm still returns the $i$-th largest of the remaining $n$ elements.
+  Any comparison involving $a = \omega$ can be skipped, because we already know the outcome -- $\omega$ is larger.
+  In particular, the first comparison is skipped, reducing the number of comparisons by at least $1$.
+  Thus we obtain an algorithm for selecting the $i$-th smallest of $n$ elements using $k - 1$ comparisons.
 \end{proof}
 
 Note that the bound in \Cref{lemma:previous_next_poset}\todo{use cleveref everywhere} is tight, as can be seen by $V_1(n) = n-1$\todo{cite, or mention in related work}.
@@ -277,12 +277,12 @@ This observation leads us to the notion of compatible solutions, which is a part
 Clearly a solved problem has exactly one compatible solution.
 Let
 \begin{equation*}
-\mathcal{C}(P, i) = \{(S, i) \mid (S, i) \text{ is compatible with } (P, i) \}
+  \mathcal{C}(P, i) = \{(S, i) \mid (S, i) \text{ is compatible with } (P, i) \}
 \end{equation*}
 be the set of all solutions compatible with $(P, i)$.
 Observe that, given two elements unrelated in $P$, every solution compatible with $(P, i)$ is compatible with at least one of $(\pchild{P}{a}{b}, i)$ and $(\pchild{P}{b}{a}, i)$ and thus
 \begin{equation}\label{lemma:compatible_union}
-\mathcal{C}(P, i) = \mathcal{C}(\pchild{P}{a}{b}, i) \cup \mathcal{C}(\pchild{P}{b}{a}, i)\,\text{.}
+  \mathcal{C}(P, i) = \mathcal{C}(\pchild{P}{a}{b}, i) \cup \mathcal{C}(\pchild{P}{b}{a}, i)\,\text{.}
 \end{equation}
 
 We use the concept of compatible solutions to derive a lower bound on the number of comparisons required to select the $i$-th smallest element of a poset $P$.
@@ -365,12 +365,12 @@ For this means, the following strategies are applied.
 
 \begin{enumerate}
   \item[1.]
-    Use solvability-check. For an unsolvable poset the check always returns 'unsolvable'.
-    However, the check may return 'solvable' or 'unsolvable' for a poset that is in fact solvable.
-    If the check returns 'unsolvable', the branch is pruned.
-    Otherwise, the search is continued in the current branch.
+        Use solvability-check. For an unsolvable poset the check always returns 'unsolvable'.
+        However, the check may return 'solvable' or 'unsolvable' for a poset that is in fact solvable.
+        If the check returns 'unsolvable', the branch is pruned.
+        Otherwise, the search is continued in the current branch.
   \item[2.]
-    Use \texttt{current\_best}. This variable facilitates cutting off branches according to the idea of alpha-beta pruning.
+        Use \texttt{current\_best}. This variable facilitates cutting off branches according to the idea of alpha-beta pruning.
 \end{enumerate}
 
 It is optimal because of an inductive argument over the number of relative orders\todo{?} determined.
@@ -450,24 +450,6 @@ By canonifying the poset, the elements can be sorted in a way such that each ele
 This property can be used to reduce the adjacency matrix to a triangular matrix, which can then be stored using $\frac{n^2 - n}{2}$ bits.
 It can also simplify some algorithms, for example calculating the number of compatible solutions.
 
-\subsubsection{Multithreading}
-\todo[inline]{We could remove this.}
-Since the forward search recursively explores posets, it is possible to treat subtrees as separate tasks and run them on multiple threads.
-We chose to give the thus far implicit search tree an explicit tree structure keeping track of the given poset for later caching, the current best result and number of open child tasks.
-
-Additionally, the tasks also save the second poset of the two outcomes of a comparison to avoid having to maintain separate
-MIN and MAX nodes. Once the first poset completes with a better result, the task replaces itself with that for the second poset and expands again.
-
-Unexpanded tasks are pushed into a shared task heap ordered first by number of remaining comparisons to limit breadth-first expansion and thus size of the search tree, then by the number of compatible solutions.
-An observation from single threaded runs that completed quickly after the first few posets of depth around $6$ were done also led us to prevent multithreading above that depth by keeping the respective posets in a separate queue.
-
-While this resulted in good speedup for the early iterative deepening runs, it became worse as the search approached the actually required number of comparisons.
-For some this was even worse than single threaded search at a noticeably higher cache usage, leading us to ultimately abandon multithreading and calculate the final numbers for $n = 15$ using a single core.
-
-We assume that the heap approach potentially buries promising paths from completely being searched, preventing propagation of the results and thus the pruning exploitation of a found best from reducing the search tree size so often in later runs that the increased workload overtakes the core utilization boost.
-
-See the git branch \textit{multi-threaded} for the last state.
-
 \subsection{Backward Search} \label{sec:backward}
 
 %\subsubsection{Idea}
@@ -543,73 +525,73 @@ There the challenge is to figure out how many they are and what relations they h
 To address these challenges we will first show, that after adding a comparison $(a, b)$ at most one of $\{a, b\}$ will be removed by the reduction.
 
 \begin{lemma} \label{lemma:remove_only_last_element_edge}
-Let $(P, i)$ be a reduced problem.
-Let $(Q, j) = \reduced{(\pchild{P}{a}{b}, i)}$.
-Then, $Q \cap \{a ,b \} \neq \emptyset$.
+  Let $(P, i)$ be a reduced problem.
+  Let $(Q, j) = \reduced{(\pchild{P}{a}{b}, i)}$.
+  Then, $Q \cap \{a ,b \} \neq \emptyset$.
 \end{lemma}
 
 \begin{proof}
-As $(P, i)$ ist reduced, we have $|\less{P}{c}| \le i - 1$ and $|\greater{P}{c}| \le n - i$, where $n = |\Omega_P|$, for every $c \in P$, in particular this also holds for $a$ and $b$.
-Let $P' = \pchild{P}{a}{b}$ and assume $Q \cap \{a ,b \} = \emptyset$.
-Observe that $\less{P'}{a} = \less{P}{a} \le i-1$ and $\greater{P'}{b} = \greater{P}{b} \le n - i$.
-Thus for $a$ and $b$ to be reduced, we must have $\greater{P'}{a} \ge n - i + 1$ and $\less{P'}{b} \ge i$.
-Note that there are no elements inbetween $a$ and $b$, as they are incomparable in $P$ and there is an Hasse arc between them in $P'$.
-Hence $\greater{P'}{a} \cap \less{P'}{b} = \emptyset$, leading to the contradiction $n = |\Omega_{P'}| \ge |\greater{P'}{a} \cup \less{P'}{b}| \ge n + 1$.
+  As $(P, i)$ ist reduced, we have $|\less{P}{c}| \le i - 1$ and $|\greater{P}{c}| \le n - i$, where $n = |\Omega_P|$, for every $c \in P$, in particular this also holds for $a$ and $b$.
+  Let $P' = \pchild{P}{a}{b}$ and assume $Q \cap \{a ,b \} = \emptyset$.
+  Observe that $\less{P'}{a} = \less{P}{a} \le i-1$ and $\greater{P'}{b} = \greater{P}{b} \le n - i$.
+  Thus for $a$ and $b$ to be reduced, we must have $\greater{P'}{a} \ge n - i + 1$ and $\less{P'}{b} \ge i$.
+  Note that there are no elements inbetween $a$ and $b$, as they are incomparable in $P$ and there is an Hasse arc between them in $P'$.
+  Hence $\greater{P'}{a} \cap \less{P'}{b} = \emptyset$, leading to the contradiction $n = |\Omega_{P'}| \ge |\greater{P'}{a} \cup \less{P'}{b}| \ge n + 1$.
 \end{proof}
 
 
- \begin{lemma}
-   Sei $P = (n_P, i_P, R_P)$ ein reduziertes poset.
-   Sei $Q = (n_Q, i_Q, R_Q)$ ein reduziertes poset das man aus $P$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält.
-   Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen mit.
-   Sei $i_Q \leq i_{P'} \leq i_P$.
+\begin{lemma}
+  Sei $P = (n_P, i_P, R_P)$ ein reduziertes poset.
+  Sei $Q = (n_Q, i_Q, R_Q)$ ein reduziertes poset das man aus $P$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält.
+  Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen mit.
+  Sei $i_Q \leq i_{P'} \leq i_P$.
 
-   Dann gilt für alle $V' \subseteq V \setminus \{ u, v \}$:
-   Das poset $P' = (n_P - |V'|, i_{P'}, \{ (a, b) \in R_P \mid a, b \notin V' \})$ ist reduziert und durch hinzufügen des Vergleichs $u < v$ und anschließendem Reduzieren erhält man $Q$ aus $P'$.
- \end{lemma}
+  Dann gilt für alle $V' \subseteq V \setminus \{ u, v \}$:
+  Das poset $P' = (n_P - |V'|, i_{P'}, \{ (a, b) \in R_P \mid a, b \notin V' \})$ ist reduziert und durch hinzufügen des Vergleichs $u < v$ und anschließendem Reduzieren erhält man $Q$ aus $P'$.
+\end{lemma}
 
- \begin{proof}
-   Da $P$ reduziert ist, gilt für jedes Element $x$: $less_P[x] \leq i_P$ und $greater_P[x] \leq n_P - 1 - i_P$
+\begin{proof}
+  Da $P$ reduziert ist, gilt für jedes Element $x$: $less_P[x] \leq i_P$ und $greater_P[x] \leq n_P - 1 - i_P$
 
-   Zeige zunächst, dass $P'$ reduziert ist.
+  Zeige zunächst, dass $P'$ reduziert ist.
 
-   Für $V' = \emptyset$ gilt $P' = P$ und $P'$ ist somit reduziert.
+  Für $V' = \emptyset$ gilt $P' = P$ und $P'$ ist somit reduziert.
 
-   Sei $V' = \{ x \}$.
-   Dann gilt $P' = (n_P - 1, i_{P'}, \{ (a, b) \in R_P \mid a \neq x, b \neq x \})$ mit $i_{P'} \in \{ i_P, (n_P - 1) - 1 - i_P, i_P - 1, (n_P - 1) - 1 - (i_P - 1) \}$.
+  Sei $V' = \{ x \}$.
+  Dann gilt $P' = (n_P - 1, i_{P'}, \{ (a, b) \in R_P \mid a \neq x, b \neq x \})$ mit $i_{P'} \in \{ i_P, (n_P - 1) - 1 - i_P, i_P - 1, (n_P - 1) - 1 - (i_P - 1) \}$.
 
-   Wenn $i_{P'} = i_P$, dann gilt:
-   \begin{itemize}
-     \item $i_P < n_P - 1 - i_P$ % eig. <=
-     \item für alle Elemente $x$: $less_{P'}[x] \leq less_P[x] \leq i_P \iff less_{P'}[x] \leq i_{P'}$
-     \item für alle Elemente $x$: $greater_{P'}[x] \leq greater_P[x] \leq n_P - 1 - i_P \iff greater_{P'}[x] - 1 \leq (n_{P'} - 1) - 1 - i_{P'}$
-   \end{itemize}
+  Wenn $i_{P'} = i_P$, dann gilt:
+  \begin{itemize}
+    \item $i_P < n_P - 1 - i_P$ % eig. <=
+    \item für alle Elemente $x$: $less_{P'}[x] \leq less_P[x] \leq i_P \iff less_{P'}[x] \leq i_{P'}$
+    \item für alle Elemente $x$: $greater_{P'}[x] \leq greater_P[x] \leq n_P - 1 - i_P \iff greater_{P'}[x] - 1 \leq (n_{P'} - 1) - 1 - i_{P'}$
+  \end{itemize}
 
-   Wenn $i_P > n_P - 1 - i_P$:
-   Wenn $i_{P'} = (n_P - 1) - 1 - i_P$, dann $(n_P - 1) - 1 - i_P < i_P$ und somit LESS problematisch
-
-
-   Wenn $i_{P'} = i_P - 1$, dann gilt immernoch $n_P - 1 - i_P = (n_P - 1) - 1 - (i_P - 1)$, d.h. greater gleich, aber LESS problematisch
-
-   Wenn $i_{P'} = (n_P - 1) - 1 - (i_P - 1)$, dann $...$ und somit GREATER problematisch
-
-   Da nur ein Element entfernt wird, gilt:
-   $less_P'[x] = less_P[x]$ oder $less_P[x] - 1$
-   $greater_P'[x] = greater_P[x]$ oder $greater_P[x] - 1$
-
-   o.b.d.a gilt $less_P[z] \leq i_P$. Damit Element $z$ wegreduziert werden kann, muss $i_P' < less_P'[z]$ gelten.
-   mit $less_P'[z] = less_P[z]$: $i_{P'} < less_P[z] \leq i_P$. Lösungen: $less_P[z] = i_P$, $less_P[z] = i_P - 1$
-   mit $less_P'[z] = less_P[z] - 1$: $i_{P'} + 1 < less_P[z] \leq i_P$. Lösungen:
-   % D.h. $less_P'[z] = less_P[z]$, also $less_P[z] = i_P' + 1$ und somit $i_P' + 1 = i_P$ => $i_P' = i_P - 1$
+  Wenn $i_P > n_P - 1 - i_P$:
+  Wenn $i_{P'} = (n_P - 1) - 1 - i_P$, dann $(n_P - 1) - 1 - i_P < i_P$ und somit LESS problematisch
 
 
-   Weil wir nur Entfernen von Elementen zulassen, die durch das Hinzufügen von $u < v$ rausfliegen, müssen diese in Verbindung mit $u$ oder $v$ stehen.
-   (hier müsste man noch untersuchen unter welchen umständen es dazu kommen kann, dass ein nicht mit denen geordnetes element rausfliegt weil $n$ und $i$ sich durch das entfernen anderer ändern).
+  Wenn $i_{P'} = i_P - 1$, dann gilt immernoch $n_P - 1 - i_P = (n_P - 1) - 1 - (i_P - 1)$, d.h. greater gleich, aber LESS problematisch
 
-   Damit verändern sich $less$ und $greater$ von $u$ und $v$ parallel zu den $n$ und $i$ von $P$ zu $P'$ und sie sind damit nicht aus $P'$ eliminiert.
-   Andersherum ist zu zeigen dass obwohl die Elemente aus $V \setminus V'$ durch das Entfernen potentiell $less$ und $greater$ verlieren, $n$ und $i$ so verändert sein müssen, dass sie trotzdem rausfliegen.
-   Hier wissen wir, dass alle Elemente kleiner $u$ $greater[v] + 1$ greater dazubekommen haben und das die aus $V$ über die Grenze gebracht hat, umgekehrt für $v$ mit $n_{P'} = n_P - |V'|$ und eventuellen Einschränkungen für $i$ sollte dann begründbar sein, dass sie auch in $P'$ über die Grenze kommen wenn $u < v$. dazukommt
- \end{proof}
+  Wenn $i_{P'} = (n_P - 1) - 1 - (i_P - 1)$, dann $...$ und somit GREATER problematisch
+
+  Da nur ein Element entfernt wird, gilt:
+  $less_P'[x] = less_P[x]$ oder $less_P[x] - 1$
+  $greater_P'[x] = greater_P[x]$ oder $greater_P[x] - 1$
+
+  o.b.d.a gilt $less_P[z] \leq i_P$. Damit Element $z$ wegreduziert werden kann, muss $i_P' < less_P'[z]$ gelten.
+  mit $less_P'[z] = less_P[z]$: $i_{P'} < less_P[z] \leq i_P$. Lösungen: $less_P[z] = i_P$, $less_P[z] = i_P - 1$
+  mit $less_P'[z] = less_P[z] - 1$: $i_{P'} + 1 < less_P[z] \leq i_P$. Lösungen:
+  % D.h. $less_P'[z] = less_P[z]$, also $less_P[z] = i_P' + 1$ und somit $i_P' + 1 = i_P$ => $i_P' = i_P - 1$
+
+
+  Weil wir nur Entfernen von Elementen zulassen, die durch das Hinzufügen von $u < v$ rausfliegen, müssen diese in Verbindung mit $u$ oder $v$ stehen.
+  (hier müsste man noch untersuchen unter welchen umständen es dazu kommen kann, dass ein nicht mit denen geordnetes element rausfliegt weil $n$ und $i$ sich durch das entfernen anderer ändern).
+
+  Damit verändern sich $less$ und $greater$ von $u$ und $v$ parallel zu den $n$ und $i$ von $P$ zu $P'$ und sie sind damit nicht aus $P'$ eliminiert.
+  Andersherum ist zu zeigen dass obwohl die Elemente aus $V \setminus V'$ durch das Entfernen potentiell $less$ und $greater$ verlieren, $n$ und $i$ so verändert sein müssen, dass sie trotzdem rausfliegen.
+  Hier wissen wir, dass alle Elemente kleiner $u$ $greater[v] + 1$ greater dazubekommen haben und das die aus $V$ über die Grenze gebracht hat, umgekehrt für $v$ mit $n_{P'} = n_P - |V'|$ und eventuellen Einschränkungen für $i$ sollte dann begründbar sein, dass sie auch in $P'$ über die Grenze kommen wenn $u < v$. dazukommt
+\end{proof}
 
 In the following, it is shown how a predecessor is calculated for a given poset $P = (n_P, i_P, R_P)$.
 
@@ -617,54 +599,54 @@ The computation of a predecessor for a given poset $P = (n_P, i_P, R_P)$ proceed
 \todo[inline]{Have a short itemize, describing each step in one sentence, before going into the details for each step.}
 \begin{itemize}
   \item[1.]
-    First, we search for all posets with $n_P$ elements that result in poset $P$ after inserting a comparison $u < v$ and then canonifying it.
-    In other words, we remove a comparison.
+        First, we search for all posets with $n_P$ elements that result in poset $P$ after inserting a comparison $u < v$ and then canonifying it.
+        In other words, we remove a comparison.
 
-    A challenge arises from transitive comparisons, as the insertion of a single comparison can lead to the insertion of multiple transitive comparisons.
+        A challenge arises from transitive comparisons, as the insertion of a single comparison can lead to the insertion of multiple transitive comparisons.
 
-    \begin{figure}[!b]
-      \centering
-      \input{figures/tikz_problematic_case.tex}
-      \caption{Case where further comparisons can be removed transitively by removing a comparison.}
-      \label{fig:backward_problematic}
-    \end{figure}
+        \begin{figure}[!b]
+          \centering
+          \input{figures/tikz_problematic_case.tex}
+          \caption{Case where further comparisons can be removed transitively by removing a comparison.}
+          \label{fig:backward_problematic}
+        \end{figure}
 
-    As illustrated in Figure~\ref{fig:backward_problematic}, all three posets are fully normalized.
-    Removing a comparison from poset (1) can result in either poset (2) or poset (3).
-    This implies that, depending on the current cache, both poset (2) and poset (3) are valid potential predecessors, even though the same comparison is removed each time.
+        As illustrated in Figure~\ref{fig:backward_problematic}, all three posets are fully normalized.
+        Removing a comparison from poset (1) can result in either poset (2) or poset (3).
+        This implies that, depending on the current cache, both poset (2) and poset (3) are valid potential predecessors, even though the same comparison is removed each time.
 
-    To address this issue, all potential predecessors must be computed.
+        To address this issue, all potential predecessors must be computed.
 
   \item[2.]
-    In the next step, all predecessors with $n + 1$ elements are calculated.
-    By inserting a comparison followed by canonification, the poset $P$ is obtained such that one element is eliminated during reduction.
+        In the next step, all predecessors with $n + 1$ elements are calculated.
+        By inserting a comparison followed by canonification, the poset $P$ is obtained such that one element is eliminated during reduction.
 
-    Since the new element is either smaller or larger than the $i$-th smallest element being searched for, the $(i + 1)$-th smallest or the $i$-th smallest element is searched in these predecessors.
-    Given that the poset $P$ is canonified, $i \leq n - 1 - i$ holds for $P$.
-    However, when canonifying a poset with $n + 1$ elements and searching for the $(i + 1)$-th smallest element, it may be necessary to form the dual poset, whereby the $(n + 1) - (i + 1) - 1 = n - i + 1$-th element is searched.
+        Since the new element is either smaller or larger than the $i$-th smallest element being searched for, the $(i + 1)$-th smallest or the $i$-th smallest element is searched in these predecessors.
+        Given that the poset $P$ is canonified, $i \leq n - 1 - i$ holds for $P$.
+        However, when canonifying a poset with $n + 1$ elements and searching for the $(i + 1)$-th smallest element, it may be necessary to form the dual poset, whereby the $(n + 1) - (i + 1) - 1 = n - i + 1$-th element is searched.
 
-    Construct the poset $Q$ as follows:
-    Insert a new element into poset $P$ and add arbitrary comparisons between the new element and the existing elements.
-    It is crucial to ensure that the new element cannot be immediately reduced and that no existing elements can be reduced either.
-    Furthermore, there must exist a comparison $u < v$ such that the addition of this comparison results in the poset $P$ again.
+        Construct the poset $Q$ as follows:
+        Insert a new element into poset $P$ and add arbitrary comparisons between the new element and the existing elements.
+        It is crucial to ensure that the new element cannot be immediately reduced and that no existing elements can be reduced either.
+        Furthermore, there must exist a comparison $u < v$ such that the addition of this comparison results in the poset $P$ again.
 
 
-    As proven in Lemma~\ref{lemma:remove_only_last_element_edge}, it suffices to compare the new element solely with the existing ones.
+        As proven in Lemma~\ref{lemma:remove_only_last_element_edge}, it suffices to compare the new element solely with the existing ones.
 
-    Subsequently, the posets from the first and second steps are merged into a set, ensuring the canonification of all posets.
+        Subsequently, the posets from the first and second steps are merged into a set, ensuring the canonification of all posets.
 
   \item[3.]
-    In the third step, new elements are iteratively inserted, followed by new comparisons for each previously found element, until the upper limit on elements, $n_P$, is reached.
-    This upper limit, $n_P$, also prevents the reuse of cached values from a backward search traversal in subsequent iterations.
-    When inserting a new element, it is important to note that it may no longer be the $i$-th smallest but rather the $(i + 1)$-th smallest element being searched, similar to the second step, and thus cannot be directly reduced.\todo{More precise?}
-    Additionally, by adding the comparison $u < v$, as in the first and second steps, and subsequently normalizing, the resulting poset $P$ should be obtained anew.
+        In the third step, new elements are iteratively inserted, followed by new comparisons for each previously found element, until the upper limit on elements, $n_P$, is reached.
+        This upper limit, $n_P$, also prevents the reuse of cached values from a backward search traversal in subsequent iterations.
+        When inserting a new element, it is important to note that it may no longer be the $i$-th smallest but rather the $(i + 1)$-th smallest element being searched, similar to the second step, and thus cannot be directly reduced.\todo{More precise?}
+        Additionally, by adding the comparison $u < v$, as in the first and second steps, and subsequently normalizing, the resulting poset $P$ should be obtained anew.
 
   \item[4.]
-    \todo[inline]{This isn't really the last, step, is it? This is an optimization that we apply at every step.}
-    In the final step, the minimum number of comparisons that must be removed until the unordered poset is reached is calculated for each predecessor.
-    This number corresponds to the edges in the corresponding Hasse diagram.
-    Based on known theoretical upper bounds, all posets containing too many comparisons can be discarded, as they cannot lead to an unordered poset with the remaining comparisons and therefore cannot be considered in the forward search.
-    Since no more than one comparison can be removed in each step, these posets can be excluded.
+        \todo[inline]{This isn't really the last, step, is it? This is an optimization that we apply at every step.}
+        In the final step, the minimum number of comparisons that must be removed until the unordered poset is reached is calculated for each predecessor.
+        This number corresponds to the edges in the corresponding Hasse diagram.
+        Based on known theoretical upper bounds, all posets containing too many comparisons can be discarded, as they cannot lead to an unordered poset with the remaining comparisons and therefore cannot be considered in the forward search.
+        Since no more than one comparison can be removed in each step, these posets can be excluded.
 \end{itemize}
 
 \begin{figure}[!b]
@@ -765,21 +747,21 @@ It must be noted that $n = 6, i = 3$ does not exist, as the dual poset would be 
 In this case, only $n = 6, i = 2$ is marked with an `x'.
 
 \begin{table}[!t]
-\renewcommand{\arraystretch}{1.2}
-\caption{Possible predecessors that must be calculated for $n = 7$ and $i = 3$. All predecessors for which the corresponding field is marked with `x' must be calculated.}
-\label{table:n_i_values_calculated}
-\centering
-\begin{tabular}{c|cccc}
-$n$ & \multicolumn{4}{c}{$i$}             \\
-& 0                       & 1 & 2 & 3 \\ \hline
-7   & -                       & - & - & x \\
-6   & -                       & - & x & - \\
-5   & -                       & x & x & - \\
-4   & x                       & x & - & - \\
-3   & x                       & x & - & - \\
-2   & x                       & - & - & - \\
-1   & x                       & - & - & - \\
-\end{tabular}%
+  \renewcommand{\arraystretch}{1.2}
+  \caption{Possible predecessors that must be calculated for $n = 7$ and $i = 3$. All predecessors for which the corresponding field is marked with `x' must be calculated.}
+  \label{table:n_i_values_calculated}
+  \centering
+  \begin{tabular}{c|cccc}
+    $n$ & \multicolumn{4}{c}{$i$}             \\
+        & 0                       & 1 & 2 & 3 \\ \hline
+    7   & -                       & - & - & x \\
+    6   & -                       & - & x & - \\
+    5   & -                       & x & x & - \\
+    4   & x                       & x & - & - \\
+    3   & x                       & x & - & - \\
+    2   & x                       & - & - & - \\
+    1   & x                       & - & - & - \\
+  \end{tabular}%
 \end{table}
 
 \paragraph{Iterative deepening}
