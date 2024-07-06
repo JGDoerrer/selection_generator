@@ -3,13 +3,25 @@
 ## Introduction
 
 This research project aims to find worst case optimal comparison algorithms for selecting the `i`-th smallest of `n` elements of a set for `n` up to `15` with computer search.
+Explicitly, we apply computer search to determine the optimal worst-case number of comparisons for selecting a single element from a set of initially unordered elements.
+Our method comprises the three main approaches forward search, backward search and bidirectional search.
+Additionally, we harness the notion of compatible solutions in all of the three searches.
+For the forward search approach besides pruning, poset canonification and heuristics, multithreading was applied successfully.
+In backward search the greatest challenge is posed by the task of calculating the predecessors.
+This was tackled by a three-step procedure that can be performed within reasonable time and storage costs.
+
+Time measurements showed that the backward search performed slightly faster for smaller $n$ and $i$.
+For higher values, up to `n=15` and `i=7` the backward search consumed only about `24%` of the time taken by the forward search.
+Overall, we could not only confirm solutions of previous research but also improve the lower bound for `n=15` and `i=4` by one comparison.
+Furthermore, we can disprove the conjecture that "pair-forming algorithms", in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
+For `n = 12` and `i = 4`, this assumption gives a bound of `20` comparisons, which does not correspond to the optimal bound of 19 comparisons.
 
 
 ## Requirements
 
-Since the project depends on the rust crate nauty, a C compiler able to compile it is required in addition to Rust. 
+Since the project depends on the rust crate nauty, a C-compiler able to compile it is required in addition to Rust. 
 
-To install `Rust` please follow the guide on the **website**[5].
+To install `rust` please follow the guide on the **website**[5].
 
 The package version used to create the data is
 
@@ -27,7 +39,7 @@ clang 16.0.6-1
 
 Having all required packages installed, starting a calculation on your own is straight forward.
 
-To calculate all values from the start, you can use :
+To calculate all values from the start, you can use:
 
 ```shell
 cargo run --release -- --search-mode forward --verbose --print-algorithm
@@ -43,13 +55,27 @@ cargo run --release -- --search-mode forward --verbose --print-algorithm --singl
 cargo run --release -- --search-mode backward --verbose --max-core 16 --print-algorithm --single -n 12 -i 5
 ```
 
-This will start calculating compares starting at the **i=4th** (index starts at 0) value for a list of **n=10** and will continue calculating until you stop.
-
 For more details please read
 
 ```shell
 ./target/release/selection_generator --help
 ```
+
+## Verify Test
+
+To verify the produced algorithms for a produced algorithm `12_5.rs` you have to replace it with the file `algorithm.rs` and execute the test:
+
+```shell
+cargo test algorithm_test --release
+```
+
+You can also automatically test all algorithm in the folder `./algorithms` with:
+
+```shell
+sh test_algorithms.sh
+```
+
+We attached our algorithms from the backward-search in `./logs/backward/algorithms`.
 
 
 ## Results
@@ -73,42 +99,52 @@ The minimum amount of comparisons needed to select the `i`-th smallest of `n`
 | 13        | 12 | 15 | 18 | 20 | 21 | 22 | 23 |    |
 | 14        | 13 | 16 | 19 | 21 | 23 | 24 | 25 |    |
 | 15        | 14 | 17 | 20 | 23 | 24 | 26 | 26 | 27 |
+| 16        | 15 | 18 | 21 | 24 | 26 | 27 |  ? |  ? |
 
 Comparison of the times for the forward and backward search (note: the forward search runs single threaded, in contrast to the backward search which benefits greatly from parallelism; the forward search was started with 500gb RAM)
 
-| `n` | `i` | forward search   | backward search |
-| -   | -   | -                | -               |
-| 12  | 0   | 0.0s             | 0.0s            |
-| 12  | 1   | 0.0s             | 0.1s            |
-| 12  | 2   | 0.4s             | 0.7s            |
-| 12  | 3   | 3.5s             | 1.6s            |
-| 12  | 4   | 36.1s            | 8.4s            |
-| 12  | 5   | 1m 29.9s         | 42.0s           |
-| -   | -   | -                | -               |
-| 13  | 0   | 0.0s             | 0.0s            |
-| 13  | 1   | 0.0s             | 0.5s            |
-| 13  | 2   | 0.8s             | 1.5s            |
-| 13  | 3   | 13.8s            | 16.1s           |
-| 13  | 4   | 3m 41.9s         | 1m 40.2s        |
-| 13  | 5   | 17m 9.9s         | 8m 34.7s        |
-| 13  | 6   | 59m 19.8s        | 18m 4.8s        |
-| -   | -   | -                | -               |
-| 14  | 0   | 0.0s             | 0.0s            |
-| 14  | 1   | 0.0s             | 1.5s            |
-| 14  | 2   | 1.4s             | 5.9s            |
-| 14  | 3   | 35.9s            | 46.9s           |
-| 14  | 4   | 17m 27.2s        | 15m 32.5s       |
-| 14  | 5   | 2h 39m 49.5s     | 1h 39m 59.6s    |
-| 14  | 6   | 14h 39m 41.5s    | 6h 26m 30.8s    |
-| -   | -   | -                | -               |
-| 15  | 0   | 0.0s             | 0.0s            |
-| 15  | 1   | 0.1s             | 4.0s            |
-| 15  | 2   | 2.8s             | 25.9s           |
-| 15  | 3   | 2m 23.7s         | 13m 10.9s       |
-| 15  | 4   | 1h 12m 9.6s      | 45m 51.9s       |
-| 15  | 5   | 1d 8h 37m        | 19h 30m 20.6s   |
-| 15  | 6   | 12d 13h 43m      | 1d 5h 42m 51.5s |
-| 15  | 7   | 14d 1h 51m       | 3d 8h 8m 32.6s  |
+| `n` | `i` | forward search | backward search |
+| -   | -   | -              | -               |
+| 12  | 0   | 0.0s           | 0.0s            |
+| 12  | 1   | 0.0s           | 0.2s            |
+| 12  | 2   | 0.4s           | 0.6s            |
+| 12  | 3   | 3.5s           | 0.9s            |
+| 12  | 4   | 36.1s          | 3.8s            |
+| 12  | 5   | 1m 30s         | 18.0s           |
+| -   | -   | -              | -               |
+| 13  | 0   | 0.0s           | 0.0s            |
+| 13  | 1   | 0.0s           | 0.5s            |
+| 13  | 2   | 0.8s           | 1.2s            |
+| 13  | 3   | 13.8s          | 10.3s           |
+| 13  | 4   | 3m 42s         | 44.5s           |
+| 13  | 5   | 17m 10s        | 3m 22s          |
+| 13  | 6   | 59m 20s        | 7m 16s          |
+| -   | -   | -              | -               |
+| 14  | 0   | 0.0s           | 0.0s            |
+| 14  | 1   | 0.0s           | 1.3s            |
+| 14  | 2   | 1.4s           | 5.1s            |
+| 14  | 3   | 35.9s          | 33.0s           |
+| 14  | 4   | 17m 27s        | 7m 1s           |
+| 14  | 5   | 2h 40m         | 37m 54s         |
+| 14  | 6   | 14h 40m        | 2h 17m          |
+| -   | -   | -              | -               |
+| 15  | 0   | 0.0s           | 0.0s            |
+| 15  | 1   | 0.1s           | 3.9s            |
+| 15  | 2   | 2.8s           | 24.5s           |
+| 15  | 3   | 2m 24s         | 11m 2s          |
+| 15  | 4   | 1h 12m         | 22m 11s         |
+| 15  | 5   | 1d 8h 37m      | 7h 17m          |
+| 15  | 6   | 4d 23h 37m     | 9h 45m          |
+| 15  | 7   | 14d 1h 51m     | 1d 3h 7m        |
+| -   | -   | -              | -               |
+| 16  | 0   | -              | 0.0s            |
+| 16  | 1   | -              | 12.3s           |
+| 16  | 2   | -              | 1m 55.1s        |
+| 16  | 3   | -              | 52m 9.4s        |
+| 16  | 4   | -              | 6h 48m 14.8s    |
+| 16  | 5   | -              | 1d 1h 26m       |
+| 16  | 6   | -              | -               |
+| 16  | 7   | -              | -               |
 
 
 ## Hardware used
