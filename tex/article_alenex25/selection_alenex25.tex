@@ -28,8 +28,10 @@
 \usepackage{algpseudocode}
 \usepackage{todonotes}
 \usepackage{cleveref}
+\usepackage{mathtools}
 
 % Commands
+%! parser=off
 \newcommand\smallO{
 \mathchoice
 {{\scriptstyle\mathcal{O}}}% \displaystyle
@@ -37,6 +39,7 @@
 {{\scriptscriptstyle\mathcal{O}}}% \scriptstyle
 {\scalebox{.50}{$\scriptscriptstyle\mathcal{O}$}}%\scriptscriptstyle
 }
+%! parser=on
 \DeclareMathOperator{\N}{\mathbb{N}}
 \newcommand{\set}[2]{\left\{\, \mathinner{#1}\vphantom{#2}\: \left|\: \vphantom{#1}\mathinner{#2} \right.\,\right\}}
 \newcommand\ie{i.e\@., }
@@ -493,7 +496,7 @@ We begin with a formal definition of a predecessor.
   The problem $(Q, j)$ is a \emph{predecessor} of $(P, i)$ if there is a comparison $(a, b)$, such that
   \begin{enumerate}
     \item $(P, i) = \reduced(\pchild{Q}{a}{b}, j)$ and
-    \item $V_j(\pchild{Q}{a}{b}) \le V_i(P)$ and
+    \item $V_j(\pchild{Q}{b}{a}) \le V_i(P)$ and
     \item $V_j(Q) \neq V_i(P)$.
   \end{enumerate}
 \end{definition}
@@ -541,56 +544,56 @@ To address these challenges we will first show, that after adding a comparison $
 
 
 \begin{lemma}
-  Sei $P = (n_P, i_P, R_P)$ ein reduziertes poset.
-  Sei $Q = (n_Q, i_Q, R_Q)$ ein reduziertes poset das man aus $P$ durch hinzufügen eines Vergleichs $u < v$ und anschließendem Reduzieren erhält.
-  Sei $V$ die Menge der Elemente die beim Reduzieren wegfallen mit.
-  Sei $i_Q \leq i_{P'} \leq i_P$.
-
-  Dann gilt für alle $V' \subseteq V \setminus \{ u, v \}$:
-  Das poset $P' = (n_P - |V'|, i_{P'}, \{ (a, b) \in R_P \mid a, b \notin V' \})$ ist reduziert und durch hinzufügen des Vergleichs $u < v$ und anschließendem Reduzieren erhält man $Q$ aus $P'$.
+  Let $(P, i)$ be a reduced problem.
+  Let $(Q, j) = \reduced{(\pchild{P}{a}{b}, i)}$.
+  Then, $Q \cap \{a ,b \} \neq \emptyset$.
+  If $(P, i)$ is a predecessor of $(Q, j)$ and $\Omega_P \setminus (\Omega_Q \cup \{a, b\}) \neq \emptyset$, then there is an element $c \in \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ such that $(P|_{\Omega_P \setminus \{c\}}, i')$, where $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+1$ and $i'=0$ otherwise, is a reduced predecessor of $(Q, j)$.
 \end{lemma}
 
 \begin{proof}
-  Da $P$ reduziert ist, gilt für jedes Element $x$: $less_P[x] \leq i_P$ und $greater_P[x] \leq n_P - 1 - i_P$
-
-  Zeige zunächst, dass $P'$ reduziert ist.
-
-  Für $V' = \emptyset$ gilt $P' = P$ und $P'$ ist somit reduziert.
-
-  Sei $V' = \{ x \}$.
-  Dann gilt $P' = (n_P - 1, i_{P'}, \{ (a, b) \in R_P \mid a \neq x, b \neq x \})$ mit $i_{P'} \in \{ i_P, (n_P - 1) - 1 - i_P, i_P - 1, (n_P - 1) - 1 - (i_P - 1) \}$.
-
-  Wenn $i_{P'} = i_P$, dann gilt:
+  Let $V = \Omega_P \setminus (\Omega_Q \cup \{a, b\})$.
+  It is easy to see that for every $c \in V$ the problem $(P', i')$ where $P' = P|_{\Omega_P \setminus \{c\}}$ and $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+1$ and $i'=0$ otherwise is a predecessor of $(Q, j)$:
   \begin{itemize}
-    \item $i_P < n_P - 1 - i_P$ % eig. <=
-    \item für alle Elemente $x$: $less_{P'}[x] \leq less_P[x] \leq i_P \iff less_{P'}[x] \leq i_{P'}$
-    \item für alle Elemente $x$: $greater_{P'}[x] \leq greater_P[x] \leq n_P - 1 - i_P \iff greater_{P'}[x] - 1 \leq (n_{P'} - 1) - 1 - i_{P'}$
+    \item It is obvious that $(Q, j) = \reduced{(\pchild{P'}{a}{b}, i')}$.
+    \item $(\pchild{P'}{b}{a}, i')$ is at least as easy solve as $(\pchild{P}{b}{a}, i)$. Thus $V_{i'}(\pchild{P'}{b}{a}) \le V_i(\pchild{P}{b}{a})$.
+    \item \todo[inline]{We don't have $V_{i'}(P') \neq V_j(Q)$!}
   \end{itemize}
-
-  Wenn $i_P > n_P - 1 - i_P$:
-  Wenn $i_{P'} = (n_P - 1) - 1 - i_P$, dann $(n_P - 1) - 1 - i_P < i_P$ und somit LESS problematisch
-
-
-  Wenn $i_{P'} = i_P - 1$, dann gilt immernoch $n_P - 1 - i_P = (n_P - 1) - 1 - (i_P - 1)$, d.h. greater gleich, aber LESS problematisch
-
-  Wenn $i_{P'} = (n_P - 1) - 1 - (i_P - 1)$, dann $...$ und somit GREATER problematisch
-
-  Da nur ein Element entfernt wird, gilt:
-  $less_P'[x] = less_P[x]$ oder $less_P[x] - 1$
-  $greater_P'[x] = greater_P[x]$ oder $greater_P[x] - 1$
-
-  o.b.d.a gilt $less_P[z] \leq i_P$. Damit Element $z$ wegreduziert werden kann, muss $i_P' < less_P'[z]$ gelten.
-  mit $less_P'[z] = less_P[z]$: $i_{P'} < less_P[z] \leq i_P$. Lösungen: $less_P[z] = i_P$, $less_P[z] = i_P - 1$
-  mit $less_P'[z] = less_P[z] - 1$: $i_{P'} + 1 < less_P[z] \leq i_P$. Lösungen:
-  % D.h. $less_P'[z] = less_P[z]$, also $less_P[z] = i_P' + 1$ und somit $i_P' + 1 = i_P$ => $i_P' = i_P - 1$
-
-
-  Weil wir nur Entfernen von Elementen zulassen, die durch das Hinzufügen von $u < v$ rausfliegen, müssen diese in Verbindung mit $u$ oder $v$ stehen.
-  (hier müsste man noch untersuchen unter welchen umständen es dazu kommen kann, dass ein nicht mit denen geordnetes element rausfliegt weil $n$ und $i$ sich durch das entfernen anderer ändern).
-
-  Damit verändern sich $less$ und $greater$ von $u$ und $v$ parallel zu den $n$ und $i$ von $P$ zu $P'$ und sie sind damit nicht aus $P'$ eliminiert.
-  Andersherum ist zu zeigen dass obwohl die Elemente aus $V \setminus V'$ durch das Entfernen potentiell $less$ und $greater$ verlieren, $n$ und $i$ so verändert sein müssen, dass sie trotzdem rausfliegen.
-  Hier wissen wir, dass alle Elemente kleiner $u$ $greater[v] + 1$ greater dazubekommen haben und das die aus $V$ über die Grenze gebracht hat, umgekehrt für $v$ mit $n_{P'} = n_P - |V'|$ und eventuellen Einschränkungen für $i$ sollte dann begründbar sein, dass sie auch in $P'$ über die Grenze kommen wenn $u < v$. dazukommt
+  The challenge is to find an element $c$, such $P'$ is reduced.
+  We define the following sets.
+  \begin{align*}
+    E^+ &= \{e \in \Omega_P \mid \greater{P}{e} = n - i \}\\
+    E^- &= \{e \in \Omega_P \mid \less{P}{e} = i - 1 \}\\
+    V^+ &= \{c \in V \mid \greater{\pchild{P}{a}{b}}{c} \ge n - i + 1 \}\\
+    V^- &= \{c \in V \mid \less{\pchild{P}{a}{b}}{c} \ge i \}
+  \end{align*}
+  Note that $V = V^- \cup V^+$.
+  Any element $c \in V^+$ that is smaller (in $P$) than all elements in $E^-$ will result in $P'$ being reduced.
+  By symmetry, any element $c \in V^-$ smaller than all elements in $E^+$ works as well.
+  We first show that if we have an element in $V^- \cap E^-$ or $V^+ \cap E^+$, then this property is fulfilled:
+  \begin{equation}
+    \forall c \in E^+, e \in E^- \colon (c, e) \in P\,\text{.}
+  \end{equation}
+  Assume we have $c \in E^+, e \in E^-$, but there is no edge $(c, e) \in P$. Then the sets $\{c\} \cup \greater{P}{c}$ and $\{e\} \cup \less{P}{e}$ are disjoint.
+  This is a contradiction as $|\{c\} \cup \greater{P}{c}| + |\{e\} \cup \less{P}{e}| = n + 1 > |\Omega_P|$.
+  
+  The second step is to show that if $V^- \cap E^- = \emptyset$ and $V^+ \cap E^+ = \emptyset$, then we can pick any $c \in V$.
+  We show the following:
+  \begin{equation}
+    \forall c \in V^-, e \in E^+ \colon (e, c) \in P \text{ or } e \in V^+\,\text{.}
+  \end{equation}
+  Assume we have $c \in V^-, e \in E^+$.
+  By repeating the counting argument we observe that the sets $\{c\} \cup \less{\pchild{P}{a}{b}}{c}$ and $\{e\} \cup \greater{P}{e}$ cannot be disjoint.
+  Thus $(e, c) \in \pchild{P}{a}{b}$.
+  Hence we have either $(e, c) \in P$ or $(e, a) \in P$.
+  If $(e, a) \in P$ but not $(e, c) \in P$, then we have to show $a \neq e$ to obtain $e \in V^+$:
+  Assume $a = e$.
+  Then $\greater{P}{a}$ and $\{c\} \cup \less{\pchild{P}{a}{b}}{c}$ must be disjoint as $(e, c) \notin P$.
+  We obtain the contradiction $|\greater{P}{a}| + |\{c\} \cup \less{\pchild{P}{a}{b}}{c}| \ge n + 1$.
+  By symmetrie we also get
+  \begin{equation}
+    \forall c \in V^+, e \in E^- \colon (c, e) \in P \text{ or } e \in V^-\,\text{,}
+  \end{equation}
+  which concludes the proof.
 \end{proof}
 
 In the following, it is shown how a predecessor is calculated for a given poset $P = (n_P, i_P, R_P)$.
