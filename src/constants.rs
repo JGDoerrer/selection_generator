@@ -1,6 +1,6 @@
 pub const MAX_N: usize = 16;
 
-pub const KNOWN_VALUES: [&[usize]; 16] = [
+pub const KNOWN_VALUES: [&[usize]; 17] = [
     &[0],                              // n = 0
     &[0],                              // n = 1
     &[1],                              // n = 2
@@ -17,23 +17,8 @@ pub const KNOWN_VALUES: [&[usize]; 16] = [
     &[12, 15, 18, 20, 21, 22, 23],     // n = 13
     &[13, 16, 19, 21, 23, 24, 25],     // n = 14
     &[14, 17, 20, 23, 24, 26, 26, 27], // n = 15
+    &[15, 18, 21, 24, 26, 27],         // n = 16
 ];
-
-pub const fn min(a: usize, b: usize) -> usize {
-    if a < b {
-        a
-    } else {
-        b
-    }
-}
-
-pub const fn max(a: usize, b: usize) -> usize {
-    if a < b {
-        b
-    } else {
-        a
-    }
-}
 
 pub const LOWER_BOUNDS: [[usize; MAX_N]; MAX_N + 1] = {
     let mut values = [[0; MAX_N]; MAX_N + 1];
@@ -43,13 +28,20 @@ pub const LOWER_BOUNDS: [[usize; MAX_N]; MAX_N + 1] = {
         let mut i = 0;
         while i < n {
             values[n][i] = lower_bound(n, i);
+
             if i < n - 1 {
                 let index = min(i, (n - 1) - i - 1);
+
                 if (n - 1) < KNOWN_VALUES.len() && index < KNOWN_VALUES[n - 1].len() {
                     values[n][i] = max(values[n][i], KNOWN_VALUES[n - 1][index] + 1);
                     // (9): https://dl.acm.org/doi/pdf/10.1145/360336.360339
                 }
             }
+
+            // TODO: find proof for "V_i(n) <= V_{i + 1}(n) for all i < n/2"
+            // if 0 < i && n < KNOWN_VALUES.len() && i - 1 < KNOWN_VALUES[n].len() {
+            //     values[n][i] = max(KNOWN_VALUES[n][i - 1], values[n][i]);
+            // };
 
             i += 1;
         }
@@ -76,7 +68,23 @@ pub const UPPER_BOUNDS: [[usize; MAX_N]; MAX_N + 1] = {
     values
 };
 
-pub const fn upper_bound(n: usize, i0: usize) -> usize {
+const fn min(a: usize, b: usize) -> usize {
+    if a < b {
+        a
+    } else {
+        b
+    }
+}
+
+const fn max(a: usize, b: usize) -> usize {
+    if a < b {
+        b
+    } else {
+        a
+    }
+}
+
+const fn upper_bound(n: usize, i0: usize) -> usize {
     let i = i0 + 1;
     match i {
         1 => n - 1,
@@ -99,7 +107,7 @@ pub const fn upper_bound(n: usize, i0: usize) -> usize {
     }
 }
 
-pub const fn lower_bound(n: usize, i0: usize) -> usize {
+const fn lower_bound(n: usize, i0: usize) -> usize {
     let i = i0 + 1;
 
     match i {

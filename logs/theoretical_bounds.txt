@@ -76,3 +76,12 @@ n: 15, i: 4, comparisons: 24 - 26
 n: 15, i: 5, comparisons: 25 - 29
 n: 15, i: 6, comparisons: 26 - 30
 n: 15, i: 7, comparisons: 26 - 35
+
+n: 16, i: 0, comparisons: 15
+n: 16, i: 1, comparisons: 18
+n: 16, i: 2, comparisons: 21
+n: 16, i: 3, comparisons: 24
+n: 16, i: 4, comparisons: 25 - 27
+n: 16, i: 5, comparisons: 27 - 30
+n: 16, i: 6, comparisons: 27 - 33
+n: 16, i: 7, comparisons: 28 - 36
