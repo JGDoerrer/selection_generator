@@ -65,6 +65,22 @@ impl BackwardsPoset {
         }
     }
 
+    pub fn new_with_inc_n(&self) -> Self {
+        Self {
+            n: self.n + 1,
+            i: self.i,
+            adjacency: self.adjacency,
+        }
+    }
+
+    pub fn new_with_inc_ni(&self) -> Self {
+        Self {
+            n: self.n + 1,
+            i: self.i + 1,
+            adjacency: self.adjacency,
+        }
+    }
+
     // getter
     pub fn n(&self) -> u8 {
         self.n
@@ -795,16 +811,9 @@ impl BackwardsPoset {
     ) {
         debug_assert!(!self.is_less(k, j) && !self.is_less(j, k));
 
-        let mut init_poset = Self::new(self.n + 1, self.i);
-        for i in 0..self.n {
-            for j in 0..self.n {
-                init_poset.set_less(i, j, self.is_less(i, j));
-            }
-        }
-
         let mut unfiltered = HashSet::new();
         let mut swap_init = VecDeque::new();
-        swap_init.push_back((init_poset, 0, self.count_min_comparisons()));
+        swap_init.push_back((self.new_with_inc_n(), 0, self.count_min_comparisons()));
         while let Some((poset, number, min_comparisons_done)) = swap_init.pop_back() {
             for index in number..(poset.n - 1) {
                 if poset.is_less(index, poset.n - 1)
@@ -848,16 +857,9 @@ impl BackwardsPoset {
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
     ) {
-        let mut init_poset = Self::new(self.n + 1, self.i);
-        for i in 0..self.n {
-            for j in 0..self.n {
-                init_poset.set_less(i, j, self.is_less(i, j));
-            }
-        }
-
         let mut enlarged = HashSet::new();
         let mut swap_init = VecDeque::new();
-        swap_init.push_back((init_poset, 0));
+        swap_init.push_back((self.new_with_inc_n(), 0));
         while let Some((poset, number)) = swap_init.pop_back() {
             for k in number..(poset.n - 1) {
                 if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
@@ -898,8 +900,12 @@ impl BackwardsPoset {
         }
     }
 
+    fn number_of_smaller_elements(&self, element: u8) -> u8 {
+        self.adjacency[element as usize].len() as u8
+    }
+
     fn can_reduce_element_smaller(&self, element: u8) -> bool {
-        ((self.n as usize - 1) - self.i as usize) < self.adjacency[element as usize].len()
+        (self.n - 1) - self.i < self.number_of_smaller_elements(element)
     }
 
     pub fn enlarge_i_smaller_with_comparison(
@@ -911,16 +917,9 @@ impl BackwardsPoset {
     ) {
         debug_assert!(!self.is_less(k, j) && !self.is_less(j, k));
 
-        let mut init_poset = Self::new(self.n + 1, self.i + 1);
-        for i in 0..self.n {
-            for j in 0..self.n {
-                init_poset.set_less(i, j, self.is_less(i, j));
-            }
-        }
-
         let mut unfiltered = HashSet::new();
         let mut swap_init = VecDeque::new();
-        swap_init.push_back((init_poset, 0, self.count_min_comparisons()));
+        swap_init.push_back((self.new_with_inc_ni(), 0, self.count_min_comparisons()));
         while let Some((poset, number, min_comparisons_done)) = swap_init.pop_back() {
             for index in number..(poset.n - 1) {
                 if poset.is_less(index, poset.n - 1)
@@ -964,16 +963,9 @@ impl BackwardsPoset {
         max_remaining_comparisons: usize,
         poset_cache: &BackwardCache,
     ) {
-        let mut init_poset = Self::new(self.n + 1, self.i + 1);
-        for i in 0..self.n {
-            for j in 0..self.n {
-                init_poset.set_less(i, j, self.is_less(i, j));
-            }
-        }
-
         let mut enlarged = HashSet::new();
         let mut swap_init = VecDeque::new();
-        swap_init.push_back((init_poset, 0));
+        swap_init.push_back((self.new_with_inc_ni(), 0));
         while let Some((poset, number)) = swap_init.pop_back() {
             for k in number..(poset.n - 1) {
                 if !poset.is_less(k, poset.n - 1) && !poset.is_less(poset.n - 1, k) {
