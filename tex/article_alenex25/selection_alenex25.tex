@@ -402,7 +402,7 @@ This problem is expensive to solve for every poset comparison.
 
 After adding a comparison to a poset, we transform the poset to a canonical form.
 All posets, that are isomorphic to each other should be transformed to the same canonical form.
-Computing the canonical form can be done using Nauty, but this takes a significant amount of time.
+Computing the canonical form can be done using \texttt{nauty}, but this takes a significant amount of time.
 Some performance tests show that it is faster to compute an almost canonical form, where some posets that are isomorphic to each other result in different canonified forms.
 As a result, some posets that are isomorphic occupy several cache entries, but canonifying a poset is much faster.
 
@@ -562,10 +562,10 @@ The next lemma shows, that the elements removed by the reduction, which are not 
   The challenge is to find an element $c$, such $P'$ is reduced.
   We define the following sets.
   \begin{align*}
-    E^+ &= \{e \in \Omega_P \mid \greater{P}{e} = n - i \}\\
-    E^- &= \{e \in \Omega_P \mid \less{P}{e} = i - 1 \}\\
-    V^+ &= \{c \in V \mid \greater{\pchild{P}{a}{b}}{c} \ge n - i + 1 \}\\
-    V^- &= \{c \in V \mid \less{\pchild{P}{a}{b}}{c} \ge i \}
+    E^+ & = \{e \in \Omega_P \mid \greater{P}{e} = n - i \}               \\
+    E^- & = \{e \in \Omega_P \mid \less{P}{e} = i - 1 \}                  \\
+    V^+ & = \{c \in V \mid \greater{\pchild{P}{a}{b}}{c} \ge n - i + 1 \} \\
+    V^- & = \{c \in V \mid \less{\pchild{P}{a}{b}}{c} \ge i \}
   \end{align*}
   Note that $V = V^- \cup V^+$.
   Any element $c \in V^+$ that is smaller (in $P$) than all elements in $E^-$ will result in $P'$ being reduced.
@@ -576,7 +576,7 @@ The next lemma shows, that the elements removed by the reduction, which are not 
   \end{equation}
   Assume we have $c \in E^+, e \in E^-$, but there is no edge $(c, e) \in P$. Then the sets $\{c\} \cup \greater{P}{c}$ and $\{e\} \cup \less{P}{e}$ are disjoint.
   This is a contradiction as $|\{c\} \cup \greater{P}{c}| + |\{e\} \cup \less{P}{e}| = n + 1 > |\Omega_P|$.
-  
+
   The second step is to show that if $V^- \cap E^- = \emptyset$ and $V^+ \cap E^+ = \emptyset$, then we can pick any $c \in V$.
   We show the following:
   \begin{equation}
@@ -628,8 +628,8 @@ For a potential predecessor $(Q, j)$ where $(P, i) = \reduced{(\pchild{Q}{a}{b},
 This is done by checking whether $(\pchild{Q}{a}{b}, j)$ is contained in one of the sets $A_k$ already for $k \le V_i(P)$, which have already been computed at this point.
 
 
-  \paragraph{One additional element, involved in the comparison.}
-    In the next step, all predecessors with $n + 1$ elements are computed, where the additional element is involved in the comparison.
+\paragraph{One additional element, involved in the comparison.}
+In the next step, all predecessors with $n + 1$ elements are computed, where the additional element is involved in the comparison.
 %    By inserting a comparison followed by canonification, the poset $P$ is obtained such that one element is eliminated during reduction.
 %
 %    Since the new element is either smaller or larger than the $i$-th smallest element being searched for, the $(i + 1)$-th smallest or the $i$-th smallest element is searched in these predecessors.
@@ -672,15 +672,15 @@ Figure~\ref{fig:backward-search-tree} illustrates the posets explored in the bac
 
 \subsubsection{Normalform} \label{sec:backward:normal_form}
 Note that the backward search requires a unique normal form distinct from the pseudo canonified form used in the forward search.
-If our custom canonification fails to produce a unique form, nauty provides the appropriate canonified form.
+If our custom canonification fails to produce a unique form, \texttt{nauty} provides the appropriate canonified form.
 The following outlines the canonification process:
 
 First, determine whether $i < n - 1 - i$ holds.
 If not, replace the poset with its dual.
 According to Lemma~\ref{lemma:dual_poset_allowed}, the solvability of the poset remains unchanged.
 
-Finally, the posets elements are arranged canonically. % TODO: nauty in textttt
-The canonic labelling of the elements is provided by nauty\todo{Wie schreiben wir nauty}, which is a program in \texttt{C} for the calculation of graph automorphism groups \cite[Practical Graph Isomorphism]{MCKAY201494}.
+Finally, the posets elements are arranged canonically.
+The canonic labelling of the elements is provided by \texttt{nauty}, which is a program in \texttt{C} for the calculation of graph automorphism groups \cite[Practical Graph Isomorphism]{MCKAY201494}.
 With this canonical labelling, the poset can be represented canonically.
 
 A potential issue arises if $i = n - 1 - i$.
@@ -689,7 +689,7 @@ In this case, it is impossible to decide whether $P$ or $P^{-1}$ corresponds to 
 \begin{figure}[!b]
   \centering
   \input{figures/tikz_backward_canonify_problematic.tex}
-  \caption{Problematic case where nauty cannot distinguish between the two posets, despite them being each other's duals. However, according to Lemma~\ref{lemma:dual_poset_allowed} they can be transformed into each other.\todo[inline]{Nauty cannot distinguish?}} % KEIN FEHLER, da gerichteter Graph
+  \caption{Problematic case where \texttt{nauty} cannot distinguish between the two posets, despite them being each other's duals. However, according to Lemma~\ref{lemma:dual_poset_allowed} they can be transformed into each other.\todo[inline]{nauty cannot distinguish?}} % KEIN FEHLER, da gerichteter Graph
   \label{fig:backward_canonify_problematic}
 \end{figure}
 
@@ -702,7 +702,7 @@ To resolve this ambiguity, the dual poset is computed and canonified for each po
 Subsequently, one of the posets is deterministically selected.
 The deterministic selection is realized by comparing the two binary representations.
 
-Since canonification is inevitable for the backward search but consumes significant computational time, all trivial cases are treated manually and only the remaining cases are canonified by nauty.
+Since canonification is inevitable for the backward search but consumes significant computational time, all trivial cases are treated manually and only the remaining cases are canonified by \texttt{nauty}.
 
 The manual canonification works as follows:
 First, compute the in- and out-degree for each node.
@@ -720,11 +720,11 @@ Given the realistic assumption that $l$ is small, all $2^l$ permutations can be 
 With the aim of obtaining values for $n = 15$, it follows that there are at most $7$ pairs, hence $l \leq 7$ always holds.
 Finally, one permutation is deterministically selected based on its internal representation, as in the case of the dual poset.
 
-Implementing this canonification preprocessing significantly reduces the number of cases that require nauty, as illustrated in Table~\ref{table:nauty-ratio}.
+Implementing this canonification preprocessing significantly reduces the number of cases that require \texttt{nauty}, as illustrated in Table~\ref{table:nauty-ratio}.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
-  \caption{Percentage of canonification requiring nauty for variable $n$ and $i$, where lower values are preferable.}
+  \caption{Percentage of canonification requiring \texttt{nauty} for variable $n$ and $i$, where lower values are preferable.}
   \label{table:nauty-ratio}
   \centering
   \resizebox{\columnwidth}{!}{%
@@ -738,8 +738,8 @@ Implementing this canonification preprocessing significantly reduces the number 
   }
 \end{table}
 
-It is particularly noteworthy that as $i$ increases, the percentage of nauty calls decreases.
-For small values of $i$, the high percentage of nauty calls is not critical, as computations for small $i$ are generally quick.
+It is particularly noteworthy that as $i$ increases, the percentage of \texttt{nauty} calls decreases.
+For small values of $i$, the high percentage of \texttt{nauty} calls is not critical, as computations for small $i$ are generally quick.
 
 \subsubsection{Optimization}
 
