@@ -134,9 +134,9 @@ In this work we present a novel approach to finding optimal algorithms for selec
 Using our approach we obtained the following results.
 \begin{enumerate}
   \item We confirm most of the values $V_i(n)$ computed by Oksanen and correct an error in his work which states that $V_5(15)$ would be $25$~\cite{Oksanen}.
-  We show that the optimal algorithm requires one comparison fewer, that is $V_5(15) = 24$.
+        We show that the optimal algorithm requires one comparison fewer, that is $V_5(15) = 24$.
   \item We determined the precise values $V_7(14) = 25$, $V_6(15) = V_7(15) = 26$ and $V_8(15) = 27$.
-  Only a range of values was known for these instances previously.
+        Only a range of values was known for these instances previously.
   \item We compute $V_i(16)$ for $i \le \text{TODO}$.
 \end{enumerate}
 
@@ -188,12 +188,12 @@ We denote by $\pchild{P}{a}{b}$ the transitive closure of $P \cup \{(a, b)\}$.\t
 By $P|_{\Omega'}$ we denote the restriction of $P$ to $\Omega'$.
 \todo[inline]{define less/ greater here. Probably best to define them as sets.
 
-  Let $\less{P}{v}$ denote the number of elements smaller than $v$ in poset $P$.
-  Let $\greater{P}{u}$ denote the number of elements greater than $u$ in poset $P$.
+Let $\less{P}{v}$ denote the number of elements smaller than $v$ in poset $P$.
+Let $\greater{P}{u}$ denote the number of elements greater than $u$ in poset $P$.
 Notation: $\less{P}{v} = {v\downarrow_P} = D_P(v)$ and $\greater{P}{u} = u \uparrow_P = U_P(u)$.
 }
 \todo[inline]{
-Define $\reduced{P}$.
+  Define $\reduced{P}$.
 }
 
 
@@ -351,30 +351,11 @@ This premise is implemented by a minimax algorithm as shown in \Cref{fig:minimax
 We can drastically speed up this exploration by caching previous results, even with a simple usage based ejection policy.
 Since the search always imposes an upper bound for the number of comparisons to allow this also includes yet unsolved posets, for which we note the currently known minimum.
 
-\subsubsection{Pruning Decisions.} % hier einfach schreiben: wir machen alpha-beta pruning
-The minimax search algorithm allows for cutting off unpromising branches.
-For this means, the following strategies are applied.
-
-\begin{enumerate}
-  \item[1.]
-    Use solvability-check. For an unsolvable poset the check always returns `unsolvable'.
-    However, the check may return `solvable' or `unsolvable' for a poset that is in fact solvable.
-    If the check returns `unsolvable', the branch is pruned.
-    Otherwise, the search is continued in the current branch.
-  \item[2.]
-    Use \texttt{current\_best}.
-    This variable facilitates cutting off branches according to the idea of alpha-beta pruning.
-\end{enumerate}
-
-It is optimal because of an inductive argument over the number of relative orders\todo{?} determined.
-An already solved poset obviously takes no further comparisons to solve.
-Then, given an unsolved poset with all elements already too large or small excluded\todo{reduced} we must make at least one more comparison to make progress.
-Since all posets resulting from these comparisons must have more elements ordered\todo{?} than the current one has we can assume as per induction that we know their optimal cost.
-As a result, we cannot solve the poset in less than the cost of the cheapest of these comparisons, plus one for the comparison itself, hence the current poset is also solved optimally.
-
-It is also complete for a given upper bound, explainable through a similar inductive argument.
-If the poset is solvable within that bound, then at least one of its possible comparisons must have both outcomes be solvable within the bound lowered by one.
-Since the search only lowers the bound imposed on its recursive descendants beyond that once at least one has been solved, we are also guaranteed to find a solution for the original poset if it exists within the bound.
+\subsubsection{Pruning Decisions.}
+We use the minimax search algorithm for cutting off unpromising branches.
+While searching the possible comparisons of a poset, we keep track of the currently best result.
+The remaining comparisons are searched with a limitied depth such that only solutions, which improve the current best are found.
+At the start of a search, the possible comparisons are sorted using a heuristic so that the most promising comparisons are searched for first.
 
 \begin{figure}[!b]
   \centering
