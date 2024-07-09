@@ -45,7 +45,7 @@
 \newcommand\ie{i.e\@., }
 \newcommand{\sse}{\subseteq}
 \newcommand{\pchild}[3]{{#1}\kern-1pt{+}{#2}{#3}}
-\newcommand{\dual}[1]{{#1}^{D}}
+\newcommand{\dual}[1]{{#1}^{\delta}}
 \newcommand{\reduced}[1]{\operatorname{red}{#1}}
 \newcommand{\less}[2]{\operatorname{less}_{#1}(#2)}
 \newcommand{\greater}[2]{\operatorname{greater}_{#1}(#2)}
@@ -126,7 +126,7 @@ On his website Kenneth Oksanen~\cite{Oksanen} published a computer search algori
 However, the results are not published in a scientific journal and lack explanation.
 This work will continue the work of Oksanen~\cite{Oksanen} by confirming, improving and expanding the values he found.
 It will reimplement some ideas of the algorithms Oksanen published along with his found lower bounds and improve the computer search algorithms by researching the benefits of different search strategies, adding $\alpha$-$\beta$-pruning and the exploitation of compatible solutions.
-A quote from Miguel de Cervantes from Don Quijote will hold true for this article: The journey is better than the inn. \cite{cervantes_don_quijote}
+A quote from Miguel de Cervantes from Don Quijote will hold true for this article: ``the journey is better than the inn'' \cite{cervantes_don_quijote}.
 So buckle up.
 
 \subsection{Contribution}
@@ -139,6 +139,14 @@ Using our approach we obtained the following results.
   Only a range of values was known for these instances previously.
   \item We compute $V_i(16)$ for $i \le \text{TODO}$.
 \end{enumerate}
+
+Our algorithmic approach is twofold.
+The first approach, which we will call forward search in the remainder of this article, an improvement to the minimax algorithm also used by Gasarch et.\ al\@.~\cite{Gasarch1996} and Oksanen~\cite{Oksanen2006,Oksanen}.
+We introduce a novel pruning criteria based on the notion of compatible solutions.\todo{Do we have data which shows the speedup obtained from using compatible solutions?}
+
+The second approach, the backward search, is based on a different idea entirely.
+Here the start and endpoint of the search switch places.
+This type of search has not been applied to the selection problem before, and we will see, that its efficient application poses several challenges.
 
 
 
@@ -169,19 +177,23 @@ Therefore selection is for sure in a time complexity of $\mathcal{O}(n)$ for bes
 
 \subsection{Posets.}
 A partial order is a reflexive, transitive and antisymmetric relation.
-A partially ordered set, short \emph{poset}, is a set $\Omega$ with a partial order $R \subseteq \Omega \times \Omega$.
+A partially ordered set, short \emph{poset}, is a set $\Omega$ with a partial order $P \subseteq \Omega \times \Omega$.
 By a slight abuse of notation, we denote the poset by $R$ as well.
-Where necessary, we write $\Omega_R$ for the underlying set.
+Where necessary, we write $\Omega_P$ for the underlying set.
 Throughout this paper $\Omega$ is finite.
 Two posets $P$ and $Q$ are \emph{isomorphic} if there is a bijective mapping $\varphi: \Omega_P \to \Omega_Q$ such that $(u, v) \in R \iff (\varphi(u), \varphi(v)) \in Q$ for all $u, v \in \Omega$.
-The \emph{dual} of a poset $R$ is obtained by reversing the direction of all edges, \ie $\dual{R} = \set{(v,u)}{(u,v) \in R}$.
+The \emph{dual} of a poset $P$ is obtained by reversing the direction of all edges, \ie $\dual{P} = \set{(v,u)}{(u,v) \in P}$.
 Given a poset $P$, its \emph{Hasse diagram} $H$ is given by the smallest subset $H \sse \Omega \times \Omega$ such that $P$ is the reflexive, transitive closure of $H$.
-We denote by $\pchild{P}{a}{b}$ the transitive closure of $P \cup \{(a, b)\}$.
+We denote by $\pchild{P}{a}{b}$ the transitive closure of $P \cup \{(a, b)\}$.\todo{alternativ $P_{a<b}$}
+By $P|_{\Omega'}$ we denote the restriction of $P$ to $\Omega'$.
 \todo[inline]{define less/ greater here. Probably best to define them as sets.
 
   Let $\less{P}{v}$ denote the number of elements smaller than $v$ in poset $P$.
   Let $\greater{P}{u}$ denote the number of elements greater than $u$ in poset $P$.
 Notation: $\less{P}{v} = {v\downarrow_P} = D_P(v)$ and $\greater{P}{u} = u \uparrow_P = U_P(u)$.
+}
+\todo[inline]{
+Define $\reduced{P}$.
 }
 
 
