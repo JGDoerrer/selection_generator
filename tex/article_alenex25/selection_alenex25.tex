@@ -129,8 +129,18 @@ It will reimplement some ideas of the algorithms Oksanen published along with hi
 A quote from Miguel de Cervantes from Don Quijote will hold true for this article: The journey is better than the inn. \cite{cervantes_don_quijote}
 So buckle up.
 
-\subsection{Contribution.}
-\todo[inline]{tbd}
+\subsection{Contribution}
+In this work we present a novel approach to finding optimal algorithms for selection.
+Using our approach we obtained the following results.
+\begin{enumerate}
+  \item We confirm most of the values $V_i(n)$ computed by Oksanen and correct an error in his work which states that $V_5(15)$ would be $25$~\cite{Oksanen}.
+  We show that the optimal algorithm requires one comparison fewer, that is $V_5(15) = 24$.
+  \item We determined the precise values $V_7(14) = 25$, $V_6(15) = V_7(15) = 26$ and $V_8(15) = 27$.
+  Only a range of values was known for these instances previously.
+  \item We compute $V_i(16)$ for $i \le \text{TODO}$.
+\end{enumerate}
+
+
 
 \subsection{Related Work.}
 A first approach to solve this can be achieved by sorting the list at first and selecting the $i$-th
@@ -171,12 +181,13 @@ We denote by $\pchild{P}{a}{b}$ the transitive closure of $P \cup \{(a, b)\}$.
 
   Let $\less{P}{v}$ denote the number of elements smaller than $v$ in poset $P$.
   Let $\greater{P}{u}$ denote the number of elements greater than $u$ in poset $P$.
+Notation: $\less{P}{v} = {v\downarrow_P} = D_P(v)$ and $\greater{P}{u} = u \uparrow_P = U_P(u)$.
 }
 
 
 \subsection{The Selection Problem.}
-The selection problem is, given a poset $R$ and an integer $i$, to determine the $i$-th smallest of the $n$ elements in $\Omega_R$ where we already know the relations $R$.
-We denote an instance of the \emph{selection problem} by $(R, i)$.
+The selection problem is, given a poset $R$ and an integer $i$, to determine the $i$-th smallest of the $n$ elements in $\Omega_R$ where we already know the relation $R$.
+We denote an instance of the \emph{selection problem}, or problem for short, by $(R, i)$\todo{alternative: instance}.
 The notion of isomorphism extends naturally to selection problems.
 For the dual we have $\dual{(R, i)} = (\dual{R}, n - i + 1)$.
 The problem $(R, i)$ is \emph{reduced} if for each element there are at most $i - 1$ smaller elements and at most $n - i$ larger elements.
@@ -197,14 +208,6 @@ The number of comparisons required by the algorithm (in the worst case) is the m
 
 \subsection{Minimum Number of Comparisons.}
 
-\todo[inline]{This def could be text}
-\begin{definition}[Optimal Cost]
-  The cost $V(P)$ of the poset $P = (n, i, R)$ is the optimal number of further comparisons needed to perform the selection.
-
-  We measure this pessimistically, meaning that among all possible outcomes of those further comparisons we assume the most expensive ones.
-\end{definition}
-
-
 By $V_i(n)$ we denote the minimum number of comparisons which suffice to select the $i$-th smallest out of $n$ elements in the worst-case.
 We prove the following transfer lemma for lower bounds, showing that if $k$ is a lower bound for selecting $i$ of $n$, then selecting $i$ of $n + 1$ must take at least $k + 1$ comparisons.
 
@@ -218,7 +221,7 @@ We prove the following transfer lemma for lower bounds, showing that if $k$ is a
   Let $a$ and $b$ be the two elements compared first by the algorithm for $n + 1$ elements.
   In the input of the algorithm we insert a new element $\omega$ that is larger than any other element.
   The algorithm still returns the $i$-th smallest of the remaining $n$ elements.
-  Any comparison involving $a = \omega$ can be skipped, because we already know the outcome -- $\omega$ is larger.
+  Any comparison involving $a = \omega$ can be skipped, because we already know the outcome: $\omega$ is larger.
   In particular, the first comparison is skipped, reducing the number of comparisons by at least $1$.
   Thus we obtain an algorithm for selecting the $i$-th smallest of $n$ elements using $k - 1$ comparisons.
 \end{proof}
