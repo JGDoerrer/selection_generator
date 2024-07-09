@@ -219,7 +219,7 @@ We prove the following transfer lemma for lower bounds, showing that if $k$ is a
   There is an algorithm that selects the $i$-th smallest of $n + 1$ elements using $k = V_i(n + 1)$ comparisons.
   We now construct an algorithm that selects the $i$-th smallest of $n$ elements using at most $k$ comparisons.
   Let $a$ and $b$ be the two elements compared first by the algorithm for $n + 1$ elements.
-  In the input of the algorithm we insert a new element $\omega$ that is larger than any other element.
+  In the input of the algorithm we put in the place of $a$ a new element $\omega$ that is larger than any other element.
   The algorithm still returns the $i$-th smallest of the remaining $n$ elements.
   Any comparison involving $a = \omega$ can be skipped, because we already know the outcome: $\omega$ is larger.
   In particular, the first comparison is skipped, reducing the number of comparisons by at least $1$.
