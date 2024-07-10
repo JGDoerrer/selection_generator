@@ -120,13 +120,13 @@
 The problem of selecting the $i$-th smallest element in a list of $n$ elements is a well-known problem in computer science called \textit{selection}.
 Explicitly, we concern ourselves with the optimal worst-case selection of a single element from a set of initially unordered unique elements, measuring the cost as the number of comparisons made.
 
-Searching for optimal solutions is considerably difficult and the tightest known lower bounds obtained by mathematical means soon exceed what is attainable by even rather intelligent search.
+Searching for optimal solutions is considerably difficult and the tightest known lower bounds obtained by mathematical means soon exceed what is attainable by even rather intelligent search.\todo{Was heißt das?}
 An approach to finding optimal algorithms is made by Gasarch, Kelly and Pugh~\cite{Gasarch1996} who introduced computer search to find optimal selection algorithms.
 On his website Kenneth Oksanen~\cite{Oksanen} published a computer search algorithm improving the previously known lower bounds found by Gasarch et.\ al\@.~\cite{Gasarch1996}.
 However, the results are not published in a scientific journal and lack explanation.
 This work will continue the work of Oksanen~\cite{Oksanen} by confirming, improving and expanding the values he found.
 It will reimplement some ideas of the algorithms Oksanen published along with his found lower bounds and improve the computer search algorithms by researching the benefits of different search strategies, adding $\alpha$-$\beta$-pruning and the exploitation of compatible solutions.
-A quote from Miguel de Cervantes from Don Quijote will hold true for this article: ``the journey is better than the inn'' \cite{cervantes_don_quijote}.
+A quote from Miguel de Cervantes from Don Quijote will hold true for this article: ``the journey is better than the inn''~\cite{cervantes_don_quijote}.
 So buckle up.
 
 \subsection{Contribution}
@@ -141,7 +141,7 @@ Using our approach we obtained the following results.
 \end{enumerate}
 
 Our algorithmic approach is twofold.
-The first approach, which we will call forward search in the remainder of this article, an improvement to the minimax algorithm also used by Gasarch et.\ al\@.~\cite{Gasarch1996} and Oksanen~\cite{Oksanen2006,Oksanen}.
+The first approach, which we will call forward search in the remainder of this article, an improvement to the minimax algorithm also used by Gasarch et.\ al\@.~\cite{Gasarch1996} and Oksanen~\cite{Oksanen,Oksanen2006}.
 We introduce a novel pruning criteria based on the notion of compatible solutions.\todo{Do we have data which shows the speedup obtained from using compatible solutions?}
 
 The second approach, the backward search, is based on a different idea entirely.
@@ -214,7 +214,7 @@ The leaf nodes are labeled with \emph{solved} problems, that is tupels $(R, i)$ 
 Hence, $a$ ist the $i$-th smallest element.
 
 The selection algorithm associates to each inner node $P$ a comparison $\{a, b\}$, meaning that the algorithm compares $a$ with $b$ as its next step.
-The two children $\pchild{P}{a}{b}$ and $\pchild{P}{b}{a}$ correspond to the two possible outcomes of the comparison $a \preceq b$ and $b \succeq a$.
+The two children $\pchild{P}{a}{b}$ and $\pchild{P}{b}{a}$ correspond to the two possible outcomes of the comparison $a < b$ and $b > a$.
 The number of comparisons required by the algorithm (in the worst case) is the maximum length of a path from the root to some leaf.
 
 
@@ -516,12 +516,12 @@ The next lemma shows, that the elements removed by the reduction, which are not 
   Let $(P, i)$ be a reduced problem.
   Let $(Q, j) = \reduced{(\pchild{P}{a}{b}, i)}$.
   Then, $Q \cap \{a, b\} \neq \emptyset$.
-  If $(P, i)$ is a predecessor of $(Q, j)$ and $\Omega_P \setminus (\Omega_Q \cup \{a, b\}) \neq \emptyset$, then there is an element $c \in \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ such that $(P|_{\Omega_P \setminus \{c\}}, i')$, where $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+1$ and $i'=0$ otherwise, is a reduced predecessor of $(Q, j)$.
+  If $(P, i)$ is a predecessor of $(Q, j)$ and $\Omega_P \setminus (\Omega_Q \cup \{a, b\}) \neq \emptyset$, then there is an element $c \in \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ such that $(P|_{\Omega_P \setminus \{c\}}, i')$, where $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+1$ and $i'=i$ otherwise, is a reduced predecessor of $(Q, j)$.
 \end{lemma}
 
 \begin{proof}
-  Let $V = \Omega_P \setminus (\Omega_Q \cup \{a, b\})$.
-  It is easy to see that for every $c \in V$ the problem $(P', i')$ where $P' = P|_{\Omega_P \setminus \{c\}}$ and $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+1$ and $i'=0$ otherwise is a predecessor of $(Q, j)$:
+  Let $R = \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ be the set of elements removed by the reduction.
+  It is easy to see that for every $c \in R$ the problem $(P', i')$ where $P' = P|_{\Omega_P \setminus \{c\}}$ and $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+1$ and $i'=i$ otherwise is a predecessor of $(Q, j)$:
   \begin{itemize}
     \item It is obvious that $(Q, j) = \reduced{(\pchild{P'}{a}{b}, i')}$.
     \item $(\pchild{P'}{b}{a}, i')$ is at least as easy solve as $(\pchild{P}{b}{a}, i)$. Thus $V_{i'}(\pchild{P'}{b}{a}) \le V_i(\pchild{P}{b}{a})$.
@@ -530,37 +530,39 @@ The next lemma shows, that the elements removed by the reduction, which are not 
   The challenge is to find an element $c$, such $P'$ is reduced.
   We define the following sets.
   \begin{align*}
-    E^+ & = \{e \in \Omega_P \mid \greater{P}{e} = n - i \}               \\
-    E^- & = \{e \in \Omega_P \mid \less{P}{e} = i - 1 \}                  \\
-    V^+ & = \{c \in V \mid \greater{\pchild{P}{a}{b}}{c} \ge n - i + 1 \} \\
-    V^- & = \{c \in V \mid \less{\pchild{P}{a}{b}}{c} \ge i \}
+    C^+ & = \{e \in \Omega_P \mid \greater{P}{e} = n - i \}               \\
+    C^- & = \{e \in \Omega_P \mid \less{P}{e} = i - 1 \}                  \\
+    R^+ & = \{c \in V \mid \greater{\pchild{P}{a}{b}}{c} \ge n - i + 1 \} \\
+    R^- & = \{c \in V \mid \less{\pchild{P}{a}{b}}{c} \ge i \}
   \end{align*}
-  Note that $V = V^- \cup V^+$.
-  Any element $c \in V^+$ that is smaller (in $P$) than all elements in $E^-$ will result in $P'$ being reduced.
-  By symmetry, any element $c \in V^-$ smaller than all elements in $E^+$ works as well.
-  We first show that if we have an element in $V^- \cap E^-$ or $V^+ \cap E^+$, then this property is fulfilled:
+  Note that $R = R^- \cup R^+$.
+  The sets $C^-$ and $C^+$ are the critical elements:
+  If $P'$ is not reduced, then it is because one of these elements can no longer be the $i$-th smallest.
+  To avoid that we need an element $c \in R^+$ that is smaller (in $P$) than all elements in $C^-$.
+  By symmetry, any element $c \in R^-$ smaller than all elements in $C^+$ works as well.
+  We first show that if we have an element in $R^- \cap C^-$ or $R^+ \cap C^+$, then this property is fulfilled:
   \begin{equation}
-    \forall c \in E^+, e \in E^- \colon (c, e) \in P\,\text{.}
+    \forall c \in C^+, e \in C^- \colon (c, e) \in P\,\text{.}
   \end{equation}
-  Assume we have $c \in E^+, e \in E^-$, but there is no edge $(c, e) \in P$. Then the sets $\{c\} \cup \greater{P}{c}$ and $\{e\} \cup \less{P}{e}$ are disjoint.
+  Assume we have $c \in C^+, e \in C^-$, but there is no edge $(c, e) \in P$. Then the sets $\{c\} \cup \greater{P}{c}$ and $\{e\} \cup \less{P}{e}$ are disjoint.
   This is a contradiction as $|\{c\} \cup \greater{P}{c}| + |\{e\} \cup \less{P}{e}| = n + 1 > |\Omega_P|$.
 
-  The second step is to show that if $V^- \cap E^- = \emptyset$ and $V^+ \cap E^+ = \emptyset$, then we can pick any $c \in V$.
+  The second step is to show that if $R^- \cap C^- = \emptyset$ and $R^+ \cap C^+ = \emptyset$, then we can pick any $c \in R$.
   We show the following:
   \begin{equation}
-    \forall c \in V^-, e \in E^+ \colon (e, c) \in P \text{ or } e \in V^+\,\text{.}
+    \forall c \in R^-, e \in C^+ \colon (e, c) \in P \text{ or } e \in R^+\,\text{.}
   \end{equation}
-  Assume we have $c \in V^-, e \in E^+$.
+  Assume we have $c \in R^-, e \in C^+$.
   By repeating the counting argument we observe that the sets $\{c\} \cup \less{\pchild{P}{a}{b}}{c}$ and $\{e\} \cup \greater{P}{e}$ cannot be disjoint.
   Thus $(e, c) \in \pchild{P}{a}{b}$.
   Hence we have either $(e, c) \in P$ or $(e, a) \in P$.
-  If $(e, a) \in P$ but not $(e, c) \in P$, then we have to show $a \neq e$ to obtain $e \in V^+$:
+  If $(e, a) \in P$ but not $(e, c) \in P$, then we have to show $a \neq e$ to obtain $e \in R^+$:
   Assume $a = e$.
   Then $\greater{P}{a}$ and $\{c\} \cup \less{\pchild{P}{a}{b}}{c}$ must be disjoint as $(e, c) \notin P$.
   We obtain the contradiction $|\greater{P}{a}| + |\{c\} \cup \less{\pchild{P}{a}{b}}{c}| \ge n + 1$.
   By symmetrie we also get
   \begin{equation}
-    \forall c \in V^+, e \in E^- \colon (c, e) \in P \text{ or } e \in V^-\,\text{,}
+    \forall c \in R^+, e \in C^- \colon (c, e) \in P \text{ or } e \in R^-\,\text{,}
   \end{equation}
   which concludes the proof.
 \end{proof}
