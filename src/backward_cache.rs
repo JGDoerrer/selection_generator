@@ -4,7 +4,7 @@ use std::{cmp::Ordering, mem::size_of};
 
 use crate::backwards_poset::BackwardsPoset;
 
-const HASHTABLE_BITS: usize = 16;
+const HASHTABLE_BITS: usize = 8;
 const HASHTABLE_SIZE: usize = 1 << HASHTABLE_BITS;
 const HASHTABLE_SHIFT: usize = 128 - HASHTABLE_BITS;
 
