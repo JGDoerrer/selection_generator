@@ -99,19 +99,7 @@
 %\setcounter{page}{1}%Leave this line commented out.
 
 \begin{abstract} \small\baselineskip=9pt
-  This research project aims to find worst case optimal comparison algorithms for selecting the $i$-th smallest of $n$ elements of a set for $n$ up to $16$ with computer search.
-  Explicitly, we apply computer search to determine the optimal worst-case number of comparisons for selecting a single element from a set of initially unordered elements.
-  Our method comprises the three main approaches forward search, backward search and bidirectional search.
-  Additionally, we harness the notion of compatible solutions in all of the three searches.
-  For the forward search approach besides pruning, poset canonification and heuristics, multithreading was applied successfully.
-  In backward search the greatest challenge is posed by the task of calculating the predecessors.
-  This was tackled by a three-step procedure that can be performed within reasonable time and storage costs.
-
-  Time measurements showed that the backward search performed slightly faster for smaller $n$ and $i$.
-  For higher values, up to $n = 15$ and $i = 8$ the backward search consumed only a fraction of the time taken by the forward search.
-  Overall, we could not only confirm solutions of previous research but also improve the lower bound for $n = 15$ and $i = 5$ by one comparison.
-  Furthermore, we can disprove the conjecture that ``pair-forming algorithms'', in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
-  For $n = 12$ and $i = 5$, this assumption gives a bound of $20$ comparisons, which does not correspond to the optimal bound of $19$ comparisons.
+  T.b.d.\ short summary of contribution.
 
 \end{abstract} % newline above is important for formatting
 
@@ -119,13 +107,24 @@
 
 The problem of selecting the $i$-th smallest element in a list of $n$ elements is a well-known problem in computer science called \textit{selection}.
 Explicitly, we concern ourselves with the optimal worst-case selection of a single element from a set of initially unordered unique elements, measuring the cost as the number of comparisons made.
+We denote this cost by $V_i(n)$.
 
-Searching for optimal solutions is considerably difficult and the tightest known lower bounds obtained by mathematical means soon exceed what is attainable by even rather intelligent search.\todo{Was heißt das?}
-An approach to finding optimal algorithms is made by Gasarch, Kelly and Pugh~\cite{Gasarch1996} who introduced computer search to find optimal selection algorithms.
-On his website Kenneth Oksanen~\cite{Oksanen} published a computer search algorithm improving the previously known lower bounds found by Gasarch et.\ al\@.~\cite{Gasarch1996}.
-However, the results are not published in a scientific journal and lack explanation.
-This work will continue the work of Oksanen~\cite{Oksanen} by confirming, improving and expanding the values he found.
-It will reimplement some ideas of the algorithms Oksanen published along with his found lower bounds and improve the computer search algorithms by researching the benefits of different search strategies, adding $\alpha$-$\beta$-pruning and the exploitation of compatible solutions.
+For selecting the smallest and seconds smallest element optimal algorithms are known with $V_1(n) = n - 1$ and $V_2(n) = \text{TODO}$~\cite{todo}.
+In general the selection problem is solvable in linear time, e.g.\ using the median of medians algorithm~\cite{todo}.
+The best known upper bound, proposed by Blum et.\ al.\ is $5.4305n$~\cite{todo}.
+This is a significant gap to the best known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$ where $H(x) = x \cdot \log_2 \frac{1}{x} + (1 - x) \log_2 \frac{1}{1 - x}$~\cite{todo}.
+
+Looking at the special case of selecting the median $i = \nicefrac{n}{2}$, the best known algorithm requires $2.95n$ comparisons~\cite{dor1999selecting}.
+Even though this is better than what we know for the general selection problem, there is still a gap to the lower bound, which is $2 \cdot n - \smallO(n)$ in this case.
+It has been conjectured that the lower bound for selecting the median is at least TODO~\cite{todo}.
+
+Gasarch, Kelly and Pugh~\cite{Gasarch1996} were the first to use computer search to find optimal selection algorithms.
+Oksanen continued this line of work, improving upon the previously known lower bounds~\cite{Oksanen2006}.
+His results and the computer program he used to obtain them are available on his website Oksanen~\cite{Oksanen}.
+However, the results are not published in a scientific journal.% and lack explanation.
+
+We too, will attack the selection problem using computer search.
+We will reimplement some of the existing ideas and add our own improvements exploring the benefits of different search strategies, adding $\alpha$-$\beta$-pruning and the exploitation of compatible solutions.
 A quote from Miguel de Cervantes from Don Quijote will hold true for this article: ``the journey is better than the inn''~\cite{cervantes_don_quijote}.
 So buckle up.
 
@@ -151,6 +150,7 @@ This type of search has not been applied to the selection problem before, and we
 
 
 \subsection{Related Work.}
+\todo[inline]{I put most of this section in the introduction, so maybe this can go?}
 A first approach to solve this can be achieved by sorting the list at first and selecting the $i$-th
 element.
 However, this approach has a time complexity of $\mathcal{O}(n \cdot \log n)$.
