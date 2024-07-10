@@ -4,13 +4,12 @@ use std::{cmp::Ordering, mem::size_of};
 
 use crate::backwards_poset::BackwardsPoset;
 
-const HASHTABLE_BITS: usize = 8;
+const HASHTABLE_BITS: usize = 16;
 const HASHTABLE_SIZE: usize = 1 << HASHTABLE_BITS;
-const HASHTABLE_SHIFT: usize = 128 - HASHTABLE_BITS;
 
 pub struct CacheBucket {
     hashtable: Vec<usize>,
-    data: Vec<(u128, (u8, u8))>,
+    data: Vec<(u16, u128, (u8, u8))>,
 }
 
 impl Default for CacheBucket {
@@ -29,6 +28,13 @@ pub struct BackwardCache {
 }
 
 impl BackwardCache {
+    fn hash(value: u128) -> u16 {
+        let mut hash = value as u64;
+        hash ^= (value >> 64) as u64;
+        hash ^= hash >> 32;
+        (hash >> 16) as u16
+    }
+
     pub fn new() -> Self {
         Self {
             buckets: Default::default(),
@@ -37,28 +43,40 @@ impl BackwardCache {
 
     pub fn add_layer(&mut self, posets: &HashMap<BackwardsPoset, (u8, u8)>) {
         for (poset, indices) in posets {
+            let packed = poset.pack_poset();
             self.buckets[poset.n() as usize - 1][poset.i() as usize]
                 .data
-                .push((poset.pack_poset(), *indices));
+                .push((Self::hash(packed), packed, *indices));
         }
 
+        // let mut n = 0;
+        // let mut i: i32;
         for bucket_n in &mut self.buckets {
+            // n += 1;
+            // i = 0;
             for bucket_ni in bucket_n {
+                // i += 1;
                 if bucket_ni.data.is_empty() {
                     continue;
                 }
 
                 bucket_ni
                     .data
-                    .sort_by(|(key1, _), (key2, _)| key1.cmp(key2));
+                    .sort_by(|(hash1, key1, _), (hash2, key2, _)| {
+                        hash1.cmp(hash2).then(key1.cmp(key2))
+                    });
                 bucket_ni.data.shrink_to_fit();
 
+                // println!("{n} {i}:");
                 let mut pos = 0;
+                // let mut old = 0;
                 for k in 0..HASHTABLE_SIZE {
                     bucket_ni.hashtable[k] = pos;
-                    while pos < bucket_ni.data.len()
-                        && (bucket_ni.data[pos].0 >> HASHTABLE_SHIFT) <= k as u128
-                    {
+                    // if k != 0 && k % 256 == 0 {
+                    //     println!("{}: {}", k / 256, pos - old);
+                    //     old = pos;
+                    // }
+                    while pos < bucket_ni.data.len() && bucket_ni.data[pos].0 <= k as u16 {
                         pos += 1;
                     }
                 }
@@ -70,20 +88,21 @@ impl BackwardCache {
     fn binary_search_by(
         mut left: usize,
         mut right: usize,
-        vec: &[(u128, (u8, u8))],
+        vec: &[(u16, u128, (u8, u8))],
         poset: u128,
     ) -> Option<(u8, u8)> {
         let mut size = right - left;
         while left < right {
             let mid = left + size / 2;
-            let cmp = vec[mid].0.cmp(&poset);
+            let cmp = vec[mid].1.cmp(&poset);
+            debug_assert!(vec[mid].0.cmp(&Self::hash(poset)).is_eq());
 
             if cmp == Ordering::Less {
                 left = mid + 1;
             } else if cmp == Ordering::Greater {
                 right = mid;
             } else {
-                return Some(vec[mid].1);
+                return Some(vec[mid].2);
             }
 
             size = right - left;
@@ -97,14 +116,14 @@ impl BackwardCache {
         debug_assert_ne!(poset.n(), 0);
 
         let packed = poset.pack_poset();
+        let hash = Self::hash(packed);
         let bucket = &self.buckets[poset.n() as usize - 1][poset.i() as usize];
-        let prefix = packed >> HASHTABLE_SHIFT;
 
-        let left = bucket.hashtable[prefix as usize];
-        let right = if prefix as usize + 1 == HASHTABLE_SIZE {
+        let left = bucket.hashtable[hash as usize];
+        let right = if hash as usize + 1 == HASHTABLE_SIZE {
             bucket.data.len()
         } else {
-            bucket.hashtable[prefix as usize + 1]
+            bucket.hashtable[hash as usize + 1]
         };
 
         Self::binary_search_by(left, right, &bucket.data, packed)
@@ -121,8 +140,8 @@ impl BackwardCache {
             for bucket_ni in bucket_n {
                 memory_size += size_of::<Vec<usize>>()
                     + bucket_ni.hashtable.len() * size_of::<usize>()
-                    + size_of::<Vec<(u128, (u8, u8))>>()
-                    + bucket_ni.data.capacity() * size_of::<(u128, (u8, u8))>();
+                    + size_of::<Vec<(u16, u128, (u8, u8))>>()
+                    + bucket_ni.data.capacity() * size_of::<(u16, u128, (u8, u8))>();
             }
         }
         memory_size

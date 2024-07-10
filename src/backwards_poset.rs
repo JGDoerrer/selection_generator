@@ -101,24 +101,15 @@ impl BackwardsPoset {
         }
     }
 
-    fn hash(value: u128) -> u8 {
-        let combined = ((value >> 64) as u64) ^ (value as u64);
-        let combined32 = ((combined >> 32) as u32) ^ (combined as u32);
-        let combined16 = ((combined32 >> 16) as u16) ^ (combined32 as u16);
-        ((combined16 >> 8) as u8) ^ (combined16 as u8)
-    }
-
     pub fn pack_poset(&self) -> u128 {
         let mut result: u128 = Default::default();
-        let mut counter = 120;
 
         for i in 0..self.n {
             result <<= i;
             result += self.adjacency[i as usize].bits() as u128;
-            counter -= i;
         }
 
-        (result << counter) | ((Self::hash(result) as u128) << 120)
+        result
     }
 
     pub fn add_less(&mut self, i: u8, j: u8) {
