@@ -211,33 +211,6 @@ The select problem is thus embedded as $(n, i, \emptyset)$.
   The dual of a poset $P = (n, i, R)$ is the poset $P^{-1} = (n, n - 1 - i, R')$ with $R' = \{(u,v) \mid (v,u) \in R\}$.
 \end{definition}
 
-\begin{definition}[Reduced] \label{definition:reduced_poset}
-  A poset is \textbf{reduced} if all its elements have at most $i$ elements smaller than themselves and at most $n - 1 - i$ larger than themselves.
-  Hence, all elements are still possible solutions.
-\end{definition}
-
-\begin{definition}[Canonified]
-  A poset is \textbf{canonified} if it matches the following conditions making it unique among all posets isomorphic to it:
-  \begin{itemize}
-    \item all elements in the poset are arranged canonically, i.e. all permutations of these elements must map to this poset
-    \item
-          If $i = n - 1 - i$ applies, the dual poset is formed, both are canonified and deterministically decided which of the two posets corresponds to the canonified representation.
-          This is also described in more detail in Section~\ref{sec:backward:normal_form}
-  \end{itemize}
-
-  Some parts of this paper use a best effort approximation for this to increase speed, the results are then called \textbf{pseudo canonified}.
-\end{definition}
-
-\begin{definition}[Normal]
-  A \textbf{normal} poset is reduced and canonified.
-\end{definition}
-
-\begin{definition}[Optimal Cost]
-  The cost $V(P)$ of the poset $P = (n, i, R)$ is the optimal number of further comparisons needed to perform the selection.
-
-  We measure this pessimistically, meaning that among all possible outcomes of those further comparisons we assume the most expensive ones.
-\end{definition}
-
 \begin{lemma} \label{lemma:dual_poset_allowed}
   For a given poset $P = (n, i, R)$ it holds $V(P) = V(P^{-1})$
 \end{lemma}
@@ -248,9 +221,30 @@ The select problem is thus embedded as $(n, i, \emptyset)$.
   Since $n$ and $i$ are fixed, this algorithm can be converted into a binary decision tree and by swapping all the children, the new algorithm must now select the element such that $n - i$ are smaller and $i - 1$ are larger than it while assuming an inverted $R$, which is the solution for $P^{-1}$.
 \end{proof}
 
+A poset is \textbf{reduced} if all its elements have at most $i$ elements smaller than themselves and at most $n - 1 - i$ larger than themselves.
+Hence, all elements are still possible solutions.
+
+A poset is \textbf{canonified} if it matches the following conditions making it unique among all posets isomorphic to it:
+\begin{itemize}
+  \item all elements in the poset are arranged canonically, i.e. all permutations of these elements must map to this poset
+  \item $i\leq\frac{n+1}{2}$, using the dual.
+        If $i = \frac{n+1}{2}$ applies, one of the two is chosen deterministically.
+        This is also described in more detail in Section~\ref{sec:backward:normal_form}
+\end{itemize}
+
+While this canonical form has certain semantic properties, such as the elements being in a possible total order, the main incentive is unique representation with many aspects chosen for ease of computation instead. Some parts of this paper use a best effort approximation for this to increase speed, the results are then called \textbf{pseudo canonified}.
+
+A \textbf{normal} poset is reduced and canonified.
+
+\begin{definition}[Optimal Cost]
+  The cost $V(P)$ of the poset $P = (n, i, R)$ is the optimal number of further comparisons needed to perform the selection.
+
+  We measure this pessimistically, meaning that among all possible outcomes of those further comparisons we assume the most expensive ones.
+\end{definition}
+
 
 \subsubsection{Solved posets and Compatible Solutions}
-BBy definition of the problem, we seek an element that is larger than $n-i$ elements and smaller than $i - 1$ elements.
+By definition of the problem, we seek an element that is larger than $n-i$ elements and smaller than $i - 1$ elements.
 
 Solving a poset requires knowing the explicit elements making up these two sets. For suppose we have determined the element $e$ to be the solution, and an element $p$ remains unordered with $e$.
 
