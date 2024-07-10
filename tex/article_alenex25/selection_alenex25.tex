@@ -242,6 +242,8 @@ Note that the bound in \Cref{lemma:previous_next_poset} is tight, as can be seen
 An easy corollary to the lemma is $V_{i + 1}(n + 1) \ge V_i(n) + 1$.
 This follows immediately using the next lemma.
 
+\todo[inline]{Remark: It appears Oksanen did not know Lemma 2.1.}
+
 By $V_i(P)$ we denote the minimum number of comparisons which suffice to select the $i$-th smallest element of the poset $P$ in the worst-case.
 $V_i(n)$ is the special case $V_i(\emptyset_n)$.
 We prove the following lemma showing the cost of selection does not change when considering the dual problem.
@@ -289,6 +291,7 @@ We use the concept of compatible solutions to derive a lower bound on the number
 
 
 \subsection{Example.}
+\todo[inline]{Example weg oder in den Anhang, um auf 10 Seiten zu kommen.}
 \begin{figure}[!b]
   \centering
   \input{figures/tikz_example_5_2.tex}
@@ -312,7 +315,13 @@ We push it further using a pruning technique based on compatible solutions.
 The backward search is a different approach, that has not been applied to the problem of selection before.
 It allows us to go even further in computing optimal selection algorithms.
 
-\todo[inline]{I put this here for now. Maybe we can have a subsection Datastructures and Isomorphism testing?}
+\subsection{Datastructures and Isomorphism Testing.}
+T.b.d.:
+\begin{itemize}
+  \item We use a triangular Adjacency matrix.
+  \item We only store reduced problems. (Maybe we need to show that this is still correct?)
+  \item Talk about canonification and dual.
+\end{itemize}
 
 \begin{definition}[Canonified]
   A poset is \textbf{canonified} if it matches the following conditions making it unique among all posets isomorphic to it:
@@ -348,14 +357,20 @@ The algorithms output by the search program are built by saving for each poset t
 To save memory and allow further pruning, we traverse the search tree using a depth-first search approach, reducing the maximum number of comparisons assigned to child posets to a value one less than the best result currently found.
 This premise is implemented by a minimax algorithm as shown in \Cref{fig:minimax_search}.
 
+
+
+\subsubsection{Optimizations.}
+
+\paragraph{Cache.}
 We can drastically speed up this exploration by caching previous results, even with a simple usage based ejection policy.
 Since the search always imposes an upper bound for the number of comparisons to allow this also includes yet unsolved posets, for which we note the currently known minimum.
 
-\subsubsection{Pruning Decisions.}
+\paragraph{Maximum Depth}
 We use the minimax search algorithm for cutting off unpromising branches.
 While searching the possible comparisons of a poset, we keep track of the currently best result.
 The remaining comparisons are searched with a limitied depth such that only solutions, which improve the current best are found.
 At the start of a search, the possible comparisons are sorted using a heuristic so that the most promising comparisons are searched for first.
+\todo[inline]{This is alpha-beta-pruning? This might be a good place too talk about the iterative deepening as well.}
 
 \begin{figure}[!b]
   \centering
@@ -364,8 +379,7 @@ At the start of a search, the possible comparisons are sorted using a heuristic 
   \label{fig:minimax_search}
 \end{figure}
 
-\subsubsection{Canonification.}
-\todo[inline]{This could go to the datastructures and canonification section}
+\paragraph{Isomorphism testing.}
 When caching the posets we have to check whether two posets are isomorphic to each other.
 We consider a poset isomorphic to another poset if we can relabel the elements of one poset to obtain the other poset.
 This problem is expensive to solve for every poset comparison.
@@ -378,18 +392,17 @@ Since \texttt{nauty} provides a unique canonical form, this takes a significant 
 Some performance tests show that it is faster to compute an almost canonical form, where some posets that are isomorphic to each other result in different canonified forms.
 As a result, some posets that are isomorphic occupy several cache entries, but canonifying a poset is much faster.
 
-\subsubsection{Heuristics.}
+\subsubsection{Pruning.}
+%We used multiple heuristics to estimate if a poset is solvable in a given number of comparisons.
+%These heuristics are used to reject posets that are not solvable in the given number of comparisons.
+%Other than caching, no strategies to preemptively prove solvability within some bound were employed.
+%This means that the following heuristics must only provably be not too pessimistic.\todo{?} % das sollte hoch
+We use the following two pruning criteria to reject posets that are not solvable in the given number of comparisons.
 
-\todo[inline]{Iterative deepening}
-We used multiple heuristics to estimate if a poset is solvable in a given number of comparisons.
-These heuristics are used to reject posets that are not solvable in the given number of comparisons.
-Other than caching, no strategies to preemptively prove solvability within some bound were employed.
-This means that the following heuristics must only provably be not too pessimistic.\todo{?} % das sollte hoch
-
+\paragraph{Compatible Solutions.}
 The first heuristic uses the number of compatible solutions.
 We use the fact, proven in Theorem~\ref{theorem:compatible_log}, that the $\log_2$ of the number of compatible solutions is a lower bound for the cost of a poset.
 
-\paragraph{Compatible Solutions.}
 \Cref{algo:compatible_solutions} shows an algorithm for computing the number of compatible solutions for a poset.
 The algorithm assumes that the elements in the poset are sorted in such a way that an element that is smaller than another has a smaller index.
 The calculation of this number first picks a solution element $j$ - since posets are always reduced in the forward search any element is valid - and then counts the number of possible separations into greater and lesser elements, summing up these counts over all solution elements.
@@ -397,7 +410,7 @@ The calculation of this number first picks a solution element $j$ - since posets
 \begin{algorithm}[t]
   \centering
   \input{figures/algorithm_compatible_solutions.tex}
-  \caption{An algorithm for computing the number of compatible solutions for a given poset.}
+  \caption{An algorithm for computing the number of compatible solutions for a given poset.\todo[inline]{Use $\greater{P}{u}$.}}
   \label{algo:compatible_solutions}
 \end{algorithm}
 
@@ -431,7 +444,7 @@ To develop the backward search, primarily the backward search from \cite{stober2
 The backward search starts with the set of solved selection problems, and iteratively removes comparisons until the unordered poset is found.
 Now, the set of solved problems, even if we restrict ourselves to a fixed cardinality $n$ and rank $i$, will be quite large.
 We solve this by only enumerating reduced problems.
-With that restriction the starting point of the backward search is $(\emptyset_1, 1)$.
+With that restriction the starting point of the backward search is $(\emptyset_1, 1)$.\todo{$\emptyset_n$ -> $E_n$ + definieren}
 
 %It should be noted that if a comparison is removed from the poset $P = (n, i, R)$ resulting in the poset $P' = (n, i, R \setminus (u, v))$,
 %the poset $Q = (n, i, R \setminus (u, v) \cup (v, u))$\todo{ugly formula} should already be in a canonified form in the cache.
@@ -465,7 +478,7 @@ We begin with a formal definition of a predecessor.
   \begin{enumerate}
     \item $(P, i) = \reduced(\pchild{Q}{a}{b}, j)$ and
     \item $V_j(\pchild{Q}{b}{a}) \le V_i(P)$ and
-    \item $V_j(Q) \neq V_i(P)$.
+    \item $V_j(Q) \neq V_i(P)$.\todo{3. punkt weg}
   \end{enumerate}
 \end{definition}
 
@@ -573,7 +586,7 @@ The computation of a predecessor for a given problem $(P, i)$ comprises three st
   \item Compute predecessors with exactly one additional element, that is also involved in the comparison.
   \item Starting with the predecessors obtained in the preceding steps add additional elements iteratively.
 \end{enumerate}
-We describe the individual steps below.
+We describe the individual steps below.\todo{mention only store new predecessors in $A_{k+1}$}
 
 \paragraph{Predecessors on the same set of elements.}
 First, we search for all posets with $n_P$ elements that result in poset $P$ after inserting a comparison $a < b$.
@@ -711,7 +724,7 @@ Implementing this canonification preprocessing significantly reduces the number 
 It is particularly noteworthy that as $i$ increases, the percentage of \texttt{nauty} calls decreases.
 For small values of $i$, the high percentage of \texttt{nauty} calls is not critical, as computations for small $i$ are generally quick.
 
-\subsubsection{Optimization.}
+\subsubsection{Optimizations.}
 
 \paragraph{Remaining comparisons.}
 In the final step, the minimum number of comparisons that must be removed until the unordered poset is reached is calculated for each predecessor.
@@ -767,7 +780,7 @@ Although results from previous rounds are not used, the search space can be cons
 It is noticeable that the highest number of posets is searched for all $i$ when there are $8$ to $9$ comparisons left, with a slight tendency towards more comparisons for larger $i$.
 
 
-\subsubsection{Parallelization.} \label{sec:backward:parallelisation}
+\paragraph{Parallelization.} \label{sec:backward:parallelisation}
 
 The backward search can be ideally parallelized by performing the calculation of the predecessors in parallel.
 The only two bottlenecks here are read access to the cache and the efficient merging of all partial results.
@@ -800,6 +813,7 @@ The higher the efficiency, the better the time scales with the number of cores.
 
 
 \subsection{Bidirectional search.} \label{sec:bidirectional}
+\todo[inline]{Weg, bzw. ausblick in future work.}
 
 \subsubsection{Theoretical usability.}
 
@@ -844,7 +858,7 @@ Nevertheless, bidirectional search has great potential that can be exploited thr
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
-  \caption{The minimum number of comparisons needed to select the $i$-th smallest of $n$ elements.}
+  \caption{The minimum number of comparisons needed to select the $i$-th smallest of $n$ elements.\todo[inline]{Indicate new values.}}
   \label{table:num-comparisons}
   \centering
   \begin{tabular}{c|cccccccc}
@@ -869,9 +883,10 @@ Nevertheless, bidirectional search has great potential that can be exploited thr
   \end{tabular}
 \end{table}
 
-The values we calculated as the minimum number of comparisons needed to solve the selection problem for $n \leq 16$ are shown in \Cref{table:num-comparisons}.
+The values $V_i(n)$ we calculated as the minimum number of comparisons needed to solve the selection problem for $n \leq 16$ are shown in \Cref{table:num-comparisons}.
 For each value we generated an algorithm that solves the problem in that number of comparisons.
 We then checked the algorithm on each of the $n!$ permutations to make sure it is correct.
+\todo[inline]{lower bounds double checked: forward and backward search coincide.}
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
@@ -925,17 +940,17 @@ We then checked the algorithm on each of the $n!$ permutations to make sure it i
 \end{table}
 
 \Cref{table:search_algorithms} shows the time taken to solve the selection problem.
-The times are rounded and may not be representative as the server they were measured on was shared.
+%The times are rounded and may not be representative as the server they were measured on was shared.
 The forward search was started with $500$ GB of RAM, and was restarted for each value of $n$ and $i$, so it does not use the cache from previous runs.
-The forward search is single-threaded, unlike the backward search, which benefits greatly from parallelism.
+%The forward search is single-threaded, unlike the backward search, which benefits greatly from parallelism.
 The column `Oksanen' shows the times of his program \cite{Oksanen} on our hardware.
-Oksanen's program was started with only $25$ GB because it was designed for only $400$ MB RAM.
-The numbers marked with an asterisk by Oksanen do not give the optimal lower bound in the publicly available version \texttt{1.6}, even though he has given an optimal algorithm on the website with the unavailable version \texttt{1.1}.
+Oksanen's program was started with only $25$ GB because it was designed for only $400$ MB RAM.\todo{why 25Gb?}
+The numbers in the Oksanen column marked with an asterisk do not give the optimal lower bound in the publicly available version \texttt{1.6}, even though he has given an optimal algorithm on the website with the unavailable version \texttt{1.1}.\todo{Grammatik etwas holprig.}
 
 Additionally we measured the number of posets that were stored in the cache after the calculation, which can be seen in \Cref{table:cache_entries}.
 
 Furthermore, we can disprove Gasarch's~\cite{Gasarch1996} conjecture that ``pair-forming algorithms'', in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
-For $n = 12$ and $i = 5$, this assumption gives a bound of $20$ comparisons, which does not correspond to the optimal bound of $19$ comparisons.
+For $n = 12$ and $i = 5$, this assumption gives a bound of $20$ comparisons, which does not correspond to the optimal bound of $19$ comparisons.\todo{Das steht bei Oksanen.}
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
