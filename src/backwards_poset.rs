@@ -1,7 +1,6 @@
 use hashbrown::{HashMap, HashSet};
 use std::collections::VecDeque;
 use std::fmt::{Debug, Formatter, Result};
-use std::hash::Hash;
 use std::os::raw::c_int;
 
 use nauty_Traces_sys::{densenauty, optionblk, statsblk, FALSE, TRUE};
@@ -102,15 +101,24 @@ impl BackwardsPoset {
         }
     }
 
+    fn hash(value: u128) -> u8 {
+        let combined = ((value >> 64) as u64) ^ (value as u64);
+        let combined32 = ((combined >> 32) as u32) ^ (combined as u32);
+        let combined16 = ((combined32 >> 16) as u16) ^ (combined32 as u16);
+        ((combined16 >> 8) as u8) ^ (combined16 as u8)
+    }
+
     pub fn pack_poset(&self) -> u128 {
         let mut result: u128 = Default::default();
+        let mut counter = 120;
 
         for i in 0..self.n {
             result <<= i;
             result += self.adjacency[i as usize].bits() as u128;
+            counter -= i;
         }
 
-        result
+        (result << counter) | ((Self::hash(result) as u128) << 120)
     }
 
     pub fn add_less(&mut self, i: u8, j: u8) {
@@ -801,6 +809,125 @@ impl BackwardsPoset {
         }
         self.i < greater
     }
+
+    // pub fn enumerate_enlarged_n<F>(&self, mut callback: F)
+    // where
+    //     F: FnMut(&BackwardsPoset) -> bool,
+    // {
+    //     let mut check = |upset: BitSet| {
+    //         if self.i < (self.n - upset.len() as u8) {
+    //             return true;
+    //         }
+    //         let mut poset = self.new_with_inc_n();
+    //         for i in 0..self.n {
+    //             if !upset.contains(i as usize) {
+    //                 poset.set_less(i, self.n, true);
+    //             }
+    //         }
+    //         callback(&poset)
+    //     };
+
+    //     // compute upsets
+    //     let mut excluded = BitSet::empty();
+    //     for k in 0..self.n {
+    //         if self.n - self.i == self.number_of_smaller_elements(k) {
+    //             excluded.insert(k as usize);
+    //             excluded = excluded.union(self.adjacency[k as usize]);
+    //         }
+    //     }
+
+    //     if !check(excluded) {
+    //         return;
+    //     }
+
+    //     let mut upsets = Vec::new();
+    //     upsets.push(excluded);
+
+    //     for j in 0..self.n() as usize {
+    //         if excluded.contains(j) {
+    //             continue;
+    //         }
+
+    //         let greater_than_j = self.adjacency[j];
+
+    //         // try adding j to all previous subsets
+    //         for i in 0..upsets.len() {
+    //             let upset = upsets[i];
+
+    //             // test if adding j would make a valid upset
+    //             // we know, that there is no k with p[k] > p[j]
+    //             if greater_than_j.intersect(upset) == greater_than_j {
+    //                 let mut new_upset = upset;
+    //                 new_upset.insert(j);
+    //                 if check(new_upset) {
+    //                     upsets.push(new_upset);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    // pub fn enlarge_i_larger_with_comparison(
+    //     &self,
+    //     poset_buckets: &mut PosetLevel,
+    //     max_remaining_comparisons: usize,
+    //     poset_cache: &BackwardCache,
+    //     (k, j): (u8, u8),
+    // ) {
+    //     self.enumerate_enlarged_n(|item| {
+    //         if !item.is_less(j, item.n - 1) {
+    //             false
+    //         } else if item.is_less(k, item.n - 1) {
+    //             true
+    //         } else if !item.with_less(k, j).can_reduce_element_larger(item.n - 1) {
+    //             false
+    //         } else if max_remaining_comparisons < item.count_min_comparisons() {
+    //             true
+    //         } else {
+    //             let (canonified, indices) = item.canonify_transform_indices();
+    //             let new_indices = Self::canonify_indices(canonified.n, indices, (k, j));
+    //             Self::handle_poset(poset_buckets, canonified, new_indices, poset_cache)
+    //         }
+    //     });
+    // }
+
+    // fn enlarge_i_larger(
+    //     &self,
+    //     poset_buckets: &mut PosetLevel,
+    //     max_remaining_comparisons: usize,
+    //     poset_cache: &BackwardCache,
+    // ) {
+    //     self.enumerate_enlarged_n(|item| {
+    //         if max_remaining_comparisons < item.count_min_comparisons() {
+    //             return true;
+    //         }
+    //         let mut result = false;
+    //         let mut canonified = None;
+    //         for k in 0..item.n - 1 {
+    //             if !item.is_less(k, item.n - 1) {
+    //                 if item
+    //                     .with_less(k, item.n - 1)
+    //                     .can_reduce_element_larger(item.n - 1)
+    //                 {
+    //                     if canonified.is_none() {
+    //                         canonified = Some(item.canonify_transform_indices());
+    //                     }
+    //                     if let Some((canonified, indices)) = canonified {
+    //                         result |= Self::handle_poset(
+    //                             poset_buckets,
+    //                             canonified,
+    //                             Self::canonify_indices(canonified.n, indices, (k, item.n - 1)),
+    //                             poset_cache,
+    //                         );
+    //                     }
+    //                 } else {
+    //                     result = true;
+    //                 }
+    //             }
+    //         }
+    //         return result;
+    //     });
+    // }
 
     pub fn enlarge_i_larger_with_comparison(
         &self,

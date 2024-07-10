@@ -454,7 +454,7 @@ where
         return index;
     }
 
-    let (i, j) = comparisons.get(&poset);
+    let (i, j) = comparisons.get(&poset).unwrap();
 
     let (less, (less_mapping, less_is_dual)) = poset.with_less_mapping(i, j);
     let (greater, (greater_mapping, greater_is_dual)) = poset.with_less_mapping(j, i);
