@@ -328,8 +328,9 @@ T.b.d.:
   \begin{itemize}
     \item all elements in the poset are arranged canonically, \ie all permutations of these elements must map to this poset
     \item
-          If $i = n - i + 1$ applies, the dual poset is formed, both are canonified and deterministically decided which of the two posets corresponds to the canonified representation.
-          This is also described in more detail in \Cref{sec:backward:normal_form}
+          $i\leq\frac{n+1}{2}$, using the dual.
+        If $i = \frac{n+1}{2}$ applies, one of the two is chosen deterministically.
+        This is also described in more detail in Section~\ref{sec:backward:normal_form}
   \end{itemize}
 
   Some parts of this paper use a best effort approximation for this to increase speed, the results are then called \textbf{pseudo canonified}.
