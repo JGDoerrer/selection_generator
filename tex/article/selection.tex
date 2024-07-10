@@ -250,17 +250,11 @@ The select problem is thus embedded as $(n, i, \emptyset)$.
 
 
 \subsubsection{Solved posets and Compatible Solutions}
-By definition of the problem, we seek an element that is larger than $n-i$ elements and smaller than $i - 1$ elements.
+BBy definition of the problem, we seek an element that is larger than $n-i$ elements and smaller than $i - 1$ elements.
 
-\begin{lemma}\label{lemma:partition}
-  Solving a poset requires knowing the explicit elements making up these two sets.
-\end{lemma}
+Solving a poset requires knowing the explicit elements making up these two sets. For suppose we have determined the element $e$ to be the solution, and an element $p$ remains unordered with $e$.
 
-\begin{proof}
-  Suppose we have determined the element $e$ to be the solution, and an element $p$ unordered with $e$.
-
-  Then $p$ may be above as well as below $e$, which can't be the solution in both cases.
-\end{proof}
+Then $p$ may be above as well as below $e$, which can't be the solution in both cases.
 
 \begin{definition}[Compatible Solution]
   As such we can define a \textbf{compatible solution} $Q = (n, i, S)$ of a poset $P = (n, i, R)$, to be solved and agreeing with $P$, that is $(a, b)\in S\implies (b, a)\notin R$.
@@ -268,46 +262,21 @@ By definition of the problem, we seek an element that is larger than $n-i$ eleme
   Furthermore, $Q$ has no comparisons other than the $n - 1$ needed to prove the solution and the ones resulting from application of transitivity to the former.
 \end{definition}
 
-With Lemma~\ref{lemma:partition}, a solved poset has exactly one compatible solution.
+Because the less and greater sets need to be known, a solved poset has exactly one compatible solution and any solution compatible with a poset $P$ must be compatible with either $P+uv$ or $P+vu$ for any two unordered elements $u,v$, both if they are also unordered in the solution.
 
-Let $\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$ be the set of all solutions compatible with $P$.
-
-\begin{lemma}\label{lemma:compatible_union}
-  For a poset $P = (n, i, R)$ and $a, b$ with $(a, b), (b, a)\notin R$ it holds $\mathcal{C}(P) = \mathcal{C}(n, i, R \, \cup \{(a, b)\}) \cup \mathcal{C}(n, i, R\cup \{(b, a)\})$.
-\end{lemma}
-
-\begin{proof}
-  Let $Q = (n, i, S)\in \mathcal{C}(P)$.
-  Then for all $c, d$ other than $a, b$ it must hold that $(c, d)\in S\implies (d,c)\notin R\cup \{(a, b)\}$ and $(c, d)\in S\implies (d, c)\notin R\cup \{(b, c)\}$.
-
-  So if $(a, b)\in S$ then $Q\in\mathcal{C}(n, i, R\cup \{(a, b)\})$, if $(b, a)\in S$ then $Q\in\mathcal{C}(n, i, R\cup \{(b, a)\})$
-  and if $a, b$ are unordered in $Q$, it is in both.
-
-  The reverse also holds because $(c, d)\notin R\cup \{(a, b)\}\implies (c, d)\notin R$, same for $R\cup \{(b, a)\}$.
-\end{proof}
+Let $\mathcal{C}(P) = \{Q \mid Q \text{ compatible with } P\}$ be the set of all solutions compatible with $P$. 
 
 \begin{theorem}\label{theorem:compatible_log}
   A poset $P=(n,i,R)$ cannot be solvable in less than $\lceil\log_2(|\mathcal{C}(P)|)\rceil$ comparisons in the worst case.
 \end{theorem}
 
 \begin{proof}
-  If $P$ is already solved, $|\mathcal{C}(P)|=1$, and $\log_2(1)=0$.
-
-  If not, we must make at least one more comparison $a, b$.
-
-  From Lemma~\ref{lemma:compatible_union} we also know that
-  $$|\mathcal{C}(P)| \leq |\mathcal{C}((n,i,R\cup \{(a, b)\}))| + |\mathcal{C}((n,i,R\cup \{(b, a)\}))|$$
-
-  Since this is a pessimistic measure, we must assume that the result of the comparison results in the one with more compatible solutions.
-  Without loss of generality we assume that to be $(a, b)$.
-  Then
-
-  $$\frac{|\mathcal{C}(P)|}{2}\leq |\mathcal{C}((n,i,R\cup \{(a, b)\}))|$$
-
-  Repeated application of this over multiple comparisons results in $\frac{|\mathcal{C}(P)|}{2^j}$ as the lower bound for the amount of compatible solutions after $j$ comparisons.
-
-  Since $|\mathcal{C}(P)|\leq 2^j$ must be satisfied for the solution, $j\geq\log_2(|\mathcal{C}(P)|)$
+  If a poset is solvable within some number $k$ of comparisons there exists a binary decision tree of depth $k+1$. 
+  Each leaf corresponds to exactly one compatible solution, so the tree must have at least as many 
+  leafs as the poset at the root has compatible solutions. 
+  With $\mathcal{C}(root)\leq2^{k+1}$ we get the proposed lower bound for $k$.
 \end{proof}
+
 
 
 \subsection{Example}
@@ -355,7 +324,6 @@ For this means, the following strategies are applied.
     Use \texttt{current\_best}. This variable facilitates cutting off branches according to the idea of alpha-beta pruning.
 \end{enumerate}
 
-It is optimal because of an inductive argument over the number of relative orders determined.
 An already solved poset obviously takes no further comparisons to solve.
 Then, given an unsolved poset with all elements already too large or small excluded we must make at least one more comparison to
 make progress.
