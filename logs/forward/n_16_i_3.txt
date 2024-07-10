@@ -1,0 +1,28 @@
+
+Branch: main
+SHA: 019eb02
+
+Thread(s) per core: 2
+Core(s) per socket: 6
+CPU max MHz: 3100.0000
+CPU min MHz: 1200.0000
+
+Current time: 2024-07-03 02:54:20
+===============
+Cache entries: 0
+Maximum cache entries: 10416666664
+
+Congratulations. A solution was found!
+
+n: 16, i: 3
+Comparisons: 24
+
+Cache entries: 2397496
+Cache size: 0.054 Gigabyte
+Cache hits: 47236537
+Cache misses: 2397496
+Cache replaced: 0
+
+Posets searched: 1191558
+Duration: 0d 0h 7m 22.310669s
+
