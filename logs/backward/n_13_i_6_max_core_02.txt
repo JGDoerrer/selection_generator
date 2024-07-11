@@ -1,0 +1,98 @@
+
+Branch: main
+SHA: 26df3a2
+
+Thread(s) per core: 2
+Core(s) per socket: 12
+CPU max MHz: 2900.0000
+CPU min MHz: 1200.0000
+
+Current time: 2024-07-11 16:21:26
+===============
+n: 13, i: 6 needs at least 21 comparisons
+# 0: 1 in 8.252µs, total: 1
+# 1: 1 in 25.041µs, total: 2
+# 2: 3 in 30.560µs, total: 5
+# 3: 16 in 477.976µs, total: 21
+# 4: 381 in 42.546ms, total: 402
+# 5: 13472 in 1.323s, total: 13874
+# 6: 168172 in 16.827s, total: 182046
+# 7: 610049 in 74.395s, total: 792095
+# 8: 893827 in 142.794s, total: 1685922
+# 9: 656107 in 141.673s, total: 2342029
+# 10: 292064 in 82.968s, total: 2634093
+# 11: 94096 in 35.762s, total: 2728189
+# 12: 25303 in 12.938s, total: 2753492
+# 13: 6399 in 4.672s, total: 2759891
+# 14: 1587 in 1.468s, total: 2761478
+# 15: 428 in 546.479ms, total: 2761906
+# 16: 110 in 138.613ms, total: 2762016
+# 17: 32 in 26.422ms, total: 2762048
+# 18: 10 in 7.105ms, total: 2762058
+# 19: 3 in 6.929ms, total: 2762061
+# 20: 1 in 2.254ms, total: 2762062
+# 21: 0 in 924.402µs, total: 2762062
+Duration: 0d 0h 8m 35.59796s
+n: 13, i: 6 needs at least 22 comparisons
+# 0: 1 in 4.971µs, total: 1
+# 1: 1 in 18.956µs, total: 2
+# 2: 3 in 31.916µs, total: 5
+# 3: 16 in 437.817µs, total: 21
+# 4: 381 in 38.357ms, total: 402
+# 5: 14591 in 1.538s, total: 14993
+# 6: 231605 in 24.282s, total: 246598
+# 7: 1094812 in 137.535s, total: 1341410
+# 8: 2020393 in 329.081s, total: 3361803
+# 9: 1791994 in 384.775s, total: 5153797
+# 10: 914165 in 262.174s, total: 6067962
+# 11: 320411 in 117.190s, total: 6388373
+# 12: 88647 in 44.004s, total: 6477020
+# 13: 22075 in 14.655s, total: 6499095
+# 14: 5349 in 6.207s, total: 6504444
+# 15: 1318 in 1.770s, total: 6505762
+# 16: 324 in 555.140ms, total: 6506086
+# 17: 80 in 117.176ms, total: 6506166
+# 18: 20 in 25.644ms, total: 6506186
+# 19: 5 in 5.824ms, total: 6506191
+# 20: 2 in 3.302ms, total: 6506193
+# 21: 0 in 1.270ms, total: 6506193
+Duration: 0d 0h 22m 3.985962s
+n: 13, i: 6 needs at least 23 comparisons
+# 0: 1 in 5.524µs, total: 1
+# 1: 1 in 13.026µs, total: 2
+# 2: 3 in 29.172µs, total: 5
+# 3: 16 in 430.591µs, total: 21
+# 4: 381 in 36.026ms, total: 402
+# 5: 15227 in 1.722s, total: 15629
+# 6: 290138 in 32.412s, total: 305767
+# 7: 1750707 in 226.730s, total: 2056474
+# 8: 4058631 in 667.620s, total: 6115105
+# 9: 4368185 in 938.604s, total: 10483290
+# 10: 2592437 in 723.108s, total: 13075727
+# 11: 1006071 in 378.864s, total: 14081798
+# 12: 291970 in 133.776s, total: 14373768
+# 13: 72346 in 52.282s, total: 14446114
+# 14: 16728 in 17.592s, total: 14462842
+# 15: 3898 in 7.131s, total: 14466740
+# 16: 893 in 1.895s, total: 14467633
+# 17: 227 in 744.226ms, total: 14467860
+# 18: 58 in 210.990ms, total: 14467918
+# 19: 17 in 41.659ms, total: 14467935
+# 20: 6 in 10.214ms, total: 14467941
+# 21: 2 in 4.145ms, total: 14467943
+# 22: 1 in 62.610µs, total: 14467944
+# 23: 1 in 27.597µs, total: 14467945
+Duration: 0d 0h 53m 2.7856445s
+
+Congratulations. A solution was found!
+
+n: 13, i: 6
+Comparisons: 23
+
+Cache entries: 14467945
+Cache size: 0.730 (real: 0.972) Gigabyte
+Nauty Ratio: 0.114%
+
+Duration: 0d 1h 23m 43.02881s
+
+generating algorithm Duration: 0d 0h 0m 0.00539927s

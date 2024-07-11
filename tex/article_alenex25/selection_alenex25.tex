@@ -329,8 +329,8 @@ T.b.d.:
     \item all elements in the poset are arranged canonically, \ie all permutations of these elements must map to this poset
     \item
           $i\leq\frac{n+1}{2}$, using the dual.
-        If $i = \frac{n+1}{2}$ applies, one of the two is chosen deterministically.
-        This is also described in more detail in Section~\ref{sec:backward:normal_form}
+          If $i = \frac{n+1}{2}$ applies, one of the two is chosen deterministically.
+          This is also described in more detail in Section~\ref{sec:backward:normal_form}
   \end{itemize}
 
   Some parts of this paper use a best effort approximation for this to increase speed, the results are then called \textbf{pseudo canonified}.
@@ -794,12 +794,12 @@ The only two bottlenecks here are read access to the cache and the efficient mer
   \begin{tabular}{l|r|l}
     \textbf{number cores} & \textbf{time} & \textbf{efficiency} \\
     \hline
-    $1$                   & 7h 2m 59s     & $1.000$             \\
-    $2$                   & 3h 57m 9s     & $0.892$             \\
-    $4$                   & 2h 41s        & $0.877$             \\
-    $8$                   & 1h 2m 9s      & $0.851$             \\
-    $16$                  & 32m 57s       & $0.803$             \\
-    $32$                  & 20m 11s       & $0.655$             \\
+    $1$                   & 2h 45m        & $1.000$             \\
+    $2$                   & 1h 24m        & $0.987$             \\ % this value is weird, currently the program runs again
+    $3$                   & 1h 1m         & $0.898$             \\
+    $6$                   & 31m 46s       & $0.868$             \\
+    $12$                  & 17m 4s        & $0.807$             \\
+    $24$                  & 9m 9s         & $0.752$             \\
   \end{tabular}
 \end{table}
 \todo[inline]{note that these times are from an older version}
