@@ -1,6 +1,6 @@
 use crate::constants::MAX_N;
 use hashbrown::HashMap;
-use std::{cmp::Ordering, mem::size_of};
+use std::mem::size_of;
 
 use crate::backwards_poset::BackwardsPoset;
 
@@ -62,7 +62,7 @@ impl BackwardCache {
 
                 bucket_ni
                     .data
-                    .sort_by(|(hash1, key1, _), (hash2, key2, _)| {
+                    .sort_unstable_by(|(hash1, key1, _), (hash2, key2, _)| {
                         hash1.cmp(hash2).then(key1.cmp(key2))
                     });
                 bucket_ni.data.shrink_to_fit();
@@ -85,33 +85,6 @@ impl BackwardCache {
     }
 
     #[inline]
-    fn binary_search_by(
-        mut left: usize,
-        mut right: usize,
-        vec: &[(u16, u128, (u8, u8))],
-        poset: u128,
-    ) -> Option<(u8, u8)> {
-        let mut size = right - left;
-        while left < right {
-            let mid = left + size / 2;
-            let cmp = vec[mid].1.cmp(&poset);
-            debug_assert!(vec[mid].0.cmp(&Self::hash(poset)).is_eq());
-
-            if cmp == Ordering::Less {
-                left = mid + 1;
-            } else if cmp == Ordering::Greater {
-                right = mid;
-            } else {
-                return Some(vec[mid].2);
-            }
-
-            size = right - left;
-        }
-
-        None
-    }
-
-    #[inline]
     pub fn get(&self, poset: &BackwardsPoset) -> Option<(u8, u8)> {
         debug_assert_ne!(poset.n(), 0);
 
@@ -126,7 +99,11 @@ impl BackwardCache {
             bucket.hashtable[hash as usize + 1]
         };
 
-        Self::binary_search_by(left, right, &bucket.data, packed)
+        if let Ok(index) = bucket.data[left..right].binary_search_by(|poset| poset.1.cmp(&packed)) {
+            Some(bucket.data[index].2)
+        } else {
+            None
+        }
     }
 
     #[inline]
