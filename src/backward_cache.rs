@@ -50,13 +50,8 @@ impl BackwardCache {
                 .push((Self::hash(packed), packed, *indices));
         }
 
-        let mut n = 0;
-        let mut i: i32;
         for bucket_n in &mut self.buckets {
-            n += 1;
-            i = 0;
             for bucket_ni in bucket_n {
-                i += 1;
                 if bucket_ni.data.is_empty() {
                     continue;
                 }
@@ -68,15 +63,9 @@ impl BackwardCache {
                     });
                 bucket_ni.data.shrink_to_fit();
 
-                println!("{n} {i}:");
                 let mut pos = 0;
-                let mut old = 0;
                 for k in 0..HASHTABLE_SIZE {
                     bucket_ni.hashtable[k] = pos;
-                    if k != 0 && k % 256 == 0 {
-                        println!("{}: {}", k / 256, pos - old);
-                        old = pos;
-                    }
                     while pos < bucket_ni.data.len() && bucket_ni.data[pos].0 <= k as u16 {
                         pos += 1;
                     }
