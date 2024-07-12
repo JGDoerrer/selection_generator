@@ -109,18 +109,17 @@ The problem of selecting the $i$-th smallest element in a list of $n$ elements i
 Explicitly, we concern ourselves with the optimal worst-case selection of a single element from a set of initially unordered unique elements, measuring the cost as the number of comparisons made.
 We denote this cost by $V_i(n)$.
 
-For selecting the smallest and seconds smallest element optimal algorithms are known with $V_1(n) = n - 1$ and $V_2(n) = \text{TODO}$~\cite{todo}.
-In general the selection problem is solvable in linear time, e.g.\ using the median of medians algorithm~\cite{todo}.
-The best known upper bound, proposed by Blum et.\ al.\ is $5.4305n$~\cite{todo}.
-This is a significant gap to the best known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$ where $H(x) = x \cdot \log_2 \frac{1}{x} + (1 - x) \log_2 \frac{1}{1 - x}$~\cite{todo}.
-
+For selecting the smallest and seconds smallest element optimal algorithms are known with $V_1(n) = n - 1$ and $V_2(n) = n - 2 + \lceil \log n\rceil$~\cite{Knuth1973} (all logartims are to base $2$).
+In general the selection problem is solvable in linear time, e.g.\ using the median of medians algorithm~\cite{Schoening1993} or PICK~\cite{Blum1972}.
 Looking at the special case of selecting the median $i = \nicefrac{n}{2}$, the best known algorithm requires $2.95n$ comparisons~\cite{dor1999selecting}.
-Even though this is better than what we know for the general selection problem, there is still a gap to the lower bound, which is $2 \cdot n - \smallO(n)$ in this case.
-It has been conjectured that the lower bound for selecting the median is at least TODO~\cite{todo}.
-
+For other values of $i$ the algorithm in~\cite{dor1999selecting} requires fewer comparison, thus this is a general upper bound.
+This presents a significant gap to the best known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$ where $H(x) = x \cdot \log_2 \frac{1}{x} + (1 - x) \log_2 \frac{1}{1 - x}$~\cite{bent1985finding}.
+For the median this lower bound is $2 \cdot n - \smallO(n)$.
+Paterson conjectured that the lower bound for selecting the median is $n \log_{4/3} 2 \approx 2.41n$~\cite{paterson1996progress}.
+ 
 Gasarch, Kelly and Pugh~\cite{Gasarch1996} were the first to use computer search to find optimal selection algorithms.
 Oksanen continued this line of work, improving upon the previously known lower bounds~\cite{Oksanen2006}.
-His results and the computer program he used to obtain them are available on his website Oksanen~\cite{Oksanen}.
+His results and the computer program he used to obtain them are available on his website~\cite{Oksanen}.
 However, the results are not published in a scientific journal.% and lack explanation.
 
 We too, will attack the selection problem using computer search.
