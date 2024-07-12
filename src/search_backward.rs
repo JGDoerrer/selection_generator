@@ -50,7 +50,10 @@ pub fn start_search_backward(
                 .clone();
         };
 
+        let add_level = std::time::Instant::now();
         cache.add_layer(&current_level);
+        println!("add level: {:.3?}", add_level.elapsed());
+
         if let Some(backward_search_state) = backward_search_state_opt {
             let mut write_lock = backward_search_state
                 .write()
