@@ -114,7 +114,7 @@ For selecting the smallest and seconds smallest element optimal algorithms are k
 In general the selection problem is solvable in linear time, e.g.\ using the median of medians algorithm~\cite{Schoening1993} or PICK~\cite{Blum1972}.
 Looking at the special case of selecting the median $i = \nicefrac{n}{2}$, the best known algorithm requires $2.95n$ comparisons~\cite{dor1999selecting}.
 For other values of $i$ the algorithm in~\cite{dor1999selecting} requires fewer comparison, thus this is a general upper bound.
-This presents a significant gap to the best known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$ where $H(x) = x \cdot \log_2 \frac{1}{x} + (1 - x) \log_2 \frac{1}{1 - x}$~\cite{bent1985finding}.
+This presents a significant gap to the best known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$ where $H(x) = x \cdot \log \frac{1}{x} + (1 - x) \log \frac{1}{1 - x}$~\cite{bent1985finding}.
 For the median this lower bound is $2 \cdot n - \smallO(n)$.
 Paterson conjectured that the lower bound for selecting the median is $n \log_{4/3} 2 \approx 2.41n$~\cite{paterson1996progress}.
  
@@ -248,13 +248,13 @@ Observe that, given two elements unrelated in $P$, every solution compatible wit
 We use the concept of compatible solutions to derive a lower bound on the number of comparisons required to select the $i$-th smallest element of a poset $P$.
 
 \begin{theorem}\label{theorem:compatible_log}
-  Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil\log_2(|\mathcal{C}(P, i)|)\rceil$ comparisons in the worst case.
+  Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil\log(|\mathcal{C}(P, i)|)\rceil$ comparisons in the worst case.
 \end{theorem}
 
 \begin{proof}
   Assume we have an optimal algorithm for selecting the $i$-th smallest element of a poset $P$.
   From \Cref{lemma:compatible_union} it follows that for every $(S, i)$ there is at least one leaf in the decision tree labelled with $\{(S, i)\}$.
-  Hence, there are at least $|\mathcal{C}(P, i)|$ leaves and thus the height of the tree is at least $\lceil\log_2(|\mathcal{C}(P, i)|)\rceil$.
+  Hence, there are at least $|\mathcal{C}(P, i)|$ leaves and thus the height of the tree is at least $\lceil\log(|\mathcal{C}(P, i)|)\rceil$.
 \end{proof}
 
 
@@ -345,15 +345,11 @@ Some performance tests show that it is faster to compute an almost canonical for
 As a result, some posets that are isomorphic occupy several cache entries, but canonifying a poset is much faster.
 
 \subsubsection{Pruning.}
-%We used multiple heuristics to estimate if a poset is solvable in a given number of comparisons.
-%These heuristics are used to reject posets that are not solvable in the given number of comparisons.
-%Other than caching, no strategies to preemptively prove solvability within some bound were employed.
-%This means that the following heuristics must only provably be not too pessimistic.\todo{?} % das sollte hoch
 We use the following two pruning criteria to reject posets that are not solvable in the given number of comparisons.
 
 \paragraph{Compatible Solutions.}
 The first heuristic uses the number of compatible solutions.
-We use the fact, proven in Theorem~\ref{theorem:compatible_log}, that the $\log_2$ of the number of compatible solutions is a lower bound for the cost of a poset.
+We use the fact, proven in Theorem~\ref{theorem:compatible_log}, that the $\log$ of the number of compatible solutions is a lower bound for the cost of a poset.
 
 \Cref{algo:compatible_solutions} shows an algorithm for computing the number of compatible solutions for a poset.
 The algorithm assumes that the elements in the poset are sorted in such a way that an element that is smaller than another has a smaller index.
@@ -429,8 +425,7 @@ We begin with a formal definition of a predecessor.
   The problem $(Q, j)$ is a \emph{predecessor} of $(P, i)$ if there is a comparison $(a, b)$, such that
   \begin{enumerate}
     \item $(P, i) = \reduced(\pchild{Q}{a}{b}, j)$ and
-    \item $V_j(\pchild{Q}{b}{a}) \le V_i(P)$ and
-    \item $V_j(Q) \neq V_i(P)$.\todo{3. punkt weg}
+    \item $V_j(\pchild{Q}{b}{a}) \le V_i(P)$.
   \end{enumerate}
 \end{definition}
 
@@ -490,7 +485,6 @@ The next lemma shows, that the elements removed by the reduction, which are not 
   \begin{itemize}
     \item It is obvious that $(Q, j) = \reduced{(\pchild{P'}{a}{b}, i')}$.
     \item $(\pchild{P'}{b}{a}, i')$ is at least as easy solve as $(\pchild{P}{b}{a}, i)$. Thus $V_{i'}(\pchild{P'}{b}{a}) \le V_i(\pchild{P}{b}{a})$.
-    \item \todo[inline]{We don't have $V_{i'}(P') \neq V_j(Q)$!}
   \end{itemize}
   The challenge is to find an element $c$, such $P'$ is reduced.
   We define the following sets.
