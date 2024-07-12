@@ -258,23 +258,6 @@ We use the concept of compatible solutions to derive a lower bound on the number
 \end{proof}
 
 
-\subsection{Example.}
-\todo[inline]{Example weg oder in den Anhang, um auf 10 Seiten zu kommen.}
-\begin{figure}[!b]
-  \centering
-  \input{figures/tikz_example_5_2.tex}
-  \caption{Finding the median $i = 3$ of $n = 5$ values using six comparisons.\todo[inline]{Can we make this smaller/ same style as the other figures?}}
-  \label{fig:median_of_5}
-\end{figure}
-A good visual example is finding the median $i = 3$ in a list of $n = 5$ elements.
-\Cref{fig:median_of_5} illustrate the search of the median using Hasse diagrams.
-Each step shows the comparisons to be performed next as a dashed line.
-A Hasse diagram of the order of relation found so far (smaller=lower, larger=higher) is shown as the solid lines.
-The red crosses indicate elements that have been found to be greater or smaller than three other elements and therefore are disqualified for the median.
-The larger element of the final comparison is the median.
-This is also the optimal algorithm for $i = 3$ and $n = 5$.
-
-
 \section{Methods and Tools}
 
 In this section we describe our two main approaches to determining $V_i(n)$: the forward search and the backward search.
@@ -994,8 +977,27 @@ The latest version of our software can be found on github (\url{https://github.c
 \section*{Acknowledgments}
 \todo[inline]{tbd}
 
-\bibliography{biblio.bib}
+\bibliography{biblio}
+  
+  
+\clearpage
+\appendix
+
+
+\section{Example.}
+\begin{figure}[!b]
+  \centering
+  \input{figures/tikz_example_5_2.tex}
+  \caption{Finding the median $i = 3$ of $n = 5$ values using six comparisons.\todo[inline]{Can we make this smaller/ same style as the other figures?}}
+  \label{fig:median_of_5}
+\end{figure}
+A good visual example is finding the median $i = 3$ in a list of $n = 5$ elements.
+\Cref{fig:median_of_5} illustrate the search of the median using Hasse diagrams.
+Each step shows the comparisons to be performed next as a dashed line.
+A Hasse diagram of the order of relation found so far (smaller=lower, larger=higher) is shown as the solid lines.
+The red crosses indicate elements that have been found to be greater or smaller than three other elements and therefore are disqualified for the median.
+The larger element of the final comparison is the median.
+This is also the optimal algorithm for $i = 3$ and $n = 5$.
+
 
 \end{document}
-
-% End of ltexpprt.tex 
