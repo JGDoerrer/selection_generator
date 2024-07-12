@@ -27,7 +27,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{todonotes}
-\usepackage{cleveref}
+\usepackage[capitalize]{cleveref}
 \usepackage{mathtools}
 
 % Commands
@@ -47,10 +47,11 @@
 \newcommand{\pchild}[3]{{#1}\kern-1pt{+}{#2}{#3}}
 \newcommand{\dual}[1]{{#1}^{\delta}}
 \newcommand{\reduced}[1]{\operatorname{red}{#1}}
-\newcommand{\less}[2]{\operatorname{less}_{#1}(#2)}
-\newcommand{\greater}[2]{\operatorname{greater}_{#1}(#2)}
+\newcommand{\less}[2]{D_{#1}(#2)}
+\newcommand{\greater}[2]{U_{#1}(#2)}
 \newtheorem{definition}{Definition}[section]
 \newtheorem{observation}{Observation}[section]
+\newtheorem{remark}{Remark}[section]
 
 
 \bibliographystyle{plainurl}
@@ -154,40 +155,32 @@ A partially ordered set, short \emph{poset}, is a set $\Omega$ with a partial or
 By a slight abuse of notation, we denote the poset by $R$ as well.
 Where necessary, we write $\Omega_P$ for the underlying set.
 Throughout this paper $\Omega$ is finite.
+By $E_n$ we denote the unordered poset on $n$ elements where each element is related only to itself.
 Two posets $P$ and $Q$ are \emph{isomorphic} if there is a bijective mapping $\varphi: \Omega_P \to \Omega_Q$ such that $(u, v) \in R \iff (\varphi(u), \varphi(v)) \in Q$ for all $u, v \in \Omega$.
 The \emph{dual} of a poset $P$ is obtained by reversing the direction of all edges, \ie $\dual{P} = \set{(v,u)}{(u,v) \in P}$.
 Given a poset $P$, its \emph{Hasse diagram} $H$ is given by the smallest subset $H \sse \Omega \times \Omega$ such that $P$ is the reflexive, transitive closure of $H$.
-We denote by $\pchild{P}{a}{b}$ the transitive closure of $P \cup \{(a, b)\}$.\todo{alternativ $P_{a<b}$}
+We denote by $\pchild{P}{a}{b}$ the transitive closure of $P \cup \{(a, b)\}$.
 By $P|_{\Omega'}$ we denote the restriction of $P$ to $\Omega'$.
-\todo[inline]{define less/ greater here. Probably best to define them as sets.
-
-Let $\less{P}{v}$ denote the number of elements smaller than $v$ in poset $P$.
-Let $\greater{P}{u}$ denote the number of elements greater than $u$ in poset $P$.
-Notation: $\less{P}{v} = {v\downarrow_P} = D_P(v)$ and $\greater{P}{u} = u \uparrow_P = U_P(u)$.
-}
-\todo[inline]{
-  Define $\reduced{P}$.
-}
-
+The downset of an element $a$ is $\less{P}{a} = \set{b \in \Omega_P}{b \le a}$, the upset is $\greater{P}{a} = \set{b \in \Omega_P}{b \ge a}$.
 
 \subsection{The Selection Problem.}
-The selection problem is, given a poset $R$ and an integer $i$, to determine the $i$-th smallest of the $n$ elements in $\Omega_R$ where we already know the relation $R$.
-We denote an instance of the \emph{selection problem}, or problem for short, by $(R, i)$\todo{alternative: instance}.
+The selection problem is, given a poset $P$ and an integer $i$, to determine the $i$-th smallest of the $n$ elements in $\Omega_P$ where we already know the relation $P$.
+We denote an instance of the \emph{selection problem}, or problem for short, by $(P, i)$.
 The notion of isomorphism extends naturally to selection problems.
-For the dual we have $\dual{(R, i)} = (\dual{R}, n - i + 1)$.
-The problem $(R, i)$ is \emph{reduced} if for each element there are at most $i - 1$ smaller elements and at most $n - i$ larger elements.
+For the dual we have $\dual{(P, i)} = (\dual{P}, n - i + 1)$.
+The problem $(P, i)$ is \emph{reduced} if for each element there are at most $i - 1$ smaller elements and at most $n - i$ larger elements.
+We denote by $\reduced{(P, i)}$ the reduced problem corresponding to $(P, i)$.
 Hence, each element can still be the $i$-th smallest.
-
 
 \subsection{Selection Algorithms.}
 A selection algorithm is a binary decision tree.
 Each node is labeled with a selection problem.
-The root node is labeled with $(\emptyset_n, i)$ where $\emptyset_n$ is the poset on $n$ elemets without any relations.
-The leaf nodes are labeled with \emph{solved} problems, that is tupels $(R, i)$ that have a unique element $a \in \Omega_R$, such that, there are $i - 1$ elements smaller than $a$, and $n - i$ elements larger than $a$.
+The root node is labeled with $(E_n, i)$ where $E_n$ is the poset on $n$ elemets without any relations.
+The leaf nodes are labeled with \emph{solved} problems $(P, i)$ that have a unique element $a \in \Omega_P$, such that $|\less{P}{a}| = i$ and $|\greater{P}{a}| = n - i + 1$.
 Hence, $a$ ist the $i$-th smallest element.
 
-The selection algorithm associates to each inner node $P$ a comparison $\{a, b\}$, meaning that the algorithm compares $a$ with $b$ as its next step.
-The two children $\pchild{P}{a}{b}$ and $\pchild{P}{b}{a}$ correspond to the two possible outcomes of the comparison $a < b$ and $b > a$.
+The selection algorithm associates to each inner node $(P, i)$ a comparison $\{a, b\}$, meaning that the algorithm compares $a$ with $b$ as its next step.
+The two children $(\pchild{P}{a}{b}, i)$ and $(\pchild{P}{b}{a}, i)$ correspond to the two possible outcomes of the comparison $a < b$ and $b > a$.
 The number of comparisons required by the algorithm (in the worst case) is the maximum length of a path from the root to some leaf.
 
 
@@ -211,14 +204,16 @@ We prove the following transfer lemma for lower bounds, showing that if $k$ is a
   Thus we obtain an algorithm for selecting the $i$-th smallest of $n$ elements using $k - 1$ comparisons.
 \end{proof}
 
-Note that the bound in \Cref{lemma:previous_next_poset} is tight, as can be seen by $V_1(n) = n - 1$\todo{cite, or mention in related work}.
+\begin{remark}
+  It appears that Oksanen did not know about \Cref{lemma:previous_next_poset}, as the ranges he provides in his table could easily be improved using it~\cite{Oksanen}.
+\end{remark}
+
+Note that the bound in \Cref{lemma:previous_next_poset} is tight, as can be seen by $V_1(n) = n - 1$.
 An easy corollary to the lemma is $V_{i + 1}(n + 1) \ge V_i(n) + 1$.
 This follows immediately using the next lemma.
 
-\todo[inline]{Remark: It appears Oksanen did not know Lemma 2.1.}
-
 By $V_i(P)$ we denote the minimum number of comparisons which suffice to select the $i$-th smallest element of the poset $P$ in the worst-case.
-$V_i(n)$ is the special case $V_i(\emptyset_n)$.
+$V_i(n)$ is the special case $V_i(E_n)$.
 We prove the following lemma showing the cost of selection does not change when considering the dual problem.
 
 \begin{lemma} \label{lemma:dual_poset_allowed}
@@ -418,7 +413,7 @@ To develop the backward search, primarily the backward search from \cite{stober2
 The backward search starts with the set of solved selection problems, and iteratively removes comparisons until the unordered poset is found.
 Now, the set of solved problems, even if we restrict ourselves to a fixed cardinality $n$ and rank $i$, will be quite large.
 We solve this by only enumerating reduced problems.
-With that restriction the starting point of the backward search is $(\emptyset_1, 1)$.\todo{$\emptyset_n$ -> $E_n$ + definieren}
+With that restriction the starting point of the backward search is $(E_1, 1)$.
 
 %It should be noted that if a comparison is removed from the poset $P = (n, i, R)$ resulting in the poset $P' = (n, i, R \setminus (u, v))$,
 %the poset $Q = (n, i, R \setminus (u, v) \cup (v, u))$\todo{ugly formula} should already be in a canonified form in the cache.
@@ -435,13 +430,13 @@ With that restriction the starting point of the backward search is $(\emptyset_1
 
 \subsubsection{Algorithm.} \label{sec:backward:algorithm}
 The input parameters for the backward search are denoted by $n$ and $i$, like in the forward search.
-The backward search starts with the solved problem $(\emptyset_1, 1)$ and iteratively computes all posets solvable using $k = 1, 2, 3, \dots$ comparisons -- until the unordered poset $(\emptyset_n, i)$ is encountered.
+The backward search starts with the solved problem $(E_1, 1)$ and iteratively computes all posets solvable using $k = 1, 2, 3, \dots$ comparisons -- until the unordered poset $(E_n, i)$ is encountered.
 
 Let $A_k$ denote the set of all reduced selection problems solvable using $k$ comparisons.
-For all $n$ and $i$, we have $A_0 = \{ (\emptyset_1, 1) \}$.
+For all $n$ and $i$, we have $A_0 = \{ (E_1, 1) \}$.
 
 The backward search begins with $A_0$ and iteratively computes, for each problem in $A_k$, the corresponding predecessors, which form the set $A_{k + 1}$.
-If $(\emptyset_n, i) \in A_l$, then $l$ comparisons are the lower bound to determine the $i$-th smallest element of an $n$-element list.
+If $(E_n, i) \in A_l$, then $l$ comparisons are the lower bound to determine the $i$-th smallest element of an $n$-element list.
 
 
 \subsubsection{Predecessor calculation.} \label{sec:backward:predecessor_calculation}
@@ -489,12 +484,12 @@ To address these challenges we will prove two lemmas, the first of which shows t
 \end{lemma}
 
 \begin{proof}
-  As $(P, i)$ ist reduced, we have $|\less{P}{c}| \le i - 1$ and $|\greater{P}{c}| \le n - i$, where $n = |\Omega_P|$, for every $c \in P$, in particular this also holds for $a$ and $b$.
+  As $(P, i)$ ist reduced, we have $|\less{P}{c}| \le i$ and $|\greater{P}{c}| \le n - i + 1$, where $n = |\Omega_P|$, for every $c \in P$, in particular this also holds for $a$ and $b$.
   Let $P' = \pchild{P}{a}{b}$ and assume $Q \cap \{a ,b \} = \emptyset$.
-  Observe that $\less{P'}{a} = \less{P}{a} \le i-1$ and $\greater{P'}{b} = \greater{P}{b} \le n - i$.
-  Thus for $a$ and $b$ to be reduced, we must have $\greater{P'}{a} \ge n - i + 1$ and $\less{P'}{b} \ge i$.
+  Observe that $\less{P'}{a} = \less{P}{a} \le i$ and $\greater{P'}{b} = \greater{P}{b} \le n - i + 1$.
+  Thus for $a$ and $b$ to be reduced, we must have $\greater{P'}{a} \ge n - i + 2$ and $\less{P'}{b} \ge i + 1$.
   Note that there are no elements inbetween $a$ and $b$, as they are incomparable in $P$ and there is an Hasse arc between them in $P'$.
-  Hence $\greater{P'}{a} \cap \less{P'}{b} = \emptyset$, leading to the contradiction $n = |\Omega_{P'}| \ge |\greater{P'}{a} \cup \less{P'}{b}| \ge n + 1$.
+  Hence $\greater{P'}{a} \cap \less{P'}{b} = \{a, b\}$, leading to the contradiction $n = |\Omega_{P'}| \ge |\greater{P'}{a} \cup \less{P'}{b}| = |\greater{P'}{a}| + |\less{P'}{b}| - |\greater{P'}{a} \cap \less{P'}{b}| \ge n + 1$.
 \end{proof}
 
 The next lemma shows, that the elements removed by the reduction, which are not $a$ or $b$, can be added one after the other.
@@ -503,12 +498,12 @@ The next lemma shows, that the elements removed by the reduction, which are not 
   Let $(P, i)$ be a reduced problem.
   Let $(Q, j) = \reduced{(\pchild{P}{a}{b}, i)}$.
   Then, $Q \cap \{a, b\} \neq \emptyset$.
-  If $(P, i)$ is a predecessor of $(Q, j)$ and $\Omega_P \setminus (\Omega_Q \cup \{a, b\}) \neq \emptyset$, then there is an element $c \in \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ such that $(P|_{\Omega_P \setminus \{c\}}, i')$, where $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+1$ and $i'=i$ otherwise, is a reduced predecessor of $(Q, j)$.
+  If $(P, i)$ is a predecessor of $(Q, j)$ and $\Omega_P \setminus (\Omega_Q \cup \{a, b\}) \neq \emptyset$, then there is an element $c \in \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ such that $(P|_{\Omega_P \setminus \{c\}}, i')$, where $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+2$ and $i'=i$ otherwise, is a reduced predecessor of $(Q, j)$.
 \end{lemma}
 
 \begin{proof}
   Let $R = \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ be the set of elements removed by the reduction.
-  It is easy to see that for every $c \in R$ the problem $(P', i')$ where $P' = P|_{\Omega_P \setminus \{c\}}$ and $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+1$ and $i'=i$ otherwise is a predecessor of $(Q, j)$:
+  It is easy to see that for every $c \in R$ the problem $(P', i')$ where $P' = P|_{\Omega_P \setminus \{c\}}$ and $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+2$ and $i'=i$ otherwise is a predecessor of $(Q, j)$:
   \begin{itemize}
     \item It is obvious that $(Q, j) = \reduced{(\pchild{P'}{a}{b}, i')}$.
     \item $(\pchild{P'}{b}{a}, i')$ is at least as easy solve as $(\pchild{P}{b}{a}, i)$. Thus $V_{i'}(\pchild{P'}{b}{a}) \le V_i(\pchild{P}{b}{a})$.
@@ -517,10 +512,10 @@ The next lemma shows, that the elements removed by the reduction, which are not 
   The challenge is to find an element $c$, such $P'$ is reduced.
   We define the following sets.
   \begin{align*}
-    C^+ & = \{e \in \Omega_P \mid \greater{P}{e} = n - i \}               \\
-    C^- & = \{e \in \Omega_P \mid \less{P}{e} = i - 1 \}                  \\
-    R^+ & = \{c \in V \mid \greater{\pchild{P}{a}{b}}{c} \ge n - i + 1 \} \\
-    R^- & = \{c \in V \mid \less{\pchild{P}{a}{b}}{c} \ge i \}
+    C^+ & = \{e \in \Omega_P \mid \greater{P}{e} = n - i + 1\}           \\
+    C^- & = \{e \in \Omega_P \mid \less{P}{e} = i \}                      \\
+    R^+ & = \{c \in V \mid \greater{\pchild{P}{a}{b}}{c} \ge n - i + 2 \} \\
+    R^- & = \{c \in V \mid \less{\pchild{P}{a}{b}}{c} \ge i + 1 \}
   \end{align*}
   Note that $R = R^- \cup R^+$.
   The sets $C^-$ and $C^+$ are the critical elements:
@@ -531,8 +526,9 @@ The next lemma shows, that the elements removed by the reduction, which are not 
   \begin{equation}
     \forall c \in C^+, e \in C^- \colon (c, e) \in P\,\text{.}
   \end{equation}
-  Assume we have $c \in C^+, e \in C^-$, but there is no edge $(c, e) \in P$. Then the sets $\{c\} \cup \greater{P}{c}$ and $\{e\} \cup \less{P}{e}$ are disjoint.
-  This is a contradiction as $|\{c\} \cup \greater{P}{c}| + |\{e\} \cup \less{P}{e}| = n + 1 > |\Omega_P|$.
+  Assume we have $c \in C^+, e \in C^-$, but there is no edge $(c, e) \in P$.
+  Then the sets $\greater{P}{c}$ and $\less{P}{e}$ are disjoint.
+  This is a contradiction as $|\greater{P}{c}| + |\less{P}{e}| = n + 1 > |\Omega_P|$.
 
   The second step is to show that if $R^- \cap C^- = \emptyset$ and $R^+ \cap C^+ = \emptyset$, then we can pick any $c \in R$.
   We show the following:
@@ -540,13 +536,14 @@ The next lemma shows, that the elements removed by the reduction, which are not 
     \forall c \in R^-, e \in C^+ \colon (e, c) \in P \text{ or } e \in R^+\,\text{.}
   \end{equation}
   Assume we have $c \in R^-, e \in C^+$.
-  By repeating the counting argument we observe that the sets $\{c\} \cup \less{\pchild{P}{a}{b}}{c}$ and $\{e\} \cup \greater{P}{e}$ cannot be disjoint.
+  By another counting argument we observe that the sets $\less{\pchild{P}{a}{b}}{c}$ and $\greater{P}{e}$ cannot be disjoint:
+  Assuming that $\less{\pchild{P}{a}{b}}{c} \cap \greater{P}{e} = \emptyset$ leads to the contradiction $|\less{\pchild{P}{a}{b}}{c}| + |\greater{P}{e}| \ge n + 2$.
   Thus $(e, c) \in \pchild{P}{a}{b}$.
   Hence we have either $(e, c) \in P$ or $(e, a) \in P$.
   If $(e, a) \in P$ but not $(e, c) \in P$, then we have to show $a \neq e$ to obtain $e \in R^+$:
   Assume $a = e$.
-  Then $\greater{P}{a}$ and $\{c\} \cup \less{\pchild{P}{a}{b}}{c}$ must be disjoint as $(e, c) \notin P$.
-  We obtain the contradiction $|\greater{P}{a}| + |\{c\} \cup \less{\pchild{P}{a}{b}}{c}| \ge n + 1$.
+  Then $\greater{P}{a} \setminus \{ a \}$ and $\less{\pchild{P}{a}{b}}{c}$ must be disjoint as $(e, c) \notin P$.
+  We obtain the contradiction $|\greater{P}{a} \setminus \{ a \}| + |\less{\pchild{P}{a}{b}}{c}| \ge n + 1$.
   By symmetrie we also get
   \begin{equation}
     \forall c \in R^+, e \in C^- \colon (c, e) \in P \text{ or } e \in R^-\,\text{,}
