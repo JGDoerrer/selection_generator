@@ -146,32 +146,6 @@ The second approach, the backward search, is based on a different idea entirely.
 Here the start and endpoint of the search switch places.
 This type of search has not been applied to the selection problem before, and we will see, that its efficient application poses several challenges.
 
-
-
-\subsection{Related Work.}
-\todo[inline]{I put most of this section in the introduction, so maybe this can go?}
-A first approach to solve this can be achieved by sorting the list at first and selecting the $i$-th
-element.
-However, this approach has a time complexity of $\mathcal{O}(n \cdot \log n)$.
-Putting more thought into this problem one can find algorithms like the median of medians \cite{Schoening1993} or PICK \cite{Blum1972} and reduce the time complexity to $\mathcal{O}(n)$.
-Optimal algorithms are known for any $n$ when $i$ is either one or two, but there is a significant performance gap finding the median $i = \nicefrac{n}{2}$ from the best known algorithm with a time complexity of $2.95n$ described in \cite{dor1999selecting} to the tightest known minimum of $2 \cdot n - \smallO(n)$.
-
-The time complexity of $\mathcal{O}(n)$ of the mentioned algorithms is inevitable, because the input to these algorithm is a list of values in arbitrary order.
-Therefore, the algorithm must look at all the input values to determine a correct solution.
-If any of these input values will not be considered it could be the one that should have been returned by the algorithm leading to wrong results.
-Apart from this simple and straightforward argument, there is a considerable amount of research on the exact number of comparisons required for selection, both in the randomized and deterministic cases.
-
-It has been found that selecting the $i$-th element of $n$ requires at least $n + \min(i, n - i) - \mathcal{O}(1)$ comparisons \cite{cunto1989}, thus matching the average case of the Floyd-Rivest algorithm up to its $\smallO(n)$ term.
-For deterministic algorithms it has also been shown that
-\begin{eqnarray*}
-  &\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n) \\
-  &\text{with~} H(x) = x \cdot \log_2 \frac{1}{x} + (1 - x) \log_2 \frac{1}{1 - x}
-\end{eqnarray*}
-comparisons are required.
-An upper bound is been proposed by Blum, in the paper \textit{Time Bounds for Selection}. \cite{Blum1972}
-It stated that no more than $5.430\dot{5} \cdot n$ comparisons are ever required. \cite{Blum1972}
-Therefore selection is for sure in a time complexity of $\mathcal{O}(n)$ for best and worst-case.
-
 \section{Fundamentals}
 
 \subsection{Posets.}
