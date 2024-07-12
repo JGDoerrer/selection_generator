@@ -1,41 +1,30 @@
 \begin{algorithmic}
-    \State{\Call{assert}{$\forall a,b,c \in \N : (a,b) \in R \land (b,c) \in R \implies (a,c) \in R$}}
-    \State{\Call{assert}{$\forall a,b \in \N: (a,b) \in R \implies a < b$}}
 
-    \Function{NumCompatibleSolutions}{$P = (n,i,R)$}
+    \Function{NumCompatibleSolutions}{$(P, i)$}
 
-    \State{$sum \gets 0$}
+    \State{$c \gets 0$}
 
-    \For{$j \gets 0..n$}
+    \For{$j \in \Omega_P$} \Comment{solutions with $j$ $i$-th smallest}
 
-    \State{$smallerThanJ \gets \{ v \mid (v,j) \in R \}$}
-    \State{$greaterThanJ \gets \{ v \mid (j,v) \in R \}$}
-    \State{$orderedWithJ \gets smallerThanJ \cup greaterThanJ$}
-    \State{$Subsets \gets \{ smallerThanJ \}$}
+    \State{$\mathcal{D} \gets \{ \less{P}{j} \setminus \{j\} \}$}% \Comment{downsets containing $\less{P}{j} \setminus \{j\}$}
 
-    \For{$k \gets 0..n$}
-    \If{$j=k \lor k \in orderedWithJ$}
-    \State{\textbf{continue}}
-    \EndIf
+    \For{$k \in \Omega_P \setminus (\less{P}{j} \cup \greater{P}{j})$}
 
-    \State{$smallerThanK \gets \{ v \mid (v,k) \in R \}$}
+    \For{$S \in \mathcal{D}$}
 
-    \For{$S \in Subsets$}
-
-    \If{$smallerThanK \subseteq S$}
-    \State{$newSubset \gets S \cup \{ k \}$}
-    \State{$Subsets \gets Subsets \cup \{ newSubset \}$}
+    \If{$\less{P}{k} \subseteq S \cup \{ k \}$}
+    \State{$\mathcal{D} \gets \mathcal{D} \cup \{ S \cup \{ k \} \}$}
     \EndIf
 
     \EndFor
 
     \EndFor
 
-    \State{$sum \gets sum + |\{S \in Subsets \mid |S| = i \}|$}
+    \State{$c \gets c + |\{S \in \mathcal{D} \mid |S| = i \}|$}
 
     \EndFor
 
-    \State{\Return{$sum$}}
+    \State{\Return{$c$}}
 
     \EndFunction
 \end{algorithmic}
