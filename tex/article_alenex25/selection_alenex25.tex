@@ -117,7 +117,7 @@ For other values of $i$ the algorithm in~\cite{dor1999selecting} requires fewer 
 This presents a significant gap to the best known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$ where $H(x) = x \cdot \log \frac{1}{x} + (1 - x) \log \frac{1}{1 - x}$~\cite{bent1985finding}.
 For the median this lower bound is $2 \cdot n - \smallO(n)$.
 Paterson conjectured that the lower bound for selecting the median is $n \log_{4/3} 2 \approx 2.41n$~\cite{paterson1996progress}.
- 
+
 Gasarch, Kelly and Pugh~\cite{Gasarch1996} were the first to use computer search to find optimal selection algorithms.
 Oksanen continued this line of work, improving upon the previously known lower bounds~\cite{Oksanen2006}.
 His results and the computer program he used to obtain them are available on his website~\cite{Oksanen}.
@@ -489,7 +489,7 @@ The next lemma shows, that the elements removed by the reduction, which are not 
   The challenge is to find an element $c$, such $P'$ is reduced.
   We define the following sets.
   \begin{align*}
-    C^+ & = \{e \in \Omega_P \mid \greater{P}{e} = n - i + 1\}           \\
+    C^+ & = \{e \in \Omega_P \mid \greater{P}{e} = n - i + 1\}            \\
     C^- & = \{e \in \Omega_P \mid \less{P}{e} = i \}                      \\
     R^+ & = \{c \in V \mid \greater{\pchild{P}{a}{b}}{c} \ge n - i + 2 \} \\
     R^- & = \{c \in V \mid \less{\pchild{P}{a}{b}}{c} \ge i + 1 \}
@@ -592,7 +592,7 @@ We only consider potential predecessors which are reduced and of cause by the ad
 
 \begin{figure}[!b]
   \centering
-  \includegraphics[width=\columnwidth]{figures/backward-search-tree.png} \todo[inline]{this graphic should be adjusted to the shifted i}
+  \input{figures/tikz_backward_search_tree.tex}
   \caption{Search tree for $n = 4$ and $i = 2$.
     Level $k$ contains all posets that can be solved in $k$ comparisons and contribute to the solution for the given parameters $n$ and $i$. \\
     Solid arrows indicate predecessors of a poset, while dashed arrows represent the resulting posets when the reversed comparison is inserted.}
@@ -972,8 +972,8 @@ The latest version of our software can be found on github (\url{https://github.c
 \todo[inline]{tbd}
 
 \bibliography{biblio}
-  
-  
+
+
 \clearpage
 \appendix
 
