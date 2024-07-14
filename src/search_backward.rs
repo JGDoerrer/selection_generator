@@ -52,7 +52,7 @@ pub fn start_search_backward(
 
         let add_level = std::time::Instant::now();
         cache.add_layer(&current_level);
-        println!("add level: {:.3?}", add_level.elapsed());
+        let elapsed = add_level.elapsed();
 
         if let Some(backward_search_state) = backward_search_state_opt {
             let mut write_lock = backward_search_state
@@ -65,11 +65,12 @@ pub fn start_search_backward(
         }
 
         println!(
-            "# {}: {} in {:.3?}, total: {}",
+            "# {}: {} in {:.3?}, total: {}, add level: {:.3?}",
             k,                   // comparisons done
             current_level.len(), // posets per level
             start.elapsed(),     // time per level
             cache.len(),         // total cached posets
+            elapsed
         );
 
         if current_level.contains_key(&BackwardsPoset::new(n, i)) {

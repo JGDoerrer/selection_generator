@@ -1,8 +1,52 @@
 use crate::constants::MAX_N;
 use hashbrown::HashMap;
-use std::mem::size_of;
+use rayon::slice::ParallelSliceMut;
+use std::{cmp::Ordering, mem::size_of};
 
 use crate::backwards_poset::BackwardsPoset;
+
+fn extend_sorted<T, F>(a: &mut Vec<T>, b: &[T], mut compare: F)
+where
+    T: Copy + Clone + Default,
+    F: FnMut(&T, &T) -> Ordering,
+{
+    if a.is_empty() {
+        a.extend(b);
+        return;
+    }
+
+    let mut a_pos: i32 = a.len() as i32 - 1;
+
+    let mut b_iter = b.iter().rev();
+    let mut b_value = b_iter.next();
+
+    a.resize(a.len() + b.len(), Default::default());
+
+    let mut i = a.len();
+    while 0 <= a_pos && b_value.is_some() {
+        debug_assert!(0 < i);
+        i -= 1;
+
+        let b_val = b_value.unwrap();
+        let a_val = &a[a_pos as usize];
+
+        a[i] = if compare(a_val, b_val).is_le() {
+            b_value = b_iter.next();
+            *b_val
+        } else {
+            a_pos -= 1;
+            *a_val
+        };
+    }
+
+    while let Some(b_value_next) = b_value {
+        debug_assert!(0 < i);
+        i -= 1;
+
+        a[i] = *b_value_next;
+        b_value = b_iter.next();
+    }
+}
 
 const HASHTABLE_BITS: usize = 16;
 const HASHTABLE_SIZE: usize = 1 << HASHTABLE_BITS;
@@ -42,68 +86,31 @@ impl BackwardCache {
         }
     }
 
-    fn merge_sorted(
-        a: &[(u16, u128, (u8, u8))],
-        b: &[(u16, u128, (u8, u8))],
-    ) -> Vec<(u16, u128, (u8, u8))> {
-        let mut result = Vec::with_capacity(a.len() + b.len());
-
-        let mut it1 = a.iter();
-        let mut it2 = b.iter();
-        let mut val1 = it1.next();
-        let mut val2 = it2.next();
-
-        while let (Some(&v1), Some(&v2)) = (val1, val2) {
-            if v1.0.cmp(&v2.0).then(v1.1.cmp(&v2.1)).is_le() {
-                result.push(v1);
-                val1 = it1.next();
-            } else {
-                result.push(v2);
-                val2 = it2.next();
-            }
-        }
-
-        if let Some(v1) = val1 {
-            result.push(*v1);
-            result.extend(it1.copied());
-        } else if let Some(v2) = val2 {
-            result.push(*v2);
-            result.extend(it2.copied());
-        }
-
-        result
-    }
-
     pub fn add_layer(&mut self, posets: &HashMap<BackwardsPoset, (u8, u8)>) {
-        let mut old_indices: [[usize; MAX_N]; MAX_N] = Default::default();
-
-        for n in 0..MAX_N {
-            for i in 0..MAX_N {
-                old_indices[n][i] = self.buckets[n][i].data.len();
-            }
-        }
+        let mut new_items: [[CacheBucket; MAX_N]; MAX_N] = Default::default();
 
         for (poset, indices) in posets {
             let packed = poset.pack_poset();
-            self.buckets[poset.n() as usize - 1][poset.i() as usize]
+            new_items[poset.n() as usize - 1][poset.i() as usize]
                 .data
                 .push((Self::hash(packed), packed, *indices));
         }
 
+        let comparator = |(hash1, key1, _): &(u16, u128, (u8, u8)),
+                          (hash2, key2, _): &(u16, u128, (u8, u8))| {
+            hash1.cmp(hash2).then(key1.cmp(key2))
+        };
+
         for n in 0..MAX_N {
             for i in 0..MAX_N {
-                let bucket_ni = &mut self.buckets[n][i];
-                if bucket_ni.data.is_empty() {
+                if new_items.is_empty() {
                     continue;
                 }
 
-                bucket_ni.data[old_indices[n][i]..].sort_unstable_by(
-                    |(hash1, key1, _), (hash2, key2, _)| hash1.cmp(hash2).then(key1.cmp(key2)),
-                );
-                bucket_ni.data = Self::merge_sorted(
-                    &bucket_ni.data[..old_indices[n][i]],
-                    &bucket_ni.data[old_indices[n][i]..],
-                );
+                new_items[n][i].data.par_sort_unstable_by(comparator);
+
+                let bucket_ni = &mut self.buckets[n][i];
+                extend_sorted(&mut bucket_ni.data, &new_items[n][i].data, comparator);
                 bucket_ni.data.shrink_to_fit();
 
                 let mut pos = 0;
