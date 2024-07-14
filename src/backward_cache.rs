@@ -1,55 +1,9 @@
-use crate::constants::MAX_N;
+use crate::{constants::MAX_N, utils::extend_sorted};
 use hashbrown::HashMap;
 use rayon::slice::ParallelSliceMut;
-use std::{cmp::Ordering, mem::size_of};
+use std::mem::size_of;
 
 use crate::backwards_poset::BackwardsPoset;
-
-/**
- * takes a sorted `Vec<T>` and a sorted slice as input and merge it into the sorted `Vec<T>`
- */
-fn extend_sorted<T, F>(a: &mut Vec<T>, b: &[T], mut compare: F)
-where
-    T: Copy + Clone + Default,
-    F: FnMut(&T, &T) -> Ordering,
-{
-    if a.is_empty() {
-        a.extend(b);
-        return;
-    }
-
-    let mut a_pos: i32 = a.len() as i32 - 1;
-
-    let mut b_iter = b.iter().rev();
-    let mut b_value = b_iter.next();
-
-    a.resize(a.len() + b.len(), Default::default());
-
-    let mut i = a.len();
-    while 0 <= a_pos && b_value.is_some() {
-        debug_assert!(0 < i);
-        i -= 1;
-
-        let b_val = b_value.unwrap();
-        let a_val = &a[a_pos as usize];
-
-        a[i] = if compare(a_val, b_val).is_le() {
-            b_value = b_iter.next();
-            *b_val
-        } else {
-            a_pos -= 1;
-            *a_val
-        };
-    }
-
-    while let Some(b_value_next) = b_value {
-        debug_assert!(0 < i);
-        i -= 1;
-
-        a[i] = *b_value_next;
-        b_value = b_iter.next();
-    }
-}
 
 const HASHTABLE_BITS: usize = 16;
 const HASHTABLE_SIZE: usize = 1 << HASHTABLE_BITS;

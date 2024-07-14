@@ -1,5 +1,5 @@
 use chrono::prelude::*;
-use std::{process::Command, time::Instant};
+use std::{cmp::Ordering, process::Command, time::Instant};
 
 /// Print the git sha of the last commit
 /// the sha is equal to: git rev-parse --short --head
@@ -107,3 +107,62 @@ pub fn format_duration(start: Instant) -> String {
 pub fn format_memory(memory: u64) -> String {
     format!("{:.3}", memory as f64 / ((10usize).pow(9) as f64))
 }
+
+/**
+ * Takes a sorted `Vec<T>`, `a`, and a sorted slice, `b`, as input and merge it into the sorted `Vec<T>`
+ */
+#[inline]
+pub fn extend_sorted<T, F>(a: &mut Vec<T>, b: &[T], mut compare: F)
+where
+    T: Copy + Default,
+    F: FnMut(&T, &T) -> Ordering,
+{
+    let mut a_pos = a.len();
+    let mut b_pos = b.len();
+
+    a.resize(a_pos + b_pos, T::default());
+
+    while 0 < a_pos && 0 < b_pos {
+        a[a_pos + b_pos] = if compare(&a[a_pos - 1], &b[b_pos - 1]).is_ge() {
+            a_pos -= 1;
+            a[a_pos]
+        } else {
+            b_pos -= 1;
+            b[b_pos]
+        };
+    }
+
+    if 0 != b_pos {
+        a[..b_pos].copy_from_slice(&b[..b_pos]);
+    }
+}
+
+// {
+//   let mut rng = rand::thread_rng();
+//   for _ in 0..100 {
+//       for a_len in 0..5 {
+//           for b_len in 0..5 {
+//               let mut a: Vec<usize> = vec![];
+//               for _ in 0..a_len {
+//                   a.push(rng.gen::<usize>() % 20);
+//               }
+//               a.sort_unstable();
+//               let mut b: Vec<usize> = vec![];
+//               for _ in 0..b_len {
+//                   b.push(rng.gen::<usize>() % 20);
+//               }
+//               b.sort_unstable();
+
+//               let mut c = a.clone();
+//               c.extend(&b);
+//               c.sort_unstable();
+
+//               let mut new_a = a.clone();
+//               extend_sorted(&mut new_a, &b, std::cmp::Ord::cmp);
+
+//               dbg!(a, b);
+//               assert_eq!(new_a, c);
+//           }
+//       }
+//   }
+// }
