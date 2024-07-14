@@ -5,6 +5,9 @@ use std::{cmp::Ordering, mem::size_of};
 
 use crate::backwards_poset::BackwardsPoset;
 
+/**
+ * takes a sorted `Vec<T>` and a sorted slice as input and merge it into the sorted `Vec<T>`
+ */
 fn extend_sorted<T, F>(a: &mut Vec<T>, b: &[T], mut compare: F)
 where
     T: Copy + Clone + Default,
