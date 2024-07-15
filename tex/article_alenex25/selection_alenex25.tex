@@ -277,7 +277,7 @@ It allows us to go even further in computing optimal selection algorithms.
 \subsection{Data structures and Isomorphism Testing.}
 The key to reducing the search space is to consider only reduced problems and to detect isomorphic problems.
 The isomorphism testing is realized by computing a \emph{canonical} representative.
-For the backward search we use \texttt{nauty} to compute a canonical representative.
+For the backward search we use \texttt{nauty}~\cite{MCKAY201494} to compute a canonical representative.
 For the forward search we use a best effort approximation to decrease the cost of computing the representative at the expense of a slightly larger search space.
 
 By \Cref{lemma:dual_poset_allowed} we do not need to distinguish a problem from its dual.
@@ -314,6 +314,12 @@ This premise is implemented by a minimax algorithm as shown in \Cref{fig:minimax
 We can drastically speed up this exploration by caching previous results, even with a simple usage based ejection policy.
 Since the search always imposes an upper bound for the number of comparisons to allow this also includes yet unsolved posets, for which we note the currently known minimum.
 
+\paragraph{Isomorphism testing.}
+In the cache we store the approximated canonical representative of a problem and its dual.
+That way we can detect isomorphic problems.
+Our preliminary tests showed that the performance gained by computing an approximated canonical form, where some isomorphic problems may have difference representatives, outweighs the cost induced by the then larger search space.
+%As a result, some problems that are isomorphic occupy several cache entries, but canonifying a poset is much faster.
+
 \paragraph{Maximum Depth.}
 We use the minimax search algorithm for cutting off unpromising branches.
 While searching the possible comparisons of a poset, we keep track of the currently best result.
@@ -327,19 +333,6 @@ At the start of a search, the possible comparisons are sorted using a heuristic 
   \caption{Minimax search algorithm}
   \label{fig:minimax_search}
 \end{figure}
-
-\paragraph{Isomorphism testing.}
-When caching the posets we have to check whether two posets are isomorphic to each other.
-We consider a poset isomorphic to another poset if we can relabel the elements of one poset to obtain the other poset.
-This problem is expensive to solve for every poset comparison.
-
-After adding a comparison to a poset, we transform the poset to a canonical form.
-All posets, that are isomorphic to each other should be transformed to the same canonical form.
-Computing the canonical form can be done using \texttt{nauty}, which is a program in \texttt{C} for the calculation of graph automorphism groups \cite[Practical Graph Isomorphism]{MCKAY201494}.
-Since \texttt{nauty} provides a unique canonical form, this takes a significant amount of time.
-
-Some performance tests show that it is faster to compute an almost canonical form, where some posets that are isomorphic to each other result in different canonified forms.
-As a result, some posets that are isomorphic occupy several cache entries, but canonifying a poset is much faster.
 
 \subsubsection{Pruning.}
 We use the following two pruning criteria to reject posets that are not solvable in the given number of comparisons.
@@ -516,7 +509,6 @@ A challenge arises from transitive relations, as the insertion of a single compa
 This is illustrated in \Cref{fig:backward_problematic}.
 Removing a comparison from (1) can result in either (2) or (3).
 Therefore, both (2) and (3) are potential predecessors, even though the same comparison is removed each time.
-\todo[inline]{Details on how potential predecessors are computed (especially regarding transitive relations).}
 
 \begin{figure}[!b]
   \centering
@@ -958,5 +950,10 @@ The red crosses indicate elements that have been found to be greater or smaller 
 The larger element of the final comparison is the median.
 This is also the optimal algorithm for $i = 3$ and $n = 5$.
 
+
+\todo[inline]{Details on how potential predecessors are computed (especially regarding transitive relations).}
+
+\todo[inline]{Approximate normal form for forward search.}
+  
 
 \end{document}
