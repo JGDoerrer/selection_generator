@@ -103,8 +103,8 @@
   Selection is the problem of finding the $i$-th smallest of $n$ elements.
   We apply computer search to find optimal algorithms for small instances of the selection problem.
   Using new algorithmic ideas we are able to go further than what has previously been possible.
-  Our results comprise confirming optimal algorithms for $n$ up to 15, and for $n=16$ where $i \le 6$.
-  
+  Our results confirm the optimality of algorithms for $n$ up to 15, and for $n=16$ where $i \le 6$.
+
 \end{abstract} % newline above is important for formatting
 
 \section{Motivation} \label{sec:motivation}
@@ -113,7 +113,7 @@ The problem of selecting the $i$-th smallest element in a list of $n$ elements i
 Explicitly, we concern ourselves with the optimal worst-case selection of a single element from a set of initially unordered unique elements, measuring the cost as the number of comparisons made.
 We denote this cost by $V_i(n)$.
 
-For selecting the smallest and seconds smallest element optimal algorithms are known with $V_1(n) = n - 1$ and $V_2(n) = n - 2 + \lceil \log n\rceil$~\cite{Knuth1973} (all logartims are to base $2$).
+For selecting the smallest and seconds smallest element optimal algorithms are known with $V_1(n) = n - 1$ and $V_2(n) = n - 2 + \lceil \log n\rceil$~\cite{Knuth1973} (all logarithms are to base $2$).
 In general the selection problem is solvable in linear time, e.g.\ using the median of medians algorithm~\cite{Schoening1993} or PICK~\cite{Blum1972}.
 Looking at the special case of selecting the median $i = \nicefrac{n}{2}$, the best known algorithm requires $2.95n$ comparisons~\cite{dor1999selecting}.
 For other values of $i$ the algorithm in~\cite{dor1999selecting} requires fewer comparison, thus this is a general upper bound.
@@ -131,7 +131,7 @@ We will reimplement some of the existing ideas and add our own improvements expl
 A quote from Miguel de Cervantes from Don Quijote will hold true for this article: ``the journey is better than the inn''~\cite{cervantes_don_quijote}.
 So buckle up.
 
-\subsection{Contribution}
+\subsection{Contribution.}
 In this work we present a novel approach to finding optimal algorithms for selection.
 Using our approach we obtained the following results.
 \begin{enumerate}
@@ -139,7 +139,7 @@ Using our approach we obtained the following results.
         We show that the optimal algorithm requires one comparison fewer, that is $V_5(15) = 24$.
   \item We determined the precise values $V_7(14) = 25$, $V_6(15) = V_7(15) = 26$ and $V_8(15) = 27$.
         Only a range of values was known for these instances previously.
-  \item We compute $V_i(16)$ for $i \le \text{TODO}$.
+  \item We compute $V_i(16)$ for $i \le 6$. % TODO: should we write here, that we also determined a range for V_7(16) and V_8(16)?
 \end{enumerate}
 
 Our algorithmic approach is twofold.
@@ -269,7 +269,7 @@ We push it further using a pruning technique based on compatible solutions.
 The backward search is a different approach, that has not been applied to the problem of selection before.
 It allows us to go even further in computing optimal selection algorithms.
 
-\subsection{Datastructures and Isomorphism Testing.}
+\subsection{Data structures and Isomorphism Testing.}
 T.b.d.:
 \begin{itemize}
   \item We use a triangular Adjacency matrix.
@@ -320,7 +320,7 @@ This premise is implemented by a minimax algorithm as shown in \Cref{fig:minimax
 We can drastically speed up this exploration by caching previous results, even with a simple usage based ejection policy.
 Since the search always imposes an upper bound for the number of comparisons to allow this also includes yet unsolved posets, for which we note the currently known minimum.
 
-\paragraph{Maximum Depth}
+\paragraph{Maximum Depth.}
 We use the minimax search algorithm for cutting off unpromising branches.
 While searching the possible comparisons of a poset, we keep track of the currently best result.
 The remaining comparisons are searched with a limitied depth such that only solutions, which improve the current best are found.
@@ -387,28 +387,12 @@ This property can be used to reduce the adjacency matrix to a triangular matrix,
 It can also simplify some algorithms, for example calculating the number of compatible solutions.
 
 \subsection{Backward Search.} \label{sec:backward}
-
-%\subsubsection{Idea}
-
 To develop the backward search, primarily the backward search from \cite{stober2022lower} was taken as orientation, since it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen~\cite{Oksanen}.
 
 The backward search starts with the set of solved selection problems, and iteratively removes comparisons until the unordered poset is found.
 Now, the set of solved problems, even if we restrict ourselves to a fixed cardinality $n$ and rank $i$, will be quite large.
 We solve this by only enumerating reduced problems.
 With that restriction the starting point of the backward search is $(E_1, 1)$.
-
-%It should be noted that if a comparison is removed from the poset $P = (n, i, R)$ resulting in the poset $P' = (n, i, R \setminus (u, v))$,
-%the poset $Q = (n, i, R \setminus (u, v) \cup (v, u))$\todo{ugly formula} should already be in a canonified form in the cache.
-%This means that $Q$ has already been discovered in the search.
-%
-%Thus, the number of iterations taken until a poset is added to the cache equals the number of worst case comparisons needed to solve it, which means that the search terminates once $(n, i, \emptyset)$ with the desired $n$ and $i$ is found.
-
-% The argument for correctness is that the number of comparisons for which we have found all posets solvable within them equals the number of iterations of the search.
-% If for a given poset and a comparison within it we have already discovered both results then their cost must be less than the current number of iterations.
-% Hence, we can conclude that the poset is solvable within this number of comparisons.
-% Since this condition did not hold true in any previous iteration, we can further infer that the cost must also be optimal.
-% And if a poset is solvable within that number of comparisons it must have at least one comparison with a result among the posets discovered in the previous iteration, as otherwise it would have to be solvable in less.
-
 
 \subsubsection{Algorithm.} \label{sec:backward:algorithm}
 The input parameters for the backward search are denoted by $n$ and $i$, like in the forward search.
@@ -420,7 +404,6 @@ For all $n$ and $i$, we have $A_0 = \{ (E_1, 1) \}$.
 The backward search begins with $A_0$ and iteratively computes, for each problem in $A_k$, the corresponding predecessors, which form the set $A_{k + 1}$.
 If $(E_n, i) \in A_l$, then $l$ comparisons are the lower bound to determine the $i$-th smallest element of an $n$-element list.
 
-
 \subsubsection{Predecessor calculation.} \label{sec:backward:predecessor_calculation}
 We begin with a formal definition of a predecessor.
 
@@ -428,20 +411,20 @@ We begin with a formal definition of a predecessor.
   The problem $(Q, j)$ is a \emph{predecessor} of $(P, i)$ if there is a comparison $(a, b)$, such that
   \begin{enumerate}
     \item $(P, i) = \reduced(\pchild{Q}{a}{b}, j)$ and
-    \item $V_j(\pchild{Q}{b}{a}) \le V_i(P)$.
+    \item $V_j(\pchild{Q}{b}{a}) \le V_i(P)$. % TODO: Why is here `\le`, I think this should be $V_j(\pchild{Q}{b}{a}) + 1 = V_i(P)$
   \end{enumerate}
 \end{definition}
 
 Any problem $(Q, j)$ satisfying the first condition of the above definition is called a \emph{potential predecessor}.
 In fact the first step to enumerating the predecessors will be to enumerate the potential predecessors.
-The second step will be checking the second and third conditions.
+The second step will be checking the second condition.
 
 \begin{lemma} \label{lemma:predecessor_calculation}
   If $(P, i)$ is solvable in $k$ comparisons and $(Q, j)$ is a predecessor of $(P, i)$, then $(Q, j)$ is solvable in $k + 1$ comparisons.
 \end{lemma}
 
-\begin{proof} \label{proof:predecessor_calculation}
-  Since $Q$ was not found in any previous round, according to the assumption, it is not solvable in fewer comparisons.
+\begin{proof} \label{proof:predecessor_calculation} % todo: update to new def.
+  Since $Q$ was not found in any previous round, according to the assumption, it is not solvable in fewer comparisons. % todo: this assumption was never made
   By performing the addition of comparison $(i, j)$ followed by normalization, the poset $P$ is derived, consequently establishing the reachability of $Q$.
   As $P$ is solvable in $k$ comparisons, thus $Q$ is solvable in $k + 1$ comparisons.
   If the comparison is inserted in reverse, according to the assumption, the resulting poset is already in the cache.
@@ -453,7 +436,7 @@ Let us illustrate this by looking at a poset $(P, i)$ and its predecessor $(Q, j
 We know there is a comparison $(a, b)$ such that $(P, i) = \reduced(\pchild{Q}{a}{b}, j)$.
 However it is possible, that the edge $(a, b)$ is not in $P$, because either $a$ or $b$ could have been removed when reducing the problem.
 The question is, how can we undo a comparison, that we cannot see?
-Then, even if the reduction does not remove $a$ and $b$, there is still could be other elements that are removed.
+Then, even if the reduction does not remove $a$ and $b$, there could still be other elements that are removed.
 There the challenge is to figure out how many they are and what relations they have.
 
 To address these challenges we will prove two lemmas, the first of which shows that after adding a comparison $(a, b)$ at most one of $\{a, b\}$ will be removed by the reduction.
