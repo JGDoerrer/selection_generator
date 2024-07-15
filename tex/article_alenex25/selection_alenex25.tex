@@ -270,31 +270,20 @@ The backward search is a different approach, that has not been applied to the pr
 It allows us to go even further in computing optimal selection algorithms.
 
 \subsection{Data structures and Isomorphism Testing.}
-T.b.d.:
-\begin{itemize}
-  \item We use a triangular Adjacency matrix.
-  \item We only store reduced problems. (Maybe we need to show that this is still correct?)
-  \item Talk about canonification and dual.
-\end{itemize}
+The key to reducing the search space is to consider only reduced problems and to detect isomorphic problems.
+The isomorphism testing is realized by computing a \emph{canonical} representative.
+For the backward search we use \texttt{nauty} to compute a canonical representative.
+For the forward search we use a best effort approximation to decrease the cost of computing the representative at the expense of a slightly larger search space.
 
-\begin{definition}[Canonified]
-  A poset is \textbf{canonified} if it matches the following conditions making it unique among all posets isomorphic to it:
-  \begin{itemize}
-    \item all elements in the poset are arranged canonically, \ie all permutations of these elements must map to this poset
-    \item
-          $i\leq\frac{n+1}{2}$, using the dual.
-          If $i = \frac{n+1}{2}$ applies, one of the two is chosen deterministically.
-          This is also described in more detail in Section~\ref{sec:backward:normal_form}
-  \end{itemize}
+By \Cref{lemma:dual_poset_allowed} we do not need to distinguish a problem from its dual.
+We take advantage of this by switching to the dual if $i\leq\frac{n+1}{2}$.
+If $i = \frac{n+1}{2}$ applies, one of the two is chosen deterministically.
+This is also described in more detail in Section~\ref{sec:backward:normal_form}
+A \emph{normal} problem unique reduced representative of the isomorphism class of the problem and its dual.
 
-  Some parts of this paper use a best effort approximation for this to increase speed, the results are then called \textbf{pseudo canonified}.
-\end{definition}
+We store posets as an adjacency matrix.
+We will choose a canonical representative in each isomorphism class such that we have a lower triangular matrix, which can be stored using $\frac{n^2 - n}{2}$ bits.
 
-\begin{definition}[Normal]
-  A \textbf{normal} poset is reduced and canonified.
-\end{definition}
-
-\todo[inline]{Correctness reduced}
 
 \subsection{Forward Search.} \label{chapter:forward_search}
 The forward search is the same algorithm used by Oksanen~\cite{Oksanen2006} and Gasarch et.\ al\@.~\cite{Gasarch1996}.
@@ -329,7 +318,7 @@ At the start of a search, the possible comparisons are sorted using a heuristic 
 
 \begin{figure}[!b]
   \centering
-  \input{figures/tikz_minimax_search_algorithm.tex}
+  \input{figures/tikz_minimax_search_algorithm}
   \caption{Minimax search algorithm}
   \label{fig:minimax_search}
 \end{figure}
@@ -377,17 +366,8 @@ If the new poset is not solvable, we estimate the original is not solvable eithe
 This heuristic can be slightly improved by maximizing the number of elements smaller than the maximal element and greater than the minimal element.
 This is admissible because having a comparison added `for free' does not make the poset harder to solve.
 
-\subsubsection{Triangular Adjacency Matrix.}
-\todo[inline]{Another candidate for the datastructure section}
-Storing an adjacency matrix for a poset of size $n$ takes $n^2 - n$ bits, one for each possible relation.
-The diagonal does not need to be stored, as an element can not be smaller than itself.
-
-By canonifying the poset, the elements can be sorted in a way such that each element is not smaller than any element before it.
-This property can be used to reduce the adjacency matrix to a triangular matrix, which can then be stored using $\frac{n^2 - n}{2}$ bits.
-It can also simplify some algorithms, for example calculating the number of compatible solutions.
-
 \subsection{Backward Search.} \label{sec:backward}
-To develop the backward search, primarily the backward search from \cite{stober2022lower} was taken as orientation, since it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen~\cite{Oksanen}.
+To develop the backward search, primarily the backward search from~\cite{stober2022lower} was taken as orientation, since it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen~\cite{Oksanen}.
 
 The backward search starts with the set of solved selection problems, and iteratively removes comparisons until the unordered poset is found.
 Now, the set of solved problems, even if we restrict ourselves to a fixed cardinality $n$ and rank $i$, will be quite large.
@@ -588,7 +568,7 @@ We only consider potential predecessors which are reduced and of cause by the ad
 \Cref{fig:backward-search-tree} illustrates the posets explored in the backward search for $n = 4$ and $i = 2$.
 
 \subsubsection{Normalform.} \label{sec:backward:normal_form}
-Note that the backward search requires a unique normal form distinct from the pseudo canonified form used in the forward search.
+Note that the backward search requires a unique normal form and cannot use the approximation used in the forward search.
 If our custom canonification fails to produce a unique form, \texttt{nauty} provides the appropriate canonified form.
 The following outlines the canonification process:
 
