@@ -606,11 +606,10 @@ In this case, it is impossible to decide whether $P$ or $P^{-1}$ corresponds to 
 \begin{figure}[!b]
   \centering
   \input{figures/tikz_backward_canonify_problematic.tex}
-  \caption{Problematic case where \texttt{nauty} cannot distinguish between the two posets, despite them being each other's duals. However, according to \Cref{lemma:dual_poset_allowed} they can be transformed into each other.\todo[inline]{nauty cannot distinguish?}} % KEIN FEHLER, da gerichteter Graph
+  \caption{According to \Cref{lemma:dual_poset_allowed}, the two posets are dual to each other.
+    In this case, however, \texttt{nauty} cannot be used to transform the posets into each other, since they are two different graphs. This can also be seen in the Hasse diagram, which represents a directed graph, although the arrows are not shown here, but always run implicitly from top to bottom.}
   \label{fig:backward_canonify_problematic}
 \end{figure}
-
-% schreibe irgenwo: Hasse-Diagram oben größer, unten kleiner; Pfeile implizit
 
 % Irgendwo sollte etwas mit Kongruent, nicht Aufgabe von nauty, da dual
 
@@ -625,17 +624,15 @@ The manual canonification works as follows:
 First, compute the in- and out-degree for each node.
 Then assign a hash value to each node based on these degrees, considering the recursive topological structure of adjacent nodes up to a specified depth limit.
 
-Next, sort the nodes according to their hash values. % node vs vertex, einheitlich!
-If all hash values are unique, the graph finally reaches\todo{?} its unique normal form. % umschrieben
-For two nodes with identical hash values, it is attempted to swap them.
-If the internal representation remains unchanged after swapping, the poset is considered uniquely canonified, since both graphs map to the same internal representation.
-If the internal representations differ, the graph is treated as follows:
-Let there be $l$ pairs of nodes with identical attributes.
-The algorithm iterates through all possible permutations.
-E.g. for the first pair, there are two options: either the nodes are swapped or they remain unchanged. % besser formulieren, strukturieren -> Fallunterschiedung expliziter (Fall I, Fall II), aber kein Triple
+Next, sort the nodes according to their hash values.
+If all hash values are unique, the graph is in its normal form.
+Since it is often the case in the searched posets that two nodes have the same hash values, this case was intercepted.
+Let there be $l$ pairs of nodes with identical hash values.
+Then there are $2^l$ different possible posets that could correspond to the normal form, since each of the $l$ pairs may or may not be swapped.
 Given the realistic assumption that $l$ is small, all $2^l$ permutations can be efficiently iterated.
-With the aim of obtaining values for $n = 16$, it follows that there are at most $8$ pairs, hence $l \leq 8$ always holds.
-Finally, one permutation is deterministically selected based on its internal representation, as in the case of the dual poset.
+With the aim of obtaining values for $n = 16$, it follows that there are at most $\frac{n}{2}$ pairs, hence $l \leq 8$ always holds.
+All $2^l$ posets are then calculated and one permutation is deterministically selected based on its internal representation, as in the case of the dual poset.
+It should be noted that this optimisation only works with pairs of two elements and no longer works if there are three hash values with the same value.
 
 Implementing this canonification preprocessing significantly reduces the number of cases that require \texttt{nauty}, as illustrated in \Cref{table:nauty-ratio}.
 
@@ -651,6 +648,7 @@ Implementing this canonification preprocessing significantly reduces the number 
       13  & 0                       & 30.205 & 6.808 & 1.526 & 0.467 & 0.185 & 0.114 &       \\
       14  & 0                       & 33.667 & 7.552 & 1.651 & 0.425 & 0.151 & 0.073 &       \\
       15  & 0                       & 36.390 & 8.184 & 1.678 & 0.459 & 0.132 & 0.065 & 0.041 \\
+      16  & 0                       & 39.407 & 8.805 & 1.796 & 0.467 & 0.144 & -     & -     \\
     \end{tabular}%
   }
 \end{table}
@@ -660,17 +658,11 @@ For small values of $i$, the high percentage of \texttt{nauty} calls is not crit
 
 \subsubsection{Optimizations.}
 
-\paragraph{Remaining comparisons.}
-In the final step, the minimum number of comparisons that must be removed until the unordered poset is reached is calculated for each predecessor.
-This number corresponds to the edges in the corresponding Hasse diagram.
-Based on known theoretical upper bounds, all posets containing too many comparisons can be discarded, as they cannot lead to an unordered poset with the remaining comparisons and therefore cannot be considered in the forward search.
-Since no more than one comparison can be removed in each step, these posets can be excluded.
-
-\paragraph{The table thingy.}
-As there are potentially many predecessors that cannot contribute to the solution, they are only calculated up to a maximum limit of $n_P$ elements. This is possible because a predecessor always has more or the same number of elements.
-
-Furthermore, not all predecessors are calculated, as some cannot contribute to a solution.
-As illustrated in \Cref{table:n_i_values_calculated}, the search with $n = 7$ and $i = 4$ only considers predecessors that have an `x' in the corresponding row or column. As the addition of a comparison can reduce $n$ by a maximum of $1$ and therefore $i$ by a maximum of $1$, all other predecessors can be ignored as they can never be used.
+\paragraph{Limit search space.}
+As there are potentially many predecessors that cannot contribute to the solution, these are not even calculated.
+Many posets can be excluded on the basis of $n$ and $i$.
+As illustrated in \Cref{table:n_i_values_calculated}, the search with $n = 7$ and $i = 4$ only considers predecessors that have an `x' in the corresponding row or column.
+As the addition of a comparison can reduce $n$ by a maximum of $1$ and therefore $i$ by a maximum of $1$, all other predecessors can be ignored as they can never be used.
 For example, no poset with $n = 6$ and $i = 2$ can result in a poset of size $n = 7, i = 4$ by adding a comparison.
 
 The table can be calculated by marking initial $n, i$ with an `x' and then marking recursive the entries for $n - 1, i$ and $n - 1, i - 1$ with an `x', as in each step the new element could be smaller or larger than the $i$-smallest element.
@@ -681,7 +673,7 @@ In this case, only $n = 6, i = 3$ is marked with an `x'.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
-  \caption{Possible predecessors that must be calculated for $n = 7$ and $i = 3$. All predecessors for which the corresponding field is marked with `x' must be calculated.}
+  \caption{Possible predecessors that must be calculated for $n = 7$ and $i = 4$. All predecessors for which the corresponding field is marked with `x' must be calculated.}
   \label{table:n_i_values_calculated}
   \centering
   \begin{tabular}{c|cccc}
@@ -697,25 +689,19 @@ In this case, only $n = 6, i = 3$ is marked with an `x'.
   \end{tabular}%
 \end{table}
 
+\paragraph{Remaining comparisons.}
+In the next step, the minimum number of comparisons that must be removed until the unordered poset is reached is calculated for each predecessor.
+This number corresponds to the edges in the corresponding Hasse diagram.
+Based on known theoretical upper bounds, all posets containing too many comparisons can be discarded, as they cannot lead to an unordered poset with the remaining comparisons and therefore cannot be considered in the forward search.
+Since no more than one comparison can be removed in each step, these posets can be excluded.
+
 \paragraph{Iterative deepening.}
 As the theoretical upper bounds are too high in practice, the program uses an iterative deepening approach.
 It starts with an upper bound that corresponds to the theoretical lower bound, derived by \Cref{lemma:previous_next_poset} from the smaller values for $n$ and increases this bound iteratively until a solution is finally found.
 As it is not possible to save which posets are lost due to the guessed upper bound without considerable effort, the backward search is restarted several times.
 Although results from previous rounds are not used, the search space can be considerably reduced and the program can be made more efficient.
 
-\begin{figure}[!b]
-  \centering
-  \input{figures/tikz_posets_per_level.tex}
-  \caption{Number of posets generated by the backward search for $n = 14$ depending on the number of comparisons for various $i$. Be aware of the logarithmic scale of the y-axis and that the reverse search does not add comparisons, but rather removes them.}
-  \label{fig:backward-posets-per-level}
-\end{figure}
-
-\Cref{fig:backward-posets-per-level} shows the number of backward search posets for different values of $i$.
-It is noticeable that the highest number of posets is searched for all $i$ when there are $8$ to $9$ comparisons left, with a slight tendency towards more comparisons for larger $i$.
-
-
 \paragraph{Parallelization.} \label{sec:backward:parallelisation}
-
 The backward search can be ideally parallelized by performing the calculation of the predecessors in parallel.
 The only two bottlenecks here are read access to the cache and the efficient merging of all partial results.
 
@@ -728,7 +714,7 @@ The only two bottlenecks here are read access to the cache and the efficient mer
     \textbf{number cores} & \textbf{time} & \textbf{efficiency} \\
     \hline
     $1$                   & 2h 45m        & $1.000$             \\
-    $2$                   & 1h 24m        & $0.987$             \\ % this value is super weird, but I ran the test twice -> it should be correct
+    $2$                   & 1h 24m        & $0.987$             \\ % this value is super weird, but I ran the test twice -> should be correct
     $3$                   & 1h 1m         & $0.898$             \\
     $6$                   & 31m 46s       & $0.868$             \\
     $12$                  & 17m 4s        & $0.807$             \\
@@ -744,45 +730,16 @@ This can be calculated as follows
 \]
 The higher the efficiency, the better the time scales with the number of cores.
 
-
-\subsection{Bidirectional search.} \label{sec:bidirectional}
-\todo[inline]{Weg, bzw. ausblick in future work.}
-
-\subsubsection{Theoretical usability.}
-
-In order to enable a bidirectional search, forward and backward searches are combined.
-For this purpose, the intersection of the forward and backward search was first determined.
-
+% TODO: subsection?
 \begin{figure}[!b]
   \centering
-  \input{figures/tikz_backward_forward_13_6.tex}
-  \caption{Number of posets depending on the number of comparisons for $n = 13$ and $i = 7$ (red: backward search, blue: forward search).}
-  \label{fig:backward_forward_count_13_6}
+  \input{figures/tikz_posets_per_level.tex}
+  \caption{Number of posets generated by the backward search for $n = 14$ depending on the number of comparisons for various $i$. Be aware of the logarithmic scale of the y-axis and that the reverse search does not add comparisons, but rather removes them.}
+  \label{fig:backward-posets-per-level}
 \end{figure}
 
-As shown in \Cref{fig:backward_forward_count_13_6}, the forward search for $n = 13$ and $i = 7$ searches most of the posets with $k = 8$ comparisons, while the backward search searches most of the posets with $k = 14$.
-
-Let's assume that both searches are started in parallel and run until they reach $k = 11$ comparisons.
-Due to the logarithmic scaling, this is less noticeable, but the forward search searches from $k = 0$ to $11$ comparisons $99.006\%$ of all posets to be searched in its search space.
-Similarly, the backward search searches from $k = 11$ to $23$ comparisons $99.349\%$ of its search space.
-This is very unfavorable for a bidirectional search, as there is only a small intersection of both searches.
-However, a bidirectional search has been implemented.
-
-\subsubsection{Idea.}
-
-The idea is to start both searches in parallel and to save the current depth and all posets found up to that point in the backward search in a global variable.
-If the forward search goes deeper than the global depth of the backward search, \textit{solvable} is returned if the poset has already been found by the backward search.
-Otherwise, \textit{not solvable} is returned.
-
-This approach works because the backward search iterates through all possible posets.
-If a poset is not present in the cache of the backward search, it can therefore also not be solvable in the limited number of comparisons.
-
-It should be noted that due to the limited time for the project, the backward search is started with the theoretical upper bound and not the iterative deepening approach is used, as is the case with the pure backward search. % TODO: dieser Absatz ist so naja
-As a result, this is significantly slower than the pure backward search.
-Another problem is the internal conversion between the unique canonification of the backward search and the pseudo canonification of the forward search.
-For these reasons, the bidirectional search is slower than the pure forward search in the last version of the program.
-
-Nevertheless, bidirectional search has great potential that can be exploited through further research.
+\Cref{fig:backward-posets-per-level} shows the number of backward search posets for different values of $i$.
+It is noticeable that the highest number of posets is searched for all $i$ when there are $8$ to $9$ comparisons left, with a slight tendency towards more comparisons for larger $i$.
 
 
 \section{Results}
@@ -820,6 +777,18 @@ The values $V_i(n)$ we calculated as the minimum number of comparisons needed to
 For each value we generated an algorithm that solves the problem in that number of comparisons.
 We then checked the algorithm on each of the $n!$ permutations to make sure it is correct.
 \todo[inline]{lower bounds double checked: forward and backward search coincide.}
+
+% TODO: embedd the following figure
+\begin{figure}[!b]
+  \centering
+  \input{figures/tikz_backward_forward_13_6.tex}
+  \caption{Number of posets depending on the number of comparisons for $n = 13$ and $i = 7$ (red: backward search, blue: forward search).}
+  \label{fig:backward_forward_count_13_6}
+\end{figure}
+
+As shown in \Cref{fig:backward_forward_count_13_6}, the forward search for $n = 13$ and $i = 7$ searches most of the posets with $k = 8$ comparisons, while the backward search searches most of the posets with $k = 14$.
+Due to the logarithmic scaling, this is less noticeable, but the forward search searches from $k = 0$ to $11$ comparisons $99.006\%$ of all posets to be searched in its search space.
+Similarly, the backward search searches from $k = 11$ to $23$ comparisons $99.349\%$ of its search space.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.2}
@@ -867,15 +836,11 @@ We then checked the algorithm on each of the $n!$ permutations to make sure it i
     16  & 4   & 7m 22s           & 52m 9.4s          & -                \\
     16  & 5   & 7h 33m           & 6h 48m 14.8s      & -                \\
     16  & 6   & 6d 11h 21m       & 1d 1h 26m         & -                \\
-    16  & 7   & -                & ?                 & -                \\
-    16  & 8   & -                & ?                 & -                \\
   \end{tabular}
 \end{table}
 
 \Cref{table:search_algorithms} shows the time taken to solve the selection problem.
-%The times are rounded and may not be representative as the server they were measured on was shared.
 The forward search was started with $500$ GB of RAM, and was restarted for each value of $n$ and $i$, so it does not use the cache from previous runs.
-%The forward search is single-threaded, unlike the backward search, which benefits greatly from parallelism.
 The column `Oksanen' shows the times of his program \cite{Oksanen} on our hardware.
 Oksanen's program was started with only $25$ GB because it was designed for only $400$ MB RAM.\todo{why 25Gb?}
 The numbers in the Oksanen column marked with an asterisk do not give the optimal lower bound in the publicly available version \texttt{1.6}, even though he has given an optimal algorithm on the website with the unavailable version \texttt{1.1}.\todo{Grammatik etwas holprig.}
@@ -917,6 +882,13 @@ For $n = 12$ and $i = 5$, this assumption gives a bound of $20$ comparisons, whi
     15  & 6   & $1.6 \cdot 10^9$        & $0.73 \cdot 10^9$        \\
     15  & 7   & $5.3 \cdot 10^9$        & $1.3 \cdot 10^9$         \\
     15  & 8   & $15.7 \cdot 10^9$       & $2.2 \cdot 10^9$         \\
+    \hline
+    16  & 1   & -                       & $16$                     \\
+    16  & 2   & -                       & $520$                    \\
+    16  & 3   & -                       & $62.3 \cdot 10^3$        \\
+    16  & 4   & -                       & $7.4 \cdot 10^6$         \\
+    16  & 5   & -                       & $275.3 \cdot 10^6$       \\
+    16  & 6   & -                       & $2.6 \cdot 10^9$         \\
   \end{tabular}
 \end{table}
 
@@ -930,10 +902,26 @@ Along the way we learned a lot about the problem structure and complexity, impro
 If you want to use the program to generate more optimal numbers and therefore algorithms one should have quite some time and good hardware in form of a high CPU count and as much RAM as possible (see: \Cref{sec:hardware} for our used hardware).
 Right now one should use the backward search due to the lower RAM footprint and scaling with the CPU count.
 
+
+\section{Further research}
+
 If one is interested in continuing the journey the next steps would be to add multithreading to the forward search and add the possibility of a bidirectional search.
 
+% TODO: Summarize the following paragraph
 
-\subsection{Used Soft- and Hardware.} \label{sec:hardware}
+% In order to enable a bidirectional search, forward and backward searches are combined.
+% For this purpose, the intersection of the forward and backward search was first determined.
+% Let's assume that both searches are started in parallel.
+% This is very unfavorable for a bidirectional search, as there is only a small intersection of both searches.
+% The idea is to start both searches in parallel and to save the current depth and all posets found up to that point in the backward search in a global variable.
+% If the forward search goes deeper than the global depth of the backward search, \textit{solvable} is returned if the poset has already been found by the backward search.
+% Otherwise, \textit{not solvable} is returned.
+% This approach works because the backward search iterates through all possible posets.
+% If a poset is not present in the cache of the backward search, it can therefore also not be solvable in the limited number of comparisons.
+% Nevertheless, bidirectional search has great potential that can be exploited through further research.
+
+
+\section{Used Soft- and Hardware.} \label{sec:hardware}
 
 Our results were facilitated by advancements in both hardware and software.
 All versions of the software used are listed in the \Cref{table:command_outputs}.
