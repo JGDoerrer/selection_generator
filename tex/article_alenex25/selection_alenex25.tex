@@ -29,6 +29,7 @@
 \usepackage{todonotes}
 \usepackage[capitalize]{cleveref}
 \usepackage{mathtools}
+\usepackage{booktabs}
 
 % Commands
 %! parser=off
@@ -106,6 +107,10 @@
   Our results confirm the optimality of algorithms for $n$ up to 15, and for $n=16$ where $i \le 6$.
 
 \end{abstract} % newline above is important for formatting
+
+% only for initial submission. title + abstract does not count towards 10 page limit.
+\newpage~
+\newpage
 
 \section{Motivation} \label{sec:motivation}
 
@@ -617,10 +622,11 @@ It should be noted that this optimisation only works with pairs of two elements 
 Implementing this canonification preprocessing significantly reduces the number of cases that require \texttt{nauty}, as illustrated in \Cref{table:nauty-ratio}.
 
 \begin{table}[!t]
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.1}
   \caption{Percentage of canonification requiring \texttt{nauty} for variable $n$ and $i$, where lower values are preferable.}
   \label{table:nauty-ratio}
   \centering
+  \small
   \resizebox{\columnwidth}{!}{%
     \begin{tabular}{c|cccccccc}
       $n$ & \multicolumn{8}{c}{$i$}                                                          \\
@@ -652,10 +658,11 @@ It must be noted that $n = 6, i = 4$ does not exist, as the dual poset would be 
 In this case, only $n = 6, i = 3$ is marked with an `x'.
 
 \begin{table}[!t]
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.1}
   \caption{Possible predecessors that must be calculated for $n = 7$ and $i = 4$. All predecessors for which the corresponding field is marked with `x' must be calculated.}
   \label{table:n_i_values_calculated}
   \centering
+  \small
   \begin{tabular}{c|cccc}
     $n$ & \multicolumn{4}{c}{$i$}             \\
         & 1                       & 2 & 3 & 4 \\ \hline
@@ -686,10 +693,11 @@ The backward search can be ideally parallelized by performing the calculation of
 The only two bottlenecks here are read access to the cache and the efficient merging of all partial results.
 
 \begin{table}[!t]
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.1}
   \caption{Efficiency of parallelism for $n = 13, i = 7$}
   \label{table:backward-parallel}
   \centering
+  \small
   \begin{tabular}{l|r|l}
     \textbf{number cores} & \textbf{time} & \textbf{efficiency} \\
     \hline
@@ -727,10 +735,11 @@ It is noticeable that the highest number of posets is searched for all $i$ when 
 % Warum ist unser Programm korrekt -> unabh. vor- und rück suche., Algo-Test, ...
 
 \begin{table}[!t]
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.1}
   \caption{The minimum number of comparisons needed to select the $i$-th smallest of $n$ elements.\todo[inline]{Indicate new values.}}
   \label{table:num-comparisons}
   \centering
+  \small
   \begin{tabular}{c|cccccccc}
     $n$ & \multicolumn{8}{c}{$i$}                                              \\
         & 1                       & 2  & 3  & 4  & 5  & 6  & 7       & 8       \\ \hline
@@ -771,10 +780,11 @@ Due to the logarithmic scaling, this is less noticeable, but the forward search 
 Similarly, the backward search searches from $k = 11$ to $23$ comparisons $99.349\%$ of its search space.
 
 \begin{table}[!t]
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.1}
   \caption{Execution times of different search methods. Times marked with an asterisk gave a non-optimal result \todo[inline]{15, 8 is an old value from the forward search}}
   \label{table:search_algorithms}
   \centering
+  \small
   \begin{tabular}{c|c|l|l|l}
     $n$ & $i$ & \textbf{Forward} & \textbf{Backward} & \textbf{Oksanen} \\
     \hline
@@ -831,10 +841,11 @@ Furthermore, we can disprove Gasarch's~\cite{Gasarch1996} conjecture that ``pair
 For $n = 12$ and $i = 5$, this assumption gives a bound of $20$ comparisons, which does not correspond to the optimal bound of $19$ comparisons.\todo{Das steht bei Oksanen.}
 
 \begin{table}[!t]
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.1}
   \caption{Number of posets stored in the cache after the corresponding search}
   \label{table:cache_entries}
   \centering
+  \small
   \begin{tabular}{c|c|r|r}
     $n$ & $i$ & \textbf{Forward Search} & \textbf{Backward Search} \\
     \hline
@@ -909,10 +920,11 @@ For hardware, we employed two Intel Xeon CPUs, each equipped with $12$ cores ($2
 The latest version of our software can be found on github (\url{https://github.com/JGDoerrer/selection_generator}).
 
 \begin{table}[!t]
-  \renewcommand{\arraystretch}{1.2}
+  \renewcommand{\arraystretch}{1.1}
   \caption{Specific versions on the software used.}
   \label{table:command_outputs}
   \centering
+  \small
   \begin{tabular}{l|l}
     \textbf{Command}  & \textbf{Output}                   \\ \hline
     \texttt{rustc -V} & rustc 1.77.2                      \\ \hline
