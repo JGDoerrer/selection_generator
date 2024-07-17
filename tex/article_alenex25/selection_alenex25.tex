@@ -878,6 +878,8 @@ Additionally we measured the number of posets that were stored in the cache afte
   \end{tabular}
 \end{table}
 
+To evaluate the potential of the compatible solutions heuristic we determined the maximum number of compatible sulutions encountered for a given cost for $n\leq 14$ and used that as a boundary in a subsequent run. For $n=14,i=7$ this resulted in a time of $1h21m$ with $147\cdot10^6$ posets in cache, an improvement by factors $11$ and $6.3$ respectively.
+
 
 \section{Conclusion and Open Questions}
 
@@ -981,5 +983,12 @@ For hardware, we employed two Intel Xeon E5-2650v4 CPUs (2.20\,GHz, 12 Cores/24 
     \texttt{uname -a} & Linux plankton 5.15.0-105-generic \\
   \end{tabular}
 \end{table}
+
+\section{Distribution by Compatible Solutions}
+
+\begin{figure}[h]
+  \includegraphics*[scale=.5]{figures/compatible_cost_relation.png}
+  \caption*{Cost distribution for all instances solved in the forward search for $n\leq 14$, excluding $i\leq 2$, purple are low $i$, yellow high. $\log_2$ in red.}
+\end{figure}
 
 \end{document}
