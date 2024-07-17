@@ -238,7 +238,7 @@ We prove the following lemma showing the cost of selection does not change when 
 \subsection{Compatible Solutions.}
 Suppose we have a solved poset $P$ with a unique $i$-th smallest element $e$.
 Then we know precisely the set of elements that are smaller than $e$ as well as the set of elements that are larger than $e$.
-This observation leads us to the notion of compatible solutions, which is a partition of a poset into three sets: the set containing the $i$-th smallest element, the set of $i - 1$ smaller elements and the set of $n - i$ larger elements.
+This observation leads us to the notion of compatible solutions, which, similar to linear extensions, is one such partition compatible with the current relation.
 
 \begin{definition}%[Compatible Solution]
   The solved problem $(S, i)$ is a \textbf{compatible solution} of the problem $(R, i)$ if $(a, b)\in S\implies (b, a)\notin R$ and $S$ has no relations other than the $n - 1$ relations involving the $i$-th smallest element and the ones resulting from application of transitivity to the former.
@@ -325,7 +325,7 @@ Our preliminary tests showed that the performance gained by computing an approxi
 \paragraph{Maximum Depth.}
 We use the minimax search algorithm for cutting off unpromising branches.
 While searching the possible comparisons of a poset, we keep track of the currently best result.
-The remaining comparisons are searched with a limitied depth such that only solutions, which improve the current best are found.
+The remaining comparisons are searched with a limitied depth such that only solutions which improve the current best are found.
 At the start of a search, the possible comparisons are sorted using a heuristic so that the most promising comparisons are searched for first.
 
 \begin{figure}[!b]
@@ -359,10 +359,8 @@ As an example, the unordered poset $(n,i,\emptyset)$ has $n \cdot \binom{n - 1}{
 \paragraph{Free Comparison.}
 The second heuristic attempts to reduce the size of the searched subtree by adding a `useful' comparison to eliminate elements faster.
 Explicitly, it searches for unordered elements $u$ and $v$ such that $u$ has as many elements less than it as possible and $v$ as many as possible greater and adds $u < v$ to the poset.
-If there is no $u$ with at least two elements less than it or no $v$ with at least $2$ greater, the algorithm aborts the heuristic and resumes regular search.
-Otherwise, the new poset is then searched for a solution using the forward search described above without reducing the number of allowed comparisons.
+Then, the new poset is then searched for a solution using the forward search described above without reducing the number of allowed comparisons.
 If the new poset is not solvable, we estimate the original is not solvable either.
-This heuristic can be slightly improved by maximizing the number of elements smaller than the maximal element and greater than the minimal element.
 This is admissible because having a comparison added `for free' does not make the poset harder to solve.
 
 \subsection{Backward Search.} \label{sec:backward}
@@ -899,8 +897,8 @@ We believe that higher $n$ are realistic with new algorithmic ideas and conclude
 \paragraph{Bidirectional Search.}
 The classical meet in the middle approach for a bidirectional search will not work for the selection problem.
 This is illustrated in \Cref{fig:backward_forward_count_13_6}:
-assume the two searches meet at the point where $11$ comparisons have been performed and $12$ remain.
-When reaching the meeting point the forward search has explored $99.006\%$ of its search space and the backward has explored $99.349\%$ of its search space.
+assume the two searches meet at the point where $11$ comparisons have been performed.
+Then at the meeting point, both have alread covered $99\%$ of their search space.
 %Thus at the meeting point both searches have already explored most of their search space.
 
 \begin{figure}[!b]
@@ -910,12 +908,9 @@ When reaching the meeting point the forward search has explored $99.006\%$ of it
   \label{fig:backward_forward_count_13_6}
 \end{figure}
 
-An alternative approach to the bidirectional search would be to first run the backward search, but restrict it to problems with specific properties.
-E.g.\ enumerate only those problems $(P, i)$ in $A_k$ with $\mathcal{C}(P, i) \ge \alpha \cdot 2^k$ for some $\alpha \in [0, 1]$.
-Then the subsequent forward search can look up problems with a large number of compatible solutions, which are presumably hard to solve, in the results of the backward search, and only has to explore problems with a small number of linear extensions, which we estimate to be easier to solve.
+An alternative approach to the bidirectional search would be to first run the backward search, but restrict it to problems with a large number of compatible solutions, which are presumably hard to solve, so the subsequent forward search only has to explore problems with a small number of compatible solutions, which we estimate to be easier to solve.
 
-The number of compatible solutions might not be the best metric to separate backward and forward search.
-We observed that the number of comparisons required to solve a selection problem is typically about twice the lower bound obtained from the number of compatible solutions.
+We observed that the number of comparisons required to solve a selection problem is typically about twice the lower bound obtained from the number of compatible solutions minus a constant.
 This makes sense, as lower bound it gives for the median is $n + \smallO(n)$, which is far from the best known asymptotic lower bound $2n + \smallO(n)$.
 
 \paragraph{Improved Weight Function.}
