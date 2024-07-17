@@ -325,10 +325,7 @@ impl<'a> Search<'a> {
         max_comparisons: u8,
         depth: u8,
     ) -> Option<bool> {
-        let compatible_posets = poset.num_compatible_posets();
-        if compatible_posets == 0 || (max_comparisons as u32) < compatible_posets.ilog2() {
-            return Some(false);
-        }
+        
 
         let (less, greater) = poset.calculate_relations();
 
