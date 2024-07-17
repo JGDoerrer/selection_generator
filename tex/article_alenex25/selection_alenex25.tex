@@ -726,11 +726,10 @@ It is noticeable that the highest number of posets is searched for all $i$ when 
 
 \section{Results}
 
-% Warum ist unser Programm korrekt -> unabh. vor- und rück suche., Algo-Test, ...
-
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
-  \caption{The minimum number of comparisons needed to select the $i$-th smallest of $n$ elements.\todo[inline]{Indicate new values.}}
+  \caption{The minimum number of comparisons needed to select the $i$-th smallest of $n$ elements.
+  Values resulting from our work are printed in bold.\todo[inline]{Where to the upper bounds for the ranges come from?}}
   \label{table:num-comparisons}
   \centering
   \small
@@ -750,28 +749,17 @@ It is noticeable that the highest number of posets is searched for all $i$ when 
     11  & 10                      & 13 & 15 & 17 & 18 & 18                     \\
     12  & 11                      & 14 & 17 & 18 & 19 & 20                     \\
     13  & 12                      & 15 & 18 & 20 & 21 & 22 & 23                \\
-    14  & 13                      & 16 & 19 & 21 & 23 & 24 & 25                \\
-    15  & 14                      & 17 & 20 & 23 & 24 & 26 & 26      & 27      \\
-    16  & 15                      & 18 & 21 & 24 & 26 & 27 & 28 - 33 & 28 - 36 \\
+    14  & 13                      & 16 & 19 & 21 & 23 & 24 & \textbf{25}                \\
+    15  & 14                      & 17 & 20 & 23 & \textbf{24} & \textbf{26} & \textbf{26}      & \textbf{27}      \\
+    16  & 15                      & 18 & \textbf{21} & \textbf{24} & \textbf{26} & \textbf{27} & \textbf{28} - 33 & \textbf{28} - 36 \\
   \end{tabular}
 \end{table}
 
 The values $V_i(n)$ we calculated as the minimum number of comparisons needed to solve the selection problem for $n \leq 16$ are shown in \Cref{table:num-comparisons}.
-For each value we generated an algorithm that solves the problem in that number of comparisons.
-We then checked the algorithm on each of the $n!$ permutations to make sure it is correct.
-\todo[inline]{lower bounds double checked: forward and backward search coincide.}
-
-% TODO: embedd the following figure
-\begin{figure}[!b]
-  \centering
-  \input{figures/tikz_backward_forward_13_6.tex}
-  \caption{Number of posets depending on the number of comparisons for $n = 13$ and $i = 7$ (red: backward search, blue: forward search).}
-  \label{fig:backward_forward_count_13_6}
-\end{figure}
-
-As shown in \Cref{fig:backward_forward_count_13_6}, the forward search for $n = 13$ and $i = 7$ searches most of the posets with $k = 8$ comparisons, while the backward search searches most of the posets with $k = 14$.
-Due to the logarithmic scaling, this is less noticeable, but the forward search searches from $k = 0$ to $11$ comparisons $99.006\%$ of all posets to be searched in its search space.
-Similarly, the backward search searches from $k = 11$ to $23$ comparisons $99.349\%$ of its search space.
+To verify that the values we calculated are upper bounds, we checked the algorithm certifying each number on each of the $n!$ permutations to ensure it is correct.
+Certifying the correctness of the lower bound is near impossible.
+We computed every number twice, using two different algorithms, the forward and the backward search.
+Thus it is unlikely, that the results are wrong due to a coding error.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
@@ -823,16 +811,16 @@ Similarly, the backward search searches from $k = 11$ to $23$ comparisons $99.34
   \end{tabular}
 \end{table}
 
-\Cref{table:search_algorithms} shows the time taken to solve the selection problem.
+\Cref{table:search_algorithms} compares the time the different algorithms took to find an optimal selection algorithm.
+We ran all algorithms on a machine with two Intel Xeon CPUs, each equipped with $12$ cores ($24$ threads), and a total of $768$ GB of RAM.
 The forward search was started with $500$ GB of RAM, and was restarted for each value of $n$ and $i$, so it does not use the cache from previous runs.
-The column `Oksanen' shows the times of his program \cite{Oksanen} on our hardware.
+The column `Oksanen' shows the times of his program~\cite{Oksanen} on our hardware.
 Oksanen's program was started with only $25$ GB because it was designed for only $400$ MB RAM.\todo{why 25Gb?}
-The numbers in the Oksanen column marked with an asterisk do not give the optimal lower bound in the publicly available version \texttt{1.6}, even though he has given an optimal algorithm on the website with the unavailable version \texttt{1.1}.\todo{Grammatik etwas holprig.}
-
+The numbers marked with an asterisk indicate that the publicly available version \texttt{1.6} of Oksanen's program did not find an optimal algorithm, even though he has given an optimal algorithm on his website with the unavailable version \texttt{1.1}.
 Additionally we measured the number of posets that were stored in the cache after the calculation, which can be seen in \Cref{table:cache_entries}.
 
-Furthermore, we can disprove Gasarch's~\cite{Gasarch1996} conjecture that ``pair-forming algorithms'', in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
-For $n = 12$ and $i = 5$, this assumption gives a bound of $20$ comparisons, which does not correspond to the optimal bound of $19$ comparisons.\todo{Das steht bei Oksanen.}
+%Furthermore, we can disprove Gasarch's~\cite{Gasarch1996} conjecture that ``pair-forming algorithms'', in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
+%For $n = 12$ and $i = 5$, this assumption gives a bound of $20$ comparisons, which does not correspond to the optimal bound of $19$ comparisons.\todo{Das steht bei Oksanen.}
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
@@ -887,13 +875,24 @@ Along the way we learned a lot about the problem structure and complexity, impro
 If you want to use the program to generate more optimal numbers and therefore algorithms one should have quite some time and good hardware in form of a high CPU count and as much RAM as possible (see: \Cref{sec:hardware} for our used hardware).
 Right now one should use the backward search due to the lower RAM footprint and scaling with the CPU count.
 
+The latest version of our software can be found on github (\url{https://github.com/JGDoerrer/selection_generator}).
 
 \section{Further research}
 
 If one is interested in continuing the journey the next steps would be to add multithreading to the forward search and add the possibility of a bidirectional search.
 
 % TODO: Summarize the following paragraph
+% TODO: embedd the following figure
+\begin{figure}[!b]
+  \centering
+  \input{figures/tikz_backward_forward_13_6.tex}
+  \caption{Number of posets depending on the number of comparisons for $n = 13$ and $i = 7$ (red: backward search, blue: forward search).}
+  \label{fig:backward_forward_count_13_6}
+\end{figure}
 
+As shown in \Cref{fig:backward_forward_count_13_6}, the forward search for $n = 13$ and $i = 7$ searches most of the posets with $k = 8$ comparisons, while the backward search searches most of the posets with $k = 14$.
+Due to the logarithmic scaling, this is less noticeable, but the forward search searches from $k = 0$ to $11$ comparisons $99.006\%$ of all posets to be searched in its search space.
+Similarly, the backward search searches from $k = 11$ to $23$ comparisons $99.349\%$ of its search space.
 % In order to enable a bidirectional search, forward and backward searches are combined.
 % For this purpose, the intersection of the forward and backward search was first determined.
 % Let's assume that both searches are started in parallel.
@@ -905,27 +904,6 @@ If one is interested in continuing the journey the next steps would be to add mu
 % If a poset is not present in the cache of the backward search, it can therefore also not be solvable in the limited number of comparisons.
 % Nevertheless, bidirectional search has great potential that can be exploited through further research.
 
-
-\section{Used Soft- and Hardware.} \label{sec:hardware}
-
-Our results were facilitated by advancements in both hardware and software.
-All versions of the software used are listed in the \Cref{table:command_outputs}.
-For hardware, we employed two Intel Xeon CPUs, each equipped with $12$ cores ($24$ threads), and a total of $768$ GB of RAM.
-The latest version of our software can be found on github (\url{https://github.com/JGDoerrer/selection_generator}).
-
-\begin{table}[!t]
-  \renewcommand{\arraystretch}{1.1}
-  \caption{Specific versions on the software used.}
-  \label{table:command_outputs}
-  \centering
-  \small
-  \begin{tabular}{l|l}
-    \textbf{Command}  & \textbf{Output}                   \\ \hline
-    \texttt{rustc -V} & rustc 1.77.2                      \\ \hline
-    \texttt{clang -v} & Ubuntu clang version 14.0.0-1     \\ \hline
-    \texttt{uname -a} & Linux plankton 5.15.0-105-generic \\
-  \end{tabular}
-\end{table}
 
 \section*{Acknowledgments}
 \todo[inline]{tbd}
@@ -956,6 +934,27 @@ This is also the optimal algorithm for $i = 3$ and $n = 5$.
 \todo[inline]{Details on how potential predecessors are computed (especially regarding transitive relations).}
 
 \todo[inline]{Approximate normal form for forward search.}
-  
 
+
+
+\section{Used Soft- and Hardware.} \label{sec:hardware}
+
+Our results were facilitated by advancements in both hardware and software.
+All versions of the software used are listed in the \Cref{table:command_outputs}.
+For hardware, we employed two Intel Xeon E5-2650v4 CPUs (2.20\,GHz, 12 Cores/24 Threads, 30\,MB L3-Cache per CPU), and a total of $768$ GB of RAM.
+
+\begin{table}[!t]
+  \renewcommand{\arraystretch}{1.1}
+  \caption{Specific versions on the software used.}
+  \label{table:command_outputs}
+  \centering
+  \small
+  \begin{tabular}{l|l}
+    \textbf{Command}  & \textbf{Output}                   \\ \hline
+    \texttt{rustc -V} & rustc 1.77.2                      \\ \hline
+    \texttt{clang -v} & Ubuntu clang version 14.0.0-1     \\ \hline
+    \texttt{uname -a} & Linux plankton 5.15.0-105-generic \\
+  \end{tabular}
+\end{table}
+  
 \end{document}
