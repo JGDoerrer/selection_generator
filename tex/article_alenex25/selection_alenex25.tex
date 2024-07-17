@@ -54,6 +54,11 @@
 \newtheorem{observation}{Observation}[section]
 \newtheorem{remark}{Remark}[section]
 
+% \newcommand{\projectURL}[0]{https://github.com/JGDoerrer/selection_generator}
+% \newcommand{\projectServer}[0]{GitHub}
+
+\newcommand{\projectURL}[0]{https://drive.google.com/file/d/117g3E-0LrnQKdUrKN9jyYhDGjvKM81M1} % todo: final version
+\newcommand{\projectServer}[0]{Drive} %todo: final version
 
 \bibliographystyle{plainurl}
 
@@ -873,18 +878,18 @@ For $n=14,i=7$ this resulted in a time of 1h~21m with $147\cdot10^6$ posets in c
 
 \section{Conclusion and Open Questions}
 
-%Using computer search based on the work of Oksanen we were able to write our own version of a search program for selecting the $i$-th element of a list of $n$ elements (see: \href{https://github.com/JGDoerrer/selection_generator}{Github}) and not only confirming the found solutions of Oksanen for the problem but also improving some entries (e.g. $n = 15, i = 5$).
+% Using computer search based on the work of Oksanen we were able to write our own version of a search program for selecting the $i$-th element of a list of $n$ elements (see: \href{\projectURL}{\projectServer}) and not only confirming the found solutions of Oksanen for the problem but also improving some entries (e.g. $n = 15, i = 5$).
 %Further we added some more numbers and therefore algorithms to \Cref{table:num-comparisons} for higher $n$ and $i$.
 
 As stated in the motivation before: the road is better than the inn.
-Along the way we improved the forward search using a heuristic based on compatible solutions and evaluated a new algorithmic approach -- the backward search coming to a final conclusion that both are valid.
+Along the way we improved the forward search using a heuristic based on compatible solutions and evaluated a new algorithmic approach -- the backward search coming to a final conclusion that both are valid (see: \href{\projectURL}{\projectServer}).
 %If you want to use the program to generate more optimal numbers and therefore algorithms one should have quite some time and good hardware in form of a high CPU count and as much RAM as possible (see: \Cref{sec:hardware} for our used hardware).
 %Right now one should use the backward search due to the lower RAM footprint and scaling with the CPU count.
 %
-%The latest version of our software can be found on github (\url{https://github.com/JGDoerrer/selection_generator}).
 Between the structural constraints of our algorithms and the available hardware, $n=16$ is likely the limit of feasible calculation for the current state.
 %but with speedup in orders of magnitude even towards the end of development 
 We believe that higher $n$ are realistic with new algorithmic ideas and conclude this work by talking about promising directions for further research.
+The latest version of our software can be found on \projectServer~(\url{\projectURL}).
 
 \paragraph{Bidirectional Search.}
 The classical meet in the middle approach for a bidirectional search will not work for the selection problem.
