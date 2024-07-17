@@ -691,16 +691,21 @@ The only two bottlenecks here are read access to the cache and the efficient mer
   \label{table:backward-parallel}
   \centering
   \small
-  \begin{tabular}{l|r|l}
-    \textbf{number cores} & \textbf{time} & \textbf{efficiency} \\
-    \hline
-    $1$                   & 2h 45m        & $1.000$             \\
-    $2$                   & 1h 24m        & $0.987$             \\ % this value is super weird, but I ran the test twice -> should be correct
-    $3$                   & 1h 1m         & $0.898$             \\
-    $6$                   & 31m 46s       & $0.868$             \\
-    $12$                  & 17m 4s        & $0.807$             \\
-    $24$                  & 9m 9s         & $0.752$             \\
+  \begin{tabular}{l|rrrrrr}
+    \textbf{cores} & $1$ & $2$                   &$3$                   & $6$                   & $12$                  & $24$                  \\\hline
+    \textbf{time} (m) & 165        & 84        & 64         & 32       & 17        & 9        \\\hline
+    \textbf{efficiency} & $1.00$  &  $0.99$   & $0.90$   & $0.87$   &  $0.81$      &  $0.75$  
   \end{tabular}
+%  \begin{tabular}{l|r|l}
+%    \textbf{number cores} & \textbf{time} & \textbf{efficiency} \\
+%    \hline
+%    $1$                   & 2h 45m        & $1.000$             \\
+%    $2$                   & 1h 24m        & $0.987$             \\ % this value is super weird, but I ran the test twice -> should be correct
+%    $3$                   & 1h 1m         & $0.898$             \\
+%    $6$                   & 31m 46s       & $0.868$             \\
+%    $12$                  & 17m 4s        & $0.807$             \\
+%    $24$                  & 9m 9s         & $0.752$             \\
+%  \end{tabular}
 \end{table}
 
 As shown in \Cref{table:backward-parallel} for $n = 13$ and $i = 7$, it can be seen that the backward search scales well with the number of cores.
