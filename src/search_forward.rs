@@ -21,6 +21,8 @@ use crate::{
     utils::format_duration,
 };
 
+const MAX_COMPATIBLE: [usize; 30] = [0, 2, 4, 8, 14, 23, 34, 52, 80, 124, 158, 236, 328, 472, 672, 948, 1365, 1956, 2790, 3960, 5544, 7194, 10296, 12771, 18018, 1 << 25, 1 << 26, 1 << 27, 1 << 28, 1 << 29];
+
 pub struct Search<'a> {
     n: u8,
     i: u8,
@@ -326,7 +328,7 @@ impl<'a> Search<'a> {
         depth: u8,
     ) -> Option<bool> {
         let compatible_posets = poset.num_compatible_posets();
-        if compatible_posets == 0 || (max_comparisons as u32) < compatible_posets.ilog2() {
+        if compatible_posets == 0 || MAX_COMPATIBLE[max_comparisons as usize] < compatible_posets {
             return Some(false);
         }
 
