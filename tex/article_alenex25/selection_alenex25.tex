@@ -327,7 +327,6 @@ We use the minimax search algorithm for cutting off unpromising branches.
 While searching the possible comparisons of a poset, we keep track of the currently best result.
 The remaining comparisons are searched with a limitied depth such that only solutions, which improve the current best are found.
 At the start of a search, the possible comparisons are sorted using a heuristic so that the most promising comparisons are searched for first.
-\todo[inline]{This is alpha-beta-pruning? This might be a good place too talk about the iterative deepening as well.}
 
 \begin{figure}[!b]
   \centering
@@ -868,16 +867,18 @@ Additionally we measured the number of posets that were stored in the cache afte
 
 \section{Conclusion and Open Questions}
 
-Using computer search based on the work of Oksanen we were able to write our own version of a search program for selecting the $i$-th element of a list of $n$ elements (see: \href{https://github.com/JGDoerrer/selection_generator}{Github}) and not only confirming the found solutions of Oksanen for the problem but also improving some entries (e.g. $n = 15, i = 5$).
-Further we added some more numbers and therefore algorithms to \Cref{table:num-comparisons} for higher $n$ and $i$.
+%Using computer search based on the work of Oksanen we were able to write our own version of a search program for selecting the $i$-th element of a list of $n$ elements (see: \href{https://github.com/JGDoerrer/selection_generator}{Github}) and not only confirming the found solutions of Oksanen for the problem but also improving some entries (e.g. $n = 15, i = 5$).
+%Further we added some more numbers and therefore algorithms to \Cref{table:num-comparisons} for higher $n$ and $i$.
+
 As stated in the motivation before: the road is better than the inn.
-Along the way we learned a lot about the problem structure and complexity, improved our forward and backward search algorithms coming to a final conclusion that both are valid.
-If you want to use the program to generate more optimal numbers and therefore algorithms one should have quite some time and good hardware in form of a high CPU count and as much RAM as possible (see: \Cref{sec:hardware} for our used hardware).
-Right now one should use the backward search due to the lower RAM footprint and scaling with the CPU count.
-
-The latest version of our software can be found on github (\url{https://github.com/JGDoerrer/selection_generator}).
-
-We conclude this work by talking about promising direction for further research in this area.
+Along the way we improved the forward search using a heuristic based on compatible solutions and evaluated a new algorithmic approach -- the backward search coming to a final conclusion that both are valid.
+%If you want to use the program to generate more optimal numbers and therefore algorithms one should have quite some time and good hardware in form of a high CPU count and as much RAM as possible (see: \Cref{sec:hardware} for our used hardware).
+%Right now one should use the backward search due to the lower RAM footprint and scaling with the CPU count.
+%
+%The latest version of our software can be found on github (\url{https://github.com/JGDoerrer/selection_generator}).
+Between the structural constraints of our algorithms and the available hardware, $n=16$ is likely the limit of feasible calculation for the current state.
+%but with speedup in orders of magnitude even towards the end of development 
+We believe that higher $n$ are realistic with new algorithmic ideas and conclude this work by talking about promising directions for further research.
 
 \paragraph{Bidirectional Search.}
 The classical meet in the middle approach for a bidirectional search will not work for the selection problem.
@@ -905,7 +906,7 @@ This makes sense, as lower bound it gives for the median is $n + \smallO(n)$, wh
 A better lower bound can be obtained if instead of just counting the compatible solutions we assign a weight to each solution.
 It is relatively easy to create a weight function that leads to a lower bound of $1.5n + \smallO(n)$ for the median.
 We also tried to create a weight function, that mimics the techniques used to obtain the $2n + \smallO(n)$ bound in~\cite{bent1985finding}.
-However, that lead to a negative $4\sqrt{n}$ term in the resulting lower bound, cancelling out any improvement over just counting the compatible solutions.
+However, that lead to a negative $4\sqrt{n}$ term in the resulting lower bound, for $n \le 16$ cancelling out any improvement over just counting the compatible solutions.
 
 \paragraph{Yao's conjecture.}
 Yao conjectured that finding the $i$-th smallest of $n$ elements is at least as hard as finding an $n$-element subset $S$ of $m$ elements, where $m > n$, and an element $s \in S$ such that $s$ ist the $i$-th smallest element in $S$~\cite{yao1974lower}.
