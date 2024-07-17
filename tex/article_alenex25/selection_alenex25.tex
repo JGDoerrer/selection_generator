@@ -755,6 +755,15 @@ It is noticeable that the highest number of posets is searched for all $i$ when 
 \end{table}
 
 The values $V_i(n)$ we calculated as the minimum number of comparisons needed to solve the selection problem for $n \leq 16$ are shown in \Cref{table:num-comparisons}.
+We are able to confirm most of the values computed by Oksanen~\cite{Oksanen}.
+In particular $V_5(12) = 19$ which is a counter-example to a conjecture of Gasarch~\cite{Gasarch1996} that the optimum can be realized using a ``pair-forming algorithm'', in which the first comparison of any singleton is with another singleton (in this instance, the best pair-forming algorithm requires 20 comparisons).
+The values printed in bold have not been known previously.
+For $V_7(14)$, $V_6(15)$, $V_7(15)$ and $V_8(15)$ only a range has been known before.
+For $V_5(15)$ Oksanen gives a wrong value of $25$ on his website~\cite{Oksanen}.
+Curiously enough, running his search algorithm, it produced the correct value $24$.
+The values for $n=16$ have not been computed before.
+We are able to compute all values for $i \le 6$ and give ranges for $V_7(16)$ and $V_8(16)$.
+
 To verify that the values we calculated are upper bounds, we checked the algorithm certifying each number on each of the $n!$ permutations to ensure it is correct.
 Certifying the correctness of the lower bound is near impossible.
 We computed every number twice, using two different algorithms, the forward and the backward search.
@@ -818,8 +827,7 @@ Oksanen's program was started with only $25$ GB because it was designed for only
 The numbers marked with an asterisk indicate that the publicly available version \texttt{1.6} of Oksanen's program did not find an optimal algorithm, even though he has given an optimal algorithm on his website with the unavailable version \texttt{1.1}.
 Additionally we measured the number of posets that were stored in the cache after the calculation, which can be seen in \Cref{table:cache_entries}.
 
-%Furthermore, we can disprove Gasarch's~\cite{Gasarch1996} conjecture that ``pair-forming algorithms'', in which the first comparison of any singleton with another singleton is performed, do not lead to suboptimal results.
-%For $n = 12$ and $i = 5$, this assumption gives a bound of $20$ comparisons, which does not correspond to the optimal bound of $19$ comparisons.\todo{Das steht bei Oksanen.}
+
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
