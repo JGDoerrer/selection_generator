@@ -866,7 +866,7 @@ Additionally we measured the number of posets that were stored in the cache afte
 \end{table}
 
 
-\section{Conclusion}
+\section{Conclusion and Open Questions}
 
 Using computer search based on the work of Oksanen we were able to write our own version of a search program for selecting the $i$-th element of a list of $n$ elements (see: \href{https://github.com/JGDoerrer/selection_generator}{Github}) and not only confirming the found solutions of Oksanen for the problem but also improving some entries (e.g. $n = 15, i = 5$).
 Further we added some more numbers and therefore algorithms to \Cref{table:num-comparisons} for higher $n$ and $i$.
@@ -877,32 +877,42 @@ Right now one should use the backward search due to the lower RAM footprint and 
 
 The latest version of our software can be found on github (\url{https://github.com/JGDoerrer/selection_generator}).
 
-\section{Further research}
+We conclude this work by talking about promising direction for further research in this area.
 
-If one is interested in continuing the journey the next steps would be to add multithreading to the forward search and add the possibility of a bidirectional search.
+\paragraph{Bidirectional Search.}
+The classical meet in the middle approach for a bidirectional search will not work for the selection problem.
+This is illustrated in \Cref{fig:backward_forward_count_13_6}:
+assume the two searches meet at the point where $11$ comparisons have been performed and $12$ remain.
+When reaching the meeting point the forward search has explored $99.006\%$ of its search space and the backward has explored $99.349\%$ of its search space.
+%Thus at the meeting point both searches have already explored most of their search space.
 
-% TODO: Summarize the following paragraph
-% TODO: embedd the following figure
 \begin{figure}[!b]
   \centering
-  \input{figures/tikz_backward_forward_13_6.tex}
+  \input{figures/tikz_backward_forward_13_6}
   \caption{Number of posets depending on the number of comparisons for $n = 13$ and $i = 7$ (red: backward search, blue: forward search).}
   \label{fig:backward_forward_count_13_6}
 \end{figure}
 
-As shown in \Cref{fig:backward_forward_count_13_6}, the forward search for $n = 13$ and $i = 7$ searches most of the posets with $k = 8$ comparisons, while the backward search searches most of the posets with $k = 14$.
-Due to the logarithmic scaling, this is less noticeable, but the forward search searches from $k = 0$ to $11$ comparisons $99.006\%$ of all posets to be searched in its search space.
-Similarly, the backward search searches from $k = 11$ to $23$ comparisons $99.349\%$ of its search space.
-% In order to enable a bidirectional search, forward and backward searches are combined.
-% For this purpose, the intersection of the forward and backward search was first determined.
-% Let's assume that both searches are started in parallel.
-% This is very unfavorable for a bidirectional search, as there is only a small intersection of both searches.
-% The idea is to start both searches in parallel and to save the current depth and all posets found up to that point in the backward search in a global variable.
-% If the forward search goes deeper than the global depth of the backward search, \textit{solvable} is returned if the poset has already been found by the backward search.
-% Otherwise, \textit{not solvable} is returned.
-% This approach works because the backward search iterates through all possible posets.
-% If a poset is not present in the cache of the backward search, it can therefore also not be solvable in the limited number of comparisons.
-% Nevertheless, bidirectional search has great potential that can be exploited through further research.
+An alternative approach to the bidirectional search would be to first run the backward search, but restrict it to problems with specific properties.
+E.g.\ enumerate only those problems $(P, i)$ in $A_k$ with $\mathcal{C}(P, i) \ge \alpha \cdot 2^k$ for some $\alpha \in [0, 1]$.
+Then the subsequent forward search can look up problems with a large number of compatible solutions, which are presumably hard to solve, in the results of the backward search, and only has to explore problems with a small number of linear extensions, which we estimate to be easier to solve.
+
+The number of compatible solutions might not be the best metric to separate backward and forward search.
+We observed that the number of comparisons required to solve a selection problem is typically about twice the lower bound obtained from the number of compatible solutions.
+This makes sense, as lower bound it gives for the median is $n + \smallO(n)$, which is far from the best known asymptotic lower bound $2n + \smallO(n)$.
+
+\paragraph{Improved Weight Function.}
+A better lower bound can be obtained if instead of just counting the compatible solutions we assign a weight to each solution.
+It is relatively easy to create a weight function that leads to a lower bound of $1.5n + \smallO(n)$ for the median.
+We also tried to create a weight function, that mimics the techniques used to obtain the $2n + \smallO(n)$ bound in~\cite{bent1985finding}.
+However, that lead to a negative $4\sqrt{n}$ term in the resulting lower bound, cancelling out any improvement over just counting the compatible solutions.
+
+\paragraph{Yao's conjecture.}
+Yao conjectured that finding the $i$-th smallest of $n$ elements is at least as hard as finding an $n$-element subset $S$ of $m$ elements, where $m > n$, and an element $s \in S$ such that $s$ ist the $i$-th smallest element in $S$~\cite{yao1974lower}.
+It is unclear, whether her conjecture holds.
+If true, this conjecture would imply a $2.5n + \smallO(n)$ algorithm for computing the median.
+By adapting the search algorithm we presented, one could search for counter examples to the conjecture.
+
 
 
 \section*{Acknowledgments}
