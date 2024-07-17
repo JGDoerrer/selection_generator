@@ -126,7 +126,9 @@ This presents a significant gap to the best known lower bound, which is $\left (
 For the median this lower bound is $2 \cdot n - \smallO(n)$.
 Paterson conjectured that the lower bound for selecting the median is $n \log_{4/3} 2 \approx 2.41n$~\cite{paterson1996progress}.
 
-Gasarch, Kelly and Pugh~\cite{Gasarch1996} were the first to use computer search to find optimal selection algorithms.
+For the purpose of improving these bounds towards tightness, we consider it essential to have known to be optimal reference points that general approaches can be compared against.
+
+Gasarch, Kelly and Pugh~\cite{Gasarch1996} were the first to use computer search to find optimal selection algorithms for fixed $n$ and $i$.
 Oksanen continued this line of work, improving upon the previously known lower bounds~\cite{Oksanen2006}.
 His results and the computer program he used to obtain them are available on his website~\cite{Oksanen}.
 However, the results are not published in a scientific journal.% and lack explanation.
@@ -153,7 +155,7 @@ We introduce a novel pruning criteria based on the notion of compatible solution
 
 The second approach, the backward search, is based on a different idea entirely.
 Here the start and endpoint of the search switch places.
-This type of search has not been applied to the selection problem before, and we will see, that its efficient application poses several challenges.
+This type of search has not been applied to the selection problem before, and we will see that its efficient application poses several challenges.
 
 \section{Fundamentals}
 
