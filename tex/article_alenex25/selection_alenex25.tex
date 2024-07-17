@@ -692,20 +692,10 @@ The only two bottlenecks here are read access to the cache and the efficient mer
   \centering
   \small
   \begin{tabular}{l|rrrrrr}
-    \textbf{cores} & $1$ & $2$                   &$3$                   & $6$                   & $12$                  & $24$                  \\\hline
-    \textbf{time} (m) & 165        & 84        & 64         & 32       & 17        & 9        \\\hline
-    \textbf{efficiency} & $1.00$  &  $0.99$   & $0.90$   & $0.87$   &  $0.81$      &  $0.75$  
+    \textbf{cores}      & $1$    & $2$    & $3$    & $6$    & $12$   & $24$   \\ \hline
+    \textbf{time} (m)   & 165    & 84     & 64     & 32     & 17     & 9      \\ \hline
+    \textbf{efficiency} & $1.00$ & $0.99$ & $0.90$ & $0.87$ & $0.81$ & $0.75$
   \end{tabular}
-%  \begin{tabular}{l|r|l}
-%    \textbf{number cores} & \textbf{time} & \textbf{efficiency} \\
-%    \hline
-%    $1$                   & 2h 45m        & $1.000$             \\
-%    $2$                   & 1h 24m        & $0.987$             \\ % this value is super weird, but I ran the test twice -> should be correct
-%    $3$                   & 1h 1m         & $0.898$             \\
-%    $6$                   & 31m 46s       & $0.868$             \\
-%    $12$                  & 17m 4s        & $0.807$             \\
-%    $24$                  & 9m 9s         & $0.752$             \\
-%  \end{tabular}
 \end{table}
 
 As shown in \Cref{table:backward-parallel} for $n = 13$ and $i = 7$, it can be seen that the backward search scales well with the number of cores.
@@ -829,10 +819,9 @@ We ran all algorithms on a machine with two Intel Xeon CPUs, each equipped with 
 The forward search was started with $500$ GB of RAM, and was restarted for each value of $n$ and $i$, so it does not use the cache from previous runs.
 The column `Oksanen' shows the times of his program~\cite{Oksanen} on our hardware.
 Oksanen's program was started with $25$ GB.
-It originally used $400$ MB and $25$ GB was close to a natural limit due to the use of 32 bit indices. 
+It originally used $400$ MB and $25$ GB was close to a natural limit due to the use of 32 bit indices.
 The numbers marked with an asterisk indicate that the publicly available version \texttt{1.6} of Oksanen's program did not find an optimal algorithm, even though he has given an optimal algorithm on his website with the unavailable version \texttt{1.1}.
 Additionally we measured the number of posets that were stored in the cache after the calculation, which can be seen in \Cref{table:cache_entries}.
-
 
 
 \begin{table}[!t]
@@ -878,7 +867,8 @@ Additionally we measured the number of posets that were stored in the cache afte
   \end{tabular}
 \end{table}
 
-To evaluate the potential of the compatible solutions heuristic we determined the maximum number of compatible sulutions encountered for a given cost for $n\leq 14$ and used that as a boundary in a subsequent run. For $n=14,i=7$ this resulted in a time of $1h21m$ with $147\cdot10^6$ posets in cache, an improvement by factors $11$ and $6.3$ respectively.
+To evaluate the potential of the compatible solutions heuristic we determined the maximum number of compatible solutions encountered for a given cost for $n\leq 14$ and used that as a boundary in a subsequent run.
+For $n=14,i=7$ this resulted in a time of 1h~21m with $147\cdot10^6$ posets in cache, an improvement by factors $11$ and $6.3$ respectively. % hä? Satzbau
 
 
 \section{Conclusion and Open Questions}
@@ -988,7 +978,7 @@ For hardware, we employed two Intel Xeon E5-2650v4 CPUs (2.20\,GHz, 12 Cores/24 
 
 \begin{figure}[h]
   \includegraphics*[scale=.5]{figures/compatible_cost_relation.png}
-  \caption*{Cost distribution for all instances solved in the forward search for $n\leq 14$, excluding $i\leq 2$, purple are low $i$, yellow high. $\log_2$ in red.}
+  \caption*{Cost distribution for all instances solved in the forward search for $n\leq 14$, excluding $i\leq 2$, purple are low $i$, yellow high. $\log_2$ in red.} % Satzbau
 \end{figure}
 
 \end{document}
