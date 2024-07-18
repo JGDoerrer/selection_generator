@@ -1,7 +1,7 @@
 \documentclass[twoside,leqno,twocolumn]{article}
 
 % Comment out the line below if using A4 paper size
-\usepackage[letterpaper]{geometry} % todo: is this out-commented right?
+%\usepackage[letterpaper]{geometry}
 
 \usepackage{ltexpprt}
 \usepackage{footmisc}
@@ -741,6 +741,7 @@ It is noticeable that the maximum number of problems is searched for all $i$ whe
     15  & 14                      & 17 & 20          & 23          & \textbf{24} & \textbf{26} & \textbf{26}      & \textbf{27}      \\
     16  & 15                      & 18 & \textbf{21} & \textbf{24} & \textbf{26} & \textbf{27} & \textbf{28} - 33 & \textbf{28} - 36 \\
   \end{tabular}
+  \vspace{-\baselineskip}
 \end{table}
 
 Running our computer search, we obtained the values $V_i(n)$ shown in \Cref{table:num-comparisons}.
@@ -752,6 +753,7 @@ Oksanen incorrectly lists $V_5(15)$ as 25 on his website~\cite{Oksanen}, althoug
 The values for $n = 16$ have not been computed before; we provide all values for $i \leq 6$ and ranges for $V_7(16)$ and $V_8(16)$.
 The upper bound for the ranges is $V_i(n) \le n - i + (i - 1) \lceil \log (n + 2 - i) \rceil$~\cite{hadian1969selecting}.
 
+\enlargethispage{\baselineskip}
 To validate the upper bounds of the values we calculated, we checked the algorithm certifying each number on each of the $n!$ permutations.
 Certifying the correctness of the lower bound is nearly impossible.
 We computed each number twice using two different algorithms, the forward and the backward search.
