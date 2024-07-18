@@ -128,9 +128,9 @@ We denote this cost as $V_i(n)$.
 For selecting the smallest element, optimal algorithms are known with $V_1(n) = n - 1$.
 For the second smallest element it is known that $V_2(n) = n - 2 + \lceil \log n\rceil$~\cite{Knuth1973} (all logarithms are to base $2$).
 In general, the selection problem is solvable in linear time using algorithms such as median of medians~\cite{Schoening1993} or PICK~\cite{Blum1972}.
-Looking at the special case of selecting the median $i = \nicefrac{n}{2}$, the best-known algorithm requires $2.95n$ comparisons~\cite{dor1999selecting}. % todo: best known ask alex
+Looking at the special case of selecting the median $i = \nicefrac{n}{2}$, the best known algorithm requires $2.95n$ comparisons~\cite{dor1999selecting}.
 For other values of $i$, the algorithm in~\cite{dor1999selecting} requires fewer comparisons, thus providing a general upper bound.
-This presents a significant gap compared to the best-known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$, where $H(x) = x \cdot \log \frac{1}{x} + (1 - x) \log \frac{1}{1 - x}$~\cite{bent1985finding}.
+This presents a significant gap compared to the best known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$, where $H(x) = x \cdot \log \frac{1}{x} + (1 - x) \log \frac{1}{1 - x}$~\cite{bent1985finding}.
 For the median, this lower bound is $2 \cdot n - \smallO(n)$.
 Paterson conjectured that the lower bound for selecting the median is $n \log_{4/3} 2 \approx 2.41n$~\cite{paterson1996progress}.
 
@@ -555,11 +555,11 @@ We only consider potential predecessors that are reduced and of cause by the add
   \input{figures/tikz_backward_search_tree.tex}
   \caption{Search tree for $n = 4$ and $i = 2$.
     Level $k$ contains all posets that can be solved in $k$ comparisons and contribute to the solution for the given parameters $n$ and $i$.
-    Solid arrows indicate predecessors of a poset, while dashed arrows represent the resulting posets when the reversed comparison is inserted.}
+    Solid arrows indicate predecessors, while dashed arrows represent the resulting problem when the reversed comparison is inserted.}
   \label{fig:backward-search-tree}
 \end{figure}
 
-\Cref{fig:backward-search-tree} illustrates the posets explored in the backward search for $n = 4$ and $i = 2$.
+\Cref{fig:backward-search-tree} illustrates the backward search for $n = 4$ and $i = 2$.
 
 \subsubsection{Normalform.} \label{sec:backward:normal_form}
 Note that the backward search requires a unique normal form and cannot use the approximation method applied in the forward search.
@@ -895,7 +895,7 @@ These are presumably hard to solve, so the subsequent forward search only has to
 
 There might be better metrics than the compatible solutions, as there is a significant gap between the lower bound and the cost of a problem.
 We observed that the number of comparisons required to solve a selection problem is typically about twice the lower bound obtained from the number of compatible solutions, minus a constant.
-This observation is reasonable, as the lower bound for the median is $n + \smallO(n)$, which is far from the best-known asymptotic lower bound $2n + \smallO(n)$.
+This observation is reasonable, as the lower bound for the median is $n + \smallO(n)$, which is far from the best known asymptotic lower bound $2n + \smallO(n)$.
 
 \paragraph{Improved Weight Function.}
 A better lower bound can be achieved by assigning a weight to each solution rather than merely counting compatible solutions.
