@@ -127,7 +127,7 @@ We denote this cost as $V_i(n)$.
 
 For selecting the smallest element, optimal algorithms are known with $V_1(n) = n - 1$.
 For the second smallest element it is known that $V_2(n) = n - 2 + \lceil \log n\rceil$~\cite{Knuth1973} (all logarithms are to base $2$).
-In general, the selection problem is solvable in linear time using algorithms such as median of medians~\cite{Schoening1993} or PICK~\cite{Blum1972}.
+In general, the selection problem is solvable in linear time using the median of medians algorithm~\cite{Blum1972}.
 Looking at the special case of selecting the median $i = \nicefrac{n}{2}$, the best known algorithm requires $2.95n$ comparisons~\cite{dor1999selecting}.
 For other values of $i$, the algorithm in~\cite{dor1999selecting} requires fewer comparisons, thus providing a general upper bound.
 This presents a significant gap compared to the best known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$, where $H(x) = x \cdot \log \frac{1}{x} + (1 - x) \log \frac{1}{1 - x}$~\cite{bent1985finding}.

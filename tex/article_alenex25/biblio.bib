@@ -18,14 +18,13 @@
 }
 
 @article{MCKAY201494,
-  title    = {Practical graph isomorphism, II},
+  title    = {Practical graph isomorphism, {I}{I}},
   journal  = {Journal of Symbolic Computation},
   volume   = {60},
   pages    = {94--112},
   year     = {2014},
   issn     = {0747-7171},
-  doi      = {https://doi.org/10.1016/j.jsc.2013.09.003},
-  url      = {https://www.sciencedirect.com/science/article/pii/S0747717113001193},
+  doi      = {10.1016/j.jsc.2013.09.003},
   author   = {Brendan D. McKay and Adolfo Piperno},
   keywords = {Graph isomorphism, Canonical labelling, Nauty, Traces, Partition refinement},
   abstract = {We report the current state of the graph isomorphism problem from the practical point of view. After describing the general principles of the refinement-individualization paradigm and pro ving its validity, we explain how it is implemented in several of the key implementations. In particular, we bring the description of the best known program nauty up to date and describe an innovative approach called Traces that outperforms the competitors for many difficult graph classes. Detailed comparisons against saucy, Bliss and conauto are presented.}
@@ -47,15 +46,14 @@
 }
 
 @article{Oksanen2006,
-  title    = {Searching for Selection Algorithms},
+  title    = {Searching for {S}election {A}lgorithms},
   journal  = {Electronic Notes in Discrete Mathematics},
   volume   = {27},
   pages    = {77},
   year     = {2006},
   note     = {ODSA 2006 - Conference on Optimal Discrete Structures and Algorithms},
   issn     = {1571-0653},
-  doi      = {https://doi.org/10.1016/j.endm.2006.08.064},
-  url      = {https://www.sciencedirect.com/science/article/pii/S1571065306001582},
+  doi      = {10.1016/j.endm.2006.08.064},
   author   = {Kenneth Oksanen},
   keywords = {Selection algorithms, median finding, partially ordered sets}
 }
@@ -70,36 +68,37 @@
 
 @article{Blum1972,
   author   = {Blum, Manuel and Floyd, Robert W. and Pratt, Vaughan and Rivest, Ronald L. and Tarjan, Robert E.},
-  title    = {Time Bounds for Selection},
+  title    = {Time {B}ounds for {S}election},
   year     = {1973},
   journal  = {Journal of Computer and System Sciences},
   volume   = {7},
   number   = {4},
   pages    = {448--461},
   issn     = {0022-0000},
-  doi      = {https://doi.org/10.1016/S0022-0000(73)80033-9},
-  url      = {https://www.sciencedirect.com/science/article/pii/S0022000073800339},
+  doi      = {10.1016/S0022-0000(73)80033-9},
   abstract = {The number of comparisons required to select the i-th smallest of n numbers is shown to be at most a linear function of n by analysis of a new selection algorithm—PICK. Specifically, no more than 5.4305 n comparisons are ever required. This bound is improved for extreme values of i, and a new lower bound on the requisite number of comparisons is also proved.}
 }
 
-@misc{stober2022lower,
-  title         = {Lower Bounds for Sorting 16, 17, and 18 Elements},
-  author        = {Stober, Florian and Weiß, Armin},
-  year          = {2022},
-  eprint        = {2206.05597},
-  archiveprefix = {arXiv},
-  primaryclass  = {cs.DS}
+@inproceedings{stober2022lower,
+  title        = {Lower {B}ounds for {S}orting 16, 17, and 18 {E}lements},
+  author       = {Stober, Florian and Wei{\ss}, Armin},
+  booktitle    = {2023 Proceedings of the Symposium on Algorithm Engineering and Experiments (ALENEX)},
+  pages        = {201--213},
+  year         = {2023},
+  organization = {SIAM},
+  doi          = {10.1137/1.9781611977561.ch17},
 }
 
 @article{dor1999selecting,
-  title     = {Selecting the Median},
+  title     = {Selecting the {M}edian},
   author    = {Dor, Dorit and Zwick, Uri},
   journal   = {SIAM Journal on Computing},
   volume    = {28},
   number    = {5},
   pages     = {1722--1758},
   year      = {1999},
-  publisher = {SIAM}
+  publisher = {SIAM},
+  doi       = {10.1137/S0097539795288611},
 }
 
 @article{cunto1989,
@@ -122,38 +121,48 @@
 }
 
 @inproceedings{bent1985finding,
-  title     = {Finding the Median Requires 2n Comparisons},
+  title     = {Finding the {M}edian {R}equires 2n {C}omparisons},
   author    = {Bent, Samuel W. and John, John W.},
   booktitle = {Proceedings of the Seventeenth Annual ACM Symposium on Theory of Computing},
   pages     = {213--216},
-  year      = {1985}
+  year      = {1985},
+  doi       = {10.1145/22145.22169}
 }
 
 @inproceedings{paterson1996progress,
-  title        = {Progress in selection},
+  title        = {Progress in {S}election},
   author       = {Paterson, Mike},
   booktitle    = {Scandinavian Workshop on Algorithm Theory},
   pages        = {368--379},
   year         = {1996},
-  organization = {Springer}
+  organization = {Springer},
+  doi          = {10.1007/3-540-61422-2_146},
 }
 
 @article{yao1974lower,
-  title  = {On Lower Bounds for Selection Problems},
+  title  = {On {L}ower {B}ounds for {S}election {P}roblems},
   author = {Yao, Foong Frances},
-  year   = {1974}
+  year   = {1974},
+  doi    = {1721.1/149426},
 }
 
 @article{schonhage1975finding,
-  title={Finding the median},
-  author={Sch{\"o}nhage, Arnold and Paterson, Michael S and Pippenger, Nicholas},
-  year={1975},
-  publisher={University of Warwick. Department of Computer Science}
+  title     = {Finding the {M}edian},
+  author    = {Sch{\"o}nhage, A and Paterson, M and Pippenger, N},
+  journal   = {Journal of Computer and System Sciences},
+  volume    = {13},
+  number    = {2},
+  pages     = {184--199},
+  year      = {1976},
+  publisher = {Academic Press, Inc. Orlando, FL, USA},
+  doi       = {10.1016/S0022-0000(76)80029-3},
 }
 
+
 @techreport{hadian1969selecting,
-  title={Selecting the t-th largest using binary errorless comparisons},
-  author={Hadian, Abdollah and Sobel, Milton},
-  year={1969},
-  institution={University of Minnesota}
+  title       = {Selecting the t-th {L}argest {U}sing {B}inary {E}rrorless {C}omparisons},
+  author      = {Hadian, Abdollah and Sobel, Milton},
+  year        = {1969},
+  institution = {University of Minnesota},
+  doi         = {11299/199105},
 }
