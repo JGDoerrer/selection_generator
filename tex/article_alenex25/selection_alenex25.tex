@@ -403,10 +403,9 @@ The second step is to check the second condition.
   Then, $V_j(Q) \leq V_i(P) + 1$.
 \end{lemma}
 
-% todo-final-version @Florian: Please read the lemma & proof again.
 \begin{proof} \label{proof:predecessor_calculation}
-  Since $(Q, j)$ is a predecessor of $(P, i)$, $(a, b)$ exists with $V_j(\pchild{Q}{a}{b}) =V_i(P)$ by 1. and $V_j(\pchild{Q}{b}{a}) \leq V_i(P)$ by 2..
-  With $V_j(Q) \leq \max\{V_j(\pchild{Q}{a}{b}), V_j(\pchild{Q}{b}{a})\}+1$, $V_j(Q) \leq V_i(P) + 1$ follows.
+  Since $(Q, j)$ is a predecessor of $(P, i)$, there exists a comparison $(a, b)$ such that $V_j(\pchild{Q}{a}{b}) = V_i(P)$ by condition 1, and $V_j(\pchild{Q}{b}{a}) \leq V_i(P)$ by condition 2.
+  Given that $V_j(Q) \leq \max\{V_j(\pchild{Q}{a}{b}), V_j(\pchild{Q}{b}{a})\} + 1$, it follows that $V_j(Q) \leq V_i(P) + 1$.
 \end{proof}
 
 Storing only reduced problems presents a significant challenge to predecessor enumeration.
