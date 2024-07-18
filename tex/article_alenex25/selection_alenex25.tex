@@ -1,7 +1,7 @@
 \documentclass[twoside,leqno,twocolumn]{article}
 
 % Comment out the line below if using A4 paper size
-%\usepackage[letterpaper]{geometry}
+\usepackage[letterpaper]{geometry} % todo: is this out-commented right?
 
 \usepackage{ltexpprt}
 \usepackage{hyperref}
@@ -56,8 +56,8 @@
 % \newcommand{\projectURL}[0]{https://github.com/JGDoerrer/selection_generator}
 % \newcommand{\projectServer}[0]{GitHub}
 
-\newcommand{\projectURL}[0]{https://drive.google.com/file/d/117g3E-0LrnQKdUrKN9jyYhDGjvKM81M1} % todo-final-version
-\newcommand{\projectServer}[0]{Drive} %todo-final-version
+\newcommand{\projectURL}[0]{https://drive.google.com/file/d/117g3E-0LrnQKdUrKN9jyYhDGjvKM81M1} % todo: final-version
+\newcommand{\projectServer}[0]{Drive} % todo: final-version
 
 \bibliographystyle{plainurl}
 
@@ -75,7 +75,7 @@
 
 \title{\Large Lower Bounds for the Number of Comparisons in Selection\relatedversion}
 
-\author{Josua Dörrer, Konrad Gendle, Johanna Hofmann \\ Julius von Smercek, Andreas Steding, Florian Stober} % todo-final-version
+\author{Josua Dörrer, Konrad Gendle, Johanna Hofmann \\ Julius von Smercek, Andreas Steding, Florian Stober} % todo: final-version
 
 \date{}
 
@@ -111,7 +111,7 @@
   Our results comprise optimal algorithms for $n$ up to 15, and for $n=16$ when $i \leq 6$.
   We determined the precise values $V_7(14) = 25$, $V_6(15) = V_7(15) = 26$, and $V_8(15) = 27$, where previously, only a range was known.
   We computed $V_i(16)$ for $i \leq 6$ and determined a new lower bound for $V_7(16)$ and $V_8(16)$.
-  
+
 \end{abstract} % newline above is important for formatting
 
 % only for initial submission. title + abstract does not count towards 10 page limit.
@@ -127,7 +127,7 @@ We denote this cost as $V_i(n)$.
 For selecting the smallest element, optimal algorithms are known with $V_1(n) = n - 1$.
 For the second smallest element it is known that $V_2(n) = n - 2 + \lceil \log n\rceil$~\cite{Knuth1973} (all logarithms are to base $2$).
 In general, the selection problem is solvable in linear time using algorithms such as median of medians~\cite{Schoening1993} or PICK~\cite{Blum1972}.
-Looking at the special case of selecting the median $i = \nicefrac{n}{2}$, the best-known algorithm requires $2.95n$ comparisons~\cite{dor1999selecting}. % TODO best known ask alex
+Looking at the special case of selecting the median $i = \nicefrac{n}{2}$, the best-known algorithm requires $2.95n$ comparisons~\cite{dor1999selecting}. % todo: best known ask alex
 For other values of $i$, the algorithm in~\cite{dor1999selecting} requires fewer comparisons, thus providing a general upper bound.
 This presents a significant gap compared to the best-known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$, where $H(x) = x \cdot \log \frac{1}{x} + (1 - x) \log \frac{1}{1 - x}$~\cite{bent1985finding}.
 For the median, this lower bound is $2 \cdot n - \smallO(n)$.
@@ -281,7 +281,7 @@ In this section, we describe our two main approaches to determining $V_i(n)$: th
 The forward search follows the approach used by Oksanen~\cite{Oksanen2006}.
 We enhance it by using a pruning technique based on compatible solutions.
 The backward search is a novel approach that has not been previously applied to the problem of selection.
-It allows us to further improve the computation of optimal selection algorithms.%TODO improve how
+It allows us to further improve the computation of optimal selection algorithms.% todo: improve how
 
 \subsection{Data Structures and Isomorphism Testing.}
 The key to reducing the search space is to consider only reduced problems and detect isomorphic problems.
@@ -409,7 +409,7 @@ The second step is to check the second condition.
 
 \begin{proof} \label{proof:predecessor_calculation}
   Since $(Q, j)$ is a predecessor of $(P, i)$, $(a, b)$ exists with $\reduced{(\pchild{Q}{a}{b}, j)} = (P, i)$ and $V_j(\pchild{Q}{b}{a}) \leq V_i(P)$.
-  Hence, $V_j(Q) \leq \max\{V_j(\pchild{Q}{a}{b}), V_j(\pchild{Q}{b}{a})\}+1 = V_i(P) + 1$.%todo text arrangement looks good?
+  Therefore, $V_j(Q) \leq \max\{V_j(\pchild{Q}{a}{b}), V_j(\pchild{Q}{b}{a})\} + 1 = V_i(P) + 1$.
 \end{proof}
 
 Storing only reduced problems presents a significant challenge to predecessor enumeration.
@@ -445,7 +445,6 @@ The next lemma shows that the elements removed by the reduction, which are not $
   If $(P, i)$ is a predecessor of $(Q, j)$ and $\Omega_P \setminus (\Omega_Q \cup \{a, b\}) \neq \emptyset$, there exists an element $c \in \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ such that $(P|_{\Omega_P \setminus \{c\}}, i')$, where $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n - i + 2$ and $i' = i$ otherwise, is a reduced predecessor of $(Q, j)$.
 \end{lemma}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{proof}
   Let $R = \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ be the set of elements removed by the reduction.
   It is easy to see that for every $c \in R$, the problem $(P', i')$ where $P' = P|_{\Omega_P \setminus \{c\}}$ and $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n - i + 2$ and $i' = i$ otherwise is a predecessor of $(Q, j)$:
@@ -500,7 +499,7 @@ The computation of a predecessor for a given problem $(P, i)$ comprises three st
   \item Compute predecessors with exactly one additional element that is involved in the comparison.
   \item Starting with the predecessors obtained in the preceding steps, add additional elements iteratively.
 \end{enumerate}
-We describe the individual steps below. %todo: mention only store new predecessors in $A_{k+1}$
+We describe the individual steps below. % todo: mention only store new predecessors in $A_{k+1}$
 
 \paragraph{Predecessors on the same set of elements.}
 First, we search for all posets with $n$ elements that result in poset $P$ after inserting a comparison $a < b$.
@@ -562,7 +561,6 @@ We only consider potential predecessors that are reduced and of cause by the add
 
 \subsubsection{Normalform.} \label{sec:backward:normal_form}
 Note that the backward search requires a unique normal form and cannot use the approximation method applied in the forward search.
-%If our custom canonification fails to produce a unique form, \texttt{nauty} provides the appropriate canonified form.
 The following outlines the computation of the normal form:
 
 First, determine whether $i < n - i + 1$ holds.
@@ -708,13 +706,12 @@ The higher the efficiency, the better the time scales with the number of cores.
   \label{fig:backward-posets-per-level}
 \end{figure}
 
-% todo this paragraph seems out of place
+% todo: this paragraph is out of place!
 \Cref{fig:backward-posets-per-level} shows the size of the search space of the backward search for different values of $i$.
 It is noticeable that the maximum number of problems is searched for all $i$ when there are $8$ to $9$ comparisons remaining, with a slight tendency towards more comparisons for larger $i$ for $n = 14$.
 
 \section{Results}
 
-%todo: Where do the upper bounds for the ranges come from? -> Gasarch & Knuth
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
   \caption{Minimum number of comparisons needed to select the $i$-th smallest of $n$ elements.
@@ -746,22 +743,25 @@ It is noticeable that the maximum number of problems is searched for all $i$ whe
 
 Running our computer search, we obtained the values $V_i(n)$ shown in \Cref{table:num-comparisons}.
 Our findings confirm most of the values computed by Oksanen~\cite{Oksanen}.
-Notably, $V_5(12) = 19$ contradicts a conjecture by Gasarch~\cite{Gasarch1996} that the optimum can be achieved using a ``pair-forming algorithm,'' where the first comparison of any singleton is with another singleton (in this case, the best pair-forming algorithm requires 20 comparisons).
+Notably, $V_5(12) = 19$ contradicts a conjecture by Gasarch~\cite{Gasarch1996} that the optimum can be achieved using a ``pair-forming algorithm'', where the first comparison of any singleton is with another singleton (in this case, the best pair-forming algorithm requires 20 comparisons).
 The values printed in bold were unknown previously.
 For $V_7(14)$, $V_6(15)$, $V_7(15)$, and $V_8(15)$, only a range was known prior.
 Oksanen incorrectly lists $V_5(15)$ as 25 on his website~\cite{Oksanen}, although his search algorithm does produce the correct value of 24.
 The values for $n = 16$ have not been computed before; we provide all values for $i \leq 6$ and ranges for $V_7(16)$ and $V_8(16)$.
+The theoretical upper bounds for $V_7(16)$ and $V_8(16)$ have already been determined by Gasarch~\cite{Gasarch1996}.
+
 
 To validate the upper bounds of the values we calculated, we checked the algorithm certifying each number on each of the $n!$ permutations.
 Certifying the correctness of the lower bound is nearly impossible.
 We computed each number twice using two different algorithms, the forward and the backward search.
 Thus, it is unlikely that the results are incorrect due to a coding error.
 
-%todo: 15, 8 is an old value from the forward search (without compatible posets)
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
   \caption{Execution times of different search methods.
-    Times marked with an asterisk indicate non-optimal results.}
+    Times marked with an asterisk indicate non-optimal results.
+    Note that the value for $n = 15$ and $i = 8$ for the forward search is from an older version and should run slightly faster in the current version.
+  }
   \label{table:search_algorithms}
   \centering
   \small
@@ -903,7 +903,7 @@ However, this lead to a negative $4\sqrt{n}$ term in the resulting lower bound f
 \paragraph{Yao's conjecture.}
 Yao conjectured that finding the $i$-th smallest of $n$ elements is at least as hard as finding an $n$-element subset $S$ of $m$ elements, where $m > n$, and an element $s \in S$ such that $s$ is the $i$-th smallest element in $S$~\cite{yao1974lower}.
 It is unclear whether her conjecture holds.
-If true, it would imply a $2.5n + \smallO(n)$ algorithm for computing the median.%todo cite
+If true, it would imply a $2.5n + \smallO(n)$ algorithm for computing the median. % todo: cite
 By adapting our search algorithm, one could search for counter examples to the conjecture.
 
 
@@ -919,7 +919,7 @@ By adapting our search algorithm, one could search for counter examples to the c
 
 
 \section{Example.}
-% todo: Can we make this smaller/ same style as the other figures?
+% todo: Can we make this smaller / same style as the other figures?
 \begin{figure}[!b]
   \centering
   \input{figures/tikz_example_5_2.tex}
