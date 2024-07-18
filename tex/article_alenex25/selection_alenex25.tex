@@ -4,6 +4,7 @@
 \usepackage[letterpaper]{geometry} % todo: is this out-commented right?
 
 \usepackage{ltexpprt}
+\usepackage{footmisc}
 \usepackage{hyperref}
 
 % *** MATH PACKAGES ***
@@ -75,7 +76,7 @@
 
 \title{\Large Lower Bounds for the Number of Comparisons in Selection\relatedversion}
 
-\author{Josua Dörrer, Konrad Gendle, Johanna Hofmann \\ Julius von Smercek, Andreas Steding, Florian Stober} % todo: final-version
+%\author{Josua Dörrer, Konrad Gendle, Johanna Hofmann \\ Julius von Smercek, Andreas Steding, Florian Stober} % todo: final-version
 
 \date{}
 
@@ -499,7 +500,8 @@ The computation of a predecessor for a given problem $(P, i)$ comprises three st
   \item Compute predecessors with exactly one additional element that is involved in the comparison.
   \item Starting with the predecessors obtained in the preceding steps, add additional elements iteratively.
 \end{enumerate}
-We describe the individual steps below. % todo: mention only store new predecessors in $A_{k+1}$
+Of the predecessors to the problems in $A_k$, those that actually require $k+1$ comparisons (those not in $A_k$) make up the set $A_{k+1}$.
+We describe the individual steps below.
 
 \paragraph{Predecessors on the same set of elements.}
 First, we search for all posets with $n$ elements that result in poset $P$ after inserting a comparison $a < b$.
@@ -748,8 +750,7 @@ The values printed in bold were unknown previously.
 For $V_7(14)$, $V_6(15)$, $V_7(15)$, and $V_8(15)$, only a range was known prior.
 Oksanen incorrectly lists $V_5(15)$ as 25 on his website~\cite{Oksanen}, although his search algorithm does produce the correct value of 24.
 The values for $n = 16$ have not been computed before; we provide all values for $i \leq 6$ and ranges for $V_7(16)$ and $V_8(16)$.
-The theoretical upper bounds for $V_7(16)$ and $V_8(16)$ have already been determined by Gasarch~\cite{Gasarch1996}.
-
+The upper bound for the ranges is $V_i(n) \le n - i + (i - 1) \lceil \log (n + 2 - i) \rceil$~\cite{hadian1969selecting}.
 
 To validate the upper bounds of the values we calculated, we checked the algorithm certifying each number on each of the $n!$ permutations.
 Certifying the correctness of the lower bound is nearly impossible.
@@ -757,12 +758,10 @@ We computed each number twice using two different algorithms, the forward and th
 Thus, it is unlikely that the results are incorrect due to a coding error.
 
 \begin{table}[!t]
-  \renewcommand{\arraystretch}{1.1}
-  \caption{Execution times of different search methods.
-    Times marked with an asterisk indicate non-optimal results.
-    Note that the value for $n = 15$ and $i = 8$ for the forward search is from an older version and should run slightly faster in the current version.
-  }
+  \caption{Execution times of different search methods.}
   \label{table:search_algorithms}
+\begin{minipage}{\linewidth}
+  \renewcommand{\arraystretch}{1.1}
   \centering
   \small
   \begin{tabular}{c|c|l|l|l}
@@ -771,9 +770,11 @@ Thus, it is unlikely that the results are incorrect due to a coding error.
     12  & 1   & 0.0s             & 0.0s              & 0.0s             \\
     12  & 2   & 0.0s             & 0.2s              & 0.0s             \\
     12  & 3   & 0.4s             & 0.6s              & 0.0s             \\
-    12  & 4   & 3.5s             & 0.9s              & 21.4s*           \\
-    12  & 5   & 36.1s            & 3.8s              & 4m 59s*          \\
-    12  & 6   & 1m 30s           & 18.0s             & 1.9s*            \\
+    12  & 4   & 3.5s             & 0.9s              & 21.4s\footnote{\label{fn:oksanen_incorrect}The publicly available version \texttt{1.6} of Oksanen's program did not find an optimal algorithm for $V_4(12)$, $V_5(12)$ and $V_6(12)$. On his website he gives an optimal algorithm computed with the unavailable version \texttt{1.1}.}           \\
+    12  & 5   & 36.1s            & 3.8s              & 4m 59s\footref{fn:oksanen_incorrect}
+          \\
+    12  & 6   & 1m 30s           & 18.0s             & 1.9s\footref{fn:oksanen_incorrect}
+            \\
     \hline
     13  & 1   & 0.0s             & 0.0s              & 0.0s             \\
     13  & 2   & 0.0s             & 0.5s              & 0.0s             \\
@@ -789,16 +790,16 @@ Thus, it is unlikely that the results are incorrect due to a coding error.
     14  & 4   & 35.9s            & 33.0s             & 1m 47s           \\
     14  & 5   & 17m 27s          & 7m 1s             & 6h 29m           \\
     14  & 6   & 2h 40m           & 37m 54s           & 4d 10h           \\
-    14  & 7   & 14h 40m          & 2h 17m            & >5d              \\
+    14  & 7   & 14h 40m          & 2h 17m            & >5d\footnote{\label{fn:oksanen_abort}We aborted Oksanen's program after 5 days.}   \\
     \hline
     15  & 1   & 0.0s             & 0.0s              & 0.0s             \\
     15  & 2   & 0.1s             & 3.9s              & 0.0s             \\
     15  & 3   & 2.8s             & 24.5s             & 1.4s             \\
     15  & 4   & 2m 24s           & 11m 2s            & 27m 17s          \\
     15  & 5   & 1h 12m           & 22m 11s           & 1d 5h 40m        \\
-    15  & 6   & 1d 8h 37m        & 7h 17m            & >5d              \\
-    15  & 7   & 4d 23h 37m       & 9h 45m            & >5d              \\
-    15  & 8   & 14d 1h 51m       & 1d 3h 7m          & >5d              \\
+    15  & 6   & 1d 8h 37m        & 7h 17m            & >5d\footref{fn:oksanen_abort}              \\
+    15  & 7   & 4d 23h 37m       & 9h 45m            & >5d\footref{fn:oksanen_abort}              \\
+    15  & 8   & 14d 1h 51m\footnote{The 14 days for $n=15$, $i=8$ were measured with an older version of our program. The latest version would likely be a bit faster.}      & 1d 3h 7m          & >5d\footref{fn:oksanen_abort}              \\
     \hline
     16  & 1   & 0.0s             & 0.0s              & -                \\
     16  & 2   & 0.2s             & 12.3s             & -                \\
@@ -807,14 +808,14 @@ Thus, it is unlikely that the results are incorrect due to a coding error.
     16  & 5   & 7h 33m           & 6h 48m 14.8s      & -                \\
     16  & 6   & 6d 11h 21m       & 1d 1h 26m         & -                \\
   \end{tabular}
+  \end{minipage}
 \end{table}
 
 \Cref{table:search_algorithms} compares the execution times of the different algorithms to find optimal selection algorithms.
-All experiments were conducted on a machine with two Intel Xeon CPUs, each equipped with $12$ cores ($24$ threads), and a total of $768$ GB of RAM. % todo: Hardware is also in the appendix -> twice
+All experiments were conducted on a machine with two Intel Xeon CPUs, each equipped with $12$ cores ($24$ threads), and a total of $768$ GB of RAM.
 The forward search was started with $500$ GB of RAM and restarted for each combination of $n$ and $i$, ensuring no use of cached data from previous runs to provide comparability.
 The `Oksanen' column presents execution times of Oksanen's program~\cite{Oksanen} on our hardware, started with a cache size of $25$ GB RAM.
 It was originally designed to use $400$ MB RAM and $25$ GB is close to a natural limit due to the use of 32-bit indices.
-The numbers marked with an asterisk indicate that the publicly available version \texttt{1.6} of Oksanen's program did not find an optimal algorithm, even though he has given an optimal algorithm on his website with the unavailable version \texttt{1.1}.
 Additionally, we measured the number of posets stored in the cache after the calculation, which can be found in \Cref{table:cache_entries}.
 
 
@@ -887,7 +888,7 @@ At this meeting point, both searches have already covered over $99\%$ of their s
   \label{fig:backward_forward_count_13_6}
 \end{figure}
 
-An alternative approach to the bidirectional search would be to first run the backward search, but restrict it to problems with specific properties such as a large number of compatible solutions, e.g.\ problems $(P, i)$ in $A_k$ with $\mathcal{C}(P, i) \ge \alpha \cdot 2^k$ for some $\alpha \in [0, 1]$.
+An alternative approach to the bidirectional search would be to first run the backward search, but restrict it to problems with specific properties such as having a large number of compatible solutions, e.g.\ problems $(P, i)$ in $A_k$ with $\mathcal{C}(P, i) \ge \alpha \cdot 2^k$ for some $\alpha \in [0, 1]$.
 These are presumably hard to solve, so the subsequent forward search only has to explore problems with a small number of compatible solutions, which we estimate to be easier to solve.
 
 There might be better metrics than the compatible solutions, as there is a significant gap between the lower bound and the cost of a problem.
@@ -897,13 +898,13 @@ This observation is reasonable, as the lower bound for the median is $n + \small
 \paragraph{Improved Weight Function.}
 A better lower bound can be achieved by assigning a weight to each solution rather than merely counting compatible solutions.
 It is relatively straightforward to create a weight function that leads to a lower bound of $1.5n + \smallO(n)$ for the median.
-We also tried to develop a weight function that mimics the techniques used to obtain the $2n + \smallO(n)$ bound in~\cite{bent1985finding}.
-However, this lead to a negative $4\sqrt{n}$ term in the resulting lower bound for $n \leq 16$, cancelling out any improvement over just counting compatible solutions.
+We also tried to develop a weight function mimicking the techniques used to obtain the $2n + \smallO(n)$ bound in~\cite{bent1985finding}.
+However, this lead to a negative $4\sqrt{n}$ term in the resulting lower bound for $n \leq 16$, cancelling out any improvement over counting compatible solutions.
+\enlargethispage{\baselineskip}
 
 \paragraph{Yao's conjecture.}
 Yao conjectured that finding the $i$-th smallest of $n$ elements is at least as hard as finding an $n$-element subset $S$ of $m$ elements, where $m > n$, and an element $s \in S$ such that $s$ is the $i$-th smallest element in $S$~\cite{yao1974lower}.
-It is unclear whether her conjecture holds.
-If true, it would imply a $2.5n + \smallO(n)$ algorithm for computing the median. % todo: cite
+If true, it would imply a $2.5n + \smallO(n)$ algorithm for computing the median~\cite{schonhage1975finding}.
 By adapting our search algorithm, one could search for counter examples to the conjecture.
 
 
