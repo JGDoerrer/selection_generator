@@ -26,7 +26,6 @@
 \usepackage{pgfplots}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
-\usepackage{todonotes}
 \usepackage[capitalize]{cleveref}
 \usepackage{mathtools}
 \usepackage{booktabs}
@@ -57,8 +56,8 @@
 % \newcommand{\projectURL}[0]{https://github.com/JGDoerrer/selection_generator}
 % \newcommand{\projectServer}[0]{GitHub}
 
-\newcommand{\projectURL}[0]{https://drive.google.com/file/d/117g3E-0LrnQKdUrKN9jyYhDGjvKM81M1} % todo: final version
-\newcommand{\projectServer}[0]{Drive} %todo: final version
+\newcommand{\projectURL}[0]{https://drive.google.com/file/d/117g3E-0LrnQKdUrKN9jyYhDGjvKM81M1} % todo-final-version
+\newcommand{\projectServer}[0]{Drive} %todo-final-version
 
 \bibliographystyle{plainurl}
 
@@ -76,7 +75,7 @@
 
 \title{\Large Lower Bounds for the Number of Comparisons in Selection\relatedversion}
 
-\author{Josua Dörrer, Konrad Gendle, Johanna Hofmann \\ Julius von Smercek, Andreas Steding, Florian Stober}
+\author{Josua Dörrer, Konrad Gendle, Johanna Hofmann \\ Julius von Smercek, Andreas Steding, Florian Stober} % todo-final-version
 
 \date{}
 
@@ -106,10 +105,10 @@
 %\setcounter{page}{1}%Leave this line commented out.
 
 \begin{abstract} \small\baselineskip=9pt
-  Selection is the problem of finding the $i$-th smallest of $n$ elements.
+  Selection is the problem of finding the $i$-th smallest element among $n$ elements.
   We apply computer search to find optimal algorithms for small instances of the selection problem.
   Using new algorithmic ideas we are able to go further than what has previously been possible.
-  Our results confirm the optimality of algorithms for $n$ up to 15, and for $n=16$ where $i \le 6$.
+  Our results validate the optimality of algorithms for $n$ up to 15, and for $n=16$ when $i \leq 6$.
 
 \end{abstract} % newline above is important for formatting
 
@@ -120,139 +119,138 @@
 \section{Motivation} \label{sec:motivation}
 
 The problem of selecting the $i$-th smallest element in a list of $n$ elements is a well-known problem in computer science called \textit{selection}.
-Explicitly, we concern ourselves with the optimal worst-case selection of a single element from a set of initially unordered unique elements, measuring the cost as the number of comparisons made.
-We denote this cost by $V_i(n)$.
+Explicitly, we concern ourselves with the optimal worst-case selection of a single element from a set of initially unordered unique elements, measuring the cost by the number of comparisons made.
+We denote this cost as $V_i(n)$.
 
-For selecting the smallest and seconds smallest element optimal algorithms are known with $V_1(n) = n - 1$ and $V_2(n) = n - 2 + \lceil \log n\rceil$~\cite{Knuth1973} (all logarithms are to base $2$).
-In general the selection problem is solvable in linear time, e.g.\ using the median of medians algorithm~\cite{Schoening1993} or PICK~\cite{Blum1972}.
-Looking at the special case of selecting the median $i = \nicefrac{n}{2}$, the best known algorithm requires $2.95n$ comparisons~\cite{dor1999selecting}.
-For other values of $i$ the algorithm in~\cite{dor1999selecting} requires fewer comparison, thus this is a general upper bound.
-This presents a significant gap to the best known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$ where $H(x) = x \cdot \log \frac{1}{x} + (1 - x) \log \frac{1}{1 - x}$~\cite{bent1985finding}.
-For the median this lower bound is $2 \cdot n - \smallO(n)$.
+For selecting the smallest and second smallest elements, optimal algorithms are known with $V_1(n) = n - 1$ and $V_2(n) = n - 2 + \lceil \log n\rceil$~\cite{Knuth1973} (all logarithms are to base $2$).
+In general, the selection problem is solvable in linear time using algorithms such as the median of medians algorithm~\cite{Schoening1993} or PICK~\cite{Blum1972}.
+Looking at the special case of selecting the median $i = \nicefrac{n}{2}$, the best-known algorithm requires $2.95n$ comparisons~\cite{dor1999selecting}.
+For other values of $i$, the algorithm in~\cite{dor1999selecting} requires fewer comparisons, thus providing a general upper bound.
+This presents a significant gap compared to the best-known lower bound, which is $\left (1 + H(\nicefrac{i}{n}) \right ) \cdot n + \Omega(\sqrt n)$, where $H(x) = x \cdot \log \frac{1}{x} + (1 - x) \log \frac{1}{1 - x}$~\cite{bent1985finding}.
+For the median, this lower bound is $2 \cdot n - \smallO(n)$.
 Paterson conjectured that the lower bound for selecting the median is $n \log_{4/3} 2 \approx 2.41n$~\cite{paterson1996progress}.
 
-For the purpose of improving these bounds towards tightness, we consider it essential to have known to be optimal reference points that general approaches can be compared against.
+To improve these bounds toward tightness, it is essential to have known optimal reference points that general approaches can be compared against.
 
-Gasarch, Kelly and Pugh~\cite{Gasarch1996} were the first to use computer search to find optimal selection algorithms for fixed $n$ and $i$.
+Gasarch, Kelly, and Pugh~\cite{Gasarch1996} were the first to use computer search to find optimal selection algorithms for fixed $n$ and $i$.
 Oksanen continued this line of work, improving upon the previously known lower bounds~\cite{Oksanen2006}.
 His results and the computer program he used to obtain them are available on his website~\cite{Oksanen}.
-However, the results are not published in a scientific journal.% and lack explanation.
+However, these results are not published in a scientific journal.
 
-We too, will attack the selection problem using computer search.
-We will reimplement some of the existing ideas and add our own improvements exploring the benefits of different search strategies, adding $\alpha$-$\beta$-pruning and the exploitation of compatible solutions.
+We will also tackle the selection problem using computer search.
+We will reimplement some of the existing ideas and add our own improvements, exploring the benefits of different search strategies, adding $\alpha$-$\beta$-pruning, and exploiting compatible solutions.
 A quote from Miguel de Cervantes from Don Quijote will hold true for this article: ``the journey is better than the inn''~\cite{cervantes_don_quijote}.
 So buckle up.
 
 \subsection{Contribution.}
-In this work we present a novel approach to finding optimal algorithms for selection.
-Using our approach we obtained the following results.
+In this work, we present a novel approach to finding optimal algorithms for selection.
+Using our approach, we obtained the following results:
 \begin{enumerate}
   \item We confirm most of the values $V_i(n)$ computed by Oksanen and correct an error in his work which states that $V_5(15)$ would be $25$~\cite{Oksanen}.
         We show that the optimal algorithm requires one comparison fewer, that is $V_5(15) = 24$.
-  \item We determined the precise values $V_7(14) = 25$, $V_6(15) = V_7(15) = 26$ and $V_8(15) = 27$.
-        Only a range of values was known for these instances previously.
-  \item We compute $V_i(16)$ for $i \le 6$. % TODO: should we write here, that we also determined a range for V_7(16) and V_8(16)?
+  \item We determined the precise values $V_7(14) = 25$, $V_6(15) = V_7(15) = 26$, and $V_8(15) = 27$.
+        Previously, only a range of values was known for these instances.
+  \item We computed $V_i(16)$ for $i \leq 6$ and determined a better lower bound for $V_7(16)$ and $V_8(16)$.
 \end{enumerate}
 
 Our algorithmic approach is twofold.
-The first approach, which we will call forward search in the remainder of this article, an improvement to the minimax algorithm also used by Gasarch et.\ al\@.~\cite{Gasarch1996} and Oksanen~\cite{Oksanen,Oksanen2006}.
-We introduce a novel pruning criteria based on the notion of compatible solutions.\todo{Do we have data which shows the speedup obtained from using compatible solutions?}
+The first approach, which we will call forward search in the remainder of this article, is an improvement to the minimax algorithm also used by Gasarch et.\ al\@.~\cite{Gasarch1996} and Oksanen~\cite{Oksanen,Oksanen2006}.
+We introduce a novel pruning criterion based on the notion of compatible solutions.
 
-The second approach, the backward search, is based on a different idea entirely.
-Here the start and endpoint of the search switch places.
+The second approach, the backward search, is based on an entirely different idea.
+Here, the start and endpoint of the search switch places.
 This type of search has not been applied to the selection problem before, and we will see that its efficient application poses several challenges.
 
 \section{Fundamentals}
 
 \subsection{Posets.}
-A partial order is a reflexive, transitive and antisymmetric relation.
+A partial order is a reflexive, transitive, and antisymmetric relation.
 A partially ordered set, short \emph{poset}, is a set $\Omega$ with a partial order $P \subseteq \Omega \times \Omega$.
 By a slight abuse of notation, we denote the poset by $R$ as well.
-Where necessary, we write $\Omega_P$ for the underlying set.
-Throughout this paper $\Omega$ is finite.
-By $E_n$ we denote the unordered poset on $n$ elements where each element is related only to itself.
+When necessary, we write $\Omega_P$ to refer to the underlying set.
+Throughout this paper, $\Omega$ is finite.
+By $E_n$ we denote the unordered poset on $n$ elements, where each element is related only to itself.
 Two posets $P$ and $Q$ are \emph{isomorphic} if there is a bijective mapping $\varphi: \Omega_P \to \Omega_Q$ such that $(u, v) \in R \iff (\varphi(u), \varphi(v)) \in Q$ for all $u, v \in \Omega$.
 The \emph{dual} of a poset $P$ is obtained by reversing the direction of all edges, \ie $\dual{P} = \set{(v,u)}{(u,v) \in P}$.
 Given a poset $P$, its \emph{Hasse diagram} $H$ is given by the smallest subset $H \sse \Omega \times \Omega$ such that $P$ is the reflexive, transitive closure of $H$.
 We denote by $\pchild{P}{a}{b}$ the transitive closure of $P \cup \{(a, b)\}$.
 By $P|_{\Omega'}$ we denote the restriction of $P$ to $\Omega'$.
-The downset of an element $a$ is $\less{P}{a} = \set{b \in \Omega_P}{b \le a}$, the upset is $\greater{P}{a} = \set{b \in \Omega_P}{b \ge a}$.
+The downset of an element $a$ is $\less{P}{a} = \set{b \in \Omega_P}{b \le a}$, and the upset is $\greater{P}{a} = \set{b \in \Omega_P}{b \ge a}$.
 
 \subsection{The Selection Problem.}
 The selection problem is, given a poset $P$ and an integer $i$, to determine the $i$-th smallest of the $n$ elements in $\Omega_P$ where we already know the relation $P$.
 We denote an instance of the \emph{selection problem}, or problem for short, by $(P, i)$.
-The notion of isomorphism extends naturally to selection problems.
-For the dual we have $\dual{(P, i)} = (\dual{P}, n - i + 1)$.
-The problem $(P, i)$ is \emph{reduced} if for each element there are at most $i - 1$ smaller elements and at most $n - i$ larger elements.
-We denote by $\reduced{(P, i)}$ the reduced problem corresponding to $(P, i)$.
+The notion of isomorphism naturally extends to selection problems.
+For the dual, we have $\dual{(P, i)} = (\dual{P}, n - i + 1)$.
+The problem $(P, i)$ is \emph{reduced} if each element has at most $i - 1$ smaller elements and at most $n - i$ larger elements.
+We denote the reduced problem corresponding to $(P, i)$ by $\reduced{(P, i)}$.
 Hence, each element can still be the $i$-th smallest.
 
 \subsection{Selection Algorithms.}
 A selection algorithm is a binary decision tree.
 Each node is labeled with a selection problem.
-The root node is labeled with $(E_n, i)$ where $E_n$ is the poset on $n$ elemets without any relations.
+The root node is labeled with $(E_n, i)$, where $E_n$ is the poset on $n$ elements without any relations.
 The leaf nodes are labeled with \emph{solved} problems $(P, i)$ that have a unique element $a \in \Omega_P$, such that $|\less{P}{a}| = i$ and $|\greater{P}{a}| = n - i + 1$.
-Hence, $a$ ist the $i$-th smallest element.
+Thus, $a$ is the $i$-th smallest element.
 
-The selection algorithm associates to each inner node $(P, i)$ a comparison $\{a, b\}$, meaning that the algorithm compares $a$ with $b$ as its next step.
-The two children $(\pchild{P}{a}{b}, i)$ and $(\pchild{P}{b}{a}, i)$ correspond to the two possible outcomes of the comparison $a < b$ and $b > a$.
-The number of comparisons required by the algorithm (in the worst case) is the maximum length of a path from the root to some leaf.
+The selection algorithm associates each inner node $(P, i)$ with a comparison $\{a, b\}$, meaning that the algorithm compares $a$ with $b$ as its next step.
+The two children, $(\pchild{P}{a}{b}, i)$ and $(\pchild{P}{b}{a}, i)$, correspond to the two possible outcomes of the comparison $a < b$ and $b > a$.
+The number of comparisons required by the algorithm (in the worst case) is the maximum length of a path from the root to any leaf.
 
 
 \subsection{Minimum Number of Comparisons.}
 
-By $V_i(n)$ we denote the minimum number of comparisons which suffice to select the $i$-th smallest out of $n$ elements in the worst-case.
-We prove the following transfer lemma for lower bounds, showing that if $k$ is a lower bound for selecting $i$ of $n$, then selecting $i$ of $n + 1$ must take at least $k + 1$ comparisons.
+Let $V_i(n)$ denote the minimum number of comparisons required to select the $i$-th smallest out of $n$ elements in the worst case.
+We prove the following transfer lemma for lower bounds, showing that if $k$ is a lower bound for selecting the $i$-th smallest from $n$ elements, then selecting the $i$-th smallest from $n + 1$ elements require at least $k + 1$ comparisons.
 
 \begin{lemma} \label{lemma:previous_next_poset}
-  $V_i(n + 1) \ge V_i(n) + 1$.
+  $V_i(n + 1) \geq V_i(n) + 1$.
 \end{lemma}
 
 \begin{proof}
-  There is an algorithm that selects the $i$-th smallest of $n + 1$ elements using $k = V_i(n + 1)$ comparisons.
-  We now construct an algorithm that selects the $i$-th smallest of $n$ elements using at most $k$ comparisons.
+  There exists an algorithm that selects the $i$-th smallest from $n + 1$ elements using $k = V_i(n + 1)$ comparisons.
+  We now construct an algorithm that selects the $i$-th smallest from $n$ elements using at most $k$ comparisons.
   Let $a$ and $b$ be the two elements compared first by the algorithm for $n + 1$ elements.
-  In the input of the algorithm we put in the place of $a$ a new element $\omega$ that is larger than any other element.
+  Replace $a$ with a new element $\omega$ that is larger than any other element in the input of the algorithm.
   The algorithm still returns the $i$-th smallest of the remaining $n$ elements.
-  Any comparison involving $a = \omega$ can be skipped, because we already know the outcome: $\omega$ is larger.
+  Any comparison involving $a = \omega$ can be skipped, as $\omega$ is always larger.
   In particular, the first comparison is skipped, reducing the number of comparisons by at least $1$.
-  Thus we obtain an algorithm for selecting the $i$-th smallest of $n$ elements using $k - 1$ comparisons.
+  Thus, we obtain an algorithm for selecting the $i$-th smallest from $n$ elements using $k - 1$ comparisons.
 \end{proof}
 
 \begin{remark}
-  It appears that Oksanen did not know about \Cref{lemma:previous_next_poset}, as the ranges he provides in his table could easily be improved using it~\cite{Oksanen}.
+  It appears that Oksanen was unaware of \Cref{lemma:previous_next_poset}, as the ranges provided in his table could be improved using this Lemma~\cite{Oksanen}.
 \end{remark}
 
-Note that the bound in \Cref{lemma:previous_next_poset} is tight, as can be seen by $V_1(n) = n - 1$.
-An easy corollary to the lemma is $V_{i + 1}(n + 1) \ge V_i(n) + 1$.
-This follows immediately using the next lemma.
+Note that the bound in \Cref{lemma:previous_next_poset} is tight, as can be seen from $V_1(n) = n - 1$.
+An easy corollary to the lemma is $V_{i + 1}(n + 1) \geq V_i(n) + 1$, which follows immediately from the next lemma.
 
-By $V_i(P)$ we denote the minimum number of comparisons which suffice to select the $i$-th smallest element of the poset $P$ in the worst-case.
+Let $V_i(P)$ denote the minimum number of comparisons required to select the $i$-th smallest element of the poset $P$ in the worst-case.
 $V_i(n)$ is the special case $V_i(E_n)$.
-We prove the following lemma showing the cost of selection does not change when considering the dual problem.
+We prove the following lemma showing that the cost of selection remains unchanged when considering the dual problem.
 
 \begin{lemma} \label{lemma:dual_poset_allowed}
   $V_i(P) = V_{n - i + 1}(\dual{P})$
 \end{lemma}
 
 \begin{proof}
-  Given $V_i(P)$, we know that there an algorithm that determines the $i$-th smallest element in $P$ using exactly that many comparisons.
-  We view this algorithm as a binary decision tree and by swapping all the children, we obtain an algorithm for selecting the $i$-th largest element in $\dual{P}$, which is also the $(n - i + 1)$-th smallest element of $\dual{P}$.
+  Given $V_i(P)$, we know there exists an algorithm that determines the $i$-th smallest element in $P$ using exactly that many comparisons.
+  By viewing this algorithm as a binary decision tree and swapping all the children, we obtain an algorithm for selecting the $i$-th largest element in $\dual{P}$, which is also the $(n - i + 1)$-th smallest element of $\dual{P}$.
 \end{proof}
 
 \subsection{Compatible Solutions.}
 Suppose we have a solved poset $P$ with a unique $i$-th smallest element $e$.
-Then we know precisely the set of elements that are smaller than $e$ as well as the set of elements that are larger than $e$.
-This observation leads us to the notion of compatible solutions, which is a partition of a poset into three sets: the set containing the $i$-th smallest element, the set of $i - 1$ smaller elements and the set of $n - i$ larger elements.
+We then know precisely the set of elements that are smaller than $e$ as well as the set of elements that are larger than $e$.
+This observation leads us to the notion of compatible solutions, which, similar to linear extensions, is such a partition compatible with the current relation.
 
-\begin{definition}%[Compatible Solution]
-  The solved problem $(S, i)$ is a \textbf{compatible solution} of the problem $(R, i)$ if $(a, b)\in S\implies (b, a)\notin R$ and $S$ has no relations other than the $n - 1$ relations involving the $i$-th smallest element and the ones resulting from application of transitivity to the former.
+\begin{definition}
+  The solved problem $(S, i)$ is a \textbf{compatible solution} of the problem $(R, i)$ if $(a, b) \in S \implies (b, a) \notin R$ and $S$ has no relations other than the $n - 1$ relations involving the $i$-th smallest element and those resulting from the application of transitivity to the former.
 \end{definition}
 
-Clearly a solved problem has exactly one compatible solution.
+Clearly, a solved problem has exactly one compatible solution.
 Let
 \begin{equation*}
-  \mathcal{C}(P, i) = \{(S, i) \mid (S, i) \text{ is compatible with } (P, i) \}
+  \mathcal{C}(P, i) = \{(S, i) \mid (S, i) \text{ is compatible with } (P, i)\}
 \end{equation*}
 be the set of all solutions compatible with $(P, i)$.
 Observe that, given two elements unrelated in $P$, every solution compatible with $(P, i)$ is compatible with at least one of $(\pchild{P}{a}{b}, i)$ and $(\pchild{P}{b}{a}, i)$ and thus
@@ -268,70 +266,69 @@ We use the concept of compatible solutions to derive a lower bound on the number
 
 \begin{proof}
   Assume we have an optimal algorithm for selecting the $i$-th smallest element of a poset $P$.
-  From \Cref{lemma:compatible_union} it follows that for every $(S, i)$ there is at least one leaf in the decision tree labelled with $\{(S, i)\}$.
-  Hence, there are at least $|\mathcal{C}(P, i)|$ leaves and thus the height of the tree is at least $\lceil\log(|\mathcal{C}(P, i)|)\rceil$.
+  From \Cref{lemma:compatible_union}, it follows that for every $(S, i)$, there is at least one leaf in the decision tree labeled with $\{(S, i)\}$.
+  Hence, there are at least $|\mathcal{C}(P, i)|$ leaves, implying that the height of the tree is at least $\lceil\log(|\mathcal{C}(P, i)|)\rceil$.
 \end{proof}
 
 
 \section{Methods and Tools}
 
-In this section we describe our two main approaches to determining $V_i(n)$: the forward search and the backward search.
-The forward search is the same approach that has already been used by Oksanen~\cite{Oksanen2006}.
-We push it further using a pruning technique based on compatible solutions.
-The backward search is a different approach, that has not been applied to the problem of selection before.
-It allows us to go even further in computing optimal selection algorithms.
+In this section, we describe our two main approaches to determining $V_i(n)$: the forward search and the backward search.
+The forward search follows the approach used by Oksanen~\cite{Oksanen2006}.
+We enhance it by using a pruning technique based on compatible solutions.
+The backward search is a novel approach that has not been previously applied to the problem of selection.
+It allows us to further improve the computation of optimal selection algorithms.
 
 \subsection{Data structures and Isomorphism Testing.}
-The key to reducing the search space is to consider only reduced problems and to detect isomorphic problems.
-The isomorphism testing is realized by computing a \emph{canonical} representative.
-For the backward search we use \texttt{nauty}~\cite{MCKAY201494} to compute a canonical representative.
-For the forward search we use a best effort approximation to decrease the cost of computing the representative at the expense of a slightly larger search space.
+The key to reducing the search space is to consider only reduced problems and detect isomorphic problems.
+Isomorphism testing is performed by computing a \emph{canonical} representative.
+For the backward search, we use \texttt{nauty}~\cite{MCKAY201494} to compute a canonical representative.
+For the forward search, we use a best-effort approximation to reduce the cost of computing the representative, at the expense of a slightly larger search space.
 
-By \Cref{lemma:dual_poset_allowed} we do not need to distinguish a problem from its dual.
-We take advantage of this by switching to the dual if $i\leq\frac{n+1}{2}$.
-If $i = \frac{n+1}{2}$ applies, one of the two is chosen deterministically.
-This is also described in more detail in Section~\ref{sec:backward:normal_form}
-A \emph{normal} problem unique reduced representative of the isomorphism class of the problem and its dual.
+By \Cref{lemma:dual_poset_allowed}, we do not need to distinguish a problem from its dual.
+We take advantage of this by switching to the dual if $i \leq \frac{n+1}{2}$.
+If $i = \frac{n+1}{2}$, one of the two is chosen deterministically.
+This is described in more detail in \Cref{sec:backward:normal_form}.
+A \emph{normal} problem is a uniquely reduced representative of the isomorphism class of the problem and its dual.
 
-We store posets as an adjacency matrix.
-We will choose a canonical representative in each isomorphism class such that we have a lower triangular matrix, which can be stored using $\frac{n^2 - n}{2}$ bits.
+We store posets as adjacency matrix.
+We choose a canonical representative in each isomorphism class so that we have a lower triangular matrix that can be stored using $\frac{n^2 - n}{2}$ bits.
 
 
 \subsection{Forward Search.} \label{chapter:forward_search}
-The forward search is the same algorithm used by Oksanen~\cite{Oksanen2006} and Gasarch et.\ al\@.~\cite{Gasarch1996}.
-We describe the basic algorithm first, and then the optimizations and pruning techniques we applied, including a novel pruning criteria based on compatible solutions.
+The forward search algorithm is based on the work of Oksanen~\cite{Oksanen2006} and Gasarch et.\ al\@.~\cite{Gasarch1996}.
+We first describe the basic algorithm and then discuss the optimizations and pruning techniques we applied, including a novel pruning criterion based on compatible solutions.
 
-The forward search starts with an unordered poset, and recursively determines the cost of selecting the $i$-th smallest element of a poset $P$.
-Between the two possible outcomes of a comparison we assume the worse, but since an algorithm is free to choose which elements to compare we are looking for the comparison with the lowest cost still in terms of worst case outcome.
+The forward search starts with an unordered poset and recursively determines the cost of selecting the $i$-th smallest element of a poset $P$.
+Between the two possible outcomes of a comparison, we assume the worse.
+However, since the algorithm is free to choose which elements to compare, we seek the comparison with the lowest cost in terms of the worst case outcome.
 Thus, the cost $V_i(P)$ can be expressed as follows:
 \begin{equation}
   V_i(P) = \min_{a,b \in \Omega_P} \max \left\{ \,V_i(\pchild{P}{a}{b}),\, V_i(\pchild{P}{b}{a})\,\right\}\,\text{.}
 \end{equation}
 
-The algorithms output by the search program are built by saving for each poset the comparison that lead to the cheapest result.
+The algorithms generated by the search program are built by saving, for each poset, the comparison that lead to the cheapest result.
 
-To save memory and allow further pruning, we traverse the search tree using a depth-first search approach, reducing the maximum number of comparisons assigned to child posets to a value one less than the best result currently found.
-This premise is implemented by a minimax algorithm as shown in \Cref{fig:minimax_search}.
-
+To save memory and allow further pruning, we traverse the search tree using a depth-first search approach.
+This reduces the maximum number of comparisons assigned to child posets to one less than the best result currently found.
+This principle is implemented using a minimax algorithm, as shown in \Cref{fig:minimax_search}.
 
 
 \subsubsection{Optimizations.}
 
-\paragraph{Cache.}
-We can drastically speed up this exploration by caching previous results, even with a simple usage based ejection policy.
-Since the search always imposes an upper bound for the number of comparisons to allow this also includes yet unsolved posets, for which we note the currently known minimum.
+\paragraph{Caching.}
+We can significantly speed up the exploration by caching previous results, even with a simple usage-based ejection policy.
+Since the search always imposes an upper bound on the number of comparisons, this also includes unsolved posets, for which we record the currently known minimum.
 
-\paragraph{Isomorphism testing.}
-In the cache we store the approximated canonical representative of a problem and its dual.
-That way we can detect isomorphic problems.
-Our preliminary tests showed that the performance gained by computing an approximated canonical form, where some isomorphic problems may have difference representatives, outweighs the cost induced by the then larger search space.
-%As a result, some problems that are isomorphic occupy several cache entries, but canonifying a poset is much faster.
+\paragraph{Isomorphism Testing.}
+In the cache, we store the approximated canonical representative of a problem and its dual, allowing us to detect isomorphic problems.
+Preliminary tests showed that the performance gained by computing an approximated canonical form, where some isomorphic problems may have different representatives, outweighs the cost induced by the larger search space.
 
 \paragraph{Maximum Depth.}
-We use the minimax search algorithm for cutting off unpromising branches.
-While searching the possible comparisons of a poset, we keep track of the currently best result.
-The remaining comparisons are searched with a limitied depth such that only solutions, which improve the current best are found.
-At the start of a search, the possible comparisons are sorted using a heuristic so that the most promising comparisons are searched for first.
+We use the minimax search algorithm to cut off unpromising branches.
+While searching the possible comparisons of a poset, we keep track of the current best result.
+The remaining comparisons are searched with a limited depth, ensuring that only solutions improving the current best result are found.
+At the start of a search, possible comparisons are sorted using a heuristic so that the most promising comparisons are searched for first.
 
 \begin{figure}[!b]
   \centering
@@ -341,49 +338,47 @@ At the start of a search, the possible comparisons are sorted using a heuristic 
 \end{figure}
 
 \subsubsection{Pruning.}
-We use the following two pruning criteria to reject posets that are not solvable in the given number of comparisons.
+We use the following two pruning criteria to reject posets that are not solvable within the given number of comparisons.
 
 \paragraph{Compatible Solutions.}
 The first heuristic uses the number of compatible solutions.
-We use the fact, proven in Theorem~\ref{theorem:compatible_log}, that the $\log$ of the number of compatible solutions is a lower bound for the cost of a poset.
+As proven in Theorem~\ref{theorem:compatible_log}, the $\log$ of the number of compatible solutions provides a lower bound for the cost of a poset.
 
 \Cref{algo:compatible_solutions} shows an algorithm for computing the number of compatible solutions for a poset.
-The algorithm assumes that the elements in the poset are sorted in such a way that an element that is smaller than another has a smaller index.
-The calculation of this number first picks a solution element $j$ - since posets are always reduced in the forward search any element is valid - and then counts the number of possible separations into greater and lesser elements, summing up these counts over all solution elements.
+The algorithm assumes that the elements in the poset are sorted such that an element smaller than another has a smaller index.
+To calculate this number, the algorithm first picks a solution element $j$ -- since posets are always reduced in the forward search, any element is valid -- and then counts the number of possible separations into greater and lesser elements, summing these counts over all solution elements.
 
 \begin{algorithm}[t]
   \centering
   \input{figures/algorithm_compatible_solutions}
-  \caption{An algorithm for computing the number of compatible solutions for a given poset.}
+  \caption{Algorithm for computing the number of compatible solutions for a given poset.}
   \label{algo:compatible_solutions}
 \end{algorithm}
 
-As an example, the unordered poset $(n,i,\emptyset)$ has $n \cdot \binom{n - 1}{i + 1}$ compatible solutions because for each of the $n$ elements, all separations of the remaining $n - 1$ elements are valid.
+As an example, the unordered poset $(E_n, i)$ has $n \cdot \binom{n - 1}{i + 1}$ compatible solutions because, for each of the $n$ elements, all separations of the remaining $n - 1$ elements are valid.
 
 
 \paragraph{Free Comparison.}
-The second heuristic attempts to reduce the size of the searched subtree by adding a `useful' comparison to eliminate elements faster.
-Explicitly, it searches for unordered elements $u$ and $v$ such that $u$ has as many elements less than it as possible and $v$ as many as possible greater and adds $u < v$ to the poset.
-If there is no $u$ with at least two elements less than it or no $v$ with at least $2$ greater, the algorithm aborts the heuristic and resumes regular search.
-Otherwise, the new poset is then searched for a solution using the forward search described above without reducing the number of allowed comparisons.
-If the new poset is not solvable, we estimate the original is not solvable either.
-This heuristic can be slightly improved by maximizing the number of elements smaller than the maximal element and greater than the minimal element.
-This is admissible because having a comparison added `for free' does not make the poset harder to solve.
+The second heuristic aims to reduce the size of the searched subtree by adding a `useful' comparison to eliminate elements faster.
+Explicitly, it searches for unordered elements $u$ and $v$ such that $u$ has as many elements less than it and $v$ has as many elements greater than it, and adds $u < v$ to the poset.
+The new poset is then searched for a solution using the forward search described above without reducing the number of allowed comparisons.
+If the new poset is not solvable, we estimate the original poset is not solvable either.
+This is valid because adding a comparison `for free' does not make the poset harder to solve.
 
 \subsection{Backward Search.} \label{sec:backward}
-To develop the backward search, primarily the backward search from~\cite{stober2022lower} was taken as orientation, since it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen~\cite{Oksanen}.
+The development of the backward search is primarily based on the backward search method from~\cite{stober2022lower}, as it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen~\cite{Oksanen}.
 
 The backward search starts with the set of solved selection problems, and iteratively removes comparisons until the unordered poset is found.
-Now, the set of solved problems, even if we restrict ourselves to a fixed cardinality $n$ and rank $i$, will be quite large.
-We solve this by only enumerating reduced problems.
-With that restriction the starting point of the backward search is $(E_1, 1)$.
+Even if we restrict ourselves to a fixed cardinality $n$ and rank $i$, the set of solved problems remains large.
+We solve this, by only enumerating reduced problems.
+With this restriction, the starting point of the backward search is $(E_1, 1)$.
 
 \subsubsection{Algorithm.} \label{sec:backward:algorithm}
-The input parameters for the backward search are denoted by $n$ and $i$, like in the forward search.
-The backward search starts with the solved problem $(E_1, 1)$ and iteratively computes all posets solvable using $k = 1, 2, 3, \dots$ comparisons -- until the unordered poset $(E_n, i)$ is encountered.
+The input parameters for the backward search are denoted by $n$ and $i$, similar to the forward search.
+The backward search starts with the solved problem $(E_1, 1)$ and iteratively computes all posets solvable using $k = 1, 2, 3, \dots$ comparisons until the unordered poset $(E_n, i)$ is encountered.
 
 Let $A_k$ denote the set of all reduced selection problems solvable using $k$ comparisons.
-For all $n$ and $i$, we have $A_0 = \{ (E_1, 1) \}$.
+For all $n$ and $i$, we have $A_0 = \{(E_1, 1)\}$.
 
 The backward search begins with $A_0$ and iteratively computes, for each problem in $A_k$, the corresponding predecessors, which form the set $A_{k + 1}$.
 If $(E_n, i) \in A_l$, then $l$ comparisons are the lower bound to determine the $i$-th smallest element of an $n$-element list.
@@ -392,72 +387,74 @@ If $(E_n, i) \in A_l$, then $l$ comparisons are the lower bound to determine the
 We begin with a formal definition of a predecessor.
 
 \begin{definition}[Predecessor] \label{definition:predecessor_calculation}
-  The problem $(Q, j)$ is a \emph{predecessor} of $(P, i)$ if there is a comparison $(a, b)$, such that
+  The problem $(Q, j)$ is a \emph{predecessor} of $(P, i)$ if there is a comparison $(a, b)$ such that:
   \begin{enumerate}
-    \item $(P, i) = \reduced(\pchild{Q}{a}{b}, j)$ and
-    \item $V_j(\pchild{Q}{b}{a}) \le V_i(P)$. % TODO: Why is here `\le`, I think this should be $V_j(\pchild{Q}{b}{a}) + 1 = V_i(P)$
+    \item $(P, i) = \reduced(\pchild{Q}{a}{b}, j)$, and
+    \item $V_j(\pchild{Q}{b}{a}) \leq V_i(P)$.
   \end{enumerate}
 \end{definition}
 
 Any problem $(Q, j)$ satisfying the first condition of the above definition is called a \emph{potential predecessor}.
-In fact the first step to enumerating the predecessors will be to enumerate the potential predecessors.
-The second step will be checking the second condition.
+In fact, the first step in enumerating the predecessors is to enumerate the potential predecessors.
+The second step is to check the second condition.
 
 \begin{lemma} \label{lemma:predecessor_calculation}
-  If $(P, i)$ is solvable in $k$ comparisons and $(Q, j)$ is a predecessor of $(P, i)$, then $(Q, j)$ is solvable in $k + 1$ comparisons.
+  Let $(P, i)$ and $(Q, j)$ be reduced problems, where $(Q, j)$ is a predecessor of $(P, i)$.
+  Then, $V_j(Q) \leq V_i(P) + 1$.
 \end{lemma}
 
-\begin{proof} \label{proof:predecessor_calculation} % todo: update to new def.
-  Since $Q$ was not found in any previous round, according to the assumption, it is not solvable in fewer comparisons. % todo: this assumption was never made
-  By performing the addition of comparison $(i, j)$ followed by normalization, the poset $P$ is derived, consequently establishing the reachability of $Q$.
-  As $P$ is solvable in $k$ comparisons, thus $Q$ is solvable in $k + 1$ comparisons.
-  If the comparison is inserted in reverse, according to the assumption, the resulting poset is already in the cache.
-  Thus, this path is solvable in at most $k + 1$ comparisons.
+% todo-final-version @Florian: Please read the lemma & proof again.
+\begin{proof} \label{proof:predecessor_calculation}
+  Since $(Q, j)$ is a predecessor of $(P, i)$, $(a, b)$ exists with $V_j(\pchild{Q}{b}{a}) \leq V_i(P)$.
+  Obviously, $V_j(Q) \leq V_j(\pchild{Q}{b}{a}) + 1$ applies, since adding a comparison increases $V_j(Q)$ by a maximum of one.
+  Therefore $V_j(Q) \leq V_i(P) + 1$ follows.
 \end{proof}
 
-Storing only reduced problems posets is a significant challenge to predecessor enumeration.
-Let us illustrate this by looking at a poset $(P, i)$ and its predecessor $(Q, j)$.
-We know there is a comparison $(a, b)$ such that $(P, i) = \reduced(\pchild{Q}{a}{b}, j)$.
-However it is possible, that the edge $(a, b)$ is not in $P$, because either $a$ or $b$ could have been removed when reducing the problem.
-The question is, how can we undo a comparison, that we cannot see?
-Then, even if the reduction does not remove $a$ and $b$, there could still be other elements that are removed.
-There the challenge is to figure out how many they are and what relations they have.
+Storing only reduced problems presents a significant challenge to predecessor enumeration.
+To illustrate this, consider a poset $(P, i)$ and its predecessor $(Q, j)$.
+We know there exists a comparison $(a, b)$ such that $(P, i) = \reduced(\pchild{Q}{a}{b}, j)$.
+However, it is possible that the edge $(a, b)$ is not present in $P$ because either $a$ or $b$ could have been removed during the reduction process.
+The question arises: How can we undo a comparison that is not visible?
+Furthermore, even if $a$ and $b$ are not removed during the reduction, there may be other elements that are removed.
+The challenge is to determine how many elements are removed and what their relationships are.
 
-To address these challenges we will prove two lemmas, the first of which shows that after adding a comparison $(a, b)$ at most one of $\{a, b\}$ will be removed by the reduction.
+To address these challenges, we will prove two lemmas.
+The first lemma shows that after adding a comparison $(a, b)$, at most one of $\{a, b\}$ will be removed by the reduction.
 
 \begin{lemma} \label{lemma:remove_only_last_element_edge}
   Let $(P, i)$ be a reduced problem.
   Let $(Q, j) = \reduced{(\pchild{P}{a}{b}, i)}$.
-  Then, $Q \cap \{a ,b \} \neq \emptyset$.
+  Then, $Q \cap \{a, b\} \neq \emptyset$.
 \end{lemma}
 
 \begin{proof}
-  As $(P, i)$ ist reduced, we have $|\less{P}{c}| \le i$ and $|\greater{P}{c}| \le n - i + 1$, where $n = |\Omega_P|$, for every $c \in P$, in particular this also holds for $a$ and $b$.
-  Let $P' = \pchild{P}{a}{b}$ and assume $Q \cap \{a ,b \} = \emptyset$.
-  Observe that $\less{P'}{a} = \less{P}{a} \le i$ and $\greater{P'}{b} = \greater{P}{b} \le n - i + 1$.
-  Thus for $a$ and $b$ to be reduced, we must have $\greater{P'}{a} \ge n - i + 2$ and $\less{P'}{b} \ge i + 1$.
-  Note that there are no elements inbetween $a$ and $b$, as they are incomparable in $P$ and there is an Hasse arc between them in $P'$.
-  Hence $\greater{P'}{a} \cap \less{P'}{b} = \{a, b\}$, leading to the contradiction $n = |\Omega_{P'}| \ge |\greater{P'}{a} \cup \less{P'}{b}| = |\greater{P'}{a}| + |\less{P'}{b}| - |\greater{P'}{a} \cap \less{P'}{b}| \ge n + 1$.
+  Since $(P, i)$ is reduced, we have $|\less{P}{c}| \leq i$ and $|\greater{P}{c}| \leq n - i + 1$, where $n = |\Omega_P|$, for every $c \in P$.
+  In particular, this holds for both $a$ and $b$.
+  Let $P' = \pchild{P}{a}{b}$ and assume $Q \cap \{a, b\} = \emptyset$.
+  Observe that $\less{P'}{a} = \less{P}{a} \leq i$ and $\greater{P'}{b} = \greater{P}{b} \leq n - i + 1$.
+  Thus, for $a$ and $b$ to be removed, we must have $\greater{P'}{a} \geq n - i + 2$ and $\less{P'}{b} \geq i + 1$.
+  Note that there are no elements between $a$ and $b$, as they are incomparable in $P$ and there is a Hasse arc between them in $P'$.
+  Hence, $\greater{P'}{a} \cap \less{P'}{b} = \{a, b\}$, leading to the contradiction $n = |\Omega_{P'}| \ge |\greater{P'}{a} \cup \less{P'}{b}| = |\greater{P'}{a}| + |\less{P'}{b}| - |\greater{P'}{a} \cap \less{P'}{b}| \ge n + 1$.
 \end{proof}
 
-The next lemma shows, that the elements removed by the reduction, which are not $a$ or $b$, can be added one after the other.
+The next lemma shows that the elements removed by the reduction, which are not $a$ or $b$, can be added one after the other.
 
-\begin{lemma}\label{lemma:remove_elements_iteratively}
-  Let $(P, i)$ be a reduced problem.
-  Let $(Q, j) = \reduced{(\pchild{P}{a}{b}, i)}$.
+\begin{lemma} \label{lemma:remove_elements_iteratively}
+  Let $(P, i)$ be a reduced problem, and let $(Q, j) = \reduced{(\pchild{P}{a}{b}, i)}$.
   Then, $Q \cap \{a, b\} \neq \emptyset$.
-  If $(P, i)$ is a predecessor of $(Q, j)$ and $\Omega_P \setminus (\Omega_Q \cup \{a, b\}) \neq \emptyset$, then there is an element $c \in \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ such that $(P|_{\Omega_P \setminus \{c\}}, i')$, where $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+2$ and $i'=i$ otherwise, is a reduced predecessor of $(Q, j)$.
+  If $(P, i)$ is a predecessor of $(Q, j)$ and $\Omega_P \setminus (\Omega_Q \cup \{a, b\}) \neq \emptyset$, there exists an element $c \in \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ such that $(P|_{\Omega_P \setminus \{c\}}, i')$, where $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n - i + 2$ and $i' = i$ otherwise, is a reduced predecessor of $(Q, j)$.
 \end{lemma}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{proof}
   Let $R = \Omega_P \setminus (\Omega_Q \cup \{a, b\})$ be the set of elements removed by the reduction.
-  It is easy to see that for every $c \in R$ the problem $(P', i')$ where $P' = P|_{\Omega_P \setminus \{c\}}$ and $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n-i+2$ and $i'=i$ otherwise is a predecessor of $(Q, j)$:
+  It is easy to see that for every $c \in R$, the problem $(P', i')$ where $P' = P|_{\Omega_P \setminus \{c\}}$ and $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n - i + 2$ and $i' = i$ otherwise is a predecessor of $(Q, j)$:
   \begin{itemize}
     \item It is obvious that $(Q, j) = \reduced{(\pchild{P'}{a}{b}, i')}$.
-    \item $(\pchild{P'}{b}{a}, i')$ is at least as easy solve as $(\pchild{P}{b}{a}, i)$. Thus $V_{i'}(\pchild{P'}{b}{a}) \le V_i(\pchild{P}{b}{a})$.
+    \item The problem $(\pchild{P'}{b}{a}, i')$ is at least as easy to solve as $(\pchild{P}{b}{a}, i)$, hence $V_{i'}(\pchild{P'}{b}{a}) \leq V_i(\pchild{P}{b}{a})$.
   \end{itemize}
-  The challenge is to find an element $c$, such $P'$ is reduced.
-  We define the following sets.
+  The challenge is to find an element $c$ such that $P'$ is reduced.
+  We define the following sets:
   \begin{align*}
     C^+ & = \{e \in \Omega_P \mid \greater{P}{e} = n - i + 1\}            \\
     C^- & = \{e \in \Omega_P \mid \less{P}{e} = i \}                      \\
@@ -465,33 +462,32 @@ The next lemma shows, that the elements removed by the reduction, which are not 
     R^- & = \{c \in V \mid \less{\pchild{P}{a}{b}}{c} \ge i + 1 \}
   \end{align*}
   Note that $R = R^- \cup R^+$.
-  The sets $C^-$ and $C^+$ are the critical elements:
-  If $P'$ is not reduced, then it is because one of these elements can no longer be the $i$-th smallest.
-  To avoid that we need an element $c \in R^+$ that is smaller (in $P$) than all elements in $C^-$.
+  The sets $C^-$ and $C^+$ are critical:
+  If $P'$ is not reduced, it is because one of these elements can no longer be the $i$-th smallest.
+  To avoid this, we need an element $c \in R^+$ that is smaller (in $P$) than all elements in $C^-$.
   By symmetry, any element $c \in R^-$ smaller than all elements in $C^+$ works as well.
-  We first show that if we have an element in $R^- \cap C^-$ or $R^+ \cap C^+$, then this property is fulfilled:
+  We first show that if we have an element in $R^- \cap C^-$ or $R^+ \cap C^+$, then the following property holds:
   \begin{equation}
     \forall c \in C^+, e \in C^- \colon (c, e) \in P\,\text{.}
   \end{equation}
-  Assume we have $c \in C^+, e \in C^-$, but there is no edge $(c, e) \in P$.
-  Then the sets $\greater{P}{c}$ and $\less{P}{e}$ are disjoint.
-  This is a contradiction as $|\greater{P}{c}| + |\less{P}{e}| = n + 1 > |\Omega_P|$.
+  Assume we have $c \in C^+$ and $e \in C^-$, but $(c, e) \notin P$.
+  Then the sets $\greater{P}{c}$ and $\less{P}{e}$ are disjoint, leading to the contradiction $|\greater{P}{c}| + |\less{P}{e}| = n + 1 > |\Omega_P|$.
 
-  The second step is to show that if $R^- \cap C^- = \emptyset$ and $R^+ \cap C^+ = \emptyset$, then we can pick any $c \in R$.
-  We show the following:
+  The second step is to show that if $R^- \cap C^- = \emptyset$ and $R^+ \cap C^+ = \emptyset$, we can pick any $c \in R$.
+  We show:
   \begin{equation}
     \forall c \in R^-, e \in C^+ \colon (e, c) \in P \text{ or } e \in R^+\,\text{.}
   \end{equation}
-  Assume we have $c \in R^-, e \in C^+$.
+  Assume we have $c \in R^-$ and $e \in C^+$.
   By another counting argument we observe that the sets $\less{\pchild{P}{a}{b}}{c}$ and $\greater{P}{e}$ cannot be disjoint:
-  Assuming that $\less{\pchild{P}{a}{b}}{c} \cap \greater{P}{e} = \emptyset$ leads to the contradiction $|\less{\pchild{P}{a}{b}}{c}| + |\greater{P}{e}| \ge n + 2$.
-  Thus $(e, c) \in \pchild{P}{a}{b}$.
-  Hence we have either $(e, c) \in P$ or $(e, a) \in P$.
-  If $(e, a) \in P$ but not $(e, c) \in P$, then we have to show $a \neq e$ to obtain $e \in R^+$:
+  Assuming $\less{\pchild{P}{a}{b}}{c} \cap \greater{P}{e} = \emptyset$ leads to the contradiction $|\less{\pchild{P}{a}{b}}{c}| + |\greater{P}{e}| \ge n + 2$.
+  Thus, $(e, c) \in \pchild{P}{a}{b}$.
+  Hence, we have either $(e, c) \in P$ or $(e, a) \in P$.
+  If $(e, a) \in P$ but $(e, c) \notin P$, we have to show $a \neq e$ to conclude $e \in R^+$.
   Assume $a = e$.
-  Then $\greater{P}{a} \setminus \{ a \}$ and $\less{\pchild{P}{a}{b}}{c}$ must be disjoint as $(e, c) \notin P$.
+  Then $\greater{P}{a} \setminus \{ a \}$ and $\less{\pchild{P}{a}{b}}{c}$ must be disjoint, as $(e, c) \notin P$.
   We obtain the contradiction $|\greater{P}{a} \setminus \{ a \}| + |\less{\pchild{P}{a}{b}}{c}| \ge n + 1$.
-  By symmetrie we also get
+  By symmetry, we also obtain:
   \begin{equation}
     \forall c \in R^+, e \in C^- \colon (c, e) \in P \text{ or } e \in R^-\,\text{,}
   \end{equation}
@@ -501,16 +497,16 @@ The next lemma shows, that the elements removed by the reduction, which are not 
 The computation of a predecessor for a given problem $(P, i)$ comprises three steps:
 \begin{enumerate}
   \item Compute predecessors on the same set of elements.
-  \item Compute predecessors with exactly one additional element, that is also involved in the comparison.
-  \item Starting with the predecessors obtained in the preceding steps add additional elements iteratively.
+  \item Compute predecessors with exactly one additional element that is involved in the comparison.
+  \item Starting with the predecessors obtained in the preceding steps, add additional elements iteratively.
 \end{enumerate}
-We describe the individual steps below.\todo{mention only store new predecessors in $A_{k+1}$}
+We describe the individual steps below. %todo: mention only store new predecessors in $A_{k+1}$
 
 \paragraph{Predecessors on the same set of elements.}
 First, we search for all posets with $n_P$ elements that result in poset $P$ after inserting a comparison $a < b$.
 In other words, we remove a comparison.
-First we compute the potential predecessors.
-Each edge in the Hasse diagram of $P$ potentially is a comparison by which $(P, i)$ can be obtained from a predecessor.
+First, we compute the potential predecessors.
+Each edge in the Hasse diagram of $P$ potentially represents a comparison by which $(P, i)$ can be obtained from a predecessor.
 A challenge arises from transitive relations, as the insertion of a single comparison can lead to the insertion of multiple transitive relations.
 This is illustrated in \Cref{fig:backward_problematic}.
 Removing a comparison from (1) can result in either (2) or (3).
@@ -523,47 +519,41 @@ Therefore, both (2) and (3) are potential predecessors, even though the same com
   \label{fig:backward_problematic}
 \end{figure}
 
-The second step is to check for each potential predecessor, whether it actually is a predecessor of $(P, i)$.
-For a potential predecessor $(Q, j)$ where $(P, i) = \reduced{(\pchild{Q}{a}{b}, j)}$ we do this by checking whether $(\pchild{Q}{a}{b}, j)$ can be solved using at most $V_i(P)$ comparisons.
-This is done by checking whether $(\pchild{Q}{a}{b}, j)$ is contained in one of the sets $A_k$ already for $k \le V_i(P)$, which have already been computed at this point.
+The second step is to check whether each potential predecessor is actually a predecessor of $(P, i)$.
+For a potential predecessor $(Q, j)$ where $(P, i) = \reduced{(\pchild{Q}{a}{b}, j)}$, we check whether $(\pchild{Q}{a}{b}, j)$ can be solved using at most $V_i(P)$ comparisons.
+This is done by checking whether $(\pchild{Q}{a}{b}, j)$ is contained in one of the sets $A_k$ for $k \leq V_i(P)$, which have already been computed.
 
 
-\paragraph{One additional element, involved in the comparison.}
+\paragraph{One additional element involved in the comparison.}
 In the next step, all predecessors with $n + 1$ elements are computed, where the additional element is involved in the comparison.
-%    By inserting a comparison followed by canonification, the poset $P$ is obtained such that one element is eliminated during reduction.
-%
-%    Since the new element is either smaller or larger than the $i$-th smallest element being searched for, the $(i + 1)$-th smallest or the $i$-th smallest element is searched in these predecessors.
-%    Given that the poset $P$ is canonified, $i \leq n - 1 - i$ holds for $P$.
-%    However, when canonifying a poset with $n + 1$ elements and searching for the $(i + 1)$-th smallest element, it may be necessary to form the dual poset, whereby the $(n + 1) - (i + 1) - 1 = n - i + 1$-th element is searched.
-%
 We construct the potential predecessor for this case as follows.
 We insert a new element into poset $P$ and enumerate all possibilities for the relations between the new element and the existing elements.
 We want the predecessor to be reduced, thus it is crucial to ensure that the new element cannot be immediately reduced and that no existing elements can be reduced either.
-Since the new element is either smaller or larger than the $i$-th smallest element being searched for, either the $(i + 1)$-th smallest or the $i$-th smallest element is searched in these predecessors.
+Since the new element is either smaller or larger than the $i$-th smallest element being searched for, either the $(i + 1)$-th smallest or the $i$-th smallest element is searched for in these predecessors.
 Furthermore, for each $(Q, j)$ obtained this way, there must exist elements $a$ and $b$ such that $\reduced{(\pchild{Q}{a}{b}, j)} = (P, i)$.
 This is required for $(Q, j)$ to be a potential predecessor, and since we additionally want the new element to be part of the comparison, we mandate that either $a$ or $b$ is the new element.
-Checking whether the potential predecessors constructed this way are actually predecessors is done the same way as in the preceding step.
+Checking whether the potential predecessors constructed this way are actually predecessors is done in the same way as in the preceding step.
 
-For the correctness of our approach note that if we have an arbitrary reduced predecessor, then by removing all elements that are not present in $P$, with the exception of $a$ and $b$ we obtain another reduced predecessor.
+For the correctness of our approach, note that if we have an arbitrary reduced predecessor, then by removing all elements that are not present in $P$, with the exception of $a$ and $b$, we obtain another reduced predecessor.
 We get this by induction on the number of elements removed using \Cref{lemma:remove_elements_iteratively}.
 If both $a, b \in P$ then this predecessor is enumerated in the first step.
-Otherwise, as proven in \Cref{lemma:remove_only_last_element_edge}, at one of $a, b$ is in $P$ and thus the predecessor is enumerated in this second step.
-In the next step we will iteratively enumerate all predecessors by adding additional elements to the ones already found.
-That way, we will discover the arbitrary predecessor we started with.
+Otherwise, as proven in \Cref{lemma:remove_only_last_element_edge}, if one of $a$ or $b$ is in $P$, the predecessor is enumerated in this second step.
+In the next step, we will iteratively enumerate all predecessors by adding additional elements to the ones already found.
+This way, we will discover the arbitrary predecessor we started with.
 
 \paragraph{Adding elements iteratively.}
 In the third step, new elements are iteratively inserted.
 We alternate between generating new potential predecessors and checking which of those are actually predecessors.
-We stop when no new predecessors are found or when we reach an upper limit to the number of elements.
+We stop when no new predecessors are found or when we reach an upper limit on the number of elements.
 New potential predecessors are generated by adding a new element to each predecessor and enumerating all possible relations with the existing elements.
 When inserting a new element, it is important to note that it may no longer be the $i$-th smallest but rather the $(i + 1)$-th smallest element being searched, similar to the second step.
-We only consider potential predecessors which are reduced and of cause by the addition of the comparison $a < b$ and subsequent reduction, the resulting problem $(P, i)$ should be obtained anew.
+We only consider potential predecessors that are reduced and of cause by the addition of the comparison $a < b$ and subsequent reduction, the resulting problem $(P, i)$ should be obtained anew.
 
 \begin{figure}[!b]
   \centering
   \input{figures/tikz_backward_search_tree.tex}
   \caption{Search tree for $n = 4$ and $i = 2$.
-    Level $k$ contains all posets that can be solved in $k$ comparisons and contribute to the solution for the given parameters $n$ and $i$. \\
+    Level $k$ contains all posets that can be solved in $k$ comparisons and contribute to the solution for the given parameters $n$ and $i$.
     Solid arrows indicate predecessors of a poset, while dashed arrows represent the resulting posets when the reversed comparison is inserted.}
   \label{fig:backward-search-tree}
 \end{figure}
@@ -571,7 +561,7 @@ We only consider potential predecessors which are reduced and of cause by the ad
 \Cref{fig:backward-search-tree} illustrates the posets explored in the backward search for $n = 4$ and $i = 2$.
 
 \subsubsection{Normalform.} \label{sec:backward:normal_form}
-Note that the backward search requires a unique normal form and cannot use the approximation used in the forward search.
+Note that the backward search requires a unique normal form and cannot use the approximation method applied in the forward search.
 If our custom canonification fails to produce a unique form, \texttt{nauty} provides the appropriate canonified form.
 The following outlines the canonification process:
 
@@ -579,45 +569,43 @@ First, determine whether $i < n - i + 1$ holds.
 If not, replace the poset with its dual.
 According to \Cref{lemma:dual_poset_allowed}, the solvability of the poset remains unchanged.
 
-Finally, the posets elements are arranged canonically.
-The canonic labelling of the elements is provided by \texttt{nauty}.
-With this canonical labelling, the poset can be represented canonically.
+Finally, the elements of the poset are arranged in a canonical order.
+\texttt{nauty} provides the canonical labeling of the elements.
+With this canonical labeling, the poset can be represented in its canonified form.
 
 A potential issue arises if $i = n - i + 1$.
-In this case, it is impossible to decide whether $P$ or $P^{-1}$ corresponds to the canonical form based on the value of $i$.
+In this case, it is impossible to decide whether $P$ or $P^{-1}$ corresponds to the canonical form based solely on the value of $i$.
 
 \begin{figure}[!b]
   \centering
   \input{figures/tikz_backward_canonify_problematic.tex}
   \caption{According to \Cref{lemma:dual_poset_allowed}, the two posets are dual to each other.
-    In this case, however, \texttt{nauty} cannot be used to transform the posets into each other, since they are two different graphs. This can also be seen in the Hasse diagram, which represents a directed graph, although the arrows are not shown here, but always run implicitly from top to bottom.}
+    However, \texttt{nauty} cannot be used to transform the posets into each other since they are different graphs.
+    This can also be seen in the Hasse diagram, which represents a directed graph, although the arrows are not shown here and always run implicitly from top to bottom.}
   \label{fig:backward_canonify_problematic}
 \end{figure}
 
-% Irgendwo sollte etwas mit Kongruent, nicht Aufgabe von nauty, da dual
-
-In \Cref{fig:backward_canonify_problematic}, the posets as Hasse diagram appear different despite being each other's duals.
+In \Cref{fig:backward_canonify_problematic}, the posets appear different in the Hasse diagram despite being each other's duals.
 To resolve this ambiguity, the dual poset is computed and canonified for each poset where $i = n - i + 1$ holds true.
-Subsequently, one of the posets is deterministically selected.
-The deterministic selection is realized by comparing the two binary representations.
+Subsequently, one of the posets is deterministically selected by comparing their binary representations.
 
-Since canonification is inevitable for the backward search but consumes significant computational time, all trivial cases are treated manually and only the remaining cases are canonified by \texttt{nauty}.
+Since canonification is inevitable for the backward search but consumes significant computational time, all trivial cases are handled manually, and only the remaining cases are canonified using \texttt{nauty}.
 
-The manual canonification works as follows:
 First, compute the in- and out-degree for each node.
-Then assign a hash value to each node based on these degrees, considering the recursive topological structure of adjacent nodes up to a specified depth limit.
+Then, assign a hash value to each node based on these degrees, considering the recursive topological structure of adjacent nodes up to a specified depth limit.
 
+The manual canonification process is as follows:
 Next, sort the nodes according to their hash values.
 If all hash values are unique, the graph is in its normal form.
-Since it is often the case in the searched posets that two nodes have the same hash values, this case was intercepted.
+As it is often the case in the searched posets that two nodes have the same hash values, this case was intercepted.
 Let there be $l$ pairs of nodes with identical hash values.
-Then there are $2^l$ different possible posets that could correspond to the normal form, since each of the $l$ pairs may or may not be swapped.
+Then, there are $2^l$ possible posets that could correspond to the normal form, since each of the $l$ pairs may or may not be swapped.
 Given the realistic assumption that $l$ is small, all $2^l$ permutations can be efficiently iterated.
 With the aim of obtaining values for $n = 16$, it follows that there are at most $\frac{n}{2}$ pairs, hence $l \leq 8$ always holds.
-All $2^l$ posets are then calculated and one permutation is deterministically selected based on its internal representation, as in the case of the dual poset.
-It should be noted that this optimisation only works with pairs of two elements and no longer works if there are three hash values with the same value.
+All $2^l$ posets are then calculated, and one permutation is deterministically selected based on its binary representation, similar to the case of the dual poset.
+It should be noted that this optimisation only works with pairs of two elements and no longer works if there are three nodes with the same hash value.
 
-Implementing this canonification preprocessing significantly reduces the number of cases that require \texttt{nauty}, as illustrated in \Cref{table:nauty-ratio}.
+Implementing this canonification preprocessing significantly reduces the number of cases requiring \texttt{nauty}, as illustrated in \Cref{table:nauty-ratio}.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
@@ -643,13 +631,13 @@ For small values of $i$, the high percentage of \texttt{nauty} calls is not crit
 \subsubsection{Optimizations.}
 
 \paragraph{Limit search space.}
-As there are potentially many predecessors that cannot contribute to the solution, these are not even calculated.
-Many posets can be excluded on the basis of $n$ and $i$.
-As illustrated in \Cref{table:n_i_values_calculated}, the search with $n = 7$ and $i = 4$ only considers predecessors that have an `x' in the corresponding row or column.
-As the addition of a comparison can reduce $n$ by a maximum of $1$ and therefore $i$ by a maximum of $1$, all other predecessors can be ignored as they can never be used.
+Since there are potentially many predecessors that cannot contribute to the solution, they are not even calculated.
+Many posets can be excluded based on $n$ and $i$.
+As illustrated in \Cref{table:n_i_values_calculated}, the search for $n = 7$ and $i = 4$ only considers predecessors that have an `x' in the corresponding row or column.
+Since adding a comparison can reduce $n$ by a maximum of $1$ and therefore $i$ by a maximum of $1$, all other predecessors can be ignored as they can never contribute to the solution.
 For example, no poset with $n = 6$ and $i = 2$ can result in a poset of size $n = 7, i = 4$ by adding a comparison.
 
-The table can be calculated by marking initial $n, i$ with an `x' and then marking recursive the entries for $n - 1, i$ and $n - 1, i - 1$ with an `x', as in each step the new element could be smaller or larger than the $i$-smallest element.
+The table can be calculated by marking the initial $n, i$ with an `x' and then recursively marking the entries for $n - 1, i$ and $n - 1, i - 1$ with an `x', as in each step the new element could be smaller or larger than the $i$-smallest element.
 
 For \Cref{table:n_i_values_calculated}, this means that $n = 6, i = 3$ and $n = 6, i = 4$ should be marked.
 It must be noted that $n = 6, i = 4$ does not exist, as the dual poset would be formed at this point.
@@ -657,7 +645,8 @@ In this case, only $n = 6, i = 3$ is marked with an `x'.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
-  \caption{Possible predecessors that must be calculated for $n = 7$ and $i = 4$. All predecessors for which the corresponding field is marked with `x' must be calculated.}
+  \caption{Possible predecessors that must be calculated for $n = 7$ and $i = 4$.
+    All predecessors for which the corresponding field is marked with `x' must be calculated.}
   \label{table:n_i_values_calculated}
   \centering
   \small
@@ -684,7 +673,7 @@ Since no more than one comparison can be removed in each step, these posets can 
 As the theoretical upper bounds are too high in practice, the program uses an iterative deepening approach.
 It starts with an upper bound that corresponds to the theoretical lower bound, derived by \Cref{lemma:previous_next_poset} from the smaller values for $n$ and increases this bound iteratively until a solution is finally found.
 As it is not possible to save which posets are lost due to the guessed upper bound without considerable effort, the backward search is restarted several times.
-Although results from previous rounds are not used, the search space can be considerably reduced and the program can be made more efficient.
+Although results from previous rounds are not used, the search space can be considerably reduced, making the program more efficient.
 
 \paragraph{Parallelization.} \label{sec:backward:parallelisation}
 The backward search can be ideally parallelized by performing the calculation of the predecessors in parallel.
@@ -711,24 +700,24 @@ This can be calculated as follows
 \]
 The higher the efficiency, the better the time scales with the number of cores.
 
-% TODO: subsection?
 \begin{figure}[!b]
   \centering
   \input{figures/tikz_posets_per_level.tex}
-  \caption{Number of posets generated by the backward search for $n = 14$ depending on the number of comparisons for various $i$. Be aware of the logarithmic scale of the y-axis and that the reverse search does not add comparisons, but rather removes them.}
+  \caption{Number of posets generated by the backward search for $n = 14$ depending on the number of comparisons for various $i$.
+    Be aware of the logarithmic scale of the y-axis and that the reverse search does not add comparisons, but rather removes them.}
   \label{fig:backward-posets-per-level}
 \end{figure}
 
 \Cref{fig:backward-posets-per-level} shows the number of backward search posets for different values of $i$.
-It is noticeable that the highest number of posets is searched for all $i$ when there are $8$ to $9$ comparisons left, with a slight tendency towards more comparisons for larger $i$.
-
+It is noticeable that the maximum number of posets is searched for all $i$ when there are $8$ to $9$ comparisons remaining, with a slight tendency towards more comparisons for larger $i$ for $n = 14$.
 
 \section{Results}
 
+%todo: Where do the upper bounds for the ranges come from? -> Gasarch & Knuth
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
-  \caption{The minimum number of comparisons needed to select the $i$-th smallest of $n$ elements.
-    Values resulting from our work are printed in bold.\todo[inline]{Where to the upper bounds for the ranges come from?}}
+  \caption{Minimum number of comparisons needed to select the $i$-th smallest of $n$ elements.
+    Values resulting from our work are printed in bold.}
   \label{table:num-comparisons}
   \centering
   \small
@@ -754,24 +743,24 @@ It is noticeable that the highest number of posets is searched for all $i$ when 
   \end{tabular}
 \end{table}
 
-The values $V_i(n)$ we calculated as the minimum number of comparisons needed to solve the selection problem for $n \leq 16$ are shown in \Cref{table:num-comparisons}.
-We are able to confirm most of the values computed by Oksanen~\cite{Oksanen}.
-In particular $V_5(12) = 19$ which is a counter-example to a conjecture of Gasarch~\cite{Gasarch1996} that the optimum can be realized using a ``pair-forming algorithm'', in which the first comparison of any singleton is with another singleton (in this instance, the best pair-forming algorithm requires 20 comparisons).
-The values printed in bold have not been known previously.
-For $V_7(14)$, $V_6(15)$, $V_7(15)$ and $V_8(15)$ only a range has been known before.
-For $V_5(15)$ Oksanen gives a wrong value of $25$ on his website~\cite{Oksanen}.
-Curiously enough, running his search algorithm, it produced the correct value $24$.
-The values for $n=16$ have not been computed before.
-We are able to compute all values for $i \le 6$ and give ranges for $V_7(16)$ and $V_8(16)$.
+\Cref{table:num-comparisons} shows the values $V_i(n)$, representing the minimum number of comparisons needed to solve the selection problem for $n \leq 16$.
+Our findings confirm most of the values computed by Oksanen~\cite{Oksanen}.
+Notably, $V_5(12) = 19$ contradicts a conjecture by Gasarch~\cite{Gasarch1996} that the optimum can be achieved using a "pair-forming algorithm," where the first comparison of any singleton is with another singleton (in this case, the best pair-forming algorithm requires 20 comparisons).
+The values printed in bold are previously unknown.
+For $V_7(14)$, $V_6(15)$, $V_7(15)$, and $V_8(15)$, only a range was known prior.
+Oksanen incorrectly lists $V_5(15)$ as 25 on his website~\cite{Oksanen}, although his search algorithm does produce the correct value of 24.
+The values for $n = 16$ have not been computed before; we provide all values for $i \leq 6$ and ranges for $V_7(16)$ and $V_8(16)$.
 
-To verify that the values we calculated are upper bounds, we checked the algorithm certifying each number on each of the $n!$ permutations to ensure it is correct.
-Certifying the correctness of the lower bound is near impossible.
-We computed every number twice, using two different algorithms, the forward and the backward search.
-Thus it is unlikely, that the results are wrong due to a coding error.
+To verify the upper bounds of the values we calculated, we checked the algorithm certifying each number on each of the $n!$ permutations.
+Certifying the correctness of the lower bound is nearly impossible.
+We computed each number twice using two different algorithms, the forward and the backward search.
+Thus, it is unlikely that the results are incorrect due to a coding error.
 
+%todo: 15, 8 is an old value from the forward search (without compatible posets)
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
-  \caption{Execution times of different search methods. Times marked with an asterisk gave a non-optimal result \todo[inline]{15, 8 is an old value from the forward search}}
+  \caption{Execution times of different search methods.
+    Times marked with an asterisk indicate non-optimal results.}
   \label{table:search_algorithms}
   \centering
   \small
@@ -819,14 +808,13 @@ Thus it is unlikely, that the results are wrong due to a coding error.
   \end{tabular}
 \end{table}
 
-\Cref{table:search_algorithms} compares the time the different algorithms took to find an optimal selection algorithm.
-We ran all algorithms on a machine with two Intel Xeon CPUs, each equipped with $12$ cores ($24$ threads), and a total of $768$ GB of RAM.
-The forward search was started with $500$ GB of RAM, and was restarted for each value of $n$ and $i$, so it does not use the cache from previous runs.
-The column `Oksanen' shows the times of his program~\cite{Oksanen} on our hardware.
-Oksanen's program was started with $25$ GB.
-It originally used $400$ MB and $25$ GB was close to a natural limit due to the use of 32 bit indices.
+\Cref{table:search_algorithms} compares the execution times of different algorithms to find optimal selection algorithms.
+All experiments were conducted on a machine with two Intel Xeon CPUs, each equipped with $12$ cores ($24$ threads), and a total of $768$ GB of RAM. % todo: Hardware is also in the appendix -> twice
+The forward search was started with $500$ GB of RAM and restarted for each combination of $n$ and $i$, ensuring no use of cached data from previous runs to provide comparability
+The `Oksanen' column presents execution times of Oksanen's program~\cite{Oksanen} on our hardware, started with a cache size of $25$ GB RAM.
+It is originally designed to use $400$ MB RAM and $25$ GB was close to a natural limit due to the use of 32-bit indices.
 The numbers marked with an asterisk indicate that the publicly available version \texttt{1.6} of Oksanen's program did not find an optimal algorithm, even though he has given an optimal algorithm on his website with the unavailable version \texttt{1.1}.
-Additionally we measured the number of posets that were stored in the cache after the calculation, which can be seen in \Cref{table:cache_entries}.
+Additionally, we measured the number of posets stored in the cache after the calculation, which can be found in \Cref{table:cache_entries}.
 
 
 \begin{table}[!t]
@@ -872,8 +860,8 @@ Additionally we measured the number of posets that were stored in the cache afte
   \end{tabular}
 \end{table}
 
-To evaluate the potential of the compatible solutions heuristic we determined the maximum number of compatible solutions encountered for a given cost for $n\leq 14$ and used that as a boundary in a subsequent run.
-For $n=14,i=7$ this resulted in a time of 1h~21m with $147\cdot10^6$ posets in cache, an improvement by factors $11$ and $6.3$ respectively. % hä? Satzbau
+To evaluate the potential of the compatible solutions heuristic, we determined the maximum number of compatible solutions encountered for a given cost for $n \leq 14$ and used that as a boundary in a subsequent run.
+For $n = 14, i = 7$, this resulted in a time of 1h~21m with $147 \cdot 10^6$ posets in the cache, representing improvements by factors of $11$ and $6.3$, respectively.
 
 
 \section{Conclusion and Open Questions}
@@ -889,14 +877,13 @@ Along the way we improved the forward search using a heuristic based on compatib
 Between the structural constraints of our algorithms and the available hardware, $n=16$ is likely the limit of feasible calculation for the current state.
 %but with speedup in orders of magnitude even towards the end of development 
 We believe that higher $n$ are realistic with new algorithmic ideas and conclude this work by talking about promising directions for further research.
-The latest version of our software can be found on \projectServer~(\url{\projectURL}).
+The latest version of our software is available at \projectServer~(\url{\projectURL}).
 
 \paragraph{Bidirectional Search.}
-The classical meet in the middle approach for a bidirectional search will not work for the selection problem.
+The classical meet-in-the-middle approach for a bidirectional search will not work for the selection problem.
 This is illustrated in \Cref{fig:backward_forward_count_13_6}:
-assume the two searches meet at the point where $11$ comparisons have been performed and $12$ remain.
-When reaching the meeting point the forward search has explored $99.006\%$ of its search space and the backward has explored $99.349\%$ of its search space.
-%Thus at the meeting point both searches have already explored most of their search space.
+Assume the two searches meet after $11$ comparisons have been performed.
+At this meeting point, both searches have already covered over $99\%$ of their search space.
 
 \begin{figure}[!b]
   \centering
@@ -905,30 +892,27 @@ When reaching the meeting point the forward search has explored $99.006\%$ of it
   \label{fig:backward_forward_count_13_6}
 \end{figure}
 
-An alternative approach to the bidirectional search would be to first run the backward search, but restrict it to problems with specific properties.
-E.g.\ enumerate only those problems $(P, i)$ in $A_k$ with $\mathcal{C}(P, i) \ge \alpha \cdot 2^k$ for some $\alpha \in [0, 1]$.
-Then the subsequent forward search can look up problems with a large number of compatible solutions, which are presumably hard to solve, in the results of the backward search, and only has to explore problems with a small number of linear extensions, which we estimate to be easier to solve.
+An alternative approach to the bidirectional search would be to first run the backward search, but restrict it to problems with a large number of compatible solutions, which are presumably hard to solve, so the subsequent forward search only has to explore problems with a small number of compatible solutions, which we estimate to be easier to solve.
 
-The number of compatible solutions might not be the best metric to separate backward and forward search.
-We observed that the number of comparisons required to solve a selection problem is typically about twice the lower bound obtained from the number of compatible solutions.
-This makes sense, as lower bound it gives for the median is $n + \smallO(n)$, which is far from the best known asymptotic lower bound $2n + \smallO(n)$.
+We observed that the number of comparisons required to solve a selection problem is typically about twice the lower bound obtained from the number of compatible solutions, minus a constant.
+This observation is reasonable, as the lower bound for the median is $n + \smallO(n)$, which is far from the best-known asymptotic lower bound $2n + \smallO(n)$.
 
 \paragraph{Improved Weight Function.}
-A better lower bound can be obtained if instead of just counting the compatible solutions we assign a weight to each solution.
-It is relatively easy to create a weight function that leads to a lower bound of $1.5n + \smallO(n)$ for the median.
-We also tried to create a weight function, that mimics the techniques used to obtain the $2n + \smallO(n)$ bound in~\cite{bent1985finding}.
-However, that lead to a negative $4\sqrt{n}$ term in the resulting lower bound, for $n \le 16$ cancelling out any improvement over just counting the compatible solutions.
+A better lower bound can be achieved by assigning weights to each solution rather than merely counting compatible solutions.
+It is relatively straightforward to create a weight function that leads to a lower bound of $1.5n + \smallO(n)$ for the median.
+We also tried to develop a weight function that mimics the techniques used to obtain the $2n + \smallO(n)$ bound in~\cite{bent1985finding}.
+However, this lead to a negative $4\sqrt{n}$ term in the resulting lower bound for $n \leq 16$, cancelling out any improvement over just counting compatible solutions.
 
 \paragraph{Yao's conjecture.}
-Yao conjectured that finding the $i$-th smallest of $n$ elements is at least as hard as finding an $n$-element subset $S$ of $m$ elements, where $m > n$, and an element $s \in S$ such that $s$ ist the $i$-th smallest element in $S$~\cite{yao1974lower}.
-It is unclear, whether her conjecture holds.
-If true, this conjecture would imply a $2.5n + \smallO(n)$ algorithm for computing the median.
-By adapting the search algorithm we presented, one could search for counter examples to the conjecture.
+Yao conjectured that finding the $i$-th smallest of $n$ elements is at least as hard as finding an $n$-element subset $S$ of $m$ elements, where $m > n$, and an element $s \in S$ such that $s$ is the $i$-th smallest element in $S$~\cite{yao1974lower}.
+It is unclear whether her conjecture holds.
+If true, it would imply a $2.5n + \smallO(n)$ algorithm for computing the median.
+By adapting our search algorithm, one could search for counter examples to the conjecture.
 
 
 
 \section*{Acknowledgments}
-\todo[inline]{tbd}
+% todo: tbd
 
 \bibliography{biblio}
 
@@ -938,36 +922,38 @@ By adapting the search algorithm we presented, one could search for counter exam
 
 
 \section{Example.}
+% todo: Can we make this smaller/ same style as the other figures?
 \begin{figure}[!b]
   \centering
   \input{figures/tikz_example_5_2.tex}
-  \caption{Finding the median $i = 3$ of $n = 5$ values using six comparisons.\todo[inline]{Can we make this smaller/ same style as the other figures?}}
+  \caption{Finding the median $i = 3$ of $n = 5$ values using six comparisons.}
   \label{fig:median_of_5}
 \end{figure}
+
 A good visual example is finding the median $i = 3$ in a list of $n = 5$ elements.
-\Cref{fig:median_of_5} illustrate the search of the median using Hasse diagrams.
-Each step shows the comparisons to be performed next as a dashed line.
-A Hasse diagram of the order of relation found so far (smaller=lower, larger=higher) is shown as the solid lines.
-The red crosses indicate elements that have been found to be greater or smaller than three other elements and therefore are disqualified for the median.
+\Cref{fig:median_of_5} illustrates the search process of finding the median using Hasse diagrams.
+Each step shows the comparisons to be performed next, indicated by dashed lines.
+A Hasse diagram of the order relation found so far (with smaller elements positioned lower and larger elements higher) is shown with solid lines.
+The red crosses indicate elements that have been found to be greater or smaller than three other elements, thereby disqualifying them from being the median.
 The larger element of the final comparison is the median.
 This is also the optimal algorithm for $i = 3$ and $n = 5$.
 
 
-\todo[inline]{Details on how potential predecessors are computed (especially regarding transitive relations).}
+% todo: Details on how potential predecessors are computed (especially regarding transitive relations).
 
-\todo[inline]{Approximate normal form for forward search.}
+% todo: Approximate normal form for forward search.
 
 
 
-\section{Used Soft- and Hardware.} \label{sec:hardware}
+\section{Hard- and Software Used.} \label{sec:hardware}
 
 Our results were facilitated by advancements in both hardware and software.
-All versions of the software used are listed in the \Cref{table:command_outputs}.
+All versions of the software used are listed in \Cref{table:command_outputs}.
 For hardware, we employed two Intel Xeon E5-2650v4 CPUs (2.20\,GHz, 12 Cores/24 Threads, 30\,MB L3-Cache per CPU), and a total of $768$ GB of RAM.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
-  \caption{Specific versions on the software used.}
+  \caption{Specific versions of the software used.}
   \label{table:command_outputs}
   \centering
   \small
@@ -979,11 +965,12 @@ For hardware, we employed two Intel Xeon E5-2650v4 CPUs (2.20\,GHz, 12 Cores/24 
   \end{tabular}
 \end{table}
 
-\section{Distribution by Compatible Solutions}
+\section{Distribution of Compatible Solutions}
 
 \begin{figure}[h]
-  \includegraphics*[scale=.5]{figures/compatible_cost_relation.png}
-  \caption*{Cost distribution for all instances solved in the forward search for $n\leq 14$, excluding $i\leq 2$, purple are low $i$, yellow high. $\log_2$ in red.} % Satzbau
+  \includegraphics*[scale=0.5]{figures/compatible_cost_relation.png}
+  \caption*{Cost distribution for all instances solved in the forward search for $n \leq 14$, excluding $i \leq 2$.
+    Purple indicates low $i$, yellow indicates high $i$. $\log_2$ is shown in red.}
 \end{figure}
 
 \end{document}
