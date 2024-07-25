@@ -111,7 +111,8 @@ impl BackwardCache {
         let mut memory_size = 0;
         for bucket_n in &self.buckets {
             for bucket_ni in bucket_n {
-                memory_size += size_of_val(&bucket_ni.hashtable) + size_of_val(&bucket_ni.data);
+                memory_size += size_of_val(bucket_ni.hashtable.as_slice())
+                    + size_of_val(bucket_ni.data.as_slice());
             }
         }
         memory_size
