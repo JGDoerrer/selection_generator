@@ -1,7 +1,9 @@
-use crate::{constants::MAX_N, utils::extend_sorted};
-use hashbrown::HashMap;
+use crate::{
+    constants::MAX_N,
+    utils::{extend_sorted, hash},
+};
 use rayon::slice::ParallelSliceMut;
-use std::mem::size_of;
+use std::mem::size_of_val;
 
 use crate::backwards_poset::BackwardsPoset;
 
@@ -10,7 +12,7 @@ const HASHTABLE_SIZE: usize = 1 << HASHTABLE_BITS;
 
 pub struct CacheBucket {
     hashtable: Vec<usize>,
-    data: Vec<(u16, u128, (u8, u8))>,
+    data: Vec<(u16, u128, (u8, u8), u8)>, // (hash from encoded poset, encoded poset, indices, comparisons)
 }
 
 impl Default for CacheBucket {
@@ -20,6 +22,7 @@ impl Default for CacheBucket {
             data: vec![],
         };
         result.hashtable.shrink_to_fit();
+        result.data.shrink_to_fit();
         result
     }
 }
@@ -29,34 +32,30 @@ pub struct BackwardCache {
 }
 
 impl BackwardCache {
-    fn hash(value: u128) -> u16 {
-        let mut hash = value as u64;
-        hash ^= (value >> 64) as u64;
-        hash ^= hash >> 32;
-        hash ^= hash >> 16;
-        hash as u16
-    }
-
     pub fn new() -> Self {
         Self {
             buckets: Default::default(),
         }
     }
 
-    pub fn add_layer(&mut self, posets: &HashMap<BackwardsPoset, (u8, u8)>) {
-        let mut new_items: [[CacheBucket; MAX_N]; MAX_N] = Default::default();
+    pub fn add_layer(&mut self, posets: &Vec<(BackwardsPoset, (u8, u8))>, comparisons: u8) {
+        let mut new_items: [[Vec<(u16, u128, (u8, u8), u8)>; MAX_N]; MAX_N] = Default::default();
 
         for (poset, indices) in posets {
             let packed = poset.pack_poset();
-            new_items[poset.n() as usize - 1][poset.i() as usize]
-                .data
-                .push((Self::hash(packed), packed, *indices));
+            new_items[poset.n() as usize - 1][poset.i() as usize].push((
+                hash(packed),
+                packed,
+                *indices,
+                comparisons,
+            ));
         }
 
-        let comparator = |(hash1, key1, _): &(u16, u128, (u8, u8)),
-                          (hash2, key2, _): &(u16, u128, (u8, u8))| {
-            hash1.cmp(hash2).then(key1.cmp(key2))
-        };
+        let comparator =
+            |(hash1, key1, _, _): &(u16, u128, (u8, u8), u8),
+             (hash2, key2, _, _): &(u16, u128, (u8, u8), u8)| {
+                hash1.cmp(hash2).then(key1.cmp(key2))
+            };
 
         for n in 0..MAX_N {
             for i in 0..MAX_N {
@@ -64,16 +63,16 @@ impl BackwardCache {
                     continue;
                 }
 
-                new_items[n][i].data.par_sort_unstable_by(comparator);
+                new_items[n][i].par_sort_unstable_by(comparator);
 
-                let bucket_ni = &mut self.buckets[n][i];
-                extend_sorted(&mut bucket_ni.data, &new_items[n][i].data, comparator);
-                bucket_ni.data.shrink_to_fit();
+                extend_sorted(&mut self.buckets[n][i].data, &new_items[n][i], comparator);
 
                 let mut pos = 0;
                 for k in 0..HASHTABLE_SIZE {
-                    bucket_ni.hashtable[k] = pos;
-                    while pos < bucket_ni.data.len() && bucket_ni.data[pos].0 <= k as u16 {
+                    self.buckets[n][i].hashtable[k] = pos;
+                    while pos < self.buckets[n][i].data.len()
+                        && self.buckets[n][i].data[pos].0 <= k as u16
+                    {
                         pos += 1;
                     }
                 }
@@ -86,7 +85,7 @@ impl BackwardCache {
         debug_assert_ne!(poset.n(), 0);
 
         let packed = poset.pack_poset();
-        let hash = Self::hash(packed);
+        let hash = hash(packed);
         let bucket = &self.buckets[poset.n() as usize - 1][poset.i() as usize];
 
         let left = bucket.hashtable[hash as usize];
@@ -112,10 +111,7 @@ impl BackwardCache {
         let mut memory_size = 0;
         for bucket_n in &self.buckets {
             for bucket_ni in bucket_n {
-                memory_size += size_of::<Vec<usize>>()
-                    + bucket_ni.hashtable.len() * size_of::<usize>()
-                    + size_of::<Vec<(u16, u128, (u8, u8))>>()
-                    + bucket_ni.data.capacity() * size_of::<(u16, u128, (u8, u8))>();
+                memory_size += size_of_val(&bucket_ni.hashtable) + size_of_val(&bucket_ni.data);
             }
         }
         memory_size

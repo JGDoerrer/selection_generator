@@ -166,3 +166,23 @@ where
 //       }
 //   }
 // }
+
+pub fn hash(value: u128) -> u16 {
+    let mut hash = value as u64;
+    hash ^= (value >> 64) as u64;
+    hash ^= hash >> 32;
+    hash ^= hash >> 16;
+    hash as u16
+}
+
+pub fn get_memory() -> String {
+    let mut sys = sysinfo::System::new_all();
+    sys.refresh_all();
+
+    if let Ok(pid) = sysinfo::get_current_pid() {
+        if let Some(process) = sys.process(pid) {
+            return format_memory(process.memory());
+        }
+    }
+    String::from("-")
+}

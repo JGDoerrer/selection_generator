@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+use std::mem;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
 
@@ -8,14 +10,13 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use crate::backward_cache::BackwardCache;
 use crate::backwards_poset::BackwardsPoset;
 use crate::constants::{KNOWN_VALUES, LOWER_BOUNDS, MAX_N, UPPER_BOUNDS};
-use crate::utils::{format_duration, format_memory};
+use crate::utils::{format_duration, format_memory, get_memory};
 
 pub static COUTNER_USE_NOT_NAUTY: CounterUsize = CounterUsize::new(0);
 pub static COUTNER_USE_NAUTY: CounterUsize = CounterUsize::new(0);
 
 pub fn start_search_backward(
     interrupt: &Arc<AtomicBool>,
-    backward_search_state_opt: Option<&Arc<RwLock<(HashMap<BackwardsPoset, u8>, i8)>>>,
     n: u8,
     i: u8,
     max_comparisons: usize,
@@ -24,56 +25,78 @@ pub fn start_search_backward(
     BackwardsPoset::calculate_poset_table(&mut table, n as usize, i as usize);
 
     let mut cache = BackwardCache::new();
-    let mut current_level = HashMap::new();
+    let mut current_level = vec![];
     for k in 0..=max_comparisons {
         let start = std::time::Instant::now();
 
-        if 0 == k {
-            current_level.insert(BackwardsPoset::new(1, 0), (0, 0));
+        current_level = if 0 == k {
+            vec![(BackwardsPoset::new(1, 0), (0, 0))]
         } else {
+            const threshold: usize = 1_000_000;
+
             let next_level: Arc<RwLock<HashMap<BackwardsPoset, (u8, u8)>>> =
                 Arc::new(RwLock::new(HashMap::new()));
-            current_level.par_iter().for_each(|(poset, _)| {
-                if !interrupt.load(Ordering::Relaxed) {
-                    let result =
-                        poset.calculate_predecessors(&cache, &table, n, i, max_comparisons - k);
-                    next_level
-                        .write()
-                        .expect("cache shouldn't be poisoned")
-                        .extend(result);
-                }
-            });
+            let result_buffer: Arc<RwLock<(usize, VecDeque<HashMap<BackwardsPoset, (u8, u8)>>)>> =
+                Arc::new(RwLock::new((0, VecDeque::new())));
 
-            current_level = next_level
-                .read()
-                .expect("cache shouldn't be poisoned")
-                .clone();
+            current_level
+                .par_iter()
+                .for_each(|(poset, _): &(BackwardsPoset, (u8, u8))| {
+                    if !interrupt.load(Ordering::Relaxed) {
+                        let result =
+                            poset.calculate_predecessors(&cache, &table, n, i, max_comparisons - k);
+
+                        let mut writer =
+                            result_buffer.write().expect("cache shouldn't be poisoned");
+                        writer.0 += result.len();
+                        writer.1.push_back(result);
+
+                        if threshold < writer.0 {
+                            writer.0 = 0;
+                            let mut new_deque = VecDeque::new();
+                            mem::swap(&mut writer.1, &mut new_deque);
+                            mem::drop(writer);
+
+                            let mut current_level_writer =
+                                next_level.write().expect("cache shouldn't be poisoned");
+                            for hash_map in new_deque {
+                                current_level_writer.extend(hash_map);
+                            }
+                        }
+                    }
+                });
+
+            let mut writer = result_buffer.write().expect("cache shouldn't be poisoned");
+            let mut new_deque = VecDeque::new();
+            mem::swap(&mut writer.1, &mut new_deque);
+
+            let mut current_level_writer = next_level.write().expect("cache shouldn't be poisoned");
+            let mut next_level_raw = HashMap::new();
+            mem::swap(&mut *current_level_writer, &mut next_level_raw);
+
+            for hash_map in new_deque {
+                next_level_raw.extend(hash_map);
+            }
+
+            next_level_raw.into_iter().collect()
         };
+        current_level.shrink_to_fit();
 
         let add_level = std::time::Instant::now();
-        cache.add_layer(&current_level);
+        cache.add_layer(&current_level, k as u8);
         let elapsed = add_level.elapsed();
 
-        if let Some(backward_search_state) = backward_search_state_opt {
-            let mut write_lock = backward_search_state
-                .write()
-                .expect("cache shouldn't be poisoned");
-            for (item, _) in &current_level {
-                write_lock.0.insert(*item, k as u8);
-            }
-            write_lock.1 = k as i8;
-        }
-
         println!(
-            "# {}: {} in {:.3?}, total: {}, add level: {:.3?}",
+            "# {}: {} in {:.3?}, total: {}, add level: {:.3?}, real memory: {}",
             k,                   // comparisons done
             current_level.len(), // posets per level
             start.elapsed(),     // time per level
             cache.len(),         // total cached posets
-            elapsed
+            elapsed,
+            get_memory()
         );
 
-        if current_level.contains_key(&BackwardsPoset::new(n, i)) {
+        if cache.contains(&BackwardsPoset::new(n, i)) {
             return Some((k as u8, cache));
         } else if current_level.is_empty() || interrupt.load(Ordering::Relaxed) {
             return None;
@@ -97,21 +120,11 @@ pub fn iterative_deepening_backward(
     for bound in lower..=upper {
         println!("n: {n}, i: {i} needs at least {bound} comparisons");
         let this_level = std::time::Instant::now();
-        let result = start_search_backward(interrupt, None, n, i, bound);
+        let result = start_search_backward(interrupt, n, i, bound);
         println!("{}", format_duration(this_level));
 
         if let Some((comparisons, cache)) = result {
             debug_assert!(comparisons as usize == bound);
-
-            let mut sys = sysinfo::System::new_all();
-            sys.refresh_all();
-
-            let mut used_memory = String::from("-");
-            if let Ok(pid) = sysinfo::get_current_pid() {
-                if let Some(process) = sys.process(pid) {
-                    used_memory = format_memory(process.memory());
-                }
-            }
 
             let ratio = 100.0 * COUTNER_USE_NAUTY.get() as f64
                 / 1.max(COUTNER_USE_NAUTY.get() + COUTNER_USE_NOT_NAUTY.get()) as f64;
@@ -121,7 +134,7 @@ pub fn iterative_deepening_backward(
             println!();
             println!("Cache entries: {}", cache.len());
             println!(
-                "Cache size: {} (real: {used_memory}) Gigabyte",
+                "Cache size: {} Gigabyte",
                 format_memory(cache.memory_size() as u64),
             );
             println!("Nauty Ratio: {ratio:.3?}%");
