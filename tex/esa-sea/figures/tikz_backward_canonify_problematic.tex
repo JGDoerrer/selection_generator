@@ -1,0 +1,18 @@
+\begin{tikzpicture}
+  \node[circle,draw=black] (A1) at (1, 0) {};
+  \node[circle,draw=black] (A2) at (0.5, 0.8) {};
+  \node[circle,draw=black] (A3) at (1.5, 0.8) {};
+
+  \draw (A1) -- (A2) node {};
+  \draw (A1) -- (A3) node {};
+  \node (AL) at (1, -0.5) {$i = 2$};
+
+
+  \node[circle,draw=black] (B1) at (3 + 1, 0.8) {};
+  \node[circle,draw=black] (B2) at (3 + 0.5, 0) {};
+  \node[circle,draw=black] (B3) at (3 + 1.5, 0) {};
+
+  \draw (B1) -- (B2) node {};
+  \draw (B1) -- (B3) node {};
+  \node (BL) at (3 + 1, -0.5) {$i = 2$};
+\end{tikzpicture}

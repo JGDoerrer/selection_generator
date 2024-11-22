@@ -1,0 +1,72 @@
+\begin{tikzpicture}
+  \begin{axis}[
+      ybar,
+      ymode=log,
+      axis x line = bottom,%x-Achse nur unten
+      enlarge x limits = .1,%x-Achse erweitern
+      x axis line style = {-},%kein Pfeil
+      bar width=3pt,
+      ylabel={number of posets},
+      xlabel={number of comparisons done},
+      % legend cell align=left,
+      % legend pos=outer north east,
+      % legend style={at={(0.5,-0.2)},anchor=north}, % draw=none
+    ]
+    % \addlegendentry{forward search}
+    \addplot[fill=blue,shift={(1pt, 0)}] table {
+        x y
+        0  1
+        1  4
+        2  57
+        3  552
+        4  10397
+        5  154828
+        6  1166640
+        7  3770182
+        8  5941732
+        9  4726819
+        10 2096404
+        11 604582
+        12 143058
+        13 32460
+        14 7450
+        15 1823
+        16 471
+        17 132
+        18 41
+        19 13
+        20 5
+        21 3
+        22 2
+        23 1
+      };
+    % \addlegendentry{backward search}
+    \addplot[fill=red,shift={(-1pt, 0)}] table {
+        x y
+        23 1
+        22 1
+        21 3
+        20 16
+        19 381
+        18 15227
+        17 290138
+        16 1750707
+        15 4058631
+        14 4368185
+        13 2592437
+        12 1006071
+        11 291970
+        10 72346
+        9  16728
+        8  3898
+        7  893
+        6  227
+        5  58
+        4  17
+        3  6
+        2  2
+        1  1
+        0  1
+      };
+  \end{axis}
+\end{tikzpicture}
