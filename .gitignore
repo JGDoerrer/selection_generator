@@ -28,3 +28,9 @@ build
 *.nav
 *.snm
 *.toc
+
+# sea-esa template
+!cc-by.pdf
+!orcid.pdf
+!guideline.pdf
+!lipics*.pdf
