@@ -39,6 +39,7 @@
 % \usepackage[capitalize]{cleveref}
 \usepackage{mathtools}
 \usepackage{booktabs}
+\usepackage{cleveref}
 
 %\pdfoutput=1 %uncomment to ensure pdflatex processing (mandatatory e.g. to submit to arXiv)
 %\hideLIPIcs  %uncomment to remove references to LIPIcs series (logo, DOI, ...), e.g. when preparing a pre-final version to be uploaded to arXiv or another public repository
@@ -300,6 +301,99 @@ We use the concept of compatible solutions to derive a lower bound on the number
   Assume we have an optimal algorithm for selecting the $i$-th smallest element of a poset $P$.
   From \Cref{lemma:compatible_union}, it follows that for every $(S, i)$, there is at least one leaf in the decision tree labeled with $\{(S, i)\}$.
   Hence, there are at least $|\mathcal{C}(P, i)|$ leaves, implying that the height of the tree is at least $\lceil\log(|\mathcal{C}(P, i)|)\rceil$.
+\end{proof}
+
+
+\subsection{Weight Function}
+
+The goal of this section is to construct a function $w$ that assigns to each problem $(P, i)$ a weight, such that $w(P,i) \le w(\pchild{P}{a}{b}, i) + w(\pchild{P}{b}{a},i)$ for each $a,b \in \Omega_P$ and $w(P,i) = 1$ if $(P, i)$ is a solved problem.
+Note that this means that for each comparison there is an outcome where the weight of the problem is at most halfed.
+Thus, such a function will give us a lower bound of $\lceil\log(w(P, i))\rceil$ on the number of comparisons required to solve $(P, i)$.
+
+A bipartition of a partial order $P$ is a partition of $\Omega_P$ into two subsets, such that one is an upset and the other is a downset of $P$.
+We describe a bipartition using a mapping $g \colon \Omega \to \{0, 1\}$.
+In this model the two sets are $g^{-1}(0)$ and $g^{-1}(1)$, where $g^{-1}(0)$ is a downset and $g^{-1}(1)$ is an upset.
+By $\Pi_k(P)$ we denote the set of all bipartitions $g$ of $P$ such that $|g^{-1}(0)| = k$.
+We will use $A_g(P)$ to denote the set of minimal elements in the upset $g^{-1}(1)$, and $B_g(P)$ to denote the set of maximal elements in the downset $g^{-1}(0)$.
+Furthermore, for two distinct elements $a, b \in \Omega$ we define $\Pi_k(P,ab/) = \{g \in \Pi_k(P) \mid a,b \in g^{-1}(0)\}$, $\Pi_k(P,a/b) = \{g \in \Pi_k(P) \mid a \in g^{-1}(0), b \in g^{-1}(1)\}$ and $\Pi_k(P,/ab) = \{g \in \Pi_k(P) \mid a,b \in g^{-1}(1)\}$.
+This gives rise to the partition 
+\begin{equation}\label{eq:part_Pi}
+    \Pi_k(\pchild{P}{a}{b}) = \Pi_k(P, ab/) \cup \Pi_k(P, /ab) \cup \Pi_k(P, a/b)\text{.}
+\end{equation}
+Now we define a first weight function
+\begin{equation}\label{eq:def_w0}
+    w_0(P, i) = \sum_{g \in \Pi_i(P)} v_0(P, g)\text{,} \quad\quad\quad\quad\text{where } v_0(P, g) = 2^{|B_g(P)| - 1}\text.
+\end{equation}
+For a solved problem $(S, i)$ clearly $w_0(S, i) = 1$ as there is only one downset of size $i$ in $S$ and its only maximal element is the $i$-th smallest element.
+The following lemma shows that the function $w_0$ meets the criteria set out for a weight function in the beginning of the section.
+In fact, we show that there is even some excess in the inequality, which we use below to construct a better weight function.
+\begin{lemma}
+  $w_0(\pchild{P}{a}{b}, i) + w_0(\pchild{P}{b}{a}, i) \geq w_0(P, i) + \sum_{g \in \Pi_i(P, /ab)} v_0(P, g)$.
+\end{lemma}
+\begin{proof}
+  For $g \in \Pi_i(P,ab/)$ we have $B_g(\pchild{P}{a}{b}) = B_g(P) \setminus \{ b \}$ and thus $v_0(\pchild{P}{a}{b}, g) \ge \tfrac12 v_0(P, g)$.
+  The latter is an equality precisely if $b \in B_g(P)$.
+  By symmetry we also obtain $v_0(\pchild{P}{b}{a}, g) \ge \tfrac12 v_0(P, g)$.
+  For the remaining cases it is easy too see that $v_0(P, g) = v_0(\pchild{P}{a}{b}, g) = v_0(\pchild{P}{b}{a}, g)$ for $g \in \Pi_i(P,/ab)$, and $v_0(P, g) = v_0(\pchild{P}{a}{b}, g)$ for $g \in \Pi_i(P, a/b)$.
+Splitting the sum in \Cref{eq:def_w0} using \cref{eq:part_Pi} and applying the above bounds for $v_0$ we obtain
+\begin{equation*}
+    w_0(\pchild{P}{a}{b}) \geq \sum_{g \in \Pi_i(P,ab/)} \tfrac12 v_0(P,g) + \sum_{g \in \Pi_i(P,/ab)} v_0(P, g) + \sum_{g \in \Pi_i(P,a/b)} v_0(P, g)\text.
+\end{equation*}
+Now we compute
+  \begin{align*}
+    w_0(\pchild{P}{a}{b}) + w_0(\pchild{P}{b}{a}) &\geq \sum_{\mathclap{g \in \Pi_i(P,ab/)}} v_0(P,g) + 2\sum_{\mathclap{g \in \Pi_i(P,/ab)}} v_0(P, g) + \sum_{\mathclap{g \in \Pi_i(P,a/b)}} v_0(P, g) + \sum_{\mathclap{g \in \Pi_i(P,b/a)}} v_0(P, g)
+%    &= w_0(P, i) + \sum_{g \in \Pi_i(P, /ab)} v_0(P, g)\text.
+  \end{align*}%
+  We obtain the desired inequality by substituting the definition of $w_0(P, i)$.
+\end{proof}
+
+Note that $w_0(E_{2m+1}, m+1) = \binom{2m+1}{m+1} 2^{m} > \tfrac{1}{2m}2^{2m}2^m = \tfrac{1}{2m} 2^{3m}$ which implies a lower bound of $3m - \mathcal{O}(\log m)$ comparisons for selection the median of $2m + 1$ elements or a bound of about $1.5n$ for finding the median of $n$.
+To push towards a weight function that will result in a $2n$ bound for the median, we define
+\begin{equation}\label{eq:def_w1}
+w_{1,\lambda}(P, i) = \sum_{\mathclap{\substack{g \in \Pi_{i-1}(P)\\|A_g(P)| \ge \lceil\sqrt {\lambda} \rceil}}} v_{1,\lambda}(P, g)\text{,} \quad\quad\text{where } v_{1,\lambda}(P, g) = \tfrac{1}{|B_g(P)| + 1}2^{|A_g(P)| + |B_g(P)| - 2\lceil\sqrt {\lambda} \rceil}\text.
+\end{equation}
+
+Our goal is to show that the function $w_\lambda(P, i) = w_{1,\lambda}(P,i) + w_0(P, i)$ fulfills the properties of a weight function stated at the beginning of this section.
+
+\begin{lemma}
+  If the number of Hasse-arcs in $P$ is at most $\lambda$, then
+  \begin{equation*}
+    w_{1,\lambda}(\pchild{P}{a}{b}, i) + w_{1,\lambda}(\pchild{P}{b}{a}, i) \ge w_{1,\lambda} (P, i) - \sum_{\mathclap{g \in \Pi_i(P,/ab)}} v_0(P, g)\text. 
+  \end{equation*}
+\end{lemma}
+
+\begin{proof}
+  For $g \in \Pi_{i-1}(P,ab/)$ we have $B_g(\pchild{P}{a}{b}) = B_g(P) \setminus \{ b \}$ and thus $v_{1,\lambda}(\pchild{P}{a}{b}, g) \ge \tfrac12 v_{1,\lambda}(P, g)$.
+  The latter is an equality precisely if $b \in B_g(P)$.
+  Analogously, for $g \in \Pi_{i-1}(P,/ab)$ we have $v_{1,\lambda}(\pchild{P}{a}{b}, g) \ge \tfrac12 v_{1,\lambda}(P, g)$.
+  For $g \in \Pi_{i-1}(P, a/b)$ clearly $v_{1,\lambda}(P, g) = v_{1,\lambda}(\pchild{P}{a}{b}, g)$.
+  Combining this with \Cref{eq:def_w1,eq:part_Pi} we obtain
+  \begin{equation*}
+    w_{1,\lambda}(\pchild{P}{a}{b}) \ge \sum_{g \in \Pi_{i-1}(P,ab/)} \tfrac12 v_{1,\lambda}(P,g) + \sum_{\substack{g \in \Pi_{i-1}(P,/ab)\\|A_g(P)| > \lceil\sqrt\lambda\rceil}} \tfrac12 v_{1,\lambda}(P, g) + \sum_{g \in \Pi_{i-1}(P,a/b)} v_{1,\lambda}(P, g)\text.
+  \end{equation*}
+  Observe that the second sum is missing the term with $|A_g(P)| = \lceil\sqrt\lambda\rceil$.
+  The reason is that in the case $g \in \Pi_{i-1}(P,/ab)$ we could have $|A_g(P)| < \lceil\sqrt\lambda\rceil$ in which case the corresponding term would not pe present in $w_{1,\lambda}(\pchild{P}{a}{b})$.
+  Thus for the sum of weights of both outcomes of the comparison, we obtain
+  \begin{equation*}
+    w_{1,\lambda}(\pchild{P}{a}{b}) + w_{1,\lambda}(\pchild{P}{b}{a}) \ge w_{1,\lambda} (P, i) - \sum_{\substack{g \in \Pi_{i-1}(P,/ab)\\|A_g(P)| = \lceil\sqrt\lambda\rceil}} v_{1,\lambda}(P, g)\text.
+  \end{equation*}
+  It remains to show that
+  \begin{equation}\label{eq:ineq_sums}
+  \sum_{\substack{g \in \Pi_{i-1}(P,/ab)\\|A_g(P)| = \lceil\sqrt\lambda\rceil}} v_{1,\lambda}(P, g) \le \sum_{g \in \Pi_i(P, /ab)} v_0(P, g)\text.
+  \end{equation}
+  We show this by giving a mapping $\varphi \colon \Pi_{i-1}(P,/ab) \to \Pi_i(P, /ab)$ such that for each $h \in \Pi_i(P, /ab)$ we have $\sum_{g \in \varphi^{-1}(h)} v_{1,\lambda}(P, g) \le v_0(P, h)$.
+  For $g \in \Pi_{i-1}(P)$ let $a_g \in A_g(P)$ be the element that minimizes $|\less{P}{a_g} \cap B_g(P)|$.
+  We define $\varphi(g) = h$ with $h(a_g) = 0$ and $h(x) = g(x)$ for all $x \in \Omega_P \setminus a_g$.
+  Note that there is a Hasse arc between $a_g$ and each element of $\less{P}{a_g} \cap B_g(P)$.
+  As there are at most $\lambda$ Hasse arcs in $P$, out of the $\lceil\sqrt\lambda\rceil$ elements in $A_g(P)$ there is at least one with at most $\sqrt\lambda$ hasse arcs.
+  Thus $|\less{P}{a_g} \cap B_g(P)| \le \sqrt\lambda$ and we obtain $B_h(P) = (B_g(P) \setminus (\less{P}{a_g} \cap B_g(P))) \cup \{ a_g \}$.
+  Hence, $-1 \le |B_g(P)| - |B_h(P)| \le \lceil\sqrt\lambda\rceil - 1$.
+  This leads to
+  \begin{equation*}
+    v_{1,\lambda}(P, g) = \tfrac{1}{|B_g(P)| + 1}2^{|B_g(P)| - \lceil\sqrt {\lambda} \rceil - 1} \le \tfrac{1}{|B_h(P)|}2^{|B_h(P)| - 1}
+  \end{equation*}
+  Now observe that any $h \in \Pi_i(P, /ab)$ has at most $|B_h(P)|$ preimages under $\varphi$, each corresponding to the element $a \in B_h(P)$ that is move to the downset of the bipartition by the mapping $\varphi$.
+  This concludes the proof.
 \end{proof}
 
 
