@@ -442,15 +442,15 @@ This principle is implemented using a minimax algorithm, as shown in \Cref{fig:m
 
 \subsubsection{Optimizations.}
 
-\paragraph{Caching.}
+\subparagraph{Caching.}
 We can significantly speed up the exploration by caching previous results, even with a simple usage-based ejection policy.
 Since the search always imposes an upper bound on the number of comparisons, this also includes unsolved posets, for which we record the currently known minimum.
 
-\paragraph{Isomorphism Testing.}
+\subparagraph{Isomorphism Testing.}
 In the cache, we store an approximated canonical representative of a problem and its dual, allowing us to detect isomorphic problems.
 Preliminary tests showed that the performance gained by computing an approximated normal form, where some isomorphic problems may have different representatives, outweighs the cost induced by the larger search space.
 
-\paragraph{Maximum Depth.}
+\subparagraph{Maximum Depth.}
 We use the minimax search algorithm to cut off unpromising branches.
 While searching the possible comparisons of a poset, we keep track of the current best result.
 The remaining comparisons are searched with a limited depth, ensuring that only solutions improving the current best result are found.
@@ -466,7 +466,7 @@ At the start of a search, possible comparisons are sorted using a heuristic so t
 \subsubsection{Pruning.}
 We use the following two pruning criteria to reject posets that are not solvable within the given number of comparisons.
 
-\paragraph{Compatible Solutions.}
+\subparagraph{Compatible Solutions.}
 The first pruning criterion uses the number of compatible solutions.
 As proven in Theorem~\ref{theorem:compatible_log}, the $\log$ of the number of compatible solutions provides a lower bound for the cost of a given problem.
 
@@ -484,7 +484,7 @@ The algorithm assumes that the elements in the poset are sorted such that an ele
 As an example, the unordered poset $(E_n, i)$ has $n \cdot \binom{n - 1}{i - 1}$ compatible solutions because, for each of the $n$ elements, all separations of the remaining $n - 1$ elements are valid.
 
 
-\paragraph{Free Comparison.}
+\subparagraph{Free Comparison.}
 The second pruning criterion aims to reduce the size of the searched subtree by adding a `useful' comparison to eliminate elements faster.
 Explicitly, it searches for unordered elements $u$ and $v$ such that $u$ has as many elements less than it and $v$ has as many elements greater than it, and adds $u < v$ to the poset.
 The new problem is then searched for a solution using the forward search described above without reducing the number of allowed comparisons.
@@ -624,7 +624,7 @@ The computation of a predecessor for a given problem $(P, i)$ comprises three st
 Of the predecessors to the problems in $A_k$, those that actually require $k+1$ comparisons (those not in $A_k$) make up the set $A_{k+1}$.
 We describe the individual steps below.
 
-\paragraph{Predecessors on the same set of elements.}
+\subparagraph{Predecessors on the same set of elements.}
 First, we search for all posets with $n$ elements that result in poset $P$ after inserting a comparison $a < b$.
 In other words, we remove a comparison.
 First, we compute the potential predecessors.
@@ -646,7 +646,7 @@ For a potential predecessor $(Q, j)$ where $(P, i) = \reduced{(\pchild{Q}{a}{b},
 This is done by checking whether $\reduced{(\pchild{Q}{b}{a}, j)}$ is contained in one of the sets $A_k$ for $k \leq V_i(P)$, which have already been computed.
 
 
-\paragraph{One additional element involved in the comparison.}
+\subparagraph{One additional element involved in the comparison.}
 In the next step, all predecessors with $n + 1$ elements are computed, where the additional element is involved in the comparison.
 We construct the potential predecessor for this case as follows.
 We insert a new element into poset $P$ and enumerate all possibilities for the relation between the new element and the existing elements.
@@ -663,7 +663,7 @@ Otherwise, as proven in \Cref{lemma:remove_only_last_element_edge}, if one of $a
 In the next step, we will iteratively enumerate all predecessors by adding additional elements to the ones already found.
 This way, we will discover the arbitrary predecessor we started with.
 
-\paragraph{Adding elements iteratively.}
+\subparagraph{Adding elements iteratively.}
 In the third step, new elements are iteratively inserted.
 We alternate between generating new potential predecessors and checking which of those are actually predecessors.
 We stop when no new predecessors are found or when we reach an upper limit on the number of elements.
@@ -734,7 +734,7 @@ Implementing this canonification preprocessing significantly reduces the number 
   \label{table:nauty-ratio}
   \centering
   \small
-  \resizebox{\columnwidth}{!}{%
+%  \resizebox{\columnwidth}{!}{%
     \begin{tabular}{c|cccccccc}
       $n$ & \multicolumn{8}{c}{$i$}                                                          \\
           & 1                       & 2      & 3     & 4     & 5     & 6     & 7     & 8     \\ \hline
@@ -743,7 +743,7 @@ Implementing this canonification preprocessing significantly reduces the number 
       15  & 0                       & 36.390 & 8.184 & 1.678 & 0.459 & 0.132 & 0.065 & 0.041 \\
       16  & 0                       & 39.407 & 8.805 & 1.796 & 0.467 & 0.144 & -     & -     \\
     \end{tabular}%
-  }
+%  }
 \end{table}
 
 It is particularly noteworthy that as $i$ increases, the percentage of \texttt{nauty} calls decreases.
@@ -751,7 +751,7 @@ For small values of $i$, the high percentage of \texttt{nauty} calls is not crit
 
 \subsubsection{Optimizations.}
 
-\paragraph{Limit search space.}
+\subparagraph{Limit search space.}
 Since there are potentially many predecessors that cannot contribute to the solution, they are not even calculated.
 Many posets can be excluded based on $n$ and $i$.
 As illustrated in \Cref{table:n_i_values_calculated}, the search for $n = 7$ and $i = 4$ only considers predecessors that have an `x' in the corresponding row or column.
@@ -784,19 +784,19 @@ In this case, only $n = 6, i = 3$ is marked with an `x'.
   \end{tabular}%
 \end{table}
 
-\paragraph{Remaining comparisons.}
+\subparagraph{Remaining comparisons.}
 In the next step, the minimum number of comparisons that must be removed until the unordered poset is reached is calculated for each predecessor.
 This number corresponds to the edges in the corresponding Hasse diagram.
 Since no more than one comparison can be removed in each step, all posets containing too many comparisons can be discarded, as they cannot lead to an unordered poset with the remaining comparisons.
 
 
-\paragraph{Iterative deepening.}
+\subparagraph{Iterative deepening.}
 As the theoretical upper bounds are too high in practice, the program uses an iterative deepening approach.
 It starts with an upper bound that corresponds to the theoretical lower bound, derived by \Cref{lemma:previous_next_poset} from the smaller values for $n$ and increments this bound until a solution is finally found.
 As it is not possible to save which posets are lost due to the guessed upper bound without considerable effort, the backward search is restarted several times.
 Although results from previous rounds are not used, the search space can be considerably reduced, making the program more efficient.
 
-\paragraph{Parallelization.} \label{sec:backward:parallelisation}
+\subparagraph{Parallelization.} \label{sec:backward:parallelisation}
 The backward search can be ideally parallelized by performing the calculation of the predecessors in parallel.
 The only two bottlenecks here are read access to the cache and the efficient merging of all partial results.
 
@@ -998,7 +998,7 @@ Between the structural constraints of our algorithms and the available hardware,
 We believe that higher $n$ are realistic with new algorithmic ideas and conclude this work by talking about promising directions for further research.
 The latest version of our software is available at \projectServer~(\url{\projectURL}).
 
-\paragraph{Bidirectional Search.}
+\subparagraph{Bidirectional Search.}
 The classical meet-in-the-middle approach for a bidirectional search will not work for the selection problem.
 This is illustrated in \Cref{fig:backward_forward_count_13_6}:
 Assume the two searches meet after $11$ comparisons have been performed.
@@ -1018,14 +1018,14 @@ There might be better metrics than the compatible solutions, as there is a signi
 We observed that the number of comparisons required to solve a selection problem is typically about twice the lower bound obtained from the number of compatible solutions, minus a constant.
 This observation is reasonable, as the lower bound for the median is $n + \smallO(n)$, which is far from the best known asymptotic lower bound $2n + \smallO(n)$.
 
-\paragraph{Improved Weight Function.}
+\subparagraph{Improved Weight Function.}
 A better lower bound can be achieved by assigning a weight to each solution rather than merely counting compatible solutions.
 It is relatively straightforward to create a weight function that leads to a lower bound of $1.5n + \smallO(n)$ for the median.
 We also tried to develop a weight function mimicking the techniques used to obtain the $2n + \smallO(n)$ bound in~\cite{bent1985finding}.
 However, this lead to a negative $4\sqrt{n}$ term in the resulting lower bound for $n \leq 16$, cancelling out any improvement over counting compatible solutions.
 \enlargethispage{\baselineskip}
 
-\paragraph{Yao's conjecture.}
+\subparagraph{Yao's conjecture.}
 Yao conjectured that finding the $i$-th smallest of $n$ elements is at least as hard as finding an $n$-element subset $S$ of $m$ elements, where $m > n$, and an element $s \in S$ such that $s$ is the $i$-th smallest element in $S$~\cite{yao1974lower}.
 If true, it would imply a $2.5n + \smallO(n)$ algorithm for computing the median~\cite{schonhage1975finding}.
 By adapting our search algorithm, one could search for counter examples to the conjecture.
