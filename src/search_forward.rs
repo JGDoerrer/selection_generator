@@ -10,16 +10,7 @@ use std::{
 use hashbrown::HashMap;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 
-use crate::{
-    backwards_poset::BackwardsPoset,
-    cache::Cache,
-    constants::{LOWER_BOUNDS, UPPER_BOUNDS},
-    free_poset::FreePoset,
-    poset::Poset,
-    pseudo_canonified_poset::PseudoCanonifiedPoset,
-    search_backward::start_search_backward,
-    utils::format_duration,
-};
+use crate::{backwards_poset::BackwardsPoset, cache::Cache, constants::{LOWER_BOUNDS, UPPER_BOUNDS}, free_poset::FreePoset, poset::Poset, pseudo_canonified_poset::PseudoCanonifiedPoset, search_backward::start_search_backward, utils::format_duration, WeightFunction};
 
 pub struct Search<'a> {
     n: u8,
@@ -29,6 +20,7 @@ pub struct Search<'a> {
     analytics: Analytics,
     comparisons: &'a mut HashMap<PseudoCanonifiedPoset, (u8, u8)>,
     use_bidirectional_search: bool,
+    weight_function: WeightFunction,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -69,6 +61,7 @@ impl<'a> Search<'a> {
         cache: &'a mut Cache,
         comparisons: &'a mut HashMap<PseudoCanonifiedPoset, (u8, u8)>,
         use_bidirectional_search: bool,
+        weight_function: WeightFunction,
     ) -> Self {
         Search {
             n,
@@ -78,6 +71,7 @@ impl<'a> Search<'a> {
             analytics: Analytics::new(n.max(4) - 3),
             comparisons,
             use_bidirectional_search,
+            weight_function,
         }
     }
 
@@ -325,10 +319,32 @@ impl<'a> Search<'a> {
         max_comparisons: u8,
         depth: u8,
     ) -> Option<bool> {
-        let compatible_posets = poset.num_compatible_posets();
-        if compatible_posets == 0 || (max_comparisons as u32) < compatible_posets.ilog2() {
-            return Some(false);
+        
+        match self.weight_function {
+            WeightFunction::CompatibleSolutions => {
+                let compatible_posets = poset.num_compatible_posets();
+                if compatible_posets == 0 || (max_comparisons as u32) < (compatible_posets - 1).ilog2() + 1 {
+                    return Some(false);
+                }
+            }
+            WeightFunction::Weight0 => {
+                let weight = poset.weight0();
+                // ilog2 is rounded down -> (weight - 1).ilog2() + 1 is rounded up
+                if weight <= 1 || (max_comparisons as u32) <= (weight - 1).ilog2() {
+                    return Some(false);
+                }
+            }
+            WeightFunction::Weight => {
+                let scale = (1..=self.n).map(|k| k as u128).product();
+                let weight = poset.weight(depth as usize + max_comparisons as usize, scale);
+                if weight <= scale || (max_comparisons as u32) <= ((weight / scale) - 1).ilog2() {
+                    return Some(false);
+                }
+            }
+            WeightFunction::None => {}
         }
+
+        
 
         let (less, greater) = poset.calculate_relations();
 

@@ -57,6 +57,28 @@ impl FromStr for SearchMode {
     }
 }
 
+#[derive(Debug, Copy, Clone)]
+pub enum WeightFunction {
+    CompatibleSolutions,
+    Weight0,
+    Weight,
+    None,
+}
+
+impl FromStr for WeightFunction {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "cs" => Ok(WeightFunction::CompatibleSolutions),
+            "w0" => Ok(WeightFunction::Weight0),
+            "w" => Ok(WeightFunction::Weight),
+            "none" => Ok(WeightFunction::None),
+            _ => Err(Error::new(ErrorKind::InvalidValue)),
+        }
+    }
+}
+
 #[derive(Parser, Debug)]
 #[command(author, version)]
 struct Args {
@@ -85,6 +107,9 @@ struct Args {
     /// Print the algorithm which solves the problem
     #[arg(short, long, default_value_t = false)]
     print_algorithm: bool,
+    /// Weight function to use for forward search
+    #[arg(long, default_value = "w")]
+    weight_function: WeightFunction,
 }
 
 fn main() {
@@ -129,7 +154,7 @@ fn run_forward(args: &Args) {
 
         for i in start_i..(n + 1) / 2 {
             let result =
-                Search::new(n, i, &mut cache, &mut algorithm, use_bidirectional_search).search();
+                Search::new(n, i, &mut cache, &mut algorithm, use_bidirectional_search, args.weight_function).search();
 
             if (n as usize) < KNOWN_VALUES.len() && (i as usize) < KNOWN_VALUES[n as usize].len() {
                 assert_eq!(result, KNOWN_VALUES[n as usize][i as usize] as u8);

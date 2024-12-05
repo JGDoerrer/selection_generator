@@ -146,6 +146,183 @@ pub trait Poset: Sized + Debug {
 
         sum
     }
+
+
+    fn weight0(&self) -> u64 {
+        debug_assert!(self.is_lower_triangle_matrix());
+
+        let all_less_than = {
+            let mut bitsets = [BitSet::empty(); MAX_N];
+            bitsets
+                .iter_mut()
+                .take(self.n() as usize)
+                .enumerate()
+                .for_each(|(i, bs)| *bs = self.get_all_less_than(i as u8));
+            bitsets
+        };
+
+        let all_greater_than = {
+            let mut bitsets = [BitSet::empty(); MAX_N];
+            bitsets
+                .iter_mut()
+                .take(self.n() as usize)
+                .enumerate()
+                .for_each(|(i, bs)| *bs = self.get_all_greater_than(i as u8));
+            bitsets
+        };
+
+        let mut less_subsets = Vec::with_capacity(1000);
+
+        less_subsets.push(BitSet::empty());
+
+        for j in 0..self.n() as usize {
+
+            let less_than_j = all_less_than[j];
+
+            // try adding j to all previous subsets
+            for i in 0..less_subsets.len() {
+                let subset = less_subsets[i];
+
+                // test if adding j would make a valid subset
+                // we know, that there is no k with p[k] > p[j]
+                if less_than_j.intersect(subset) == less_than_j {
+                    let mut new_subset = subset;
+                    new_subset.insert(j);
+                    less_subsets.push(new_subset);
+                }
+            }
+        }
+
+        let (w1, w2) = less_subsets
+            .iter()
+            .map(|b| {
+                let w1 = (if b.len() == (self.i() + 1) as usize {
+                    let mut max_b = *b;
+                    for j in 0..self.n() as usize {
+                        if max_b.contains(j) {
+                            max_b = max_b.intersect(all_less_than[j].complement());
+                        }
+                    }
+                    let exp = (max_b.len() - 1) as u32;
+                    2u64.pow(exp)
+                } else {
+                    0u64
+                });
+                let w2 = (if b.len() == (self.i()) as usize {
+                    let a = b.complement()
+                        .intersect(BitSet::from_u16((1u16 << self.n()) - 1));
+                    let mut min_a = a;
+                    for j in 0..self.n() as usize {
+                        if min_a.contains(j) {
+                            min_a = min_a.intersect(all_greater_than[j].complement());
+                        }
+                    }
+                    let exp = (min_a.len() - 1) as u32;
+                    2u64.pow(exp)
+                } else {
+                    0u64
+                });
+                (w1, w2)
+            })
+            .reduce(|(x1, x2), (y1, y2)| { (x1 + y1, x2 + y2) }).unwrap();
+        return w1.max(w2);
+    }
+
+    fn weight(&self, max_comparisons: usize, scale: u128) -> u128 {
+        debug_assert!(self.is_lower_triangle_matrix());
+
+        let all_less_than = {
+            let mut bitsets = [BitSet::empty(); MAX_N];
+            bitsets
+                .iter_mut()
+                .take(self.n() as usize)
+                .enumerate()
+                .for_each(|(i, bs)| *bs = self.get_all_less_than(i as u8));
+            bitsets
+        };
+
+        let all_greater_than = {
+            let mut bitsets = [BitSet::empty(); MAX_N];
+            bitsets
+                .iter_mut()
+                .take(self.n() as usize)
+                .enumerate()
+                .for_each(|(i, bs)| *bs = self.get_all_greater_than(i as u8));
+            bitsets
+        };
+
+        let mut less_subsets = Vec::with_capacity(1000);
+
+        less_subsets.push(BitSet::empty());
+
+        for j in 0..self.n() as usize {
+
+            let less_than_j = all_less_than[j];
+
+            // try adding j to all previous subsets
+            for i in 0..less_subsets.len() {
+                let subset = less_subsets[i];
+
+                // test if adding j would make a valid subset
+                // we know, that there is no k with p[k] > p[j]
+                if less_than_j.intersect(subset) == less_than_j {
+                    let mut new_subset = subset;
+                    new_subset.insert(j);
+                    less_subsets.push(new_subset);
+                }
+            }
+        }
+
+        let (w1, w2) = less_subsets
+            .iter()
+            .map(|b| {
+                let a = b.complement()
+                    .intersect(BitSet::from_u16((1u16 << self.n()) - 1));
+                let mut max_b = *b;
+                for j in 0..self.n() as usize {
+                    if max_b.contains(j) {
+                        max_b = max_b.intersect(all_less_than[j].complement());
+                    }
+                }
+                let mut min_a = a;
+                for j in 0..self.n() as usize {
+                    if min_a.contains(j) {
+                        min_a = min_a.intersect(all_greater_than[j].complement());
+                    }
+                }
+                let w1 = (if b.len() == self.i() as usize {
+                    let sqrtn = (max_comparisons as f64).sqrt();
+                    if min_a.len() >= (sqrtn).ceil() as usize && min_a.len() + max_b.len() >= 2 * sqrtn.ceil() as usize {
+                        let exp = (min_a.len() + max_b.len()) as u32 - 2 * sqrtn.ceil() as u32;
+                        2u128.pow(exp) * scale / (max_b.len() as u128 + 1)
+                    } else {
+                        0
+                    }
+                } else if b.len() == (self.i() + 1) as usize {
+                    let exp = (max_b.len() - 1) as u32;
+                    2u128.pow(exp) * scale
+                } else {
+                    0
+                });
+                let w2 = (if b.len() == (self.i() + 1) as usize {
+                    let sqrtn = (max_comparisons as f64).sqrt();
+                    if max_b.len() >= (sqrtn).ceil() as usize && min_a.len() + max_b.len() >= 2 * sqrtn.ceil() as usize {
+                        let exp = (min_a.len() + max_b.len()) as u32 - 2 * sqrtn.ceil() as u32;
+                        2u128.pow(exp) * scale / (min_a.len() as u128 + 1)
+                    } else {
+                        0
+                    }
+                } else if b.len() == (self.i()) as usize {
+                    let exp = (min_a.len() - 1) as u32;
+                    2u128.pow(exp) * scale
+                } else {
+                    0
+                });
+                (w1, w2)
+            })
+            .reduce(|(x1, x2), (y1, y2)| { (x1 + y1, x2 + y2) }).unwrap();
+        return w1.max(w2);
+    }
 }
 
 #[cfg(test)]
