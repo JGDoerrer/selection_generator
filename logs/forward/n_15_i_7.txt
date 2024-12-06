@@ -1,12 +1,30 @@
+
+Branch: main
+SHA: 7892ddb
+
+Thread(s) per core: 2
+Core(s) per socket: 12
+CPU max MHz: 2900.0000
+CPU min MHz: 1200.0000
+
+Current time: 2024-07-12 13:10:24
+===============
+Cache entries: 0
+Maximum cache entries: 20833333332
+n: 15, i: 7 needs at least 27 comparisons
+Duration: 14d 21h 19m 12.125s
+
+Congratulations. A solution was found!
+
 n: 15, i: 7
 Comparisons: 27
 
-Cache entries: 15710506210
-Cache size: 321.894 Gigabyte
-Cache hits: 267514248542
-Cache misses: 17391943951
-Cache replaced: 1681437747
+Cache entries: 14483826570
+Cache size: 323.739 Gigabyte
+Cache hits: 278336126768
+Cache misses: 18447321300
+Cache replaced: 3963494733
 
-Posets searched: 3525511907
-Duration: 14d 1h 50m 45.25s
+Posets searched: 3643407316
+Duration: 14d 21h 25m 47.375s
 
