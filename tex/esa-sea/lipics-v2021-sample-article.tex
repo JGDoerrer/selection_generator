@@ -501,6 +501,7 @@ Explicitly, it searches for unordered elements $u$ and $v$ such that $u$ has as 
 The new problem is then searched for a solution using the forward search described above without reducing the number of allowed comparisons.
 If the new problem is not solvable, then the original problem cannot be solvable either.
 This is valid because adding a comparison `for free' does not make the problem harder to solve.
+The additional comparison helps to connect parts of the poset and thus allows more elements to be discarded.
 
 \subsection{Backward Search.} \label{sec:backward}
 The development of the backward search is primarily based on the backward search method from~\cite{stober2022lower}, as it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen~\cite{Oksanen}.
