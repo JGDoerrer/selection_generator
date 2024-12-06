@@ -143,7 +143,7 @@
   Using new algorithmic ideas we established tighter lower bounds for the number of comparisons required, denoted as $V_i(n)$.
   Our results include optimal algorithms for $n$ up to 15 and arbitrary $i$, and for $n=16$ when $i \leq 6$.
   We determined the precise values $V_7(14) = 25$, $V_6(15) = V_7(15) = 26$, and $V_8(15) = 27$, where previously, only a range was known.
-%  We computed $V_i(16)$ for $i \leq 6$ and determined a new lower bound for $V_7(16)$ and $V_8(16)$.
+%  We computed $V_i(16)$ for $i \leq 6$ and determined a new lower bound for $V_7(16)$ and $V_8(16)$. 
 
 \end{abstract} % newline above is important for formatting
 
@@ -155,6 +155,10 @@
   mention doing anything other than using nauty).
   \item The "free comparison" bound right before 3.3 is correct, but is there
   any intuition about why it was good to use?
+  \item Poset Abbildungen kleiner machen -> scale 0.7
+  \item Isomorphism nur an einer Stelle im Paper beschreiben
+  \item Predecessor Section ist zu lang -> kürzer
+  \item Table 2 weg
 \end{itemize}
 % delete above block
 
@@ -431,6 +435,9 @@ A \emph{normal} representative is a uniquely reduced representative of the isomo
 We store posets as adjacency matrix.
 We choose a canonical representative in each isomorphism class so that we have a lower triangular matrix that can be stored using $\frac{n^2 - n}{2}$ bits.
 
+% TODO: hier alle Sachen zu Isomorphism schreiben
+
+% 2 Unterpunkte jeweils Vor- und Rückwärtssuche
 
 \subsection{Forward Search.} \label{chapter:forward_search}
 The forward search algorithm is based on the work of Oksanen~\cite{Oksanen2006} and Gasarch et.\ al\@.~\cite{Gasarch1996}.
