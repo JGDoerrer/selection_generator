@@ -23,6 +23,7 @@ build
 *.gz
 *.run.xml
 *.bcf
+*.vtc
 
 ## presentation
 *.nav
