@@ -436,7 +436,8 @@ It allows us to further improve the computation of optimal selection algorithms.
 \subsection{Data Structures and Isomorphism Testing.}
 The key to reducing the search space is to consider only reduced problems and detect isomorphic problems.
 Isomorphism testing is performed by computing a \emph{canonical} representative.
-For the backward search, we use \texttt{nauty}~\cite{MCKAY201494} to compute a canonical representative.
+For the backward search, we use a custom algorithm to compute a canonical representative.
+For complicated cases our custom algorithm uses \texttt{nauty}~\cite{MCKAY201494} as fall-back.
 For the forward search, we use a best-effort approximation to reduce the cost of computing the representative, at the expense of a slightly larger search space.
 
 By \Cref{lemma:dual_poset_allowed}, we do not need to distinguish a problem from its dual.
@@ -454,7 +455,8 @@ We choose a canonical representative in each isomorphism class so that we have a
 
 \subsection{Forward Search.} \label{chapter:forward_search}
 The forward search algorithm is based on the work of Oksanen~\cite{Oksanen2006} and Gasarch et.\ al\@.~\cite{Gasarch1996}.
-We first describe the basic algorithm and then discuss the optimizations and pruning techniques we applied, including a novel pruning criterion based on compatible solutions.
+We first describe the basic algorithm and then discuss the optimizations and pruning techniques we applied.
+Our main contribution to the forward search, is the introduction of a novel pruning criterion based on compatible solutions.
 
 The forward search starts with the problem $(E_n, i)$ and recursively determines the cost of selecting the $i$-th smallest element of a poset $P$.
 Between the two possible outcomes of a comparison, we assume the worse.
@@ -499,7 +501,7 @@ We use the following two pruning criteria to reject posets that are not solvable
 
 \subparagraph{Compatible Solutions.}
 The first pruning criterion uses the number of compatible solutions.
-As proven in Theorem~\ref{theorem:compatible_log}, the $\log$ of the number of compatible solutions provides a lower bound for the cost of a given problem.
+As proven in Theorem~\ref{theorem:compatible_log}, the logarithm of the number of compatible solutions provides a lower bound for the cost of a given problem.
 
 \Cref{algo:compatible_solutions} shows how we compute the number of compatible solutions for a given problem.
 To calculate this number, the algorithm first picks a solution element $j$ -- since problems are always reduced in the forward search, any element is valid -- and then counts the number of partitions into greater and lesser elements, summing these counts over all solution elements.
@@ -516,7 +518,7 @@ As an example, the unordered poset $(E_n, i)$ has $n \cdot \binom{n - 1}{i - 1}$
 
 
 \subparagraph{Free Comparison.}
-The second pruning criterion aims to reduce the size of the searched subtree by adding a `useful' comparison to eliminate elements faster.
+The second pruning criterion, which has already been used in~\cite{Oksanen}, aims to reduce the size of the searched subtree by adding a `useful' comparison to eliminate elements faster.
 Explicitly, it searches for unordered elements $u$ and $v$ such that $u$ has as many elements less than it and $v$ has as many elements greater than it, and adds $u < v$ to the poset.
 The new problem is then searched for a solution using the forward search described above without reducing the number of allowed comparisons.
 If the new problem is not solvable, then the original problem cannot be solvable either.
@@ -524,20 +526,19 @@ This is valid because adding a comparison `for free' does not make the problem h
 The additional comparison helps to connect parts of the poset and thus allows more elements to be discarded.
 
 \subsection{Backward Search.} \label{sec:backward}
-The development of the backward search is primarily based on the backward search method from~\cite{stober2022lower}, as it represents a new research area for the selection problem and was not addressed in the previous work by Oksanen~\cite{Oksanen}.
-
-The backward search starts with the set of solved selection problems, and iteratively removes comparisons until the unordered poset is found.
-Even if we restrict ourselves to a fixed cardinality $n$ and rank $i$, the set of solved problems remains large.
-We solve this, by only enumerating reduced problems.
-With this restriction, the starting point of the backward search is $(E_1, 1)$.
+The backward search is a different kind of search algorithm, which has not been applied to the selection problem before.
+The idea is to start with the set of solved problems, and iteratively remove comparisons until the unordered poset is found.
+Recently, this approach has been applied with great success to the related problem of determining the exact lower bound for sorting~\cite{stober2022lower}.
 
 \subsubsection{Algorithm.} \label{sec:backward:algorithm}
+In this section we briefly describe the core principles of the backward search algorithm.
 The input parameters for the backward search are denoted by $n$ and $i$, similar to the forward search.
-The backward search starts with the solved problem $(E_1, 1)$ and iteratively computes all posets solvable using $k = 1, 2, 3, \dots$ comparisons until the unordered poset $(E_n, i)$ is encountered.
-
-Let $A_k$ denote the set of all reduced selection problems solvable using $k$ comparisons.
+A first challenge when starting the search with the set of solved selection problems is that, even if we restrict ourselves to a fixed cardinality $n$ and rank $i$, the set of solved problems remains large.
+We overcome this, by only enumerating reduced problems.
+With this restriction, the starting point of the backward search is $(E_1, 1)$.
+%The backward search starts with the solved problem $(E_1, 1)$ and iteratively computes all posets solvable using $k = 1, 2, 3, \dots$ comparisons until the unordered poset $(E_n, i)$ is encountered.
+By $A_k$ we denote the set of all reduced selection problems solvable using $k$ comparisons.
 For all $n$ and $i$, we have $A_0 = \{(E_1, 1)\}$.
-
 The backward search begins with $A_0$ and iteratively computes, for each problem in $A_k$, the corresponding predecessors, which form the set $A_{k + 1}$.
 If $(E_n, i) \in A_\ell$, then $V_i(n) = \ell$.
 
@@ -714,72 +715,67 @@ We only consider potential predecessors that are reduced and of cause by the add
 
 \Cref{fig:backward-search-tree} illustrates the backward search for $n = 4$ and $i = 2$.
 
-\subsubsection{Normalform.} \label{sec:backward:normal_form}
-Note that the backward search requires a unique normal form and cannot use the approximation method applied in the forward search.
-The following outlines the computation of the normal form:
+\subsubsection{Normal Form.} \label{sec:backward:normal_form}
+The backward search requires a unique normal form and cannot use the approximation method applied in the forward search.
+The computation of the normal form consists of the following three steps, which will be explained in detail below.
+First, we decide whether or not the replace the posets with its dual.
+Then, a hash value is computed for each vertex in the poset, based on the topological structure.
+Lastly, the elements in the poset are ordered based on their hash value.
+There is some special consideration for elements with the same hash value, and should the algorithm fail to produce a unique representation, then it will fall back to calling \texttt{nauty}.
 
-First, determine whether $i < n - i + 1$ holds.
-If not, replace the problem with its dual.
-According to \Cref{lemma:dual_poset_allowed}, the cost of the problem remains unchanged.
-
-Finally, the elements of the poset are arranged in a canonical order.
-We use \texttt{nauty} to obtain a canonical labeling of the elements.
-With this canonical labeling, the poset can be represented in its canonified form.
-
-A potential issue arises if $i = n - i + 1$.
+Whether or not to use the dual problem, is decided such that $i < \tfrac{n}{2}$.
+%According to \Cref{lemma:dual_poset_allowed}, the cost of the problem remains unchanged.
+A potential issue arises if $i = \tfrac{n}{2}$.
 In this case, it is impossible to decide whether $(P, i)$ or $\dual{(P, i)}$ corresponds to the normal form based solely on the value of $i$.
+To resolve this, the subsequent steps will be computed for the the problem and its dual.
+At the end, one is deterministically selected by comparing the binary representations of the posets.
 
-\begin{figure}[!b]
-  \centering
-  \input{figures/tikz_backward_canonify_problematic.tex}
-  \caption{According to \Cref{lemma:dual_poset_allowed}, the two posets are dual to each other.
-    However, \texttt{nauty} cannot be used to transform the posets into each other since they are different graphs.
-    This can also be seen in the Hasse diagram, which represents a directed graph, although the arrows are not shown here and always run implicitly from top to bottom.}
-  \label{fig:backward_canonify_problematic}
-\end{figure}
+%
+%\begin{figure}[!b]
+%  \centering
+%  \input{figures/tikz_backward_canonify_problematic.tex}
+%  \caption{According to \Cref{lemma:dual_poset_allowed}, the two posets are dual to each other.
+%    However, \texttt{nauty} cannot be used to transform the posets into each other since they are different graphs.
+%    This can also be seen in the Hasse diagram, which represents a directed graph, although the arrows are not shown here and always run implicitly from top to bottom.}
+%  \label{fig:backward_canonify_problematic}
+%\end{figure}
+The next step is the computation of a hash value for each vertex in the poset.
+We begin with the in- and out-degree for each vertex and assign a hash value based on these degrees.
+Then, we iteratively update the hash value of each vertex, considering the hash value of the adjacent vertices.
+Only three iterations are sufficient to obtain good-enough hash values.
 
-In \Cref{fig:backward_canonify_problematic}, the posets appear different in the Hasse diagram despite being each other's duals.
-To resolve this ambiguity, the dual poset is computed and canonified for each poset where $i = n - i + 1$ holds true.
-Subsequently, one of the posets is deterministically selected by comparing their binary representations.
-
-Since canonification is inevitable for the backward search but consumes significant computational time, all simple cases are handled manually, and only the remaining cases are canonified using \texttt{nauty}.
-
-First, compute the in- and out-degree for each node.
-Then, assign a hash value to each node based on these degrees, considering the recursive topological structure of adjacent nodes up to a specified depth limit.
-
-The manual canonification process is as follows:
-Next, sort the nodes according to their hash values.
+The last step is to sort the vertices according to their hash values.
 If all hash values are unique, we have a canonical labeling.
-As it is often the case in the searched posets that two nodes have the same hash values, this case was intercepted.
-Let there be $l$ pairs of nodes with identical hash values.
-Then, there are $2^l$ possible posets that could correspond to the normal form, since each of the $l$ pairs may or may not be swapped.
+If there are vertices with the same hash, then we apply a special treatment to the following common situation.
+Let there be $l$ non-overlapping pairs of vertices with identical hash values (and all other pairs have different hash values).
+Then, there are $2^l$ possible permutations that could correspond to the normal form, since each of the $l$ pairs may or may not be swapped.
 Given the realistic assumption that $l$ is small, all $2^l$ permutations can be efficiently iterated.
 With the aim of obtaining values for $n = 16$, it follows that there are at most $\frac{n}{2}$ pairs, hence $l \leq 8$ always holds.
-All $2^l$ posets are then calculated, and one permutation is deterministically selected based on its binary representation, similar to the case of the dual poset.
-It should be noted that this optimisation only works with pairs of two elements and no longer works if there are three nodes with the same hash value.
+All $2^l$ posets are then calculated, and one permutation is deterministically selected based on its binary representation.
+It should be noted that this special treatment only applies to pairs of two elements and no longer applies if there are three vertices with the same hash value.
+All remaining ambiguous cases, not covered by the special treatment above, are handled using \texttt{nauty}.
 
-Implementing this canonification preprocessing significantly reduces the number of cases requiring \texttt{nauty}, as illustrated in \Cref{table:nauty-ratio}.
+In practise, our algorithm for computing the normal form rarely falls back to using \texttt{nauty}, as illustrated in \Cref{table:nauty-ratio}.
+It is particularly noteworthy that as $i$ increases, the percentage of \texttt{nauty} calls decreases.
+For small values of $i$, the high percentage of \texttt{nauty} calls is not critical, as computations for small $i$ are generally quick.
 
 \begin{table}[!t]
   \renewcommand{\arraystretch}{1.1}
-  \caption{Percentage of canonification requiring \texttt{nauty} for variable $n$ and $i$, where lower values are preferable.}
+  \caption{Percentage of normal form computations using \texttt{nauty} for variable $n$ and $i$, where lower values are preferable.}
   \label{table:nauty-ratio}
   \centering
   \small
 %  \resizebox{\columnwidth}{!}{%
-    \begin{tabular}{c|cccccccc}
-      $n$ & \multicolumn{8}{c}{$i$}                                                          \\
-          & 1                       & 2      & 3     & 4     & 5     & 6     & 7     & 8     \\ \hline
-      13  & 0                       & 30.205 & 6.808 & 1.526 & 0.467 & 0.185 & 0.114 &       \\
-      14  & 0                       & 33.667 & 7.552 & 1.651 & 0.425 & 0.151 & 0.073 &       \\
-      15  & 0                       & 36.390 & 8.184 & 1.678 & 0.459 & 0.132 & 0.065 & 0.041 \\
-      16  & 0                       & 39.407 & 8.805 & 1.796 & 0.467 & 0.144 & -     & -     \\
+    \begin{tabular}{cr|cccccccc}
+%      $n$ & $i$ & \multicolumn{8}{c}{$i$}                                                          \\
+      $n$ & $i$    & 1                       & 2      & 3     & 4     & 5     & 6     & 7     & 8     \\ \hline
+      13 & & 0                       & 30.205 & 6.808 & 1.526 & 0.467 & 0.185 & 0.114 &       \\
+      14 & & 0                       & 33.667 & 7.552 & 1.651 & 0.425 & 0.151 & 0.073 &       \\
+      15 & & 0                       & 36.390 & 8.184 & 1.678 & 0.459 & 0.132 & 0.065 & 0.041 \\
+      16 & & 0                       & 39.407 & 8.805 & 1.796 & 0.467 & 0.144 & -     & -     \\
     \end{tabular}%
 %  }
 \end{table}
-
-It is particularly noteworthy that as $i$ increases, the percentage of \texttt{nauty} calls decreases.
-For small values of $i$, the high percentage of \texttt{nauty} calls is not critical, as computations for small $i$ are generally quick.
 
 \subsubsection{Optimizations.}
 
