@@ -185,13 +185,33 @@ His results and the computer program he used to obtain them are available on his
 However, these results are not published in a scientific journal.
 
 We will also tackle the selection problem using computer search.
-We will reimplement some of the existing ideas and add our own improvements, exploring the benefits of different search strategies, adding $\alpha$-$\beta$-pruning, and exploiting compatible solutions.
+%We will reimplement some of the existing ideas and add our own improvements, exploring the benefits of different search strategies, adding $\alpha$-$\beta$-pruning, and exploiting compatible solutions.
+We reimplement the minimax algorithm used in~\cite{Gasarch1996,Oksanen,Oksanen2006} and improve upon it by introducing suitable heuristics.
+Then we explore a different search strategy, the backwards search, which is another significant improvement over the minimax algorithm.
 A quote from Miguel de Cervantes from Don Quijote will hold true for this article: ``the journey is better than the inn''~\cite{cervantes_don_quijote}.
 So buckle up.
 
 \subsection{Contribution.}
-In this work, we present a novel approach to finding optimal algorithms for selection.
-Using our approach, we obtained the following results:
+In this work, we apply two different search algorithms to finding optimal algorithms for selection.
+The first, which we will call forward search in the remainder of this article, is based on the minimax algorithm also used by Gasarch et.\ al\@.~\cite{Gasarch1996} and Oksanen~\cite{Oksanen,Oksanen2006}.
+We introduce a novel pruning criterion based on the notion of compatible solutions, and demonstrate that this leads to a significant improvement compared to the benchmark implementation from~\cite{Oksanen}.
+
+The second algorithm, the backward search, is based on an entirely different idea.
+Here, the start and endpoint of the search switch places.
+This type of search has not been applied to the selection problem before, and its efficient application poses several challenges, the solution of which is the main technical contribution of this work.
+
+One such challenge is the use of reduced posets.
+A poset is reduced by removing all elements that cannot be the $i$-th smallest.
+In the forward search this is a straight-forward optimization to reduce the search space
+To apply this optimization in the backward search, we show that reduced posets are well behaved, in a way that allows us to efficiently reverse the reduction.
+
+Another challenge, more of an engineering nature, is the need for an efficiently computable normal form.
+The goal of the normal form is to identify isomorphic posets and thus reduce the size of the search space.
+A normal form can be computed using the well-known \text{nauty} tool~\cite{MCKAY201494}.
+However, a call to \texttt{nauty} is expensive compared to the other steps in the backward search.
+Thus we spend a lot of effort on buing able to avoid a call to \texttt{nauty} in many cases when computing the normal form.
+
+Using our two algorithms, we obtained the following results:
 \begin{enumerate}
   \item We confirm most of the values $V_i(n)$ computed by Oksanen and correct an error in his work which states that $V_5(15)$ would be $25$~\cite{Oksanen}.
         We show that the optimal algorithm requires one comparison fewer, that is $V_5(15) = 24$.
@@ -200,13 +220,6 @@ Using our approach, we obtained the following results:
   \item We computed $V_i(16)$ for $i \leq 6$ and determined a better lower bound for $V_7(16)$ and $V_8(16)$.
 \end{enumerate}
 
-Our algorithmic approach is twofold.
-The first approach, which we will call forward search in the remainder of this article, is an improvement to the minimax algorithm also used by Gasarch et.\ al\@.~\cite{Gasarch1996} and Oksanen~\cite{Oksanen,Oksanen2006}.
-We introduce a novel pruning criterion based on the notion of compatible solutions.
-
-The second approach, the backward search, is based on an entirely different idea.
-Here, the start and endpoint of the search switch places.
-This type of search has not been applied to the selection problem before, and we will see that its efficient application poses several challenges.
 
 \section{Fundamentals}
 
