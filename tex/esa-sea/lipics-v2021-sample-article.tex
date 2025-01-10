@@ -156,8 +156,6 @@
   \item Julius: Poset Abbildungen kleiner machen -> scale 0.7
   \item Konrad: Isomorphism nur an einer Stelle im Paper beschreiben
   \item Johanna: Table 2 weg; Abbildung minimax weg; Ergebnisstabelle (Tabelle 5 und 6) in Anhang; Kurze Tabelle in Text (nur Median)
-  \item Josua: The "free comparison" bound right before 3.3 is correct, but is there
-  any intuition about why it was good to use?
   \item Predecessor Section ist zu lang -> kürzer
 \end{itemize}
 % delete above block
@@ -393,11 +391,12 @@ At the start of a search, possible comparisons are sorted using a heuristic so t
 
 \subparagraph{Free Comparison.}
 Another pruning criterion, which has already been used in~\cite{Oksanen}, aims to reduce the size of the searched subtree by adding a `useful' comparison to eliminate elements faster.
-Explicitly, it searches for unordered elements $u$ and $v$ such that $u$ has as many elements less than it and $v$ has as many elements greater than it, and adds $u < v$ to the poset.
+Explicitly, it searches for unordered elements $u$ and $v$ such that $u$ has at least two elements less than it and no elements greater than it and $v$ has at least two elements greater than it and no elements smaller than it, and adds $u < v$ to the poset.
 The new problem is then searched for a solution using the forward search described above without reducing the number of allowed comparisons.
 If the new problem is not solvable, then the original problem cannot be solvable either.
 This is valid because adding a comparison `for free' does not make the problem harder to solve.
-The additional comparison helps to connect parts of the poset and thus allows more elements to be discarded.
+Connecting a small element to a large element can result in many elements being larger or smaller than $i$ elements.
+This allows for more elements to be discarded.
 
 \subsection{Backward Search.} \label{sec:backward}
 The backward search is a different kind of search algorithm, which has not been applied to the selection problem before.
