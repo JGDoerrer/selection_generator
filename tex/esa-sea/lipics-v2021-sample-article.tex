@@ -842,11 +842,11 @@ We observed that the number of comparisons required to solve a selection problem
 This observation is reasonable, as the lower bound for the median is $n + \smallO(n)$, which is far from the best known asymptotic lower bound $2n + \smallO(n)$.
 
 \subparagraph{Improved Weight Function.}
-A better lower bound can be achieved by assigning a weight to each solution rather than merely counting compatible solutions.
-It is relatively straightforward to create a weight function that leads to a lower bound of $1.5n + \smallO(n)$ for the median.
-We also tried to develop a weight function mimicking the techniques used to obtain the $2n + \smallO(n)$ bound in~\cite{bent1985finding}.
-However, this lead to a negative $4\sqrt{n}$ term in the resulting lower bound for $n \leq 16$, cancelling out any improvement over counting compatible solutions.
-\enlargethispage{\baselineskip}
+A better lower bound might be achieved by assigning a weight to each solution rather than merely counting compatible solutions.
+%It is relatively straightforward to create a weight function that leads to a lower bound of $1.5n + \smallO(n)$ for the median.
+Mimicking the techniques used to obtain the $2n + \smallO(n)$ bound in~\cite{bent1985finding} could be a fruitful approach.
+%However, this lead to a negative $4\sqrt{n}$ term in the resulting lower bound for $n \leq 16$, cancelling out any improvement over counting compatible solutions.
+%\enlargethispage{\baselineskip}
 
 \subparagraph{Yao's conjecture.}
 Yao conjectured that finding the $i$-th smallest of $n$ elements is at least as hard as finding an $n$-element subset $S$ of $m$ elements, where $m > n$, and an element $s \in S$ such that $s$ is the $i$-th smallest element in $S$~\cite{yao1974lower}.
