@@ -303,24 +303,81 @@ The backward search is a novel approach that has not been previously applied to 
 It allows us to further improve the computation of optimal selection algorithms.% todo: improve how
 
 \subsection{Data Structures and Isomorphism Testing.}
-The key to reducing the search space is to consider only reduced problems and detect isomorphic problems.
-Isomorphism testing is performed by computing a \emph{canonical} representative.
-For the backward search, we use a custom algorithm to compute a canonical representative.
-For complicated cases, our custom algorithm uses \texttt{nauty}~\cite{MCKAY201494} as a fallback.
-For the forward search, we use a best-effort approximation to reduce the cost of computing the representative, at the expense of a slightly larger search space.
-
-By \Cref{lemma:dual_poset_allowed}, we do not need to distinguish a problem from its dual.
-We take advantage of this by switching to the dual if $i \leq \frac{n+1}{2}$.
+The fundamental approach shared by both search algorithms for 
+detecting redundant Posets is to reorder the elements into 
+a specific form that then can be tested for equality. The 
+poset is reduced and converted into its dual if $i \leq \frac{n+1}{2}$.
 If $i = \frac{n+1}{2}$, one of the two is chosen deterministically.
-This is described in more detail in \Cref{sec:backward:normal_form}.
-A \emph{normal} representative is a uniquely reduced representative of the isomorphism class of the problem and its dual.
+We then order the remaining elements based on their discovered relations 
+as well as a hash-like value based on each element's neighborhood topology. We
+found a depth of three for the considered neighborhood sufficient in almost all
+cases.
 
-We store posets as adjacency matrices.
-We choose a canonical representative in each isomorphism class so that we have a lower triangular matrix that can be stored using $\frac{n^2 - n}{2}$ bits.
+We store posets as adjacency matrix.
+We choose a canonical representative in each isomorphism class such that we have a lower triangular matrix that can be stored using $\frac{n^2 - n}{2}$ bits.
 
-% TODO: hier alle Sachen zu Isomorphism schreiben
+\subsubsection{Forward Search}
+Preliminary tests showed that the performance gained by
+using this as is, where some isomorphic problems still may have different
+representatives, outweighs the cost induced by the larger search space. 
+\texttt{nauty} is never used.
 
-% 2 Unterpunkte jeweils Vor- und Rückwärtssuche
+\subsubsection{Backward Search} \label{sec:backward:normal_form}
+The backward search requires a unique normal form and cannot use the approximation method applied in the forward search.
+
+% Whether or not to use the dual problem, is decided such that $i < \tfrac{n}{2}$.
+% %According to \Cref{lemma:dual_poset_allowed}, the cost of the problem remains unchanged.
+% A potential issue arises if $i = \tfrac{n}{2}$.
+% In this case, it is impossible to decide whether $(P, i)$ or $\dual{(P, i)}$ corresponds to the normal form based solely on the value of $i$.
+% To resolve this, the subsequent steps will be computed for the the problem and its dual.
+% At the end, one is deterministically selected by comparing the binary representations of the posets.
+
+%
+%\begin{figure}[!b]
+%  \centering
+%  \input{figures/tikz_backward_canonify_problematic.tex}
+%  \caption{According to \Cref{lemma:dual_poset_allowed}, the two posets are dual to each other.
+%    However, \texttt{nauty} cannot be used to transform the posets into each other since they are different graphs.
+%    This can also be seen in the Hasse diagram, which represents a directed graph, although the arrows are not shown here and always run implicitly from top to bottom.}
+%  \label{fig:backward_canonify_problematic}
+%\end{figure}
+% The next step is the computation of a hash value for each vertex in the poset.
+% We begin with the in- and out-degree for each vertex and assign a hash value based on these degrees.
+% Then, we iteratively update the hash value of each vertex, considering the hash value of the adjacent vertices.
+% Only three iterations are sufficient to obtain good-enough hash values.
+
+% The last step is to sort the vertices according to their hash values.
+% If all hash values are unique, we have a canonical labeling.
+If there are vertices with the same hash, then we apply a special treatment to the following common situation.
+Let there be $l$ non-overlapping pairs of vertices with identical hash values (and all other pairs have different hash values).
+Then, there are $2^l$ possible permutations that could correspond to the normal form, since each of the $l$ pairs may or may not be swapped.
+Given the realistic assumption that $l$ is small, all $2^l$ permutations can be efficiently iterated.
+With the aim of obtaining values for $n = 16$, it follows that there are at most $\frac{n}{2}$ pairs, hence $l \leq 8$ always holds.
+All $2^l$ posets are then calculated, and one permutation is deterministically selected based on its binary representation.
+It should be noted that this special treatment only applies to pairs of two elements and no longer applies if there are three vertices with the same hash value.
+All remaining ambiguous cases, not covered by the special treatment above, are handled using \texttt{nauty}.
+
+In practise, our algorithm for computing the normal form rarely falls back to using \texttt{nauty}, as illustrated in \Cref{table:nauty-ratio}.
+It is particularly noteworthy that as $i$ increases, the percentage of \texttt{nauty} calls decreases.
+For small values of $i$, the high percentage of \texttt{nauty} calls is not critical, as computations for small $i$ are generally quick.
+
+\begin{table}[!t]
+  \renewcommand{\arraystretch}{1.1}
+  \caption{Percentage of normal form computations using \texttt{nauty} for variable $n$ and $i$, where lower values are preferable.}
+  \label{table:nauty-ratio}
+  \centering
+  \small
+%  \resizebox{\columnwidth}{!}{%
+    \begin{tabular}{cr|cccccccc}
+%      $n$ & $i$ & \multicolumn{8}{c}{$i$}                                                          \\
+      $n$ & $i$    & 1                       & 2      & 3     & 4     & 5     & 6     & 7     & 8     \\ \hline
+      13 & & 0                       & 30.205 & 6.808 & 1.526 & 0.467 & 0.185 & 0.114 &       \\
+      14 & & 0                       & 33.667 & 7.552 & 1.651 & 0.425 & 0.151 & 0.073 &       \\
+      15 & & 0                       & 36.390 & 8.184 & 1.678 & 0.459 & 0.132 & 0.065 & 0.041 \\
+      16 & & 0                       & 39.407 & 8.805 & 1.796 & 0.467 & 0.144 & -     & -     \\
+    \end{tabular}%
+%  }
+\end{table}
 
 \subsection{Forward Search.} \label{chapter:forward_search}
 The forward search algorithm is based on the work of Oksanen~\cite{Oksanen2006} and Gasarch et.\ al\@.~\cite{Gasarch1996}.
@@ -586,68 +643,6 @@ We stop when no new predecessors are found or when we reach an upper limit on th
 New potential predecessors are generated by adding a new element to each predecessor and enumerating all possible relations with the existing elements.
 When inserting a new element, it is important to note that it may no longer be the $i$-th smallest but rather the $(i + 1)$-th smallest element being searched, similar to the second step.
 We only consider potential predecessors that are reduced and of cause by the addition of the comparison $a < b$ and subsequent reduction, the resulting problem $(P, i)$ should be obtained anew.
-
-\subsubsection{Normal Form.} \label{sec:backward:normal_form}
-The backward search requires a unique normal form and cannot use the approximation method applied in the forward search.
-The computation of the normal form consists of the following three steps, which will be explained in detail below.
-First, we decide whether or not to replace the poset with its dual.
-Then, a hash value is computed for each vertex in the poset, based on the topological structure.
-Lastly, the elements in the poset are ordered based on their hash value.
-There is some special consideration for elements with the same hash value, and should the algorithm fail to produce a unique representation, then it will fall back to calling \texttt{nauty}.
-
-Whether or not to use the dual problem is decided such that $i < \tfrac{n}{2}$.
-%According to \Cref{lemma:dual_poset_allowed}, the cost of the problem remains unchanged.
-A potential issue arises if $i = \tfrac{n}{2}$.
-In this case, it is impossible to decide whether $(P, i)$ or $\dual{(P, i)}$ corresponds to the normal form based solely on the value of $i$.
-To resolve this, the subsequent steps will be computed for the problem and its dual.
-At the end, one is deterministically selected by comparing the binary representations of the posets.
-
-%
-%\begin{figure}[!b]
-%  \centering
-%  \input{figures/tikz_backward_canonify_problematic.tex}
-%  \caption{According to \Cref{lemma:dual_poset_allowed}, the two posets are dual to each other.
-%    However, \texttt{nauty} cannot be used to transform the posets into each other since they are different graphs.
-%    This can also be seen in the Hasse diagram, which represents a directed graph, although the arrows are not shown here and always run implicitly from top to bottom.}
-%  \label{fig:backward_canonify_problematic}
-%\end{figure}
-The next step is the computation of a hash value for each vertex in the poset.
-We begin with the in- and out-degree for each vertex and assign a hash value based on these degrees.
-Then, we iteratively update the hash value of each vertex, considering the hash value of the adjacent vertices.
-Only three iterations are sufficient to obtain good-enough hash values.
-
-The last step is to sort the vertices according to their hash values.
-If all hash values are unique, we have a canonical labeling.
-If there are vertices with the same hash, then we apply a special treatment to the following common situation.
-Let there be $l$ non-overlapping pairs of vertices with identical hash values (and all other pairs have different hash values).
-Then, there are $2^l$ possible permutations that could correspond to the normal form, since each of the $l$ pairs may or may not be swapped.
-Given the realistic assumption that $l$ is small, all $2^l$ permutations can be efficiently iterated.
-With the aim of obtaining values for $n = 16$, it follows that there are at most $\frac{n}{2}$ pairs, hence $l \leq 8$ always holds.
-All $2^l$ posets are then calculated, and one permutation is deterministically selected based on its binary representation.
-It should be noted that this special treatment only applies to pairs of two elements and no longer applies if there are three vertices with the same hash value.
-All remaining ambiguous cases, not covered by the special treatment above, are handled using \texttt{nauty}.
-
-In practice, our algorithm for computing the normal form rarely falls back to using \texttt{nauty}, as illustrated in \Cref{table:nauty-ratio}.
-It is particularly noteworthy that as $i$ increases, the percentage of \texttt{nauty} calls decreases.
-For small values of $i$, the high percentage of \texttt{nauty} calls is not critical, as computations for small $i$ are generally quick.
-
-\begin{table}[!t]
-  \renewcommand{\arraystretch}{1.1}
-  \caption{Percentage of normal form computations using \texttt{nauty} for variable $n$ and $i$, where lower values are preferable.}
-  \label{table:nauty-ratio}
-  \centering
-  \small
-%  \resizebox{\columnwidth}{!}{%
-    \begin{tabular}{cr|cccccccc}
-%      $n$ & $i$ & \multicolumn{8}{c}{$i$}                                                          \\
-      $n$ & $i$    & 1                       & 2      & 3     & 4     & 5     & 6     & 7     & 8     \\ \hline
-      13 & & 0                       & 30.205 & 6.808 & 1.526 & 0.467 & 0.185 & 0.114 &       \\
-      14 & & 0                       & 33.667 & 7.552 & 1.651 & 0.425 & 0.151 & 0.073 &       \\
-      15 & & 0                       & 36.390 & 8.184 & 1.678 & 0.459 & 0.132 & 0.065 & 0.041 \\
-      16 & & 0                       & 39.407 & 8.805 & 1.796 & 0.467 & 0.144 & -     & -     \\
-    \end{tabular}%
-%  }
-\end{table}
 
 \subsubsection{Optimizations.}
 
