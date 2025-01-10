@@ -165,7 +165,7 @@
 \section{Motivation} \label{sec:motivation}
 
 The problem of selecting the $i$-th smallest element in a list of $n$ elements is a well-known problem in computer science called \textit{selection}.
-Explicitly, we concern ourselves with the optimal worst-case selection of a single element from a set of initially unordered unique elements, measuring the cost by the number of comparisons made.
+Explicitly, we concern ourselves with the optimal worst-case selection of a single element from a set of initially unordered unique elements, measuring the cost by the number of comparisons.
 We denote this cost as $V_i(n)$.
 
 For selecting the smallest element, optimal algorithms are known with $V_1(n) = n - 1$.
@@ -180,8 +180,7 @@ To improve these bounds toward tightness, it is essential to have known optimal 
 
 Gasarch, Kelly, and Pugh~\cite{Gasarch1996} were the first to use computer search to find optimal selection algorithms for fixed $n$ and $i$.
 Oksanen continued this line of work, improving upon the previously known lower bounds~\cite{Oksanen2006}.
-His results and the computer program he used to obtain them are available on his website~\cite{Oksanen}.
-However, these results are not published in a scientific journal.
+His results and the computer program he used to obtain them are available on his website~\cite{Oksanen}, but have not been published in a scientific journal.
 
 We will also tackle the selection problem using computer search.
 We reimplement the minimax algorithm used in~\cite{Gasarch1996,Oksanen,Oksanen2006} and improve upon it by introducing suitable heuristics.
@@ -297,38 +296,6 @@ We prove the following lemma showing that the cost of selection remains unchange
   By viewing this algorithm as a binary decision tree and swapping all the children, we obtain an algorithm for selecting the $i$-th largest element in $\dual{P}$, which is also the $(n - i + 1)$-th smallest element of $\dual{P}$.
 \end{proof}
 
-\subsection{Compatible Solutions.}
-Suppose we have a solved poset $P$ with a unique $i$-th smallest element $e$.
-We then know precisely the set of elements that are smaller than $e$ as well as the set of elements that are larger than $e$.
-This observation leads us to the notion of compatible solutions, which is such a partition compatible with the current relation.
-
-\begin{definition}
-  The solved problem $(S, i)$ is a \textbf{compatible solution} of the problem $(R, i)$ if $(a, b) \in S \implies (b, a) \notin R$ and $S$ has no relations other than the $n - 1$ relations involving the $i$-th smallest element along with their transitive relations. 
-\end{definition}
-
-Clearly, a solved problem has exactly one compatible solution.
-Let
-\begin{equation*}
-  \mathcal{C}(P, i) = \{(S, i) \mid (S, i) \text{ is compatible with } (P, i)\}
-\end{equation*}
-be the set of all solutions compatible with $(P, i)$.
-Observe that, given two elements $a,b$ that are unrelated in $P$, every solution compatible with $(P, i)$ is compatible with at least one of $(\pchild{P}{a}{b}, i)$ and $(\pchild{P}{b}{a}, i)$ and thus
-\begin{equation}\label{lemma:compatible_union}
-  \mathcal{C}(P, i) = \mathcal{C}(\pchild{P}{a}{b}, i) \cup \mathcal{C}(\pchild{P}{b}{a}, i)\,\text{.}
-\end{equation}
-
-We use the concept of compatible solutions to derive a lower bound on the number of comparisons required to select the $i$-th smallest element of a poset $P$.
-
-\begin{theorem}\label{theorem:compatible_log}
-  Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil\log(|\mathcal{C}(P, i)|)\rceil$ comparisons in the worst case.
-\end{theorem}
-
-\begin{proof}
-  Assume we have an optimal algorithm for selecting the $i$-th smallest element of a poset $P$.
-  From \Cref{lemma:compatible_union}, it follows that for every $(S, i)$, there is at least one leaf in the decision tree labeled with $\{(S, i)\}$.
-  Hence, there are at least $|\mathcal{C}(P, i)|$ leaves, implying that the height of the tree is at least $\lceil\log(|\mathcal{C}(P, i)|)\rceil$.
-\end{proof}
-
 \section{Methods and Tools}
 
 In this section, we describe our two main approaches to determining $V_i(n)$: the forward search and the backward search.
@@ -376,6 +343,37 @@ To save memory and allow further pruning, we traverse the search tree using a de
 This reduces the maximum number of comparisons assigned to child problems to one less than the best result currently found.
 This principle is implemented using a minimax algorithm.
 
+\subsubsection{Compatible Solutions.}
+Suppose we have a solved problem $(P, i)$ with a unique $i$-th smallest element $e$.
+We then know precisely the set of elements that are smaller than $e$ as well as the set of elements that are larger than $e$.
+This observation leads us to the notion of compatible solutions, which is such a partition compatible with the current relation.
+
+\begin{definition}
+  The solved problem $(S, i)$ is a \textbf{compatible solution} of the problem $(R, i)$ if $(a, b) \in S \implies (b, a) \notin R$ and $S$ has no relations other than the $n - 1$ relations involving the $i$-th smallest element along with their transitive relations.
+\end{definition}
+
+Clearly, a solved problem has exactly one compatible solution.
+Let
+\begin{equation*}
+  \mathcal{C}(P, i) = \{(S, i) \mid (S, i) \text{ is compatible with } (P, i)\}
+\end{equation*}
+be the set of all solutions compatible with $(P, i)$.
+Observe that, given two elements $a,b$ that are unrelated in $P$, every solution compatible with $(P, i)$ is compatible with at least one of $(\pchild{P}{a}{b}, i)$ and $(\pchild{P}{b}{a}, i)$ and thus
+\begin{equation}\label{lemma:compatible_union}
+\mathcal{C}(P, i) = \mathcal{C}(\pchild{P}{a}{b}, i) \cup \mathcal{C}(\pchild{P}{b}{a}, i)\,\text{.}
+\end{equation}
+
+We use the concept of compatible solutions to derive the following lower bound on the number of comparisons required to select the $i$-th smallest element of a poset $P$, which we use as a pruning criterion in the forward search.
+
+\begin{theorem}\label{theorem:compatible_log}
+Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil\log(|\mathcal{C}(P, i)|)\rceil$ comparisons in the worst case.
+\end{theorem}
+
+\begin{proof}
+  Assume we have an optimal algorithm for selecting the $i$-th smallest element of a poset $P$.
+  From \Cref{lemma:compatible_union}, it follows that for every $(S, i)$, there is at least one leaf in the decision tree labeled with $\{(S, i)\}$.
+  Hence, there are at least $|\mathcal{C}(P, i)|$ leaves, implying that the height of the tree is at least $\lceil\log(|\mathcal{C}(P, i)|)\rceil$.
+\end{proof}
 
 \subsubsection{Optimizations.}
 
@@ -393,29 +391,8 @@ While searching the possible comparisons of a poset, we keep track of the curren
 The remaining comparisons are searched with a limited depth, ensuring that only solutions improving the current best result are found.
 At the start of a search, possible comparisons are sorted using a heuristic so that the most promising comparisons are searched for first.
 
-\subsubsection{Pruning.}
-We use the following two pruning criteria to reject posets that are not solvable within the given number of comparisons.
-
-\subparagraph{Compatible Solutions.}
-The first pruning criterion uses the number of compatible solutions.
-As proven in Theorem~\ref{theorem:compatible_log}, the logarithm of the number of compatible solutions provides a lower bound for the cost of a given problem.
-
-\Cref{algo:compatible_solutions} shows how we compute the number of compatible solutions for a given problem.
-To calculate this number, the algorithm first picks a solution element $j$ -- since problems are always reduced in the forward search, any element is valid -- and then counts the number of partitions into greater and lesser elements, summing these counts over all solution elements.
-The algorithm assumes that the elements in the poset are sorted such that an element smaller than another has a smaller index.
-
-\begin{algorithm}[t]
-  \centering
-  \input{figures/algorithm_compatible_solutions}
-  \caption{Algorithm for computing the number of compatible solutions for a given poset.}
-  \label{algo:compatible_solutions}
-\end{algorithm}
-
-As an example, the unordered poset $(E_n, i)$ has $n \cdot \binom{n - 1}{i - 1}$ compatible solutions because, for each of the $n$ elements, all separations of the remaining $n - 1$ elements are valid.
-
-
 \subparagraph{Free Comparison.}
-The second pruning criterion, which has already been used in~\cite{Oksanen}, aims to reduce the size of the searched subtree by adding a `useful' comparison to eliminate elements faster.
+Another pruning criterion, which has already been used in~\cite{Oksanen}, aims to reduce the size of the searched subtree by adding a `useful' comparison to eliminate elements faster.
 Explicitly, it searches for unordered elements $u$ and $v$ such that $u$ has as many elements less than it and $v$ has as many elements greater than it, and adds $u < v$ to the poset.
 The new problem is then searched for a solution using the forward search described above without reducing the number of allowed comparisons.
 If the new problem is not solvable, then the original problem cannot be solvable either.
@@ -487,8 +464,7 @@ To address these challenges, we will prove two lemmas.
 The first lemma shows that after adding a comparison $(a, b)$, at most one of $\{a, b\}$ will be removed by the reduction.
 
 \begin{lemma} \label{lemma:remove_only_last_element_edge}
-  Let $(P, i)$ be a reduced problem and let $(Q, j) = \reduced{(\pchild{P}{a}{b}, i)}$.
-  Then, $Q \cap \{a, b\} \neq \emptyset$.
+  If $(P, i)$ is a reduced problem and $(Q, j) = \reduced{(\pchild{P}{a}{b}, i)}$, then, $Q \cap \{a, b\} \neq \emptyset$.
 \end{lemma}
 
 \begin{proof}
@@ -513,7 +489,7 @@ The next lemma shows that the elements removed by the reduction, which are not $
   It is easy to see that for every $c \in R$, the problem $(P', i')$ where $P' = P|_{\Omega_P \setminus \{c\}}$ and $i' = i - 1$ if $|\greater{\pchild{P}{a}{b}}{c}| \ge n - i + 2$ and $i' = i$ otherwise is a predecessor of $(Q, j)$:
   \begin{itemize}
     \item It is obvious that $(Q, j) = \reduced{(\pchild{P'}{a}{b}, i')}$.
-    \item The problem $(\pchild{P'}{b}{a}, i')$ is at least as easy to solve as $(\pchild{P}{b}{a}, i)$, hence $V_{i'}(\pchild{P'}{b}{a}) \leq V_i(\pchild{P}{b}{a})$.
+    \item The problem $(\pchild{P'}{b}{a}, i')$ cannot be harder than $(\pchild{P}{b}{a}, i)$, hence $V_{i'}(\pchild{P'}{b}{a}) \leq V_i(\pchild{P}{b}{a})$.
   \end{itemize}
   The challenge is to find an element $c$ such that $P'$ is reduced.
   We define the following sets:
@@ -1178,6 +1154,20 @@ For hardware, we employed two Intel Xeon E5-2650v4 CPUs (2.20\,GHz, 12 Cores/24 
   \caption*{Cost distribution for all instances solved in the forward search for $n \leq 14$, excluding $i \leq 2$.
     Purple indicates low $i$, yellow indicates high $i$. $\log_2$ is shown in red.}
 \end{figure}
+
+\section{ComputingCompatible Solutions.}
+\Cref{algo:compatible_solutions} shows how we compute the number of compatible solutions for a given problem.
+To calculate this number, the algorithm first picks a solution element $j$ -- since problems are always reduced in the forward search, any element is valid -- and then counts the number of partitions into greater and lesser elements, summing these counts over all solution elements.
+The algorithm assumes that the elements in the poset are sorted such that an element smaller than another has a smaller index.
+
+\begin{algorithm}[t]
+  \centering
+  \input{figures/algorithm_compatible_solutions}
+  \caption{Algorithm for computing the number of compatible solutions for a given poset.}
+  \label{algo:compatible_solutions}
+\end{algorithm}
+
+As an example, the unordered poset $(E_n, i)$ has $n \cdot \binom{n - 1}{i - 1}$ compatible solutions because, for each of the $n$ elements, all separations of the remaining $n - 1$ elements are valid.
 
 % \section{Styles of lists, enumerations, and descriptions}\label{sec:itemStyles}
 
