@@ -303,51 +303,39 @@ The backward search is a novel approach that has not been previously applied to 
 It allows us to further improve the computation of optimal selection algorithms.% todo: improve how
 
 \subsection{Data Structures and Isomorphism Testing.}
-The fundamental approach shared by both search algorithms for 
-detecting redundant Posets is to reorder the elements into 
-a specific form that then can be tested for equality. The 
-poset is reduced and converted into its dual if $i \leq \frac{n+1}{2}$.
-If $i = \frac{n+1}{2}$, one of the two is chosen deterministically.
-We then order the remaining elements based on their discovered relations 
-as well as a hash-like value based on each element's neighborhood topology. We
-found a depth of three for the considered neighborhood sufficient in almost all
-cases.
+The key to reducing the search space is to consider only reduced problems and detect isomorphic problems.
+Isomorphism testing is performed by computing a \emph{canonical} representative.
+For the backward search, we use a custom algorithm to compute a canonical representative.
+For complicated cases, our custom algorithm uses \texttt{nauty}~\cite{MCKAY201494} as a fallback.
+For the forward search, we use a best-effort approximation to reduce the cost of computing the representative, at the expense of a slightly larger search space.
 
 We store posets as adjacency matrix.
 We choose a canonical representative in each isomorphism class such that we have a lower triangular matrix that can be stored using $\frac{n^2 - n}{2}$ bits.
 
-\subsubsection{Forward Search}
-Preliminary tests showed that the performance gained by
-using this as is, where some isomorphic problems still may have different
-representatives, outweighs the cost induced by the larger search space. 
-\texttt{nauty} is never used.
+\subparagraph{Forward Search}
+The approximated canonical representative is computed as follows.
+First a hash value is computed for each vertex in the poset.
+We begin with the in- and out-degree for each vertex and assign a hash value based on these degrees.
+Then, we iteratively update the hash value of each vertex, considering the hash value of the adjacent vertices.
+Only three iterations are sufficient to obtain good-enough hash values.
+Then, the vertices are ordered according to their hash values.
+Our tests showed that the performance gained by computing only an approximated normal form, where some isomorphic problems may have different representatives, outweighs the cost induced by the larger search space.
 
-\subsubsection{Backward Search} \label{sec:backward:normal_form}
-The backward search requires a unique normal form and cannot use the approximation method applied in the forward search.
+\subparagraph{Backward Search} \label{sec:backward:normal_form}
+The backward search requires a unique normal form.
+To that end, we extend the approximation method applied in the forward search in the following ways, which we will explain in detail below.
+By \Cref{lemma:dual_poset_allowed}, we do not need to distinguish a problem from its dual, thus we select one deterministically.
+We apply some special consideration for elements with the same hash value.
+Should the algorithm fail to produce a unique representation, then it will fall back to calling \texttt{nauty}.
 
-% Whether or not to use the dual problem, is decided such that $i < \tfrac{n}{2}$.
-% %According to \Cref{lemma:dual_poset_allowed}, the cost of the problem remains unchanged.
-% A potential issue arises if $i = \tfrac{n}{2}$.
-% In this case, it is impossible to decide whether $(P, i)$ or $\dual{(P, i)}$ corresponds to the normal form based solely on the value of $i$.
-% To resolve this, the subsequent steps will be computed for the the problem and its dual.
-% At the end, one is deterministically selected by comparing the binary representations of the posets.
+Whether or not to use the dual problem is decided such that $i < \tfrac{n}{2}$.
+A potential issue arises if $i = \tfrac{n}{2}$.
+In this case, it is impossible to decide whether $(P, i)$ or $\dual{(P, i)}$ corresponds to the normal form based solely on the value of $i$.
+To resolve this, the subsequent steps will be computed for the problem and its dual.
+At the end, one is deterministically selected by comparing the binary representations of the posets.
 
-%
-%\begin{figure}[!b]
-%  \centering
-%  \input{figures/tikz_backward_canonify_problematic.tex}
-%  \caption{According to \Cref{lemma:dual_poset_allowed}, the two posets are dual to each other.
-%    However, \texttt{nauty} cannot be used to transform the posets into each other since they are different graphs.
-%    This can also be seen in the Hasse diagram, which represents a directed graph, although the arrows are not shown here and always run implicitly from top to bottom.}
-%  \label{fig:backward_canonify_problematic}
-%\end{figure}
-% The next step is the computation of a hash value for each vertex in the poset.
-% We begin with the in- and out-degree for each vertex and assign a hash value based on these degrees.
-% Then, we iteratively update the hash value of each vertex, considering the hash value of the adjacent vertices.
-% Only three iterations are sufficient to obtain good-enough hash values.
-
-% The last step is to sort the vertices according to their hash values.
-% If all hash values are unique, we have a canonical labeling.
+The next step is the computation of a hash value for each vertex in the poset, using the same algorithm as for the approximated normal form in the forward search, and ordering the vertices according to their hash values.
+%If all hash values are unique, we have a canonical labeling.
 If there are vertices with the same hash, then we apply a special treatment to the following common situation.
 Let there be $l$ non-overlapping pairs of vertices with identical hash values (and all other pairs have different hash values).
 Then, there are $2^l$ possible permutations that could correspond to the normal form, since each of the $l$ pairs may or may not be swapped.
@@ -368,14 +356,14 @@ For small values of $i$, the high percentage of \texttt{nauty} calls is not crit
   \centering
   \small
 %  \resizebox{\columnwidth}{!}{%
-    \begin{tabular}{cr|cccccccc}
+  \begin{tabular}{cr|cccccccc}
 %      $n$ & $i$ & \multicolumn{8}{c}{$i$}                                                          \\
-      $n$ & $i$    & 1                       & 2      & 3     & 4     & 5     & 6     & 7     & 8     \\ \hline
-      13 & & 0                       & 30.205 & 6.808 & 1.526 & 0.467 & 0.185 & 0.114 &       \\
-      14 & & 0                       & 33.667 & 7.552 & 1.651 & 0.425 & 0.151 & 0.073 &       \\
-      15 & & 0                       & 36.390 & 8.184 & 1.678 & 0.459 & 0.132 & 0.065 & 0.041 \\
-      16 & & 0                       & 39.407 & 8.805 & 1.796 & 0.467 & 0.144 & -     & -     \\
-    \end{tabular}%
+    $n$ & $i$    & 1                       & 2      & 3     & 4     & 5     & 6     & 7     & 8     \\ \hline
+    13 & & 0                       & 30.205 & 6.808 & 1.526 & 0.467 & 0.185 & 0.114 &       \\
+    14 & & 0                       & 33.667 & 7.552 & 1.651 & 0.425 & 0.151 & 0.073 &       \\
+    15 & & 0                       & 36.390 & 8.184 & 1.678 & 0.459 & 0.132 & 0.065 & 0.041 \\
+    16 & & 0                       & 39.407 & 8.805 & 1.796 & 0.467 & 0.144 & -     & -     \\
+  \end{tabular}%
 %  }
 \end{table}
 
@@ -435,10 +423,6 @@ Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil\l
 \subparagraph{Caching.}
 We can significantly speed up the exploration by caching previous results, even with a simple usage-based ejection policy.
 Since the search always imposes an upper bound on the number of comparisons, this also includes unsolved posets, for which we record the currently known minimum.
-
-\subparagraph{Isomorphism Testing.}
-In the cache, we store an approximated canonical representative of a problem and its dual, allowing us to detect isomorphic problems.
-Preliminary tests showed that the performance gained by computing an approximated normal form, where some isomorphic problems may have different representatives, outweighs the cost induced by the larger search space.
 
 \subparagraph{Maximum Depth.}
 We use the minimax search algorithm to cut off unpromising branches.
