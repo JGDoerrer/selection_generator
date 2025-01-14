@@ -723,28 +723,31 @@ We computed each number twice using two different algorithms, the forward and th
 Thus, it is unlikely that the results are incorrect due to a coding error.
 
 \begin{table}[!t]
-  \caption{Execution times for different search methods.}
+  \caption{Execution times and number of posets stored in the cache for different search methods.}
   \label{table:search_algorithms}
+  \label{table:cache_entries}
 \begin{minipage}{\linewidth}
   \renewcommand{\arraystretch}{1.1}
   \centering
   \small
-  \begin{tabular}{c|c|l|l|l}
-    $n$ & $i$ & \textbf{Forward} & \textbf{Backward} & \textbf{Oksanen} \\
+  \begin{tabular}{cc|ll|ll|l}
+    & & \multicolumn{2}{c|}{\textbf{Forward Search}} & \multicolumn{2}{c|}{\textbf{Backward Search}} & \textbf{Oksanen} \\
+    $n$ & $i$ & {\footnotesize time} & {\footnotesize posets} & {\footnotesize time} & {\footnotesize posets} & {\footnotesize time} \\
     \hline
-    12  & 6   & 1m 30s           & 18.0s             & 1.9s
+    12  & 6   & 1m 30s     & $1.9 \cdot 10^6$        & 18.0s    & $996 \cdot 10^3$         & 1.9s
             \\
     \hline
-    13  & 7   & 59m 20s          & 7m 16s            & 16h 10m          \\
+    13  & 7   & 59m 20s   & $67.6 \cdot 10^6$       & 7m 16s    & $14.5 \cdot 10^6$           & 16h 10m          \\
     \hline
-    14  & 7   & 14h 40m          & 2h 17m            & >5d\footnote{\label{fn:oksanen_abort}We aborted Oksanen's program after 5 days.}   \\
+    14  & 7   & 14h 40m & $925.3 \cdot 10^6$         & 2h 17m     & $263.3 \cdot 10^6$         & >5d\footnote{\label{fn:oksanen_abort}We aborted Oksanen's program after 5 days.}   \\
     \hline
-    15  & 8   & 14d 21h 26m      & 1d 3h 7m          & >5d\footref{fn:oksanen_abort}              \\
+    15  & 8   & 14d 21h 26m    & $15.7 \cdot 10^9$       & 1d 3h 7m       & $2.2 \cdot 10^9$        & >5d\footref{fn:oksanen_abort}              \\
     \hline
-    16  & 6   & 6d 11h 21m       & 1d 1h 26m         & -                \\
+    16  & 6   & 6d 11h 21m    & $3.6 \cdot 10^9$      & 1d 1h 26m       & $2.6 \cdot 10^9$     & -                \\
   \end{tabular}
   \end{minipage}
 \end{table}
+
 
 \Cref{table:search_algorithms} compares the execution times of the different algorithms to find optimal selection algorithms.
 All experiments were conducted on a machine with two Intel Xeon CPUs, each equipped with $12$ cores ($24$ threads), and a total of $768$ GB of RAM.
@@ -752,26 +755,6 @@ The forward search was started with $500$ GB of RAM and restarted for each combi
 The `Oksanen' column presents execution times of Oksanen's program~\cite{Oksanen} on our hardware, started with a cache size of $25$ GB RAM.
 It was originally designed to use $400$ MB RAM and $25$ GB is close to a natural limit due to the use of 32-bit indices.
 Additionally, we measured the number of posets stored in the cache after the calculation, which can be found in \Cref{table:cache_entries}.
-
-
-\begin{table}[!t]
-  \renewcommand{\arraystretch}{1.1}
-  \caption{Number of posets stored in the cache after the corresponding search}
-  \label{table:cache_entries}
-  \centering
-  \small
-  \begin{tabular}{c|c|r|r}
-    $n$ & $i$ & \textbf{Forward Search} & \textbf{Backward Search} \\
-    \hline
-    13  & 7   & $67.6 \cdot 10^6$       & $14.5 \cdot 10^6$        \\
-    \hline
-    14  & 7   & $925.3 \cdot 10^6$      & $263.3 \cdot 10^6$       \\
-    \hline
-    15  & 8   & $15.7 \cdot 10^9$       & $2.2 \cdot 10^9$         \\
-    \hline
-    16  & 6   & $3.6 \cdot 10^9$        & $2.6 \cdot 10^9$         \\
-  \end{tabular}
-\end{table}
 
 To evaluate the potential of compatible solutions as pruning criterion, we determined the maximum number of compatible solutions encountered for a given cost for $n \leq 14$ and used that as a boundary in a subsequent run.
 For $n = 14, i = 7$, this resulted in a time of 1h~21m with $147 \cdot 10^6$ posets in the cache, representing improvements by factors of $11$ and $6.3$, respectively.
