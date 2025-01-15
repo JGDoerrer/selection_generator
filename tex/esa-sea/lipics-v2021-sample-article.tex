@@ -771,19 +771,10 @@ The latest version of our software is available at \projectServer~(\url{\project
 
 \subparagraph{Bidirectional Search.}
 The classical meet-in-the-middle approach for a bidirectional search will not work for the selection problem.
-This is illustrated in \Cref{fig:backward_forward_count_13_6}:
-Assume the two searches meet after $11$ comparisons have been performed.
-At this meeting point, both searches have already covered over $99\%$ of their search space.
+Our experiments with the forward and backward search showed that, using the number of comparisons as metric, at any possible meeting point, at least one of the two searches has already covered over $99\%$ of its search space.
 
-\begin{figure}[!b]
-  \centering
-  \input{figures/tikz_backward_forward_13_6}
-  \caption{Number of posets depending on the number of comparisons for $n = 13$ and $i = 7$ (red: backward search, blue: forward search).}
-  \label{fig:backward_forward_count_13_6}
-\end{figure}
-
-An alternative approach to the bidirectional search would be to first run the backward search, but restrict it to problems with specific properties such as having a large number of compatible solutions, e.g.\ problems $(P, i)$ in $A_k$ with $\mathcal{C}(P, i) \ge \alpha \cdot 2^k$ for some $\alpha \in [0, 1]$.
-These are presumably hard to solve, so the subsequent forward search only has to explore problems with a small number of compatible solutions, which we estimate to be easier to solve.
+An alternative approach to the bidirectional search would be to first run the backward search, but restricted to problems with specific properties such as having a large number of compatible solutions, e.g.\ problems $(P, i)$ in $A_k$ with $\mathcal{C}(P, i) \ge \alpha \cdot 2^k$ for some $\alpha \in [0, 1]$.
+These are presumably hard to solve, so the subsequent forward search only has to explore problems with a small number of compatible solutions, which should be easier to solve.
 
 There might be better metrics than the compatible solutions, as there is a significant gap between the lower bound and the cost of a problem.
 We observed that the number of comparisons required to solve a selection problem is typically about twice the lower bound obtained from the number of compatible solutions, minus a constant.
@@ -1116,6 +1107,20 @@ The algorithm assumes that the elements in the poset are sorted such that an ele
 \end{algorithm}
 
 As an example, the unordered poset $(E_n, i)$ has $n \cdot \binom{n - 1}{i - 1}$ compatible solutions because, for each of the $n$ elements, all separations of the remaining $n - 1$ elements are valid.
+
+
+\section{Bidirectional Search.}
+Recall the proposition of using a bidirectional search suggested in the conclusion.
+\Cref{fig:backward_forward_count_13_6} illustrates why the classical meet-in-the-middle approach will not work for the selection problem.
+Assume the two searches meet after $11$ comparisons have been performed.
+At this meeting point, both searches have already covered over $99\%$ of their search space.
+
+\begin{figure}[!b]
+  \centering
+  \input{figures/tikz_backward_forward_13_6}
+  \caption{Number of posets depending on the number of comparisons for $n = 13$ and $i = 7$ (red: backward search, blue: forward search).}
+  \label{fig:backward_forward_count_13_6}
+\end{figure}
 
 % \section{Styles of lists, enumerations, and descriptions}\label{sec:itemStyles}
 
