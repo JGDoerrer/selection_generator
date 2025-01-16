@@ -1,5 +1,5 @@
 
-\documentclass[a4paper,UKenglish,cleveref, autoref, thm-restate]{lipics-v2021}
+\documentclass[a4paper,UKenglish,cleveref, autoref, thm-restate, anonymous]{lipics-v2021}
 %This is a template for producing LIPIcs articles. 
 %See lipics-v2021-authors-guidelines.pdf for further information.
 %for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
@@ -54,6 +54,7 @@
 
 % \author{Jane {Open Access}}{Dummy University Computing Laboratory, [optional: Address], Country \and My second affiliation, Country \and \url{http://www.myhomepage.edu} }{johnqpublic@dummyuni.org}{https://orcid.org/0000-0002-1825-0097}{(Optional) author-specific funding acknowledgements}
 
+
 \author{Josua Dörrer}{University Stuttgart}{}{}{}
 \author{Konrad Gendle}{University Stuttgart}{}{}{}
 \author{Johanna Hofmann}{University Stuttgart}{}{}{}
@@ -63,15 +64,21 @@
 
 %TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional. Use additional curly braces to indicate the correct name splitting when the last name consists of multiple name parts.
 
-\author{Joan R. Public\footnote{Optional footnote, e.g. to mark corresponding author}}{Department of Informatics, Dummy College, [optional: Address], Country}{joanrpublic@dummycollege.org}{[orcid]}{[funding]}
+%\author{Joan R. Public\footnote{Optional footnote, e.g. to mark corresponding author}}{Department of Informatics, Dummy College, [optional: Address], Country}{joanrpublic@dummycollege.org}{[orcid]}{[funding]}
 
 \authorrunning{J. Open Access and J.\,R. Public} %TODO mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
 
 \Copyright{Jane Open Access and Joan R. Public} %TODO mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
 
-\ccsdesc[100]{\textcolor{red}{Replace ccsdesc macro with valid one}} %TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm 
+%\ccsdesc[100]{\textcolor{red}{Replace ccsdesc macro with valid one}} %TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm 
 
-\keywords{Dummy keyword} %TODO mandatory; please add comma-separated list of keywords
+\ccsdesc[500]{Theory of computation~Sorting and searching}
+\ccsdesc[300]{Mathematics of computing~Combinatorial algorithms}
+
+
+
+\keywords{selection, lower bounds, exhaustive computer search}
+
 
 \category{} %optional, e.g. invited paper
 
@@ -321,7 +328,7 @@ In this case, it is impossible to decide whether $(P, i)$ or $\dual{(P, i)}$ cor
 To resolve this, the subsequent steps will be computed for the problem and its dual.
 At the end, one is deterministically selected by comparing the binary representations of the posets.
 
-The next step is the computation of a hash value for each vertex in the poset, using the same algorithm as for the approximated normal form in the forward search, and ordering the vertices according to their hash values.
+The next step is computing a hash value for each vertex in the poset, using the same algorithm as for the approximated normal form in the forward search, and ordering the vertices accordingly.
 %If all hash values are unique, we have a canonical labeling.
 If there are vertices with the same hash, then we apply a special treatment to the following common situation.
 Let there be $l$ non-overlapping pairs of vertices with identical hash values (and all other pairs have different hash values).
@@ -559,19 +566,19 @@ The next lemma shows that the elements removed by the reduction, which are not $
   which concludes the proof.
 \end{proof}
 
-The computation of a predecessor for a given problem $(P, i)$ comprises three steps:
+The set of predecessors for a given problem $(P, i)$ can be split into the following three subsets, which we compute in that order.
 \begin{enumerate}
-  \item Compute predecessors on the same set of elements.
-  \item Compute predecessors with exactly one additional element that is involved in the comparison.
-  \item Starting with the predecessors obtained in the preceding steps, add additional elements iteratively.
+  \item Predecessors on the same set of elements.
+  \item Predecessors with exactly one additional element that is involved in the comparison.
+  \item Predecessors with additional elements of which at least is not involved in the comparison.
 \end{enumerate}
 Of the predecessors to the problems in $A_k$, those that actually require $k+1$ comparisons (those not in $A_k$) make up the set $A_{k+1}$.
-We describe the individual steps below.
+We describe the steps to compute the three sets below.
 
 \subparagraph{Predecessors on the same set of elements.}
-First, we search for all posets with $n$ elements that result in poset $P$ after inserting a comparison $a < b$.
-In other words, we remove a comparison.
-First, we compute the potential predecessors.
+Our goal is to find all posets with $n$ elements that result in poset $P$ after inserting a comparison $a < b$.
+%In other words, we remove a comparison.
+%First, we compute the potential predecessors.
 Each edge in the Hasse diagram of $P$ potentially represents a comparison by which $(P, i)$ can be obtained from a predecessor.
 A challenge arises from transitive relations, as the insertion of a single comparison can lead to the insertion of multiple transitive relations.
 This is illustrated in \Cref{fig:backward_problematic}.
@@ -585,13 +592,13 @@ Therefore, both (2) and (3) are potential predecessors, even though the same com
   \label{fig:backward_problematic}
 \end{figure}
 
-The second step is to check whether each potential predecessor is actually a predecessor of $(P, i)$.
+After enumerating the potential predecessors, we check for each one whether it is a predecessor of $(P, i)$.
 For a potential predecessor $(Q, j)$ where $(P, i) = \reduced{(\pchild{Q}{a}{b}, j)}$, we check whether $(\pchild{Q}{b}{a}, j)$ can be solved using at most $V_i(P)$ comparisons.
 This is done by checking whether $\reduced{(\pchild{Q}{b}{a}, j)}$ is contained in one of the sets $A_k$ for $k \leq V_i(P)$, which have already been computed.
 
 
-\subparagraph{One additional element involved in the comparison.}
-In the next step, all predecessors with $n + 1$ elements are computed, where the additional element is involved in the comparison.
+\subparagraph{Predecessors with exactly one additional element that is involved in the comparison.}
+%All predecessors with $n + 1$ elements are computed, where the additional element is involved in the comparison.
 We construct the potential predecessor for this case as follows.
 We insert a new element into poset $P$ and enumerate all possibilities for the relation between the new element and the existing elements.
 We want the predecessor to be reduced, thus it is crucial to ensure that the new element cannot be immediately reduced and that no existing elements can be reduced either.
@@ -607,8 +614,8 @@ Otherwise, as proven in \Cref{lemma:remove_only_last_element_edge}, if one of $a
 In the next step, we will iteratively enumerate all predecessors by adding additional elements to the ones already found.
 This way, we will discover the arbitrary predecessor we started with.
 
-\subparagraph{Adding elements iteratively.}
-In the third step, new elements are iteratively inserted.
+\subparagraph{Predecessors with additional elements of which at least is not involved in the comparison.}
+Starting with the predecessors computed in the first two steps, new elements are iteratively inserted.
 We alternate between generating new potential predecessors and checking which of those are actually predecessors.
 We stop when no new predecessors are found or when we reach an upper limit on the number of elements.
 New potential predecessors are generated by adding a new element to each predecessor and enumerating all possible relations with the existing elements.
@@ -704,7 +711,6 @@ Oksanen incorrectly lists $V_5(15)$ as 25 on his website~\cite{Oksanen}, althoug
 The values for $n = 16$ have not been computed before; we provide all values for $i \leq 6$ and ranges for $V_7(16)$ and $V_8(16)$.
 The upper bound for the ranges is $V_i(n) \le n - i + (i - 1) \lceil \log (n + 2 - i) \rceil$~\cite{hadian1969selecting}.
 
-\enlargethispage{\baselineskip}
 To validate the upper bounds of the values we calculated, we checked the algorithm certifying each number on each of the $n!$ permutations.
 Certifying the correctness of the lower bound is nearly impossible.
 We computed each number twice using two different algorithms, the forward and the backward search.
@@ -773,7 +779,6 @@ A better lower bound might be achieved by assigning a weight to each solution ra
 %It is relatively straightforward to create a weight function that leads to a lower bound of $1.5n + \smallO(n)$ for the median.
 Mimicking the techniques used to obtain the $2n + \smallO(n)$ bound in~\cite{bent1985finding} could be a fruitful approach.
 %However, this lead to a negative $4\sqrt{n}$ term in the resulting lower bound for $n \leq 16$, cancelling out any improvement over counting compatible solutions.
-%\enlargethispage{\baselineskip}
 
 \subparagraph{Yao's conjecture.}
 Yao conjectured that finding the $i$-th smallest of $n$ elements is at least as hard as finding an $n$-element subset $S$ of $m$ elements, where $m > n$, and an element $s \in S$ such that $s$ is the $i$-th smallest element in $S$~\cite{yao1974lower}.
@@ -834,7 +839,6 @@ By adapting our search algorithm, one could search for counter examples to the c
 % \texttt{natbib} package is not supported.)
 % \end{itemize}
 
-% \enlargethispage{\baselineskip}
 
 % This is only a summary containing the most relevant details. Please read the complete document ``LIPIcs: Instructions for Authors and the \texttt{lipics-v2021} Class'' for all details and don't hesitate to contact Dagstuhl Publishing (\url{mailto:publishing@dagstuhl.de}) in case of questions or comments:
 % \href{http://drops.dagstuhl.de/styles/lipics-v2021/lipics-v2021-authors/lipics-v2021-authors-guidelines.pdf}{\texttt{http://drops.dagstuhl.de/styles/lipics-v2021/\newline lipics-v2021-authors/lipics-v2021-authors-guidelines.pdf}}
