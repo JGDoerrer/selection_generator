@@ -1,5 +1,5 @@
 
-\documentclass[a4paper,UKenglish,cleveref, autoref, thm-restate, anonymous]{lipics-v2021}
+\documentclass[a4paper,UKenglish,cleveref, autoref, thm-restate]{lipics-v2021}
 %This is a template for producing LIPIcs articles. 
 %See lipics-v2021-authors-guidelines.pdf for further information.
 %for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
@@ -13,7 +13,7 @@
 %for producing a PDF according the PDF/A standard, add "pdfa"
 
 % \usepackage{ltexpprt}
-\usepackage{footmisc}
+%\usepackage{footmisc}
 \usepackage{hyperref}
 
 % *** MATH PACKAGES ***
@@ -37,45 +37,35 @@
 \usepackage{pgfplots}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
-% \usepackage[capitalize]{cleveref}
 \usepackage{mathtools}
 \usepackage{booktabs}
-\usepackage{cleveref}
 
 %\pdfoutput=1 %uncomment to ensure pdflatex processing (mandatatory e.g. to submit to arXiv)
 %\hideLIPIcs  %uncomment to remove references to LIPIcs series (logo, DOI, ...), e.g. when preparing a pre-final version to be uploaded to arXiv or another public repository
+\nolinenumbers
 
 %\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
 \bibliographystyle{plainurl}% the mandatory bibstyle
 
-\title{\Large Exact Lower Bounds for the Number of Comparisons in Selection}
+\title{Exact Lower Bounds for the Number of Comparisons in Selection}
 
 %\titlerunning{Dummy short title} %TODO optional, please use if title is longer than one line
 
-% \author{Jane {Open Access}}{Dummy University Computing Laboratory, [optional: Address], Country \and My second affiliation, Country \and \url{http://www.myhomepage.edu} }{johnqpublic@dummyuni.org}{https://orcid.org/0000-0002-1825-0097}{(Optional) author-specific funding acknowledgements}
+\author{Josua Dörrer}{University of Stuttgart, Germany}{}{}{}
+\author{Konrad Gendle}{University of Stuttgart, Germany}{}{}{}
+\author{Johanna Hofmann}{University of Stuttgart, Germany}{}{}{}
+\author{Julius von Smercek}{University of Stuttgart, Germany}{}{}{}
+\author{Andreas Steding}{University of Stuttgart, Germany}{}{}{}
+\author{Florian Stober}{University of Stuttgart, Germany}{florian.stober@fmi.uni-stuttgart.de}{0000-0002-5516-6660}{}
 
 
-\author{Josua Dörrer}{University Stuttgart}{}{}{}
-\author{Konrad Gendle}{University Stuttgart}{}{}{}
-\author{Johanna Hofmann}{University Stuttgart}{}{}{}
-\author{Julius von Smercek}{University Stuttgart}{}{}{}
-\author{Andreas Steding}{University Stuttgart}{}{}{}
-\author{Florian Stober}{University Stuttgart}{}{}{}
+\authorrunning{J.\ Dörrer, K.\ Gendle, J.\ Hofmann, J.\ von Smercek, A.\ Steding, F.\ Stober} 
 
-%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional. Use additional curly braces to indicate the correct name splitting when the last name consists of multiple name parts.
-
-%\author{Joan R. Public\footnote{Optional footnote, e.g. to mark corresponding author}}{Department of Informatics, Dummy College, [optional: Address], Country}{joanrpublic@dummycollege.org}{[orcid]}{[funding]}
-
-\authorrunning{J. Open Access and J.\,R. Public} %TODO mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
-
-\Copyright{Jane Open Access and Joan R. Public} %TODO mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
-
-%\ccsdesc[100]{\textcolor{red}{Replace ccsdesc macro with valid one}} %TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm 
+\Copyright{Josua Dörrer, Konrad Gendle, Johanna Hofmann, Julius von Smercek, Andreas Steding, and Florian Stober} 
 
 \ccsdesc[500]{Theory of computation~Sorting and searching}
 \ccsdesc[300]{Mathematics of computing~Combinatorial algorithms}
-
 
 
 \keywords{selection, lower bounds, exhaustive computer search}
@@ -91,24 +81,24 @@
 
 %\funding{(Optional) general funding statement \dots}%optional, to capture a funding statement, which applies to all authors. Please enter author specific funding statements as fifth argument of the \author macro.
 
-\acknowledgements{I want to thank \dots}%optional
+%\acknowledgements{I want to thank \dots}%optional
 
 %\nolinenumbers %uncomment to disable line numbering
 
 
 
 %Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\EventEditors{John Q. Open and Joan R. Access}
+\EventEditors{Petra Mutzel and Nicola Prezza}
 \EventNoEds{2}
-\EventLongTitle{42nd Conference on Very Important Topics (CVIT 2016)}
-\EventShortTitle{CVIT 2016}
-\EventAcronym{CVIT}
-\EventYear{2016}
-\EventDate{December 24--27, 2016}
-\EventLocation{Little Whinging, United Kingdom}
+\EventLongTitle{23rd International Symposium on Experimental Algorithms (SEA 2025)}
+\EventShortTitle{SEA 2025}
+\EventAcronym{SEA}
+\EventYear{2025}
+\EventDate{July 22--24, 2025}
+\EventLocation{Venice, Italy}
 \EventLogo{}
-\SeriesVolume{42}
-\ArticleNo{23}
+\SeriesVolume{338}
+\ArticleNo{3}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Commands
@@ -130,15 +120,12 @@
 \newcommand{\reduced}[1]{\operatorname{red}#1}
 \newcommand{\less}[2]{D_{#1}(#2)}
 \newcommand{\greater}[2]{U_{#1}(#2)}
-% \newtheorem{definition}{Definition}[section]
-% \newtheorem{observation}{Observation}[section]
-% \newtheorem{remark}{Remark}[section]
 
-%\newcommand{\projectURL}[0]{https://github.com/JGDoerrer/selection_generator}
-%\newcommand{\projectServer}[0]{GitHub}
+\newcommand{\projectURL}[0]{https://github.com/JGDoerrer/selection_generator}
+\newcommand{\projectServer}[0]{GitHub}
 
- \newcommand{\projectURL}[0]{https://drive.google.com/drive/folders/14XalmmslsgfCowJgQnN3gHSkFM60hkv4?usp=sharing} % todo: final-version
- \newcommand{\projectServer}[0]{Drive} % todo: final-version
+\supplement{}
+\supplementdetails[subcategory={Source Code}, cite={}, swhid={}]{Software}{https://github.com/JGDoerrer/selection_generator}
 
 \begin{document}
 
@@ -151,7 +138,6 @@
   Using new algorithmic ideas, we establish tighter lower bounds for the number of comparisons required, denoted as $V_i(n)$.
   Our results include optimal algorithms for $n$ up to 15 and arbitrary $i$, and for $n=16$ when $i \leq 6$.
   We determine the precise values $V_7(14) = 25$, $V_6(15) = V_7(15) = 26$, and $V_8(15) = 27$, where previously, only a range was known.
-  %  We computed $V_i(16)$ for $i \leq 6$ and determined a new lower bound for $V_7(16)$ and $V_8(16)$. 
 
 \end{abstract} % newline above is important for formatting
 
@@ -199,7 +185,7 @@ Another challenge, more of an engineering nature, is the need for an efficiently
 The goal of the normal form is to identify isomorphic posets and thus reduce the size of the search space.
 A normal form can be computed using the well-known \text{nauty} tool~\cite{MCKAY201494}.
 However, a call to \texttt{nauty} is expensive compared to the other steps in the backward search.
-Thus we spend a lot of effort on being able to avoid a call to \texttt{nauty} in many cases when computing the normal form.
+Thus, we spend a lot of effort on being able to avoid a call to \texttt{nauty} in many cases when computing the normal form.
 
 Using our two algorithms, we obtained the following results:
 \begin{enumerate}
@@ -238,7 +224,7 @@ The notion of isomorphism naturally extends to selection problems.
 For the dual, we define $\dual{(P, i)} = (\dual{P}, n - i + 1)$.
 The problem $(P, i)$ is \emph{reduced} if for each element there are at most $i - 1$ smaller elements and at most $n - i$ larger elements.
 Hence, each element in a reduced problem could be the $i$-th smallest.
-There is a unique reduced problem corresponding to $(P, i)$ which is obtained by removing all elements that cannot be the $i$-th smallest and if necessary adjusting $i$.
+There is a unique reduced problem corresponding to $(P, i)$ which is obtained by removing all elements that cannot be the $i$-th smallest and if necessary, adjusting $i$.
 We denote the reduced problem corresponding to $(P, i)$ by $\reduced{(P, i)}$.
 
 
@@ -322,7 +308,7 @@ We choose a canonical representative in each isomorphism class such that we have
 
 \subparagraph{Forward Search}
 The approximated canonical representative is computed as follows.
-First a hash value is computed for each vertex in the poset.
+First, a hash value is computed for each vertex in the poset.
 We begin with the in- and out-degree for each vertex and assign a hash value based on these degrees.
 Then, we iteratively update the hash value of each vertex, considering the hash value of the adjacent vertices.
 Only three iterations are sufficient to obtain good-enough hash values.
@@ -343,7 +329,6 @@ To resolve this, the subsequent steps will be computed for the problem and its d
 At the end, one is deterministically selected by comparing the binary representations of the posets.
 
 The next step is computing a hash value for each vertex in the poset, using the same algorithm as for the approximated normal form in the forward search, and ordering the vertices accordingly.
-%If all hash values are unique, we have a canonical labeling.
 If there are vertices with the same hash, then we apply a special treatment to the following common situation.
 Let there be $l$ non-overlapping pairs of vertices with identical hash values (and all other pairs have different hash values).
 Then, there are $2^l$ possible permutations that could correspond to the normal form, since each of the $l$ pairs may or may not be swapped.
@@ -363,16 +348,13 @@ For small values of $i$, the high percentage of \texttt{nauty} calls is not crit
   \label{table:nauty-ratio}
   \centering
   \small
-  %  \resizebox{\columnwidth}{!}{%
   \begin{tabular}{cr|cccccccc}
-    %      $n$ & $i$ & \multicolumn{8}{c}{$i$}                                                          \\
     $n$ & $i$ & 1 & 2      & 3     & 4     & 5     & 6     & 7     & 8     \\ \hline
     13  &     & 0 & 30.205 & 6.808 & 1.526 & 0.467 & 0.185 & 0.114 &       \\
     14  &     & 0 & 33.667 & 7.552 & 1.651 & 0.425 & 0.151 & 0.073 &       \\
     15  &     & 0 & 36.390 & 8.184 & 1.678 & 0.459 & 0.132 & 0.065 & 0.041 \\
     16  &     & 0 & 39.407 & 8.805 & 1.796 & 0.467 & 0.144 & -     & -     \\
   \end{tabular}%
-  %  }
 \end{table}
 
 \subsection{Forward Search.} \label{chapter:forward_search}
@@ -458,7 +440,6 @@ The input parameters for the backward search are denoted by $n$ and $i$, similar
 A first challenge when starting the search with the set of solved selection problems is that, even if we restrict ourselves to a fixed cardinality $n$ and rank $i$, the set of solved problems remains large.
 We overcome this by only enumerating reduced problems.
 With this restriction, the starting point of the backward search is $(E_1, 1)$.
-%The backward search starts with the solved problem $(E_1, 1)$ and iteratively computes all posets solvable using $k = 1, 2, 3, \dots$ comparisons until the unordered poset $(E_n, i)$ is encountered.
 By $A_k$ we denote the set of all reduced selection problems solvable using $k$ comparisons.
 For all $n$ and $i$, we have $A_0 = \{(E_1, 1)\}$.
 The backward search begins with $A_0$ and iteratively computes, for each problem in $A_k$, the corresponding predecessors, which form the set $A_{k + 1}$.
@@ -556,8 +537,6 @@ The next lemma shows that the elements removed by the reduction, which are not $
       \draw[dashed] (b1) -- (a1);
       \draw (a1) -- (c_el1);
 
-%      \node[descr, below=0.3cm of c_el1, text width=4.5cm] (P_footer)
-%      {Let $R=\{d, c_{el}\}$. The lemma guarantees existence of $c_{lemma} \in R$ such that $P|_{\Omega_P \setminus \{c_{lemma}\}}$ is reduced.};
     \end{scope}
 
     \begin{scope}[xshift=5.75cm]
@@ -571,10 +550,6 @@ The next lemma shows that the elements removed by the reduction, which are not $
       \draw[dashed] (b2) -- (a2);
       \draw (a2) -- (c_el2);
 
-%      \node[descr, below=0.3cm of c_el2] (Pd_reduced_text)
-%      {$(P', 2)$ is reduced.
-%        (Index $i'=i=2$ implies $|\greater{\pchild{P}{a_{lem}}{b_{lem}}}{d}| < n - i + 2$).
-%        This $d$ acts as the $c_{lemma}$ guaranteed by the lemma.};
     \end{scope}
 
     \begin{scope}[xshift=11.5cm]
@@ -588,15 +563,8 @@ The next lemma shows that the elements removed by the reduction, which are not $
       \draw (d3) -- (b3);
       \draw[dashed] (b3) -- (a3);
 
-%      \node[descr, below=0.3cm of a3] (Pc_not_reduced_text)
-%      {$(P'', 1)$ is not reduced.
-%        (Index $i''=i-1=1$ implies $|\greater{\pchild{P}{a_{lem}}{b_{lem}}}{c_{el}}| \ge n - i + 2$).
-%        This choice illustrates an alternative removal.};
     \end{scope}
 
-%    \path[-{Stealth[length=2.5mm, width=2mm]}, shorten >=3pt, shorten <=3pt, thick]
-%    (P_title.east) edge node[arrowlabel, below right, xshift=-8mm, yshift=-2mm] {Lemma guarantees this path exists} (Pprime_title.west)
-%    (P_title.east) edge[bend left=25] node[arrowlabel, above right, xshift=-7mm] {Alternative (not guaranteed to be reduced)} (Pdoubleprime_title.west);
   \end{tikzpicture}}
 
 {\small
@@ -675,8 +643,6 @@ We describe the steps to compute the three sets below.
 
 \subparagraph{Predecessors on the same set of elements.}
 Our goal is to find all posets with $n$ elements that result in poset $P$ after inserting a comparison $a < b$.
-%In other words, we remove a comparison.
-%First, we compute the potential predecessors.
 Each edge in the Hasse diagram of $P$ potentially represents a comparison by which $(P, i)$ can be obtained from a predecessor.
 A challenge arises from transitive relations, as the insertion of a single comparison can lead to the insertion of multiple transitive relations.
 This is illustrated in \Cref{fig:backward_problematic}.
@@ -696,7 +662,6 @@ This is done by checking whether $\reduced{(\pchild{Q}{b}{a}, j)}$ is contained 
 
 
 \subparagraph{Predecessors with exactly one additional element that is involved in the comparison.}
-%All predecessors with $n + 1$ elements are computed, where the additional element is involved in the comparison.
 We construct the potential predecessor for this case as follows.
 We add a new element to the poset $P$ and enumerate all possibilities for the relation between the new element and the existing elements.
 We want the predecessor to be reduced, thus it is crucial to ensure that the new element cannot be immediately reduced and that no existing elements can be reduced either.
@@ -867,216 +832,15 @@ This observation is reasonable, as the lower bound for the median is $n + \small
 
 \subparagraph{Improved Weight Function.}
 A better lower bound might be achieved by assigning a weight to each solution rather than merely counting compatible solutions.
-%It is relatively straightforward to create a weight function that leads to a lower bound of $1.5n + \smallO(n)$ for the median.
 Mimicking the techniques used to obtain the $2n + \smallO(n)$ bound in~\cite{bent1985finding} could be a fruitful approach.
-%However, this lead to a negative $4\sqrt{n}$ term in the resulting lower bound for $n \leq 16$, cancelling out any improvement over counting compatible solutions.
 
 \subparagraph{Yao's conjecture.}
 Yao conjectured that finding the $i$-th smallest of $n$ elements is at least as hard as finding an $n$-element subset $S$ of $m$ elements, where $m > n$, and an element $s \in S$ such that $s$ is the $i$-th smallest element in $S$~\cite{yao1974lower}.
 If true, it would imply a $2.5n + \smallO(n)$ algorithm for computing the median~\cite{schonhage1975finding}.
 By adapting our search algorithm, one could search for counter examples to the conjecture.
 
-\clearpage
 
 \bibliography{lipics-v2021-sample-article}
-
-\clearpage
-\appendix
-
-\section{Example}
-% todo: Can we make this smaller / same style as the other figures?
-\begin{figure}[!b]
-  \centering
-  \input{figures/tikz_example_5_2.tex}
-  \caption{Finding the median $i = 3$ of $n = 5$ values using six comparisons.}
-  \label{fig:median_of_5}
-\end{figure}
-
-A good visual example is finding the median $i = 3$ in a list of $n = 5$ elements.
-\Cref{fig:median_of_5} illustrates the search process of finding the median using Hasse diagrams.
-Each step shows the comparisons to be performed next, indicated by dashed lines.
-A Hasse diagram of the order relation found so far (with smaller elements positioned lower and larger elements higher) is shown with solid lines.
-The red crosses indicate elements that have been found to be greater or smaller than three other elements, thereby disqualifying them from being the median.
-The larger element of the final comparison is the median.
-This is also the optimal algorithm for $i = 3$ and $n = 5$.
-
-
-\section{Hard- and Software Used} \label{sec:hardware}
-
-Our results were facilitated by advancements in both hardware and software.
-All versions of the software used are listed in \Cref{table:command_outputs}.
-For hardware, we employed two Intel Xeon E5-2650v4 CPUs (2.20\,GHz, 12 Cores/24 Threads, 30\,MB L3-Cache per CPU), and a total of $768$ GB of RAM.
-
-\begin{table}[!t]
-  \renewcommand{\arraystretch}{1.1}
-  \caption{Specific versions of the software used.}
-  \label{table:command_outputs}
-  \centering
-  \small
-  \begin{tabular}{l|l}
-    \textbf{Command}  & \textbf{Output}                   \\ \hline
-    \texttt{rustc -V} & rustc 1.77.2                      \\ \hline
-    \texttt{clang -v} & Ubuntu clang version 14.0.0-1     \\ \hline
-    \texttt{uname -a} & Linux plankton 5.15.0-105-generic \\
-  \end{tabular}
-\end{table}
-
-% todo: Details on how potential predecessors are computed (especially regarding transitive relations).
-
-% todo: Approximate normal form for forward search.
-
-\section{Execution Time and Number of Posets Stored}
-
-\cref{tab:cache_entries_appendix} compares the size of the explored search space for the different search algorithms.
-We compare the forward search with the backward search for values $n$ and $i$ from $n=13, i=1$ to $n=16,i=6$.
-\cref{tab:search_algorithms_appendix} compares the execution time of the different search algorithms.
-We compare the forward search, the backward search and Oksanen's implementation as reference, for values $n$ and $i$ from $n=12, i=1$ to $n=16,i=6$.
-
-\begin{table}[!t]
-  \renewcommand{\arraystretch}{1.1}
-  \caption{Number of posets stored in the cache after the corresponding search}
-  \label{tab:cache_entries_appendix}
-  \centering
-  \small
-  \begin{tabular}{c|c|r|r}
-    $n$ & $i$ & \textbf{Forward Search} & \textbf{Backward Search} \\
-    \hline
-    13  & 1   & $12$                    & $13$                     \\
-    13  & 2   & $329$                   & $245$                    \\
-    13  & 3   & $9.7 \cdot 10^3$        & $10.9 \cdot 10^3$        \\
-    13  & 4   & $199.7 \cdot 10^3$      & $276.9 \cdot 10^3$       \\
-    13  & 5   & $3.7 \cdot 10^6$        & $2.2 \cdot 10^6$         \\
-    13  & 6   & $18.1 \cdot 10^6$       & $9.7 \cdot 10^6$         \\
-    13  & 7   & $67.6 \cdot 10^6$       & $14.5 \cdot 10^6$        \\
-    \hline
-    14  & 1   & $13$                    & $14$                     \\
-    14  & 2   & $442$                   & $319$                    \\
-    14  & 3   & $15.2 \cdot 10^3$       & $19.6 \cdot 10^3$        \\
-    14  & 4   & $438.0 \cdot 10^3$      & $644.2 \cdot 10^3$       \\
-    14  & 5   & $14.1 \cdot 10^6$       & $13.9 \cdot 10^6$        \\
-    14  & 6   & $149.5 \cdot 10^6$      & $84.1 \cdot 10^6$        \\
-    14  & 7   & $925.3 \cdot 10^6$      & $263.3 \cdot 10^6$       \\
-    \hline
-    15  & 1   & $14$                    & $15$                     \\
-    15  & 2   & $741$                   & $407$                    \\
-    15  & 3   & $23.6 \cdot 10^3$       & $34.9 \cdot 10^3$        \\
-    15  & 4   & $1.3 \cdot 10^6$        & $3.1 \cdot 10^6$         \\
-    15  & 5   & $53.0 \cdot 10^6$       & $40.0 \cdot 10^6$        \\
-    15  & 6   & $1.6 \cdot 10^9$        & $0.73 \cdot 10^9$        \\
-    15  & 7   & $5.3 \cdot 10^9$        & $1.3 \cdot 10^9$         \\
-    15  & 8   & $15.7 \cdot 10^9$       & $2.2 \cdot 10^9$         \\
-    \hline
-    16  & 1   & $15$                    & $16$                     \\
-    16  & 2   & $990$                   & $520$                    \\
-    16  & 3   & $35.8 \cdot 10^3$       & $62.3 \cdot 10^3$        \\
-    16  & 4   & $2.4 \cdot 10^6$        & $7.4 \cdot 10^6$         \\
-    16  & 5   & $211.1 \cdot 10^6$      & $275.3 \cdot 10^6$       \\
-    16  & 6   & $3.6 \cdot 10^9$        & $2.6 \cdot 10^9$         \\
-  \end{tabular}
-\end{table}
-
-
-
-\begin{table}[!t]
-  \caption{Execution times of different search methods.}
-  \label{tab:search_algorithms_appendix}
-
-  \begin{minipage}{\linewidth}
-    \renewcommand{\arraystretch}{1.1}
-    \centering
-    \small
-    \begin{tabular}{c|c|l|l|l}
-      $n$ & $i$ & \textbf{Forward} & \textbf{Backward} & \textbf{Oksanen}                                                                                                                                                                                                                                                                        \\
-      \hline
-      12  & 1   & 0.0s             & 0.0s              & 0.0s                                                                                                                                                                                                                                                                                    \\
-      12  & 2   & 0.0s             & 0.2s              & 0.0s                                                                                                                                                                                                                                                                                    \\
-      12  & 3   & 0.4s             & 0.6s              & 0.0s                                                                                                                                                                                                                                                                                    \\
-      12  & 4   & 3.5s             & 0.9s              & 21.4s\footnote{\label{fn:oksanen_incorrect}The publicly available version \texttt{1.6} of Oksanen's program did not find an optimal algorithm for $V_4(12)$, $V_5(12)$ and $V_6(12)$. On his website he gives an optimal algorithm computed with the unavailable version \texttt{1.1}.} \\
-      12  & 5   & 36.1s            & 3.8s              & 4m 59s\footref{fn:oksanen_incorrect}
-      \\
-      12  & 6   & 1m 30s           & 18.0s             & 1.9s\footref{fn:oksanen_incorrect}
-      \\
-      \hline
-      13  & 1   & 0.0s             & 0.0s              & 0.0s                                                                                                                                                                                                                                                                                    \\
-      13  & 2   & 0.0s             & 0.5s              & 0.0s                                                                                                                                                                                                                                                                                    \\
-      13  & 3   & 0.8s             & 1.2s              & 0.2s                                                                                                                                                                                                                                                                                    \\
-      13  & 4   & 13.8s            & 10.3s             & 55.4s                                                                                                                                                                                                                                                                                   \\
-      13  & 5   & 3m 42s           & 44.5s             & 26m 36s                                                                                                                                                                                                                                                                                 \\
-      13  & 6   & 17m 10s          & 3m 22s            & 3h 25m                                                                                                                                                                                                                                                                                  \\
-      13  & 7   & 59m 20s          & 7m 16s            & 16h 10m                                                                                                                                                                                                                                                                                 \\
-      \hline
-      14  & 1   & 0.0s             & 0.0s              & 0.0s                                                                                                                                                                                                                                                                                    \\
-      14  & 2   & 0.0s             & 1.3s              & 0.0s                                                                                                                                                                                                                                                                                    \\
-      14  & 3   & 1.4s             & 5.1s              & 0.6s                                                                                                                                                                                                                                                                                    \\
-      14  & 4   & 35.9s            & 33.0s             & 1m 47s                                                                                                                                                                                                                                                                                  \\
-      14  & 5   & 17m 27s          & 7m 1s             & 6h 29m                                                                                                                                                                                                                                                                                  \\
-      14  & 6   & 2h 40m           & 37m 54s           & 4d 10h                                                                                                                                                                                                                                                                                  \\
-      14  & 7   & 14h 40m          & 2h 17m            & >5d\footnote{\label{fn:oksanen_abort_appendix}We aborted Oksanen's program after 5 days.}                                                                                                                                                                                               \\
-      \hline
-      15  & 1   & 0.0s             & 0.0s              & 0.0s                                                                                                                                                                                                                                                                                    \\
-      15  & 2   & 0.1s             & 3.9s              & 0.0s                                                                                                                                                                                                                                                                                    \\
-      15  & 3   & 2.8s             & 24.5s             & 1.4s                                                                                                                                                                                                                                                                                    \\
-      15  & 4   & 2m 24s           & 11m 2s            & 27m 17s                                                                                                                                                                                                                                                                                 \\
-      15  & 5   & 1h 12m           & 22m 11s           & 1d 5h 40m                                                                                                                                                                                                                                                                               \\
-      15  & 6   & 1d 8h 37m        & 7h 17m            & >5d\footref{fn:oksanen_abort}                                                                                                                                                                                                                                                           \\
-      15  & 7   & 4d 23h 37m       & 9h 45m            & >5d\footref{fn:oksanen_abort}                                                                                                                                                                                                                                                           \\
-      15  & 8   & 14d 21h 26m      & 1d 3h 7m          & >5d\footref{fn:oksanen_abort}                                                                                                                                                                                                                                                           \\
-      \hline
-      16  & 1   & 0.0s             & 0.0s              & -                                                                                                                                                                                                                                                                                       \\
-      16  & 2   & 0.2s             & 12.3s             & -                                                                                                                                                                                                                                                                                       \\
-      16  & 3   & 6.4s             & 1m 55.1s          & -                                                                                                                                                                                                                                                                                       \\
-      16  & 4   & 7m 22s           & 52m 9.4s          & -                                                                                                                                                                                                                                                                                       \\
-      16  & 5   & 7h 33m           & 6h 48m 14.8s      & -                                                                                                                                                                                                                                                                                       \\
-      16  & 6   & 6d 11h 21m       & 1d 1h 26m         & -                                                                                                                                                                                                                                                                                       \\
-    \end{tabular}
-  \end{minipage}
-\end{table}
-
-\section{Computing Compatible Solutions}
-\Cref{algo:compatible_solutions} shows how we compute the number of compatible solutions for a given problem.
-To calculate this number, the algorithm first picks a solution element $j$ -- since problems are always reduced in the forward search, any element is valid -- and then counts the number of partitions into greater and lesser elements, summing these counts over all solution elements.
-The algorithm assumes that the elements in the poset are sorted such that an element smaller than another has a smaller index.
-
-\begin{algorithm}[t]
-  \centering
-  \input{figures/algorithm_compatible_solutions}
-  \caption{Algorithm for computing the number of compatible solutions for a given poset.}
-  \label{algo:compatible_solutions}
-\end{algorithm}
-
-As an example, the unordered poset $(E_n, i)$ has $n \cdot \binom{n - 1}{i - 1}$ compatible solutions because, for each of the $n$ elements, all separations of the remaining $n - 1$ elements are valid.
-
-
-\section{Distribution of Compatible Solutions}%
-\begin{figure}[h]
-  \includegraphics*[scale=0.5]{figures/compatible_cost_relation}
-  \caption*{Cost distribution for all instances solved in the forward search for $n \leq 14$, excluding $i \leq 2$.
-    Purple indicates low $i$, yellow indicates high $i$. $\log_2$ is shown in red.}
-\end{figure}
-
-\section{Search Space of the Backward Search}
-\begin{figure}[!b]
-  \centering
-  \input{figures/tikz_posets_per_level.tex}
-  \caption{Number of posets generated by the backward search for $n = 14$ depending on the number of comparisons for various $i$.
-    Be aware of the logarithmic scale of the y-axis and that the reverse search does not add comparisons, but rather removes them.}
-  \label{fig:backward-posets-per-level}
-\end{figure}
-
-\Cref{fig:backward-posets-per-level} shows the size of the search space of the backward search for different values of $i$.
-It is noticeable that the maximum number of problems is searched for all $i$ when there are $8$ to $9$ comparisons remaining, with a slight tendency towards more comparisons for larger $i$ for $n = 14$.
-
-\section{Bidirectional Search}
-Recall the proposition of using a bidirectional search suggested in the conclusion.
-\Cref{fig:backward_forward_count_13_6} illustrates why the classical meet-in-the-middle approach will not work for the selection problem.
-Assume the two searches meet after $11$ comparisons have been performed.
-At this meeting point, both searches have already covered over $99\%$ of their search space.
-
-\begin{figure}[!b]
-  \centering
-  \input{figures/tikz_backward_forward_13_6}
-  \caption{Number of posets depending on the number of comparisons for $n = 13$ and $i = 7$ (red: backward search, blue: forward search).}
-  \label{fig:backward_forward_count_13_6}
-\end{figure}
+  
 
 \end{document}
