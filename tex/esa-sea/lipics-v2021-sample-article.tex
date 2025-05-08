@@ -150,7 +150,7 @@
   Using new algorithmic ideas, we establish tighter lower bounds for the number of comparisons required, denoted as $V_i(n)$.
   Our results include optimal algorithms for $n$ up to 15 and arbitrary $i$, and for $n=16$ when $i \leq 6$.
   We determine the precise values $V_7(14) = 25$, $V_6(15) = V_7(15) = 26$, and $V_8(15) = 27$, where previously, only a range was known.
-%  We computed $V_i(16)$ for $i \leq 6$ and determined a new lower bound for $V_7(16)$ and $V_8(16)$. 
+  %  We computed $V_i(16)$ for $i \leq 6$ and determined a new lower bound for $V_7(16)$ and $V_8(16)$. 
 
 \end{abstract} % newline above is important for formatting
 
@@ -362,16 +362,16 @@ For small values of $i$, the high percentage of \texttt{nauty} calls is not crit
   \label{table:nauty-ratio}
   \centering
   \small
-%  \resizebox{\columnwidth}{!}{%
+  %  \resizebox{\columnwidth}{!}{%
   \begin{tabular}{cr|cccccccc}
-%      $n$ & $i$ & \multicolumn{8}{c}{$i$}                                                          \\
-    $n$ & $i$    & 1                       & 2      & 3     & 4     & 5     & 6     & 7     & 8     \\ \hline
-    13 & & 0                       & 30.205 & 6.808 & 1.526 & 0.467 & 0.185 & 0.114 &       \\
-    14 & & 0                       & 33.667 & 7.552 & 1.651 & 0.425 & 0.151 & 0.073 &       \\
-    15 & & 0                       & 36.390 & 8.184 & 1.678 & 0.459 & 0.132 & 0.065 & 0.041 \\
-    16 & & 0                       & 39.407 & 8.805 & 1.796 & 0.467 & 0.144 & -     & -     \\
+    %      $n$ & $i$ & \multicolumn{8}{c}{$i$}                                                          \\
+    $n$ & $i$ & 1 & 2      & 3     & 4     & 5     & 6     & 7     & 8     \\ \hline
+    13  &     & 0 & 30.205 & 6.808 & 1.526 & 0.467 & 0.185 & 0.114 &       \\
+    14  &     & 0 & 33.667 & 7.552 & 1.651 & 0.425 & 0.151 & 0.073 &       \\
+    15  &     & 0 & 36.390 & 8.184 & 1.678 & 0.459 & 0.132 & 0.065 & 0.041 \\
+    16  &     & 0 & 39.407 & 8.805 & 1.796 & 0.467 & 0.144 & -     & -     \\
   \end{tabular}%
-%  }
+  %  }
 \end{table}
 
 \subsection{Forward Search.} \label{chapter:forward_search}
@@ -410,13 +410,13 @@ Let
 be the set of all solutions compatible with $(P, i)$.
 Observe that, given two elements $a,b$ that are unrelated in $P$, every solution compatible with $(P, i)$ is compatible with at least one of $(\pchild{P}{a}{b}, i)$ and $(\pchild{P}{b}{a}, i)$ and thus
 \begin{equation}\label{lemma:compatible_union}
-\mathcal{C}(P, i) = \mathcal{C}(\pchild{P}{a}{b}, i) \cup \mathcal{C}(\pchild{P}{b}{a}, i)\,\text{.}
+  \mathcal{C}(P, i) = \mathcal{C}(\pchild{P}{a}{b}, i) \cup \mathcal{C}(\pchild{P}{b}{a}, i)\,\text{.}
 \end{equation}
 
 We use the concept of compatible solutions to derive the following lower bound on the number of comparisons required to select the $i$-th smallest element of a poset $P$, which we use as a pruning criterion in the forward search.
 
 \begin{theorem}\label{theorem:compatible_log}
-Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil\log(|\mathcal{C}(P, i)|)\rceil$ comparisons in the worst case.
+  Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil\log(|\mathcal{C}(P, i)|)\rceil$ comparisons in the worst case.
 \end{theorem}
 
 \begin{proof}
@@ -468,8 +468,8 @@ If $(E_n, i) \in A_\ell$, then $V_i(n) = \ell$.
   \centering
   \input{figures/tikz_backward_search_tree.tex}
   \caption{Search tree for $n = 4$ and $i = 2$.
-  Level $k$ contains all posets that can be solved in $k$ comparisons and contribute to the solution for the given parameters $n$ and $i$.
-  Solid arrows indicate predecessors, while dashed arrows represent the resulting problem when the reversed comparison is inserted.}
+    Level $k$ contains all posets that can be solved in $k$ comparisons and contribute to the solution for the given parameters $n$ and $i$.
+    Solid arrows indicate predecessors, while dashed arrows represent the resulting problem when the reversed comparison is inserted.}
   \label{fig:backward-search-tree}
 \end{figure}
 
@@ -728,25 +728,25 @@ This reduces the likelihood of an incorrect result due to a coding error.
   \caption{Execution times and number of posets stored in the cache for different search methods.}
   \label{table:search_algorithms}
   \label{table:cache_entries}
-\begin{minipage}{\linewidth}
-  \renewcommand{\arraystretch}{1.1}
-  \centering
-  \small
-  \begin{tabular}{cc|ll|ll|l}
-    & & \multicolumn{2}{c|}{\textbf{Forward Search}} & \multicolumn{2}{c|}{\textbf{Backward Search}} & \textbf{Oksanen} \\
-    $n$ & $i$ & {\footnotesize time} & {\footnotesize posets} & {\footnotesize time} & {\footnotesize posets} & {\footnotesize time} \\
-    \hline
-    12  & 6   & 1m 30s     & $1.9 \cdot 10^6$        & 18.0s    & $996 \cdot 10^3$         & 1.9s
-            \\
-    \hline
-    13  & 7   & 59m 20s   & $67.6 \cdot 10^6$       & 7m 16s    & $14.5 \cdot 10^6$           & 16h 10m          \\
-    \hline
-    14  & 7   & 14h 40m & $925.3 \cdot 10^6$         & 2h 17m     & $263.3 \cdot 10^6$         & >5d\footnote{\label{fn:oksanen_abort}We aborted Oksanen's program after 5 days.}   \\
-    \hline
-    15  & 8   & 14d 21h 26m    & $15.7 \cdot 10^9$       & 1d 3h 7m       & $2.2 \cdot 10^9$        & >5d\footref{fn:oksanen_abort}              \\
-    \hline
-    16  & 6   & 6d 11h 21m    & $3.6 \cdot 10^9$      & 1d 1h 26m       & $2.6 \cdot 10^9$     & -                \\
-  \end{tabular}
+  \begin{minipage}{\linewidth}
+    \renewcommand{\arraystretch}{1.1}
+    \centering
+    \small
+    \begin{tabular}{cc|ll|ll|l}
+          &     & \multicolumn{2}{c|}{\textbf{Forward Search}} & \multicolumn{2}{c|}{\textbf{Backward Search}} & \textbf{Oksanen}                                                                                                                 \\
+      $n$ & $i$ & {\footnotesize time}                         & {\footnotesize posets}                        & {\footnotesize time} & {\footnotesize posets} & {\footnotesize time}                                                             \\
+      \hline
+      12  & 6   & 1m 30s                                       & $1.9 \cdot 10^6$                              & 18.0s                & $996 \cdot 10^3$       & 1.9s
+      \\
+      \hline
+      13  & 7   & 59m 20s                                      & $67.6 \cdot 10^6$                             & 7m 16s               & $14.5 \cdot 10^6$      & 16h 10m                                                                          \\
+      \hline
+      14  & 7   & 14h 40m                                      & $925.3 \cdot 10^6$                            & 2h 17m               & $263.3 \cdot 10^6$     & >5d\footnote{\label{fn:oksanen_abort}We aborted Oksanen's program after 5 days.} \\
+      \hline
+      15  & 8   & 14d 21h 26m                                  & $15.7 \cdot 10^9$                             & 1d 3h 7m             & $2.2 \cdot 10^9$       & >5d\footref{fn:oksanen_abort}                                                    \\
+      \hline
+      16  & 6   & 6d 11h 21m                                   & $3.6 \cdot 10^9$                              & 1d 1h 26m            & $2.6 \cdot 10^9$       & -                                                                                \\
+    \end{tabular}
   \end{minipage}
 \end{table}
 
@@ -903,48 +903,48 @@ We compare the forward search, the backward search and Oksanen's implementation 
     \centering
     \small
     \begin{tabular}{c|c|l|l|l}
-      $n$ & $i$ & \textbf{Forward} & \textbf{Backward} & \textbf{Oksanen} \\
+      $n$ & $i$ & \textbf{Forward} & \textbf{Backward} & \textbf{Oksanen}                                                                                                                                                                                                                                                                        \\
       \hline
-      12  & 1   & 0.0s             & 0.0s              & 0.0s             \\
-      12  & 2   & 0.0s             & 0.2s              & 0.0s             \\
-      12  & 3   & 0.4s             & 0.6s              & 0.0s             \\
-      12  & 4   & 3.5s             & 0.9s              & 21.4s\footnote{\label{fn:oksanen_incorrect}The publicly available version \texttt{1.6} of Oksanen's program did not find an optimal algorithm for $V_4(12)$, $V_5(12)$ and $V_6(12)$. On his website he gives an optimal algorithm computed with the unavailable version \texttt{1.1}.}           \\
+      12  & 1   & 0.0s             & 0.0s              & 0.0s                                                                                                                                                                                                                                                                                    \\
+      12  & 2   & 0.0s             & 0.2s              & 0.0s                                                                                                                                                                                                                                                                                    \\
+      12  & 3   & 0.4s             & 0.6s              & 0.0s                                                                                                                                                                                                                                                                                    \\
+      12  & 4   & 3.5s             & 0.9s              & 21.4s\footnote{\label{fn:oksanen_incorrect}The publicly available version \texttt{1.6} of Oksanen's program did not find an optimal algorithm for $V_4(12)$, $V_5(12)$ and $V_6(12)$. On his website he gives an optimal algorithm computed with the unavailable version \texttt{1.1}.} \\
       12  & 5   & 36.1s            & 3.8s              & 4m 59s\footref{fn:oksanen_incorrect}
       \\
       12  & 6   & 1m 30s           & 18.0s             & 1.9s\footref{fn:oksanen_incorrect}
       \\
       \hline
-      13  & 1   & 0.0s             & 0.0s              & 0.0s             \\
-      13  & 2   & 0.0s             & 0.5s              & 0.0s             \\
-      13  & 3   & 0.8s             & 1.2s              & 0.2s             \\
-      13  & 4   & 13.8s            & 10.3s             & 55.4s            \\
-      13  & 5   & 3m 42s           & 44.5s             & 26m 36s          \\
-      13  & 6   & 17m 10s          & 3m 22s            & 3h 25m           \\
-      13  & 7   & 59m 20s          & 7m 16s            & 16h 10m          \\
+      13  & 1   & 0.0s             & 0.0s              & 0.0s                                                                                                                                                                                                                                                                                    \\
+      13  & 2   & 0.0s             & 0.5s              & 0.0s                                                                                                                                                                                                                                                                                    \\
+      13  & 3   & 0.8s             & 1.2s              & 0.2s                                                                                                                                                                                                                                                                                    \\
+      13  & 4   & 13.8s            & 10.3s             & 55.4s                                                                                                                                                                                                                                                                                   \\
+      13  & 5   & 3m 42s           & 44.5s             & 26m 36s                                                                                                                                                                                                                                                                                 \\
+      13  & 6   & 17m 10s          & 3m 22s            & 3h 25m                                                                                                                                                                                                                                                                                  \\
+      13  & 7   & 59m 20s          & 7m 16s            & 16h 10m                                                                                                                                                                                                                                                                                 \\
       \hline
-      14  & 1   & 0.0s             & 0.0s              & 0.0s             \\
-      14  & 2   & 0.0s             & 1.3s              & 0.0s             \\
-      14  & 3   & 1.4s             & 5.1s              & 0.6s             \\
-      14  & 4   & 35.9s            & 33.0s             & 1m 47s           \\
-      14  & 5   & 17m 27s          & 7m 1s             & 6h 29m           \\
-      14  & 6   & 2h 40m           & 37m 54s           & 4d 10h           \\
-      14  & 7   & 14h 40m          & 2h 17m            & >5d\footnote{\label{fn:oksanen_abort_appendix}We aborted Oksanen's program after 5 days.}   \\
+      14  & 1   & 0.0s             & 0.0s              & 0.0s                                                                                                                                                                                                                                                                                    \\
+      14  & 2   & 0.0s             & 1.3s              & 0.0s                                                                                                                                                                                                                                                                                    \\
+      14  & 3   & 1.4s             & 5.1s              & 0.6s                                                                                                                                                                                                                                                                                    \\
+      14  & 4   & 35.9s            & 33.0s             & 1m 47s                                                                                                                                                                                                                                                                                  \\
+      14  & 5   & 17m 27s          & 7m 1s             & 6h 29m                                                                                                                                                                                                                                                                                  \\
+      14  & 6   & 2h 40m           & 37m 54s           & 4d 10h                                                                                                                                                                                                                                                                                  \\
+      14  & 7   & 14h 40m          & 2h 17m            & >5d\footnote{\label{fn:oksanen_abort_appendix}We aborted Oksanen's program after 5 days.}                                                                                                                                                                                               \\
       \hline
-      15  & 1   & 0.0s             & 0.0s              & 0.0s             \\
-      15  & 2   & 0.1s             & 3.9s              & 0.0s             \\
-      15  & 3   & 2.8s             & 24.5s             & 1.4s             \\
-      15  & 4   & 2m 24s           & 11m 2s            & 27m 17s          \\
-      15  & 5   & 1h 12m           & 22m 11s           & 1d 5h 40m        \\
-      15  & 6   & 1d 8h 37m        & 7h 17m            & >5d\footref{fn:oksanen_abort}              \\
-      15  & 7   & 4d 23h 37m       & 9h 45m            & >5d\footref{fn:oksanen_abort}              \\
-      15  & 8   & 14d 21h 26m      & 1d 3h 7m          & >5d\footref{fn:oksanen_abort}              \\
+      15  & 1   & 0.0s             & 0.0s              & 0.0s                                                                                                                                                                                                                                                                                    \\
+      15  & 2   & 0.1s             & 3.9s              & 0.0s                                                                                                                                                                                                                                                                                    \\
+      15  & 3   & 2.8s             & 24.5s             & 1.4s                                                                                                                                                                                                                                                                                    \\
+      15  & 4   & 2m 24s           & 11m 2s            & 27m 17s                                                                                                                                                                                                                                                                                 \\
+      15  & 5   & 1h 12m           & 22m 11s           & 1d 5h 40m                                                                                                                                                                                                                                                                               \\
+      15  & 6   & 1d 8h 37m        & 7h 17m            & >5d\footref{fn:oksanen_abort}                                                                                                                                                                                                                                                           \\
+      15  & 7   & 4d 23h 37m       & 9h 45m            & >5d\footref{fn:oksanen_abort}                                                                                                                                                                                                                                                           \\
+      15  & 8   & 14d 21h 26m      & 1d 3h 7m          & >5d\footref{fn:oksanen_abort}                                                                                                                                                                                                                                                           \\
       \hline
-      16  & 1   & 0.0s             & 0.0s              & -                \\
-      16  & 2   & 0.2s             & 12.3s             & -                \\
-      16  & 3   & 6.4s             & 1m 55.1s          & -                \\
-      16  & 4   & 7m 22s           & 52m 9.4s          & -                \\
-      16  & 5   & 7h 33m           & 6h 48m 14.8s      & -                \\
-      16  & 6   & 6d 11h 21m       & 1d 1h 26m         & -                \\
+      16  & 1   & 0.0s             & 0.0s              & -                                                                                                                                                                                                                                                                                       \\
+      16  & 2   & 0.2s             & 12.3s             & -                                                                                                                                                                                                                                                                                       \\
+      16  & 3   & 6.4s             & 1m 55.1s          & -                                                                                                                                                                                                                                                                                       \\
+      16  & 4   & 7m 22s           & 52m 9.4s          & -                                                                                                                                                                                                                                                                                       \\
+      16  & 5   & 7h 33m           & 6h 48m 14.8s      & -                                                                                                                                                                                                                                                                                       \\
+      16  & 6   & 6d 11h 21m       & 1d 1h 26m         & -                                                                                                                                                                                                                                                                                       \\
     \end{tabular}
   \end{minipage}
 \end{table}
@@ -968,7 +968,7 @@ As an example, the unordered poset $(E_n, i)$ has $n \cdot \binom{n - 1}{i - 1}$
 \begin{figure}[h]
   \includegraphics*[scale=0.5]{figures/compatible_cost_relation}
   \caption*{Cost distribution for all instances solved in the forward search for $n \leq 14$, excluding $i \leq 2$.
-  Purple indicates low $i$, yellow indicates high $i$. $\log_2$ is shown in red.}
+    Purple indicates low $i$, yellow indicates high $i$. $\log_2$ is shown in red.}
 \end{figure}
 
 \section{Search Space of the Backward Search}
@@ -976,7 +976,7 @@ As an example, the unordered poset $(E_n, i)$ has $n \cdot \binom{n - 1}{i - 1}$
   \centering
   \input{figures/tikz_posets_per_level.tex}
   \caption{Number of posets generated by the backward search for $n = 14$ depending on the number of comparisons for various $i$.
-  Be aware of the logarithmic scale of the y-axis and that the reverse search does not add comparisons, but rather removes them.}
+    Be aware of the logarithmic scale of the y-axis and that the reverse search does not add comparisons, but rather removes them.}
   \label{fig:backward-posets-per-level}
 \end{figure}
 
