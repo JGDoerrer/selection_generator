@@ -29,6 +29,7 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning}
 \usetikzlibrary{shapes.misc}
+\usetikzlibrary{positioning, arrows.meta, shapes, fit, calc}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -580,6 +581,84 @@ The next lemma shows that the elements removed by the reduction, which are not $
   \end{equation}
   which concludes the proof.
 \end{proof}
+
+\begin{figure}[h!]
+  \centering
+  \begin{tikzpicture}[
+      xscale=0.8, yscale=0.8,
+      Pnode/.style={draw, circle, minimum size=7mm, inner sep=0pt, font=\small},
+      Rnode/.style={Pnode, fill=yellow!50},
+      labelnode/.style={font=\small\itshape, align=center, text width=4.5cm},
+      descr/.style={font=\small, align=center, text width=4.5cm},
+      mainlabel/.style={font=\bfseries, align=center, text width=4.5cm},
+      arrowlabel/.style={midway, font=\scriptsize, text width=1.8cm, inner sep=0pt, align=center}
+    ]
+
+    \begin{scope}[xshift=0cm]
+      \node[mainlabel] (P_title) at (0,0) {Initial Problem $(P, i)$};
+      \node[labelnode, below=0.2cm of P_title] (P_i_val) {e.g., $(P, 2)$, given as reduced. Elements $d, c_{el} \in R$.};
+
+      \node[Rnode] (d1) at (0,-2.5) {$d$};
+      \node[Pnode] (b1) at (0,-3.75) {$b$};
+      \node[Pnode] (a1) at (0,-5) {$a$};
+      \node[Rnode] (c_el1) at (0,-6.25) {$c_{el}$};
+
+      \draw (d1) -- (b1);
+      \draw[dashed] (b1) -- (a1);
+      \draw (a1) -- (c_el1);
+
+      \node[descr, below=0.3cm of c_el1, text width=4.5cm] (P_footer)
+      {Let $R=\{d, c_{el}\}$. The lemma guarantees existence of $c_{lemma} \in R$ such that $P|_{\Omega_P \setminus \{c_{lemma}\}}$ is reduced.};
+    \end{scope}
+
+    \begin{scope}[xshift=5.75cm]
+      \node[mainlabel] (Pprime_title) at (0,0) {Path 1: Remove $c_{lemma} = d$};
+      \node[labelnode, below=0.2cm of Pprime_title] (Pprime_i_val) {Result: $(P', i')$ where $P' = P|_{\Omega_P \setminus \{d\}}$};
+
+      \node[Pnode] (b2) at (0,-3.75) {$b$};
+      \node[Pnode] (a2) at (0,-5) {$a$};
+      \node[Pnode] (c_el2) at (0,-6.25) {$c_{el}$};
+
+      \draw[dashed] (b2) -- (a2);
+      \draw (a2) -- (c_el2);
+
+      \node[descr, below=0.3cm of c_el2] (Pd_reduced_text)
+      {$(P', 2)$ is reduced.
+        (Index $i'=i=2$ implies $|\greater{\pchild{P}{a_{lem}}{b_{lem}}}{d}| < n - i + 2$).
+        This $d$ acts as the $c_{lemma}$ guaranteed by the lemma.};
+    \end{scope}
+
+    \begin{scope}[xshift=11.5cm] 
+      \node[mainlabel] (Pdoubleprime_title) at (0,0) {Path 2: Remove $c_{alt} = c_{el}$};
+      \node[labelnode, below=0.2cm of Pdoubleprime_title] (Pdoubleprime_i_val) {Result: $(P'', i'')$ where $P'' = P|_{\Omega_P \setminus \{c_{el}\}}$};
+
+      \node[Pnode] (d3) at (0,-2.5) {$d$};
+      \node[Pnode] (b3) at (0,-3.75) {$b$};
+      \node[Pnode] (a3) at (0,-5) {$a$};
+
+      \draw (d3) -- (b3);
+      \draw[dashed] (b3) -- (a3);
+
+      \node[descr, below=0.3cm of a3] (Pc_not_reduced_text)
+      {$(P'', 1)$ is not reduced.
+        (Index $i''=i-1=1$ implies $|\greater{\pchild{P}{a_{lem}}{b_{lem}}}{c_{el}}| \ge n - i + 2$).
+        This choice illustrates an alternative removal.};
+    \end{scope}
+
+    \path[-{Stealth[length=2.5mm, width=2mm]}, shorten >=3pt, shorten <=3pt, thick]
+    (P_title.east) edge node[arrowlabel, below right, xshift=-8mm, yshift=-2mm] {Lemma guarantees this path exists} (Pprime_title.west)
+    (P_title.east) edge[bend left=25] node[arrowlabel, above right, xshift=-7mm] {Alternative (not guaranteed to be reduced)} (Pdoubleprime_title.west);
+  \end{tikzpicture}
+  \caption{
+    The diagram exemplifies the lemma using an initial problem $(P,2)$ where the set of removable elements (excluding $a_{lem}, b_{lem}$) is $R=\{d, c_{el}\}$.
+    Path 1 demonstrates the lemma's assertion: removing $d$ (as the $c_{lemma}$) results in $(P',2)$, which is reduced.
+    The index $i'=2$ implies $|\greater{\pchild{P}{a_{lem}}{b_{lem}}}{d}| < n - i + 2$.
+    Path 2 shows an alternative: removing $c_{el}$ results in $(P'',1)$, which is not reduced.
+    The index $i''=1$ implies $|\greater{\pchild{P}{a_{lem}}{b_{lem}}}{c_{el}}| \ge n - i + 2$.
+    This path highlights that not every element in $R$ will satisfy the lemma's condition for the resulting problem to be reduced, but the lemma guarantees at least one such element exists.
+  }
+  \label{fig:lemma_viz_example}
+\end{figure}
 
 The set of predecessors for a given problem $(P, i)$ can be split into the following three subsets, which we compute in that order.
 \begin{enumerate}
