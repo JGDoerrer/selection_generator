@@ -1,0 +1,119 @@
+% pdfpc Seminar_Presentation.pdf -d 30 --disable-auto-grouping --notes=left
+\documentclass[compress,11pt,aspectratio=169]{beamer}
+
+%\setbeameroption{show notes}
+\setbeameroption{show notes on second screen=left}
+% \setbeamerfont{note page}{size=\normalsize}
+% \setbeamertemplate{note page}{
+%     \pagecolor{black}
+%     \setlength{\leftmargini}{0pt}
+%     \setbeamercolor{itemize item}{fg=white}
+%     \setbeamercolor{normal text}{fg=white}
+%     \usebeamercolor*{normal text}
+%     \insertnote
+%}
+
+
+% language and encodings
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+
+% TikZ
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.misc}
+
+% other packages
+\usepackage{graphicx}               % Bilder einbinden, Version fuer normales latex
+\usepackage{ifthen}                 % Zum Auskommentieren von Textteilen
+\usepackage{amssymb}                % Mathematische Buchstaben
+\usepackage{amsmath}                % Verbesserter Formelsatz
+\usepackage{booktabs}               % schönere Tabellen
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{urlcolor=black,citecolor=black}
+\usepackage{dsfont}
+\usepackage{float}
+\usepackage{listings}
+
+% \usepackage[style=authoryear,
+%             autocite=footnote,
+            % backend=biber,
+%             giveninits=true]{biblatex}
+\usepackage{csquotes}
+
+\usepackage{diagbox}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% \bibliography{biblio.bib}
+
+
+% Theme
+\iffalse
+    \usetheme{Singapore}
+
+    \setlength{\leftmargini}{0pt}
+    \setbeamersize{text margin left=7.5mm,text margin right=7.5mm}
+    
+    \setbeamertemplate{section in toc}[sections numbered]
+    %\setbeamertemplate{subsection in toc}[subsections numbered]
+\else
+    % Beamer theme - options:
+    % - navigationDotsLocation: specify location of the dots in the headline
+    %   - near: display the dots near the section names (default)
+    %   - below: display the dots below the section names
+    % - titlePageSpacing: vertical spacing between items on title page (default: 1.5em)
+    % - titlePageNumberOfAuthors: influence size and location of authors on title page
+    %   - few (default): use larger font size, display authors on the left
+    %   - many: use smaller font size, display authors on the right
+    % - thanksPageBigGraphicsScale: scale for the big graphics on the thanks page (default: 1)
+    % - titlePageUniversityLogo: location of university logo file on the title page
+    %   (default: logos/logo_us_white)
+    % - titlePageInstituteLogo: location of institute logo file on the title page - if empty, nothing is displayed
+    %   (default: empty)
+    % - titlePageDepartmentLogo: location of department logo file on the title page - if empty, nothing is displayed
+    %   (default: empty)
+    % - titlePageBigLogo: location of big logo file on the title page - if empty, nothing is displayed
+    %   (default: empty)
+    % - thanksPageBigGraphics: location of the big graphics on the thanks page
+    %   (default: tikz/title)
+    % - thanksPageInstituteLogo: location of institute logo file on the thanks page - if empty, nothing is displayed
+    %   (default: empty)
+    % - thanksPageDepartmentLogo: location of department logo file on the thanks page - if empty, nothing is displayed
+    %   (default: empty)
+    % - thanksPageBigLogo: location of big logo file on the thanks page - if empty, nothing is displayed
+    %   (default: empty)
+    \usetheme[
+        titlePageUniversityLogo=logos/unistuttgart_logo_deutsch_cmyk_invertiert.png,
+        thanksPageBigGraphicsScale=0.175,
+        thanksPageBigGraphics=logos/fmi.png,
+%        thanksPageBigGraphics=thanks,
+%        titlePageInstituteLogo=logos/logo_ipvs.png,
+%        titlePageDepartmentLogo=logos/logo_sgs.png,
+%        titlePageBigLogo=logos/logo_simtech.png,
+%        thanksPageInstituteLogo=logos/logo_ipvs.png,
+%        thanksPageDepartmentLogo=logos/logo_sgs.png,
+%        thanksPageBigLogo=logos/logo_simtech.png,
+        navigationDotsLocation=below,
+        %titlePageSpacing=0.6em,
+        titlePageNumberOfAuthors=many,
+    ]{Stuttgart}
+\fi
+
+\def\myverzeichnis{.}
+\numberwithin{equation}{section}
+
+\hyphenation{}
+
+\title{Exact Lower Bounds for the Number of
+Comparisons in Selection}
+%\subtitle{with the fewest possible comparisons.}
+\author{SEA 2025}
+\institute{Josua Dörrer, Konrad Gendle, \underbar{Johanna Hofmann}, \underline{Julius von Smercek}, Andreas Steding, Florian Stober} 
+\date{July 23rd 2025}
+
+\begin{document}
+\include{slides.tex}
+\end{document}
