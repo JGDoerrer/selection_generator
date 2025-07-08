@@ -43,7 +43,7 @@
 
 \begin{frame}{Complexity of the Selection Problem}
   \begin{figure}
-    \includegraphics[width=0.8\textwidth]{figures/bounds_diagram.png}
+    \includegraphics[height=0.8\textheight]{figures/bounds_diagram.png}
     \caption{Complexity bounds}
   \end{figure}
 \end{frame}
@@ -74,7 +74,6 @@
   \textbf{Aufgabenstellung} \\
   \vspace{5mm}
   Bestimme mit Computersuche $V_i^n$ - die Anzahl an Vergleichen, die ein optimaler Algorithmus im Worst Case benötigt, um das $i$ kleinste von $n$ Elementen zu finden.
-
 \end{frame}
 
 
@@ -230,7 +229,7 @@
 
 \end{frame}
 
-\section{Vorwärtssuche}
+\section{Forward Search}
 \sectionframe{\insertsection}
 
 \begin{frame}{\insertsection}
@@ -241,6 +240,11 @@
       level 2/.style = {sibling distance = 2.5cm},
     ]
 
+    \node[anchor=east] at (-7,0) {Min};
+    \node[anchor=east] at (-7,-1.5) {Max};
+    \node[anchor=east] at (-7,-3) {Min};
+    \node[anchor=east] at (-7,-4.5) {Max};
+
     \node[] (root) {$(n,i,\emptyset)$}
     child {
         node[] {$\{a,b\}$}
@@ -250,31 +254,35 @@
                 node[] {$\{c,d\}$}
                 child[sibling distance = 1cm] { node[] {$\cdots$}}
                 child[sibling distance = 1cm] { node[] {$\cdots$}}
-              }
+            }
             child[sibling distance = 1cm] { node[] {$\cdots$}}
-          }
+        }
         child {
             node[] {$(n,i,\{(b,a)\})$}
             child[sibling distance = 1cm] {
                 node[] {$\{c,d\}$}
                 child[sibling distance = 1cm] { node[] {$\cdots$}}
                 child[sibling distance = 1cm] { node[] {$\cdots$}}
-              }
+            }
             child[sibling distance = 1cm] { node[] {$\cdots$}}
-          }
-      }
+        }
+    }
     child {
         node {$\{a,c\}$}
         child[sibling distance = 1cm] { node[] {$\cdots$}}
         child[sibling distance = 1cm] { node[] {$\cdots$}}
-      }
+    }
     child {
         node[] {$\cdots$}
       }
     ;
 
-  \end{tikzpicture}
-
+\end{tikzpicture}
+  \note{
+    \begin{itemize}
+    \item Every node represents a function call on the Poset.
+    \item Minimax is used to choose the optimal comparison but still take into acount the worst case outcome of that compariosn.
+    \end{itemize} }
 \end{frame}
 
 
