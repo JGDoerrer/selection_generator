@@ -232,7 +232,7 @@
 \section{Forward Search}
 \sectionframe{\insertsection}
 
-\begin{frame}{\insertsection}
+\begin{frame}{Minimax Search Tree}
   \centering
   \begin{tikzpicture}
     [
@@ -280,11 +280,48 @@
 \end{tikzpicture}
   \note{
     \begin{itemize}
-    \item Every node represents a function call on the Poset.
-    \item Minimax is used to choose the optimal comparison but still take into acount the worst case outcome of that compariosn.
+    \item The forward search starts with the empty poset and recursively determines the cost of selecting the $i$-th smallest element of a poset $P$.
+    \item This is implemented using a minimax algorithm.
+    \item Between all pairs of elements the pair is compared that yields the smallest number of comparisons.
+    \item Between the two possible outcomes of a comparison, the worst case is assumed.
+    \item To save memory and enable pruning, the search tree is traversed using a depth-first search.
+    \item The maximum number of comparisons assigned to child problems is limited to one less than the current best result.
+    \item The search program builds algorithms by recording, for each problem, the comparison that led to the cheapest result.
     \end{itemize} }
 \end{frame}
 
+\begin{frame}{Pruning techniques}
+  \begin{itemize}
+    \item Compatible Solutions
+    \item Free Comparison
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Pruning technique: Compatible solutions}
+
+  The solved problem $(S,i)$ is a \textbf{compatible solution} of the problem $(R,i)$, if
+  \begin{align*}
+    a \leq_S b \Rightarrow b \not \leq a
+  \end{align*}
+  \vspace{1mm}
+
+  Denote the \textbf{number of compatible solutions} with $\vert \mathcal{C}(P,i) \vert $\\
+  \vspace{5mm}
+
+  \textbf{Conjecture: } Selecting the i-th smallest element of a poset P requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
+\end{frame}
+
+% \begin{frame}{Pruning technique: Compatible solutions}
+%   \includegraphics[scale=0.5]{figures/Pruning_Compatible_Solution/Folie4.JPG}
+% \end{frame}
+
+% \begin{frame}{Pruning technique: Compatible solutions}
+%   \includegraphics{figures/Pruning_Compatible_Solution/Folie5.JPG}
+% \end{frame}
+
+% \begin{frame}{Pruning technique: Compatible solutions}
+%   \includegraphics{figures/Pruning_Compatible_Solution/Folie6.JPG}
+% \end{frame}
 
 \begin{frame}{\insertsection}
   \begin{itemize}
