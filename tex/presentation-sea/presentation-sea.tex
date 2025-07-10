@@ -16,41 +16,24 @@
 
 % language and encodings
 \usepackage[utf8]{inputenc}
-\usepackage[ngerman]{babel}
+\usepackage[english]{babel}
 \usepackage[T1]{fontenc}
 
 % TikZ
 \usepackage{tikz}
-\usetikzlibrary{positioning}
-\usetikzlibrary{shapes.misc}
+\usetikzlibrary{positioning, shapes.misc}
 
-% other packages
-\usepackage{graphicx}               % Bilder einbinden, Version fuer normales latex
-\usepackage{ifthen}                 % Zum Auskommentieren von Textteilen
-\usepackage{amssymb}                % Mathematische Buchstaben
-\usepackage{amsmath}                % Verbesserter Formelsatz
-\usepackage{booktabs}               % schönere Tabellen
-\usepackage{color}
+% Other Packages
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{booktabs}
 \usepackage{hyperref}
-\hypersetup{urlcolor=black,citecolor=black}
-\usepackage{dsfont}
-\usepackage{float}
-\usepackage{listings}
-
-% \usepackage[style=authoryear,
-%             autocite=footnote,
-            % backend=biber,
-%             giveninits=true]{biblatex}
-\usepackage{csquotes}
-
+\hypersetup{urlcolor=black, citecolor=black}
 \usepackage{diagbox}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 
-% \bibliography{biblio.bib}
-
-
-% Theme
 \iffalse
     \usetheme{Singapore}
 
@@ -102,16 +85,15 @@
     ]{Stuttgart}
 \fi
 
+\setbeamercovered{invisible}
+
 \def\myverzeichnis{.}
 \numberwithin{equation}{section}
 
-\hyphenation{}
-
-\title{Exact Lower Bounds for the Number of
-Comparisons in Selection}
+\title{Exact Lower Bounds for the Number of Comparisons in Selection}
 %\subtitle{with the fewest possible comparisons.}
 \author{SEA 2025}
-\institute{Josua Dörrer, Konrad Gendle, \underbar{Johanna Hofmann}, \underline{Julius von Smercek}, Andreas Steding, Florian Stober} 
+\institute{Josua Dörrer, Konrad Gendle, \underbar{Johanna Hofmann}, \underline{Julius von Smercek}, Andreas Steding, Florian Stober}
 \date{July 23rd 2025}
 
 \begin{document}
