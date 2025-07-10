@@ -2,56 +2,64 @@
 
 \section{Introduction}
 
+% TODO: letzte Folie, full url
+%  https://medium.com/@teamtechsis/introduction-to-sorting-algorithms-1623b9cdd4f1
+% https://www.geeksforgeeks.org/dsa/quick-sort-algorithm/
+
 \begin{frame}{The Selection Problem}
-  \textit{Selection(n,i):} Find the $i$th-smallest value in a collection of $n$ values.\\
-  \vspace{5mm}
-  \textit{Base-line algorithms:}\\ \vspace*{5mm}
+  \framesubtitle{Finding the $i$-th Smallest Element}
+  \textbf{Selection($n,i$):} Find the $i$-th smallest value in a collection of $n$ distinct values.
+  \vfill
   \centering
-  \begin{tabular}{c c}
-    Sorting & Pivoting \\
+  Common approaches are based on sorting or partitioning:
+  \begin{columns}[T]
+    \begin{column}{0.45\textwidth}
+      \centering
+      \textbf{Sorting}\\
+      \includegraphics[width=0.8\textwidth, trim={0 0 0 3.5cm}, clip]{figures/Insertion_sort.jpg}\\
+      \tiny{Source: medium.com/@teamtechsis}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \centering
+      \textbf{Pivoting}\\
+      \includegraphics[width=0.8\textwidth]{figures/Pivot.jpg}\\
+      \tiny{Source: geeksforgeeks.org}
+    \end{column}
+  \end{columns}
 
-    \footnote{https://medium.com/@teamtechsis/introduction-to-sorting-algorithms-1623b9cdd4f1} \hspace*{-1mm}\includegraphics[width=0.3\textwidth, trim={0 0 0 3.5cm},clip]{figures/Insertion_sort.jpg} & 
-    
-    \footnote{https://www.geeksforgeeks.org/dsa/quick-sort-algorithm/}\hspace*{-1mm} \includegraphics[width=0.3\textwidth]{figures/Pivot.jpg} 
-  \end{tabular}
-
-  %notes
-  \note{\begin{itemize}
-    \item 
-    However, we focused on the exact number of comparisons required to solve the problem for relatively small numbers.
-    Namely determining the number of comparisons needed to find the $i$-th smallest value in a collection of $n$ values.
-    
-    \item All baseline algorithms are based on the principle of either sorting or pivoting. By counting the comparisons during runtime one obtains the $i$-the smallest element end the number of comparisons at the same time.
-  
-    \item However, with Computer search one can obtain the number of comparisons needed and a general algorithm for retrieving the $i$th-smallest element.
-    
-    \item This brings us to the previous work on this topic. We concerend ourselves with the complexity of the selection algorithm. Of course one can solely regard the asymptotic behavior of the problem and get an accurate idea of the time complexity for large n. 
-  \end{itemize}}
-
+  \note{
+    \begin{itemize}
+      \item However, we focused on the exact number of comparisons required to solve the problem for relatively small numbers.
+      \item Namely determining the number of comparisons needed to find the $i$-th smallest value in a collection of $n$ values.
+      \item All baseline algorithms are based on the principle of either sorting or pivoting. By counting the comparisons during runtime one obtains the $i$-the smallest element end the number of comparisons at the same time.
+      \item However, with Computer search one can obtain the number of comparisons needed and a general algorithm for retrieving the $i$th-smallest element.
+      \item This brings us to the previous work on this topic. We concerend ourselves with the complexity of the selection algorithm. Of course one can solely regard the asymptotic behavior of the problem and get an accurate idea of the time complexity for large n.
+    \end{itemize}
+  }
 \end{frame}
 
+% TODO: diese Folie hat viel zu viel Text
 \begin{frame}{Complexity of the Selection Problem}
+  \framesubtitle{Known Asymptotic Bounds}
   \begin{itemize}
-    \item $V_i^n$: worst case number of comparisons required by an optimal algorithm 
-    \item Selecting the smallest element: $V_1(n)=n-1$
-    \item General selection problem: median of medians algorithm is in $\mathcal{O}(n)$
-    \item Best algorithm for median selection requires $2.95n$ comparisons \textbf{$\rightarrow$} Upper bound for the selection problem
-    \item \textbf{Lower bound for median} is $2.41n$
-    \item How large is the gap between general selection algorithms and specialized algorithms for fixed values of $i$ and $n$?
+    \item<+-> Let $V_i^n$ be the worst-case number of comparisons for an optimal algorithm.
+    \item<+-> Selecting the minimum is simple: $V_1(n) = n-1$.
+    \item<+-> For the general case, the Median of Medians algorithm provides a linear time complexity of $\mathcal{O}(n)$.
+    \item<+-> The best-known upper bound for selecting the median is $\approx 2.95n$ comparisons.
+    \item<+-> The best-known lower bound for the median is $\approx 2.41n$ comparisons.
+    \item<+-> \textbf{Our Question:} What are the \textit{exact} values of $V_i^n$ for small $n$ and arbitrary $i$, and how do they compare to these general bounds?
   \end{itemize}
 \end{frame}
 
+% TODO: figure to small
 \begin{frame}{Complexity of the Selection Problem}
   \begin{figure}
-    \includegraphics[height=0.8\textheight]{figures/bounds_diagram.png}
+    \includegraphics[height=0.65\textheight]{figures/bounds_diagram.png}
     \caption{Complexity bounds}
   \end{figure}
 \end{frame}
 
-\begin{frame}{Previous Work on Lower Bounds of the Selection Problem}
-  \vspace{7mm}
-  Previous work:\\
-  \vspace{5mm}
+\begin{frame}{Previous Work on Exact Bounds}
   \begin{tabular}{|p{6cm}|p{6cm}|}
     \hline
     \multicolumn{1}{|c|}{Gasarch, Kelly and Puth (1996)}                                                                  & \multicolumn{1}{c|}{Oksanen (2002)} \\
@@ -66,10 +74,10 @@
     \cline{1-2}
   \end{tabular}
 
-  % note
   \note{This is a note}
 \end{frame}
 
+% TODO: ist diese Slide sinnvoll, wenn ja: translate to english
 \begin{frame}{\insertsection}
   \textbf{Aufgabenstellung} \\
   \vspace{5mm}
@@ -235,7 +243,7 @@
 \section{Forward Search}
 \sectionframe{\insertsection}
 
-\begin{frame}{Minimax Search Tree}
+\begin{frame}{\insertsection: A Minimax Approach}
   \centering
   \begin{tikzpicture}
     [
@@ -257,30 +265,30 @@
                 node[] {$\{c,d\}$}
                 child[sibling distance = 1cm] { node[] {$\cdots$}}
                 child[sibling distance = 1cm] { node[] {$\cdots$}}
-            }
+              }
             child[sibling distance = 1cm] { node[] {$\cdots$}}
-        }
+          }
         child {
             node[] {$(n,i,\{(b,a)\})$}
             child[sibling distance = 1cm] {
                 node[] {$\{c,d\}$}
                 child[sibling distance = 1cm] { node[] {$\cdots$}}
                 child[sibling distance = 1cm] { node[] {$\cdots$}}
-            }
+              }
             child[sibling distance = 1cm] { node[] {$\cdots$}}
-        }
-    }
+          }
+      }
     child {
         node {$\{a,c\}$}
         child[sibling distance = 1cm] { node[] {$\cdots$}}
         child[sibling distance = 1cm] { node[] {$\cdots$}}
-    }
+      }
     child {
         node[] {$\cdots$}
       }
     ;
 
-\end{tikzpicture}
+  \end{tikzpicture}
   \note{
     \begin{itemize}
     \item The forward search starts with the empty poset and recursively determines the cost of selecting the $i$-th smallest element of a poset $P$.
