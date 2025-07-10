@@ -337,19 +337,36 @@
       }
     ;
 
-     \node[anchor=north east] at (6,-1.5) {
-    \begin{tabular}{|l|c|}
-      \toprule
-      Poset & Min \#comp \\
-      \midrule
-      $(n,i,\{(a,b)\})$ & 1 \\
-      $(n,i,\{(b,a)\})$ & 1 \\
-      \bottomrule
-    \end{tabular}
-  };
-
-  \node[draw=none] at (3.5,-1.3) {\textbf{Cache}};
+    \node[anchor=north east] at (8,-1.0) {
+      \parbox{7cm}{
+        \begin{itemize}
+          \item \textbf{Iterative deepening}
+          \item \textbf{Cache}
+        \end{itemize}
+      }
+    };
+    \node[anchor=north east] at (6.8,-2.1) {
+      \parbox{5cm}{
+        \begin{tabular}{|l|c|}
+          \toprule
+          Poset & Min \#comp \\
+          \midrule
+          $(n,i,\{(a,b)\})$ & 1 \\
+          $(n,i,\{(b,a)\})$ & 1 \\
+          \bottomrule
+        \end{tabular}
+      }
+    };
 \end{tikzpicture}
+
+\note{\begin{itemize}
+  \item We apply depth-first search with iterative deepening.
+  \item This saves memory and previous results are cached.
+  \item We store an approximated canonical representation of the problem and its dual in the cache along with the number of comparisons applied so far.
+  \item Each entry indicates that the poset is not solvable with just this amount of comparisons.
+  \item Besides for simple reusing purposes, the information in the chach can be used for pruning, by cutting off branches that contradict the minimum value in the cache.
+\end{itemize}
+}
 \end{frame}
 
 \begin{frame}{Pruning techniques}
@@ -357,6 +374,11 @@
     \item Compatible Solutions
     \item Free Comparison
   \end{itemize}
+
+  \note{\begin{itemize}
+    \item We applied to furhter pruning techniques, which are based on compatible solutions and a free comparison
+  \end{itemize}
+  }
 \end{frame}
 
 \begin{frame}{Pruning technique: Compatible solutions}
@@ -369,8 +391,10 @@
 
   Denote the \textbf{number of compatible solutions} with $\vert \mathcal{C}(P,i) \vert $\\
   \vspace{5mm}
-
-  \textbf{Conjecture: } Selecting the i-th smallest element of a poset P requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
+  \hspace{-3mm}
+  \begin{tabular}{l p{8cm}}
+    \textbf{Lemma: } & Selecting the i-th smallest element of a poset P requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
+  \end{tabular}
 \end{frame}
 
 \begin{frame}{Pruning technique: Compatible solutions}
@@ -401,7 +425,7 @@
             node[] {$(n,i,\{(b,a)\})$}
             child[sibling distance = 1cm] {
                 node[] {\color{black}$\{c,d\}$}
-                child[sibling distance = 1cm] { node[] {\color{red}42}}
+                child[sibling distance = 1cm, edge from parent/.style={draw,dashed}] { node[] {\color{red}42}}
                 child[sibling distance = 1cm] { node[] {$\cdots$}}
             }
             child[sibling distance = 1cm] { node[] {$\cdots$}}
@@ -416,6 +440,11 @@
     ;
 
 \end{tikzpicture}
+\note{
+  \begin{itemize}
+    \item For example when one child turns out to be solvable with 42 comparisons, the value is propagated upwards. And e.g. this is a min node so upon completion the solution is at most 42. But when log of number of compatible solutions is larger than 42 this branch can be pruned.
+  \end{itemize}
+}
 \end{frame}
 
 \begin{frame}{Pruning technique: Compatible solutions}
@@ -446,7 +475,7 @@
             node[] {$(n,i,\{(b,a)\})$}
             child[sibling distance = 1cm,red] {
                 node[] {\color{black}$\{c,d\}$}
-                child[sibling distance = 1cm,red] { node[] {\color{red}42}}
+                child[sibling distance = 1cm,red, edge from parent/.style={draw,dashed}] { node[] {\color{red}42}}
                 child[sibling distance = 1cm,black] { node[] {$\cdots$}}
             }
             child[sibling distance = 1cm] { node[] {$\cdots$}}
@@ -492,7 +521,7 @@
             node[] {$(n,i,\{(b,a)\})$}
             child[sibling distance = 1cm,red] {
                 node[] {\color{black}$\{c,d\}$}
-                child[sibling distance = 1cm,red] { node[] {\color{red}42}}
+                child[sibling distance = 1cm,red,, edge from parent/.style={draw,dashed}] { node[] {\color{red}42}}
                 child[sibling distance = 1cm,black] { node[] {$\cdots$}}
             }
             child[sibling distance = 1cm] { node[] {$\cdots$}}
