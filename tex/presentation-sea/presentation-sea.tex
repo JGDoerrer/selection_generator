@@ -34,6 +34,14 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 
+\usepackage[style=authoryear,
+            autocite=footnote,
+            backend=biber,
+            giveninits=true]{biblatex}
+\usepackage{csquotes}
+\addbibresource{literatur.bib}
+\DeclareNameAlias{sortname}{family-given}
+
 \iffalse
     \usetheme{Singapore}
 
@@ -69,7 +77,7 @@
     % - thanksPageBigLogo: location of big logo file on the thanks page - if empty, nothing is displayed
     %   (default: empty)
     \usetheme[
-        titlePageUniversityLogo=logos/unistuttgart_logo_deutsch_cmyk_invertiert.png,
+        titlePageUniversityLogo=logos/unistuttgart_logo.pdf,
         thanksPageBigGraphicsScale=0.175,
         thanksPageBigGraphics=logos/fmi.png,
 %        thanksPageBigGraphics=thanks,
@@ -81,7 +89,7 @@
 %        thanksPageBigLogo=logos/logo_simtech.png,
         navigationDotsLocation=below,
         %titlePageSpacing=0.6em,
-        titlePageNumberOfAuthors=many,
+        titlePageNumberOfAuthors=few,
     ]{Stuttgart}
 \fi
 

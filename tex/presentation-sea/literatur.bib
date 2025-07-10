@@ -1,6 +1,6 @@
 @article{Gasarch1996,
   author     = {Gasarch, William and Kelly, Wayne and Pugh, William},
-  title      = {Finding the ith largest of n for small i,n},
+  title      = {Finding the $i$th largest of $n$ for small $i$, $n$},
   year       = {1996},
   issue_date = {June 1996},
   publisher  = {Association for Computing Machinery},
@@ -12,37 +12,30 @@
   doi        = {10.1145/235767.235772},
   abstract   = {A classic problem in computer science is selection: given a list of n numbers, find the ith largest, using the fewest number of comparisons. We are interested in the exact number of comparisons required for specific small values of i and n. We have written a program that can be used either to find the exact number of comparisons for very low values of i and n, or to find upper bounds on the number of comparisons for slightly larger values of i and n. In some cases we have improved on the results in the literature and have additional improvements contingent on a conjecture.},
   journal    = {SIGACT News},
-  month      = {jul},
-  pages      = {88 -- 96},
+  month      = {Jul},
+  pages      = {88--96},
   numpages   = {9}
 }
 
 @article{MCKAY201494,
-  title    = {Practical graph isomorphism, II},
+  title    = {Practical graph isomorphism, {I}{I}},
   journal  = {Journal of Symbolic Computation},
   volume   = {60},
-  pages    = {94 - 112},
+  pages    = {94--112},
   year     = {2014},
   issn     = {0747-7171},
-  doi      = {https://doi.org/10.1016/j.jsc.2013.09.003},
-  url      = {https://www.sciencedirect.com/science/article/pii/S0747717113001193},
+  doi      = {10.1016/j.jsc.2013.09.003},
   author   = {Brendan D. McKay and Adolfo Piperno},
   keywords = {Graph isomorphism, Canonical labelling, Nauty, Traces, Partition refinement},
   abstract = {We report the current state of the graph isomorphism problem from the practical point of view. After describing the general principles of the refinement-individualization paradigm and pro ving its validity, we explain how it is implemented in several of the key implementations. In particular, we bring the description of the best known program nauty up to date and describe an innovative approach called Traces that outperforms the competitors for many difficult graph classes. Detailed comparisons against saucy, Bliss and conauto are presented.}
 }
 
 @book{Knuth1973,
-  added-at  = {2016-06-15T15:54:18.000+0200},
   author    = {Knuth, Donald},
-  biburl    = {https://www.bibsonomy.org/bibtex/292d514d70188edc70b86721de9ae31ee/ilias_pbm_test},
-  interhash = {132508fb11effd51eb89389b60bfeccc},
-  intrahash = {92d514d70188edc70b86721de9ae31ee},
-  keywords  = {publikationen puma},
-  pages     = {391-392},
+  title     = {The Art of Computer Programming, Vol. 3: Sorting and Searching},
+  year      = {1973},
   publisher = {Addison-Wesley},
-  timestamp = {2016-06-15T15:54:18.000+0200},
-  title     = {The Art Of Computer Programming, vol. 3: Sorting And Searching},
-  year      = 1973
+  pages     = {391--392}
 }
 
 @misc{Oksanen,
@@ -52,8 +45,21 @@
   year   = {2002}
 }
 
+@article{Oksanen2006,
+  title    = {Searching for {S}election {A}lgorithms},
+  journal  = {Electronic Notes in Discrete Mathematics},
+  volume   = {27},
+  pages    = {77},
+  year     = {2006},
+  note     = {ODSA 2006 - Conference on Optimal Discrete Structures and Algorithms},
+  issn     = {1571-0653},
+  doi      = {10.1016/j.endm.2006.08.064},
+  author   = {Kenneth Oksanen},
+  keywords = {Selection algorithms, median finding, partially ordered sets}
+}
+
 @book{Schoening1993,
-  title     = {Theoretische Informatik-kurz gefasst},
+  title     = {Theoretische Informatik -- kurz gefasst},
   author    = {Sch{\"o}ning, Uwe},
   year      = {1997},
   volume    = {4},
@@ -61,72 +67,106 @@
 }
 
 @article{Blum1972,
-  author   = {Manuel Blum and Robert W. Floyd and Vaughan Pratt and Ronald L. Rivest and Robert E. Tarjan},
-  title    = {Time bounds for selection},
+  author   = {Blum, Manuel and Floyd, Robert W. and Pratt, Vaughan and Rivest, Ronald L. and Tarjan, Robert E.},
+  title    = {Time {B}ounds for {S}election},
   year     = {1973},
   journal  = {Journal of Computer and System Sciences},
   volume   = {7},
   number   = {4},
   pages    = {448--461},
   issn     = {0022-0000},
-  doi      = {https://doi.org/10.1016/S0022-0000(73)80033-9},
-  url      = {https://www.sciencedirect.com/science/article/pii/S0022000073800339},
+  doi      = {10.1016/S0022-0000(73)80033-9},
   abstract = {The number of comparisons required to select the i-th smallest of n numbers is shown to be at most a linear function of n by analysis of a new selection algorithm—PICK. Specifically, no more than 5.4305 n comparisons are ever required. This bound is improved for extreme values of i, and a new lower bound on the requisite number of comparisons is also proved.}
 }
 
-@article{HoareQuickselect,
-  author     = {Hoare, C. A. R.},
-  title      = {Algorithm 65: find},
-  year       = {1961},
-  issue_date = {July 1961},
-  publisher  = {Association for Computing Machinery},
-  address    = {New York, NY, USA},
-  volume     = {4},
-  number     = {7},
-  issn       = {0001-0782},
-  url        = {https://doi.org/10.1145/366622.366647},
-  doi        = {10.1145/366622.366647},
-  journal    = {Commun. ACM},
-  month      = {jul},
-  pages      = {321--322},
-  numpages   = {2}
-}
-
-@misc{stober2022lower,
-  title         = {Lower Bounds for Sorting 16, 17, and 18 Elements},
-  author        = {Florian Stober and Armin Weiß},
-  year          = {2022},
-  eprint        = {2206.05597},
-  archiveprefix = {arXiv},
-  primaryclass  = {cs.DS}
+@inproceedings{stober2022lower,
+  title        = {Lower {B}ounds for {S}orting 16, 17, and 18 {E}lements},
+  author       = {Stober, Florian and Wei{\ss}, Armin},
+  booktitle    = {2023 Proceedings of the Symposium on Algorithm Engineering and Experiments (ALENEX)},
+  pages        = {201--213},
+  year         = {2023},
+  organization = {SIAM},
+  doi          = {10.1137/1.9781611977561.ch17},
 }
 
 @article{dor1999selecting,
-  title     = {Selecting the median},
+  title     = {Selecting the {M}edian},
   author    = {Dor, Dorit and Zwick, Uri},
   journal   = {SIAM Journal on Computing},
   volume    = {28},
   number    = {5},
   pages     = {1722--1758},
   year      = {1999},
-  publisher = {SIAM}
+  publisher = {SIAM},
+  doi       = {10.1137/S0097539795288611},
 }
 
 @article{cunto1989,
-  title     = {Average case selection},
-  author    = {Cunto, Walter; Munro, J. Ian},
+  title     = {Average Case Selection},
+  author    = {Cunto, Walter and Munro, J. Ian},
   journal   = {Journal of the ACM},
   volume    = {36},
   number    = {2},
-  pages     = {270-279},
+  pages     = {270--279},
   year      = {1989},
   publisher = {ACM}
 }
 
 @book{cervantes_don_quijote,
-  author  = {Miguel de Cervantes Saavedra},
+  author  = {Cervantes Saavedra, Miguel de},
   title   = {Don Quijote},
   year    = {1605},
   address = {Madrid},
   note    = {Originally published as ``El ingenioso hidalgo don Quixote de la Mancha''}
+}
+
+@inproceedings{bent1985finding,
+  title     = {Finding the {M}edian {R}equires 2n {C}omparisons},
+  author    = {Bent, Samuel W. and John, John W.},
+  booktitle = {Proceedings of the Seventeenth Annual ACM Symposium on Theory of Computing},
+  pages     = {213--216},
+  year      = {1985},
+  doi       = {10.1145/22145.22169}
+}
+
+@inproceedings{paterson1996progress,
+  title        = {Progress in {S}election},
+  author       = {Paterson, Mike},
+  booktitle    = {Scandinavian Workshop on Algorithm Theory},
+  pages        = {368--379},
+  year         = {1996},
+  organization = {Springer},
+  doi          = {10.1007/3-540-61422-2_146},
+}
+
+
+@TechReport{yao1974lower,
+  title  = {On {L}ower {B}ounds for {S}election {P}roblems},
+  author = {Yao, Foong Frances},
+  year   = {1974},
+  doi    = {1721.1/149426},
+  publisher={Massachusetts Institute of Technology},
+  number = "MIT-LCS-TR-121",
+  address = "Cambridge, MA",
+  institution = "Massachusetts Institute of Technology",
+}
+
+@article{schonhage1975finding,
+  title     = {Finding the {M}edian},
+  author    = {Sch{\"o}nhage, A and Paterson, M and Pippenger, N},
+  journal   = {Journal of Computer and System Sciences},
+  volume    = {13},
+  number    = {2},
+  pages     = {184--199},
+  year      = {1976},
+  publisher = {Academic Press, Inc. Orlando, FL, USA},
+  doi       = {10.1016/S0022-0000(76)80029-3},
+}
+
+@techreport{hadian1969selecting,
+  title       = {Selecting the t-th {L}argest {U}sing {B}inary {E}rrorless {C}omparisons},
+  author      = {Hadian, Abdollah and Sobel, Milton},
+  year        = {1969},
+  institution = {University of Minnesota},
+  doi         = {11299/199105},
 }
