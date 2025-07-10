@@ -301,6 +301,65 @@
     \end{itemize} }
 \end{frame}
 
+\begin{frame}{Optimizations}
+ \begin{tikzpicture}
+ [
+      level 1/.style = {sibling distance = 4cm},
+      level 2/.style = {sibling distance = 2.5cm},
+    ]
+
+    \node[anchor=east] at (-7,2) {Min};
+    \node[anchor=east] at (-7,0.5) {Max};
+    \node[anchor=east] at (-7,-1) {Min};
+    \node[anchor=east] at (-7,-2.5) {Max};
+
+    \node[] (root) at (0,2) {$(n,i,\emptyset)$}
+    child {
+        node[] {$\{a,b\}$}
+        child {
+            node[] {$(n,i,\{(a,b)\})$}
+            child[sibling distance = 1cm] {
+                node[] {$\{c,d\}$}
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+              }
+            child[sibling distance = 1cm] { node[] {$\cdots$}}
+          }
+        child {
+            node[] {$(n,i,\{(b,a)\})$}
+            child[sibling distance = 1cm] {
+                node[] {$\{c,d\}$}
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+              }
+            child[sibling distance = 1cm] { node[] {$\cdots$}}
+          }
+      }
+    child {
+        node {$\{a,c\}$}
+        child[sibling distance = 1cm] { node[] {$\cdots$}}
+        child[sibling distance = 1cm] { node[] {$\cdots$}}
+      }
+    child {
+        node[] {$\cdots$}
+      }
+    ;
+
+     \node[anchor=north east] at (6,-1.5) {
+    \begin{tabular}{|l|c|}
+      \toprule
+      Poset & Min \#comp \\
+      \midrule
+      $(n,i,\{(a,b)\})$ & 1 \\
+      $(n,i,\{(b,a)\})$ & 1 \\
+      \bottomrule
+    \end{tabular}
+  };
+
+  \node[draw=none] at (3.5,-1.3) {\textbf{Cache}};
+\end{tikzpicture}
+\end{frame}
+
 \begin{frame}{Pruning techniques}
   \begin{itemize}
     \item Compatible Solutions
@@ -464,18 +523,6 @@
 
 \end{tikzpicture}
 \end{frame}
-
-% \begin{frame}{Pruning technique: Compatible solutions}
-%   \includegraphics[scale=0.5]{figures/Pruning_Compatible_Solution/Folie4-min.JPG}
-% \end{frame}
-
-% \begin{frame}{Pruning technique: Compatible solutions}
-%   \includegraphics[scale=0.5]{figures/Pruning_Compatible_Solution/Folie5-min.JPG}
-% \end{frame}
-
-% \begin{frame}{Pruning technique: Compatible solutions}
-%   \includegraphics[scale=0.5]{figures/Pruning_Compatible_Solution/Folie6-min.JPG}
-% \end{frame}
 
 \begin{frame}{\insertsection}
   \begin{itemize}
