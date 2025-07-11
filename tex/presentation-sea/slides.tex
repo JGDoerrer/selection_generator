@@ -52,8 +52,8 @@
   \note{
     \begin{itemize}
       \item By counting the comparisons during runtime one obtains the $i$-the smallest element end the number of comparisons at the same time.
-      \item Let $V_i^n$ be the worst-case number of comparisons for an optimal algorithm.
-      \item First, we accumulated known bounds.
+      \item Let's now have a look at some known asymptotic bounds of the selection problem.
+      \item First of all, let $V_i^n$ be the worst-case number of comparisons for an optimal algorithm.
       \item E.g. a lower bound for the general selection problem, is the number of comparisons needed for selecting the smallest element.
       \item That is just $n-1$
       \item The hardest element to determine is the median.
@@ -66,8 +66,8 @@
 
 \begin{frame}{Complexity of the Selection Problem}
   \begin{figure}
-    \includegraphics[height=0.75\textheight]{figures/bounds_diagram.png}
-    \caption{\scriptsize Complexity Bounds for the Selection Problem}
+    \includegraphics[height=0.7\textheight]{figures/bounds_diagram.png}
+    \caption{\small Complexity Bounds for the Selection Problem}
   \end{figure}
   \note{
     \begin{itemize}
@@ -76,7 +76,7 @@
       \item The orange line represents the lower bound for the median
       \item The blue line represents the upper bound for the median
       \item We are intereseted in the gap between these existing bounds especially for small n's
-      \item We explore, how many comparisons are needed for larger i's in contrast to $i=0$
+      \item We explore, how many comparisons are needed for larger i's in contrast to $i=1$
       \item And also establish optimal algorithms for all $i$ and $n$ and therefore tighten the gap between upper and lower bounds.
     \end{itemize}
   }
@@ -85,7 +85,7 @@
 \begin{frame}{Complexity of the Selection Problem}
   \begin{figure}
     \includegraphics[height=0.5\textheight]{figures/bounds_diagram.png}
-    \caption{\scriptsize Complexity Bounds for the Selection Problem}
+    \caption{\small Complexity Bounds for the Selection Problem}
   \end{figure}
   \textbf{Our Question:} What are the \textit{exact} values of $V_i^n$ for small $n$ and arbitrary $i$, and how do they compare to these general bounds?
   \note{
@@ -109,12 +109,20 @@
                          %\item [...]nutzten für größere $n,i$ sog. \textit{pair-forming algorithms}
                  \end{itemize} &
     \begin{itemize}
-      \item[...] published a computer search algorithm that surpassed the lower bounds of Gasarch et al.
+      \item[...] published a computer search algorithm that continues the work of Gasarch et al. for larger $n$ and $i$
     \end{itemize}                                        \\
     \cline{1-2}
   \end{tabular}
 
-  \note{This is a note}
+  \note{
+    \begin{itemize}
+      \item Gasarch, Kelly and Puth were the first to apply computer search to find lower bounds for the selection problem.
+      \item Results are available on his website, but have not been published in any scientific outlet. 
+      \item We also address the selection problem using computer search. We reimplemented the minimax algorithm used in and improve upon it by introducing suitable heuristics. Additionally we performed backward search, which is another significant improvement over the minimax algorithm.
+      \item I will start with Forward Search and Julius will continue with the very interesting backward search. 
+    \end{itemize}
+  
+  }
 \end{frame}
 
 % \section{Grundlagen}
@@ -397,8 +405,9 @@
   \end{tikzpicture}
 
   \note{\begin{itemize}
+      \item Let's now look at some of the optimizations we applied. 
       \item We apply depth-first search with iterative deepening.
-      \item This saves memory and previous results are cached.
+      \item This has significant memory advantages
       \item We work on reduced posets. For each poset we remove elements that cannot be the i-th smallest. So if an element has more than $i-1$ elements that are smaller, or more than $n-i$ elements that are larger, it is removed from the poset.
       \item We store an approximated canonical representation of the problem and its dual in the cache along with the number of comparisons applied so far.
       \item Each entry indicates that the poset is not solvable with just this amount of comparisons.
