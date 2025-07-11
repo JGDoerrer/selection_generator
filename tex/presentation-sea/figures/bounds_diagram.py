@@ -26,7 +26,7 @@ plt.annotate('Gap between bounds',
 
 mid_n = 19
 mid_val = 25
-plt.annotate('Gap between i=0 and median',
+plt.annotate('Gap between i=1 and median',
              xy=(mid_n, mid_val),
              xytext=(mid_n + 2, mid_val + 4),
              arrowprops=dict(arrowstyle='->',color='black', linewidth=4),
