@@ -6,13 +6,13 @@
       enlarge x limits = .05,%x-Achse erweitern
       x axis line style = {-},%kein Pfeil
       % title = {\dots},
-      ylabel={Anzahl an posets},
-      xlabel={Anzahl an entfernten Vergleichen},
+      ylabel={Number of posets},
+      xlabel={Number of comparisons removed},
       % only marks,
       cycle list={{mark=x}},
       legend pos=north east,
     ]
-    \addlegendentry{$i = 0$}
+    \addlegendentry{$i = 1$}
     \addplot+[cyan] table { %n=14,i=0
         x  y
         0  1
@@ -30,7 +30,7 @@
         12 1
         13 1
       };
-    \addlegendentry{$i = 1$}
+    \addlegendentry{$i = 2$}
     \addplot+[green] table { %n=14,i=1
         x y
         0  1
@@ -51,7 +51,7 @@
         15 2
         16 1
       };
-    \addlegendentry{$i = 2$}
+    \addlegendentry{$i = 3$}
     \addplot+[magenta] table { %n=14,i=2
         x y
         0  1
@@ -75,7 +75,7 @@
         18 2
         19 1
       };
-    \addlegendentry{$i = 3$}
+    \addlegendentry{$i = 4$}
     \addplot+[orange] table { %n=14,i=3
         x y
         0  1
@@ -101,7 +101,7 @@
         20 2
         21 1
       };
-    \addlegendentry{$i = 4$}
+    \addlegendentry{$i = 5$}
     \addplot+[yellow] table { %n=14,i=4
         x y
         0  1
@@ -129,7 +129,7 @@
         22 1
         23 1
       };
-    \addlegendentry{$i = 5$}
+    \addlegendentry{$i = 6$}
     \addplot+[red] table { %n=14,i=5
         x y
         0  1
@@ -158,7 +158,7 @@
         23 1
         24 1
       };
-    \addlegendentry{$i = 6$}
+    \addlegendentry{$i = 7$}
     \addplot+[blue] table { % n=14,i=6
         x y
         0  1
