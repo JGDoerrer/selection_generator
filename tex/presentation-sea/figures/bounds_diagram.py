@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Data
-n = np.linspace(1, 100, 500)  # Sample n values
+n = np.linspace(0, 21, 100)  # Sample n values
 
 # Plot lines
 plt.figure(figsize=(35,16))
@@ -15,20 +15,20 @@ plt.fill_between(n, n - 1, 2.41*n, alpha=0.2, color='orange')
 plt.fill_between(n, 2.41 * n, 2.95 * n, alpha=0.2, color='yellow')
 
 # Annotations
-mid_n = 95
-mid_val =250
+mid_n = 19
+mid_val = 50
 plt.annotate('Gap between bounds',
              xy=(mid_n, mid_val),
-             xytext=(mid_n + 10, mid_val + 20),
+             xytext=(mid_n + 2, mid_val + 4),
              arrowprops=dict(arrowstyle='->',color='black', linewidth=4),
              fontsize=55,
              )
 
-mid_n = 95
-mid_val = 150
+mid_n = 19
+mid_val = 25
 plt.annotate('Gap between i=0 and median',
              xy=(mid_n, mid_val),
-             xytext=(mid_n + 10, mid_val + 20),
+             xytext=(mid_n + 2, mid_val + 4),
              arrowprops=dict(arrowstyle='->',color='black', linewidth=4),
              fontsize=55,
              )
@@ -37,7 +37,7 @@ plt.annotate('Gap between i=0 and median',
 plt.xlabel('Input size $n$', fontsize=60, labelpad=40)
 plt.ylabel('Number of comparisons', fontsize=60, labelpad=40)
 plt.tick_params(axis='both', length=18, width=3, labelsize=40)
-
+plt.xticks(np.arange(0, 21, 5), fontsize=40)
 plt.legend(fontsize=48)
 plt.tight_layout()
 
