@@ -29,7 +29,7 @@
       \item We concerned ourselves with finding exact lower bounds for the number of comparisons in the selection problem
       \item First of all, what is the Selection Problem?
       \item It can be defined by the task of finding the $i$-th smallest element in a collection of $n$ distinct values.
-      \item All baseline algorithms are based on the principle of either sorting or pivoting. 
+      \item All baseline algorithms are based on the principle of either sorting or pivoting.
       \item I suppose you are familiar with the bubble sort algorithm or insertion sort. With sorting the list first and then just picking the selection problem can be solved in a trivial way.
       \item On the other hand, with pivoting one can leverage the advantages of divide-and-conquer and apply the well-known Quickselect algorithm or the median of medians appraoch.
     \end{itemize}
@@ -55,7 +55,7 @@
       \item The hardest element to determine is the median.
       \item The best-known lower bound for the median is $\approx 2.41n$ comparisons.
       \item The best-known upper bound for selecting the median is $\approx 2.95n$ comparisons.
-      
+
     \end{itemize}
   }
 \end{frame}
@@ -86,9 +86,9 @@
   \textbf{Our Question:} What are the \textit{exact} values of $V_i^n$ for small $n$ and arbitrary $i$, and how do they compare to these general bounds?
   \note{
     \begin{itemize}
-      \item This is summarized by the question 
+      \item This is summarized by the question
       \item What are the \textit{exact} values of $V_i^n$ for small $n$ and arbitrary $i$, and how do they compare to these general bounds?
-      \item Asymptotic analysis, e.g. give a good idea of the growth behavior of a problem. 
+      \item Asymptotic analysis, e.g. give a good idea of the growth behavior of a problem.
       \item However, we are intereseted in exact values for certain $n$ and $i$. A viable method to find optimal values in the worst case is Computer Search.
       \item This brings us to the previous work on this topic.
     \end{itemize}
@@ -593,10 +593,10 @@
   \begin{columns}
     \begin{column}{0.65\textwidth}
       \begin{itemize}
-      \item Already applied by Oksanen
-      \item Idea: Add a useful relation between a large element and a small element
-      \item Search for unrelated elements $a$ and $b$ such that a has at least two elements less than it and b has at least two elements greater than it
-    \end{itemize}
+        \item Already applied by Oksanen
+        \item Idea: Add a useful relation between a large element and a small element
+        \item Search for unrelated elements $a$ and $b$ such that a has at least two elements less than it and b has at least two elements greater than it
+      \end{itemize}
     \end{column}
     \begin{column}{0.35\textwidth}
       \begin{figure}
@@ -608,9 +608,9 @@
           \node[draw, circle, minimum size=0.5cm, above of=1, node distance=1.5cm] (4) {b};
           \node[draw, circle, minimum size=0.5cm, above right of=4] (5) {};
           \node[draw, circle, minimum size=0.5cm, above left of=4] (6) {};
-          
+
           \path[dashed] (1) edge (4);
-          
+
           \path[-]
           (1) edge (2)
           (1) edge (3)
@@ -619,13 +619,16 @@
         \end{tikzpicture}
       \end{figure}
     \end{column}
-    \end{columns}
+  \end{columns}
 \end{frame}
 
 \author{SEA 2025 \hspace{1cm} Julius von Smercek}
 
 \section{Backward Search}
 \sectionframe{\insertsection}
+\note{
+  Thank you! Now I would like to continue with the backward search.
+}
 
 \begin{frame}{\insertsection}
   Start with a solved poset and search the empty poset
@@ -633,10 +636,40 @@
   \begin{itemize}
     \item<+-> \textbf{Goal:} Given an upper bound $k$, find all posets solvable in at most $k$ comparisons.
     \item<+-> \textbf{Initialization:} Start with the set of all posets that are already ``solved'' (i.e., the $i$-th element is uniquely identified). Their cost is 0.
+    \item<+-> \textbf{Canonization:} A unique normal form (with `nauty`) is expensive, but required. We use fast invariants to pre-filter, such that `nauty` is needed for only $< 0.1\%$ of posets.
     \item<+-> \textbf{Iteration (Level $k \to k+1$):} To find all posets solvable in $k+1$ steps, find all \textit{predecessors} of posets solvable in $\leq k$ steps.
     \item<+-> \textbf{Termination:} The search stops when the initial empty poset $(n, i, \emptyset)$ is generated. Its level is the value $V_i^n$.
-    \item<+-> \textbf{Canonization:} A unique normal form (with `nauty`) is expensive, but required. We use fast invariants to pre-filter, such that `nauty` is needed for only $< 0.1\%$ of posets.
   \end{itemize}
+  \note{
+    \only<1>{
+      In contrast to the forward search, the backward search starts with a solved poset and seeks to find the empty poset with $n$ elements.
+
+      For this, an iterative deepening approach is employed.
+      For a given upper bound $k$, this approach finds all posets that can be solved in a maximum of $k$ comparisons.
+    }
+    \only<2>{
+      To achieve this, we start with the set of posets that are already solved, meaning the $i$-th element is uniquely identifiable.
+      The cost for each poset in this set is $0$, as they can be solved in $0$ comparisons.
+
+      To avoid redundant computations, we use a normal form that reduces the set of solved posets to a single one: the poset containing only one element for which the minimum is obvious.
+      It should be evident that this poset can be solved directly.
+    }
+    \only<3>{
+      This unique normal form is based on leveraging duality and `nauty`.
+      While computationally expensive, `nauty` is necessary to guarantee a unique normal form.
+      Although an approximate normal form was sufficient for the forward search, a unique normal form is essential for the correctness of the backward search.
+      Consequently, we have combined `nauty` with our own procedure, reducing the usage of `nauty` to less than $0.1\%$ of cases.
+    }
+    \only<4>{
+      In each iteration level, we compute all posets that are solvable in $k+1$ steps, given that we know the set of all posets solvable in fewer than $k$ steps.
+      To do this, we compute the predecessors of all posets from the previous level.
+      I will elaborate on the precise definition of a predecessor shortly.
+    }
+    \only<5>{
+      The search terminates when the empty poset is found.
+      The level in which the empty poset with the desired $n$ and $i$ first appears corresponds to the optimal number of comparisons required.
+    }
+  }
 \end{frame}
 
 \begin{frame}{Predecessor Computation}
@@ -644,13 +677,31 @@
     Suppose the set of all posets solvable in $k$ comparisons is known.
     A normalized poset $Q$ is a \textbf{predecessor} iff there exists a comparison between two elements $u,v$ such that
     \begin{enumerate}
-      \item<+-> Adding the relation $(u,v)$ to $Q$ yields a known poset solvable in exact $k$ steps
-      \item<+-> Adding the relation $(v,u)$ to $Q$ yields a known poset solvable in at maximum $k$ steps
-      \item<+-> $Q$ itself was not found at a lower level
+      \item<2-> Adding the relation $(u,v)$ to $Q$ yields a known poset solvable in exact $k$ steps
+      \item<2-> Adding the relation $(v,u)$ to $Q$ yields a known poset solvable in at maximum $k$ steps
+      \item<3-> $Q$ itself was not found at a lower level
     \end{enumerate}
   \end{definition}
   \vfill
-  This process essentially ``removes'' a comparison to go one step backward.
+  \visible<4>{
+    This process essentially ``removes'' a comparison to go one step backward.
+  }
+  \note{
+    \only<1>{
+      Okay, let's now define the concept of a predecessor.
+
+      A predecessor is determined by removing a comparison. For this, we assume that the set of all posets solvable in k comparisons is known. This set is therefore a given.
+    }
+    \only<2>{
+      A normalized poset Q is then considered a predecessor if there exists a comparison between two elements, u and v, such that adding the relation (u, v) to Q results in a known poset that is solvable in exactly k steps, and adding the relation (v, u) results in a known poset that is solvable in at most k steps.
+    }
+    \only<3>{
+      This ensures that regardless of the outcome of the comparison, Q is solvable in exactly $k + 1$ comparisons. And, obviously, Q must not have been discovered yet.
+    }
+    \only<4>{
+      This process essentially removes one comparison.
+    }
+  }
 \end{frame}
 
 \begin{frame}{Example}
@@ -663,17 +714,22 @@
   \end{figure}
 
   \note{
-    \begin{itemize}
-      \item Level k contains all posets that can be solved in k comparisons and can be formed from the previous level(s)
-      \item solid arrows: point to a poset in level k - 1 that results from removing a comparison
-      \item dashed arrows: point to the poset that results when the inverse comparison is added (all levels less than k)
-      \item Backward search starts at the bottom at k = 0, the only ``solved'' poset
-      \item compute level k + 1 as follows:
-        \begin{itemize}
-          \item first, try to remove a comparison
-          \item add an element with comparisons such that solvability is not affected \& then remove a comparison
-        \end{itemize}
-    \end{itemize}
+    \only<1>{
+      I've brought an example to illustrate this.
+
+      We start with the solved poset at the bottom and are looking for the second smallest element in an empty poset with four elements. Obviously, the solved poset is solved in 0 comparisons; for the initial poset at the top, the number of comparisons is still unknown.
+    }
+    \only<2>{
+      The very first thing we do is compute all posets that are solvable in one comparison. In this case, there is only one poset with two elements for which we are searching the minimum. Theoretically, the dual of this poset - that is, the poset with two elements where we seek the maximum - would also be on this level, but since they are isomorphic, one can be omitted.
+
+      The solid arrow here represents the resulting poset if the comparison (u, v) were to be inserted, and the dashed lines represent the resulting poset if the opposite comparison were inserted.
+    }
+    \only<3>{
+      Analogously, we can compute the level for $k = 2$. Here you can see it nicely again: the solid arrow always points to the level directly below it, while the other arrow points to some level further down.
+    }
+    \only<4>{
+      In this way, we can construct the tree until we finally find a path from the empty poset to the solved poset at $k = 4$. This means that this subtree represents an optimal algorithm for finding the second smallest element among four elements.
+    }
   }
 \end{frame}
 
@@ -684,53 +740,21 @@
     \caption{TODO}
     \label{fig:backward-problematic-case}
   \end{figure}
-
   \note{
-  }
-\end{frame}
-
-
-\begin{frame}{Multithreading}
-  % 1  core : 7h 2m 59s
-  % 32 cores:   20m 11s
-  \vspace{-1cm}
-
-  \begin{figure}
-    \centering
-    \resizebox{0.8\textheight}{!}{%
-      \begin{tikzpicture}
-        \begin{axis}[
-            ymin=0,
-            ymax=1,
-            axis x line=bottom,
-            enlarge x limits=0.1,
-            x axis line style={-},
-            ylabel={Efficiency},
-            xlabel={Number of Cores},
-            ybar, % This makes the plot a bar chart
-            bar width=0.2cm, % Adjust bar width
-            % nodes near coords, % Display values on top of bars
-            xtick=data, % Set x-ticks to data points
-            symbolic x coords={1, 2, 4, 8, 16, 32}, % Specify the x-tick labels
-          ]
-          \addplot[
-            ybar,
-            fill=blue
-          ] coordinates {
-              (1, 1.000)
-              (2, 0.892)
-              (4, 0.877)
-              (8, 0.851)
-              (16, 0.803)
-              (32, 0.655)
-            };
-        \end{axis}
-      \end{tikzpicture}%
+    \only<1>{
+      A problem that may already be apparent here is that the removal of comparisons is not unambiguous.
+      We are given a poset with three elements, where we know that the bottom element is less than the middle one, and the middle element is less than the top one.
+      This edge is invisible in the Hasse diagram.
     }
-    \caption{Efficiency of Parallelization for $n = 13, i = 6$}
-  \end{figure}
-
-  $\text{Efficiency} = (\text{single-core time}) \div (\text{number of cores} \cdot \text{multi-core time})$ \\
+    \only<2>{
+      If we now remove the red comparison between the bottom and the middle element, it is possible that the transitive edge between the top and bottom elements remains.
+    }
+    \only<3>{
+      Consequently, if the transitive edge does not exist, the middle poset could be the result.
+      However, if the edge still exists, then the last case would apply.
+      The fact that removing a single comparison can lead to multiple possible posets complicates the problem.
+    }
+  }
 \end{frame}
 
 \begin{frame}{Poset Distribution}
@@ -741,6 +765,12 @@
     }
     \caption{Number of posets for $n = 14$ depending on the number of comparisons}
   \end{figure}
+  \note{
+    Another interesting aspect is the poset distribution for the backward search.
+    Here, we have plotted the number of removed comparisons against the number of found posets on a logarithmic scale for different values of $i$.
+    It is noticeable that for larger $i$, significantly more posets must be searched.
+    Another interesting point is that the peak of searched posets for all $i$ lies between 5 and 10, which will also present a challenge for the bidirectional search.
+  }
 \end{frame}
 
 
@@ -774,9 +804,16 @@
       16  & 15                      & 18 & \textbf{21} & \textbf{24} & \textbf{26} & \textbf{27} & \textbf{28} -- 33 & \textbf{28} -- 36 \\
     \end{tabular}
   \end{table}
+  \note{
+    Let us first, however, turn to the results.
+    In the presented table, all values that we have newly computed are shown in bold.
+    We have, of course, verified all other values.
+    In doing so, we were able to improve an existing lower bound, specifically for $n = 15, i = 5$, and prove that the correct lower bound is 24 comparisons.
+    For the values $i = 7$ and $8$ at $n = 16$, we could not determine the exact number of comparisons, but we were able to establish a new lower bound.
+  }
 \end{frame}
 
-\begin{frame}{Our Contribution}
+\begin{frame}{Contribution}
   \definecolor{counterexample}{rgb}{0.8, 0.1, 0.1}
   \setbeamercolor{block title alerted}{bg=gray!20,fg=black}
   \setbeamercolor{block body alerted}{bg=gray!5}
@@ -791,6 +828,25 @@
         \textbf{Our discovered algorithm succeeds with only \textcolor{counterexample}{19} comparisons.}
       \end{alertblock}
   \end{itemize}
+  \note{
+    \only<1>{
+      To summarize our contribution, we have verified all previous results and generated executable algorithms with the optimal number of comparisons in Rust.
+    }
+    \only<2>{
+      Furthermore, we contribute the new lower bounds as well as the improved value for $n = 15$.
+    }
+    \only<3>{
+      A key component is also the backward search, which was used for the first time for this problem, as well as heuristics, such as the compatible posets, which had not been applied to this problem before.
+    }
+    \only<4>{
+      Finally, we were able to refute a conjecture by Knuth, which was already mentioned as a comment in Oksanen's C program, but could be definitively disproven by our program due to the partial incorrectness of the C code.
+    }
+    \only<5>{
+      He conjectured that an optimal algorithm exists which first compares all elements pairwise.
+      We found a counterexample for this, namely for $n=12, i=5$.
+      With this assumption, the optimal algorithm requires $20$ comparisons, which does not correspond to the optimal bound of $19$ comparisons.
+    }
+  }
 \end{frame}
 
 \begin{frame}{Runtime Comparison} % ready
@@ -821,6 +877,13 @@
       \end{tabular}
     }
   \end{table}
+  \note{
+    Finally, it is interesting to see how long we had to heat the university to compute these results.
+    An important note here is that the forward search is only single-threaded, whereas the backward search is fully parallelized and runs almost linearly faster with the number of threads. With 48 threads and 1 TB of utilized RAM, this makes a significant difference.
+    For $n=14$ and $n=15$, I have marked in bold the values that were computed the fastest.
+    For very small values, Oksanen's C program is faster; however, for moderate values, the forward search is superior, and for the large values, the backward search is, which is relatively consistent.
+    We can see here, for example, that for ($n=15, i=8$), the backward search, taking three days, significantly outperforms the forward search, which would have taken 14 days.
+  }
 \end{frame}
 
 \begin{frame}{Future Work}
@@ -847,12 +910,39 @@
       }
     \end{column}
   \end{columns}
+  \note{
+    \only<1>{
+      For the future, we could imagine parallelizing the forward search or developing even better heuristics.
+      A bidirectional search would also be conceivable.
+      This means we would start the forward and backward searches simultaneously and solve the problem from both ends.
+    }
+    \only<2>{
+      The problem with this approach is that the intersection point of the two searches is only reached after 99.9 percent of the posets have been searched for both directions.
+      We have just seen that in the backward search, the search tree explodes very early, which conversely also happens in the forward search.
+      We can see this again in this illustrative graph:
+      The number of posets for the forward and backward searches are shown in blue and red, respectively.
+    }
+    \only<3>{
+      A possible idea would be to develop pruning strategies for the backward search, although it unfortunately has to search through almost all posets to guarantee correctness.
+      These approaches are currently the subject of ongoing research, with the bidirectional search appearing to be the most promising.
+    }
+  }
 \end{frame}
+
+\thanksframe
+
+\note{
+  On that note, I would like to thank you for your attention.
+  If you have any questions, I would be happy to answer them now.
+}
 
 % TODO: prevent in toc above
 \begin{frame}[shrink=25]{References}
   \nocite{*}
   \printbibliography[heading=none]
+  \note{
+    Here are our references, which can also all be found in our paper.
+  }
 \end{frame}
 
 \begin{frame}[shrink=25]{Image References}
@@ -862,4 +952,4 @@
   \end{itemize}
 \end{frame}
 
-\thanksframe
+% TODO: Bildquellen & unser eigenes Paper
