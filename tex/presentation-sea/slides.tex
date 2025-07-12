@@ -5,22 +5,30 @@
 
 \begin{frame}{The Selection Problem}
   \framesubtitle{Finding the $i$-th Smallest Element}
-  \textbf{Selection($n,i$):} Find the $i$-th smallest element in a collection of $n$ distinct values.
-  \vfill
+  \only<1->{\textbf{Selection($n,i$):} Find the $i$-th smallest element in a collection of $n$ distinct values.}
+  
+  \vspace{5mm}
+
   \centering
-  Common approaches are based on sorting or partitioning:
+  \only<2->{Common approaches are based on sorting or partitioning:}
+  
+  \vspace{5mm}
   \begin{columns}[T]
     \begin{column}{0.45\textwidth}
       \centering
+      \only<3->{
       \textbf{Sorting}\\
       \includegraphics[width=0.8\textwidth, trim={0 0 0 3.5cm}, clip]{figures/Insertion_sort.jpg}\\
       \tiny{Source: medium.com/@teamtechsis}
+        }
     \end{column}
     \begin{column}{0.45\textwidth}
       \centering
+      \only<4->{
       \textbf{Pivoting}\\
       \includegraphics[width=0.8\textwidth]{figures/Pivot.jpg}\\
       \tiny{Source: geeksforgeeks.org}
+      }
     \end{column}
   \end{columns}
 
@@ -29,7 +37,7 @@
       \item We concerned ourselves with finding exact lower bounds for the number of comparisons in the selection problem
       \item First of all, what is the Selection Problem?
       \item It can be defined by the task of finding the $i$-th smallest element in a collection of $n$ distinct values.
-      \item All baseline algorithms are based on the principle of either sorting or pivoting. 
+      \item All baseline algorithms either rely on the principle of sorting or pivoting. 
       \item I suppose you are familiar with the bubble sort algorithm or insertion sort. With sorting the list first and then just picking the selection problem can be solved in a trivial way.
       \item On the other hand, with pivoting one can leverage the advantages of divide-and-conquer and apply the well-known Quickselect algorithm or the median of medians appraoch.
     \end{itemize}
@@ -47,7 +55,7 @@
   \end{itemize}
   \note{
     \begin{itemize}
-      \item By counting the comparisons during runtime one obtains the $i$-the smallest element end the number of comparisons at the same time.
+      \item By counting the comparisons during runtime one can simultaneously obtain the number of comparisons required, which is also the main time complexity measure.
       \item Let's now have a look at some known asymptotic bounds of the selection problem.
       \item First of all, let $V_i^n$ be the worst-case number of comparisons for an optimal algorithm.
       \item E.g. a lower bound for the general selection problem, is the number of comparisons needed for selecting the smallest element.
@@ -71,7 +79,7 @@
       \item The green line represents for the numer of comaparions for selecting the smallest element
       \item The orange line represents the lower bound for the median
       \item The blue line represents the upper bound for the median
-      \item We are intereseted in the gap between these existing bounds especially for small n's
+      \item We are intereseted in the gap between these existing bounds for small n's
       \item We explore, how many comparisons are needed for larger i's in contrast to $i=1$
       \item And also establish optimal algorithms for all $i$ and $n$ and therefore tighten the gap between upper and lower bounds.
     \end{itemize}
@@ -88,9 +96,9 @@
     \begin{itemize}
       \item This is summarized by the question 
       \item What are the \textit{exact} values of $V_i^n$ for small $n$ and arbitrary $i$, and how do they compare to these general bounds?
-      \item Asymptotic analysis, e.g. give a good idea of the growth behavior of a problem. 
-      \item However, we are intereseted in exact values for certain $n$ and $i$. A viable method to find optimal values in the worst case is Computer Search.
-      \item This brings us to the previous work on this topic.
+      \item Asymptotic analysis, provide useful insights into the growth behavior of a problem. 
+      \item For small instances exact values can be obtained with fully automated decision tree analysis.
+      \item This brings us to most relevant previous work on this topic.
     \end{itemize}
   }
 \end{frame}
@@ -102,7 +110,6 @@
     \cline{1-2}
     \raggedright \begin{itemize}
                    \item [...]were the first to apply computer search to find lower bounds for the selection problem.
-                         %\item [...]nutzten für größere $n,i$ sog. \textit{pair-forming algorithms}
                  \end{itemize} &
     \begin{itemize}
       \item[...] published a computer search algorithm that continues the work of Gasarch et al. for larger $n$ and $i$
@@ -113,11 +120,13 @@
   \note{
     \begin{itemize}
       \item Gasarch, Kelly and Puth were the first to apply computer search to find lower bounds for the selection problem.
+      \item A few years later Oksanen published a computer search algorithm that obtained results for larger $n$ and $i$.
       \item Results are available on his website, but have not been published in any scientific outlet. 
-      \item We also address the selection problem using computer search. We reimplemented the minimax algorithm used in and improve upon it by introducing suitable heuristics. Additionally we performed backward search, which is another significant improvement over the minimax algorithm.
+      \item This lack of scientific documentation led us to revisit the problem ourselves.
+      \item  We reimplemented the minimax algorithm and improve upon it by introducing suitable heuristics. 
+      \item Additionally we performed backward search, which is another significant improvement over the minimax algorithm.
       \item I will start with Forward Search and Julius will continue with the very interesting backward search. 
     \end{itemize}
-  
   }
 \end{frame}
 
@@ -324,11 +333,23 @@
       }
     ;
 
+    \node[anchor=north east] at (7, -2) {
+      \parbox{5.5cm}{
+        \begin{itemize}
+          \item<2-> \textbf{Depth-first search}
+          \item<3-> \textbf{Maximum depth} is limited by one less than the current best result
+          \item<4-> \textbf{Optimal algorithm} is build by recording the comparisons that led to the cheapest solution
+        \end{itemize}
+      }
+    };
+
   \end{tikzpicture}
   \note{
     \begin{itemize}
-      \item The forward search starts with the empty poset and recursively determines the cost of selecting the $i$-th smallest element of a poset $P$.
-      \item This is implemented using a minimax algorithm.
+      \item The forward search starts at the root with the initial problem instance which consists of the $n$, the $i$ and an empty set. This set will be filled with all relations resulting from the comparisons.
+      \item On the next level, pairs of elements are formed. In the following it will also be called partial-order set or short poset.
+      \item For each pair, the two possible outcomes are expanded on the lower levels (i.e. a<b and a>b).
+      \item The optimal number of comparisons in the worst case is obtained using the minimax algorithm.
       \item Between all pairs of elements the pair is compared that yields the smallest number of comparisons.
       \item Between the two possible outcomes of a comparison, the worst case is assumed.
       \item To save memory and enable pruning, the search tree is traversed using a depth-first search.
@@ -380,13 +401,13 @@
     \node[anchor=north east] at (3, 1.5) {
       \parbox{7cm}{
         \begin{itemize}
-          \item \textbf{Iterative deepening}
-          \item \textbf{Reduce posets} by removing all elements that cannot be the i-th smallest
-          \item \textbf{Cache}
+          \item<2-> \textbf{Iterative deepening}
+          \item<3-> \textbf{Reduce posets} by removing all elements that cannot be the i-th smallest
+          \item<4-> \textbf{Cache}
         \end{itemize}
       }
     };
-    \node[anchor=north east] at (1.8,-1.2) {
+    \only<4->{\node[anchor=north east] at (1.8,-1.2) {
       \parbox{5cm}{
         \begin{tabular}{|l|c|}
           \toprule
@@ -397,7 +418,7 @@
           \bottomrule
         \end{tabular}
       }
-    };
+    };}
   \end{tikzpicture}
 
   \note{\begin{itemize}
@@ -413,45 +434,41 @@
 \end{frame}
 
 \begin{frame}{Pruning techniques}
-  \begin{itemize}
-    \item Compatible Solutions
-    \item Free Comparison
-  \end{itemize}
-
-  \note{\begin{itemize}
-      \item We applied to furhter pruning techniques, which are based on compatible solutions and a free comparison
-    \end{itemize}
-  }
-\end{frame}
-
-\begin{frame}{Pruning technique: Compatible solutions}
-
-  The solved problem $(S,i)$ is a \textbf{compatible solution} of the problem $(R,i)$, if
+\framesubtitle{\large Compatible solutions}
+  \only<1->{The solved problem $(S,i)$ is a \textbf{compatible solution} of the problem $(R,i)$, if
   \begin{align*}
     a \leq_S b \Rightarrow b \not \leq a
-  \end{align*}
-  \vspace{1mm}
+  \end{align*}}
+  \vspace*{0.5mm}
 
-  Denote the \textbf{number of compatible solutions} with $\vert \mathcal{C}(P,i) \vert $\\
+  \only<2->{Denote the \textbf{number of compatible solutions} with $\vert \mathcal{C}(P,i) \vert $}
   \vspace{5mm}
-  \hspace{-3mm}
-  \begin{tabular}{l p{8cm}}
+  
+  \raggedright
+  \hspace*{-3mm}
+  \only<3->{\begin{tabular}{l p{10cm}}
     \textbf{Lemma: } & Selecting the i-th smallest element of a poset P requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
   \end{tabular}
+   \note{\begin{itemize}
+      \item We applied to furhter pruning techniques, which are based on compatible solutions and a free comparison
+    \end{itemize}
+  }}
 \end{frame}
 
-\begin{frame}{Pruning technique: Compatible solutions}
+\begin{frame}{Pruning techniques}
+  \framesubtitle{\large Compatible solutions}
   \only<1>{
     \begin{tikzpicture}
       [
         level 1/.style = {sibling distance = 4cm},
-        level 2/.style = {sibling distance = 2.5cm},
+        level 2/.style = {sibling distance = 3cm},
+        level 3/.style = {level distance=1.2cm}
       ]
 
       \node[anchor=east] at (-7,0) {Min};
       \node[anchor=east] at (-7,-1.5) {Max};
       \node[anchor=east] at (-7,-3) {Min};
-      \node[anchor=east] at (-7,-4.5) {Max};
+      \node[anchor=east] at (-7,-4.2) {Max};
 
       \node[] (root) {$(n,i,\emptyset)$}
       child {
@@ -489,13 +506,14 @@
     \begin{tikzpicture}
       [
         level 1/.style = {sibling distance = 4cm},
-        level 2/.style = {sibling distance = 2.5cm},
+        level 2/.style = {sibling distance = 3cm},
+        level 3/.style = {level distance=1.2cm}
       ]
 
       \node[anchor=east] at (-7,0) {Min};
       \node[anchor=east] at (-7,-1.5) {Max};
       \node[anchor=east] at (-7,-3) {Min};
-      \node[anchor=east] at (-7,-4.5) {Max};
+      \node[anchor=east] at (-7,-4.2) {Max};
 
       \node[] (root) {$(n,i,\emptyset)$}
       child {
@@ -527,20 +545,21 @@
         }
       ;
 
-      \node [draw=none] at (-1, -3) {\color{red} $(\_, 42)$};
+      \node [draw=none] at (-0.5, -3) {\color{red} $(\_, 42)$};
     \end{tikzpicture}
   }
   \only<3>{
     \begin{tikzpicture}
       [
         level 1/.style = {sibling distance = 4cm},
-        level 2/.style = {sibling distance = 2.5cm},
+        level 2/.style = {sibling distance = 3cm},
+        level 3/.style = {level distance=1.2cm}
       ]
 
       \node[anchor=east] at (-7,0) {Min};
       \node[anchor=east] at (-7,-1.5) {Max};
       \node[anchor=east] at (-7,-3) {Min};
-      \node[anchor=east] at (-7,-4.5) {Max};
+      \node[anchor=east] at (-7,-4.2) {Max};
 
       \node[] (root) {$(n,i,\emptyset)$}
       child {
@@ -572,10 +591,10 @@
         }
       ;
 
-      \draw[red] (-3.7,-2) -- (-3,-2.5);
-      \draw[red] (-3.7,-2.5) -- (-3,-2);
+      \draw[red] (-3.6,-2) -- (-2.9,-2.5);
+      \draw[red] (-3.6,-2.5) -- (-2.9,-2);
 
-      \node [draw=none] at (-1, -3) {\color{red} $(\_, 42)$};
+      \node [draw=none] at (-0.5, -3) {\color{red} $(\_, 42)$};
       \node [draw=none] at (-1, -2.25) {\color{red} If $42 < \lceil \log (\vert \mathcal{C}(P,i)\vert ) \rceil$};
 
 
@@ -589,23 +608,24 @@
   }
 \end{frame}
 
-\begin{frame}{Pruning technique: Free comparison}
+\begin{frame}{Pruning techniques}
+  \framesubtitle{\large Free comparison}
   \begin{columns}
     \begin{column}{0.65\textwidth}
       \begin{itemize}
-      \item Already applied by Oksanen
-      \item Idea: Add a useful relation between a large element and a small element
-      \item Search for unrelated elements $a$ and $b$ such that a has at least two elements less than it and b has at least two elements greater than it
+      \item<1-> Already applied by Oksanen
+      \item<2-> Idea: Add a useful relation between a large element and a small element
+      \item<3-> Search for unrelated elements $a$ and $b$ such that $a$ has at least two elements greater than it and $b$ has at least two elements smaller than it
     \end{itemize}
     \end{column}
     \begin{column}{0.35\textwidth}
-      \begin{figure}
+      \only<3->{\begin{figure}
         \begin{tikzpicture}[node distance=1.2cm]
-          \node[draw, circle, minimum size=0.5cm] (1) {a};
+          \node[draw, circle, minimum size=0.5cm] (1) {b};
           \node[draw, circle, minimum size=0.5cm, below right of=1] (2) {};
           \node[draw, circle, minimum size=0.5cm, below left of=1] (3) {};
 
-          \node[draw, circle, minimum size=0.5cm, above of=1, node distance=1.5cm] (4) {b};
+          \node[draw, circle, minimum size=0.5cm, above of=1, node distance=1.5cm] (4) {a};
           \node[draw, circle, minimum size=0.5cm, above right of=4] (5) {};
           \node[draw, circle, minimum size=0.5cm, above left of=4] (6) {};
           
@@ -617,7 +637,7 @@
           (4) edge (5)
           (4) edge (6);
         \end{tikzpicture}
-      \end{figure}
+      \end{figure}}
     \end{column}
     \end{columns}
 \end{frame}
