@@ -44,7 +44,6 @@
   }
 \end{frame}
 
-% TODO: diese Folie hat viel zu viel Text
 \begin{frame}{Complexity of the Selection Problem}
   \framesubtitle{Known Asymptotic Bounds}
   \begin{itemize}
@@ -437,7 +436,7 @@
 \framesubtitle{\large Compatible solutions}
   \only<1->{The solved problem $(S,i)$ is a \textbf{compatible solution} of the problem $(R,i)$, if
   \begin{align*}
-    a \leq_S b \Rightarrow b \not \leq a
+    a \leq_S b \Rightarrow b \not \leq_R a
   \end{align*}}
   \vspace*{0.5mm}
 
@@ -450,9 +449,16 @@
     \textbf{Lemma: } & Selecting the i-th smallest element of a poset P requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
   \end{tabular}
    \note{\begin{itemize}
-      \item We applied to furhter pruning techniques, which are based on compatible solutions and a free comparison
-    \end{itemize}
-  }}
+    \item We applied two further pruning techniques.
+    \item The first one I would like to talk about leverages the concept of compatible solution.
+    \item We say solved problem is a compatible solution of another problem if there are no contradicting relations.
+    \item We denote the \textbf{number} of compatible solutions with the absolute of C(P,i)
+    \item The useful lemma related to compatible solutions is the following:
+    \item Selecting the i-th smallest element of a poset P requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
+    \item This is because the number of compatible solutions is the number of leaf nodes below the regarded poset.
+    \item The logarithm of this the depth of the tree which is equivalent to the number of comparisons needed to achieve the solution.
+    \item 
+  \end{itemize}}
 \end{frame}
 
 \begin{frame}{Pruning techniques}
@@ -972,4 +978,4 @@
   \end{itemize}
 \end{frame}
 
-% TODO: Bildquellen & unser eigenes Paper
+% TODO: unser eigenes Paper
