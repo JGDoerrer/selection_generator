@@ -451,7 +451,7 @@
    \note{\begin{itemize}
     \item We applied two further pruning techniques.
     \item The first one I would like to talk about leverages the concept of compatible solution.
-    \item We say solved problem is a compatible solution of another problem if there are no contradicting relations.
+    \item We say a solved problem is a compatible solution of another problem if there are no contradicting relations.
     \item We denote the \textbf{number} of compatible solutions with the absolute of C(P,i)
     \item The useful lemma related to compatible solutions is the following:
     \item Selecting the i-th smallest element of a poset P requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
@@ -492,7 +492,7 @@
               node[] {$(n,i,\{(b,a)\})$}
               child[sibling distance = 1cm] {
                   node[] {\color{black}$\{c,d\}$}
-                  child[sibling distance = 1cm, edge from parent/.style={draw,dashed}] { node[] {\color{red}42}}
+                  child[sibling distance = 1cm] { node[] {$\cdots$}}
                   child[sibling distance = 1cm] { node[] {$\cdots$}}
                 }
               child[sibling distance = 1cm] { node[] {$\cdots$}}
@@ -505,6 +505,8 @@
           node[] {$\cdots$}
         }
       ;
+
+      \node [draw=none] at (-0.8, -3) {\color{red} $=P$};
 
     \end{tikzpicture}
   }
@@ -535,56 +537,10 @@
             }
           child {
               node[] {$(n,i,\{(b,a)\})$}
-              child[sibling distance = 1cm,red] {
-                  node[] {\color{black}$\{c,d\}$}
-                  child[sibling distance = 1cm,red, edge from parent/.style={draw,dashed}] { node[] {\color{red}42}}
-                  child[sibling distance = 1cm,black] { node[] {$\cdots$}}
-                }
-              child[sibling distance = 1cm] { node[] {$\cdots$}}
-            }
-        }
-      child {
-          node {$\cdots$}
-        }
-      child {
-          node[] {$\cdots$}
-        }
-      ;
-
-      \node [draw=none] at (-0.5, -3) {\color{red} $(\_, 42)$};
-    \end{tikzpicture}
-  }
-  \only<3>{
-    \begin{tikzpicture}
-      [
-        level 1/.style = {sibling distance = 4cm},
-        level 2/.style = {sibling distance = 3cm},
-        level 3/.style = {level distance=1.2cm}
-      ]
-
-      \node[anchor=east] at (-7,0) {Min};
-      \node[anchor=east] at (-7,-1.5) {Max};
-      \node[anchor=east] at (-7,-3) {Min};
-      \node[anchor=east] at (-7,-4.2) {Max};
-
-      \node[] (root) {$(n,i,\emptyset)$}
-      child {
-          node[] {$\{a,b\}$}
-          child {
-              node[] {$(n,i,\{(a,b)\})$}
               child[sibling distance = 1cm] {
-                  node[] {$\{c,d\}$}
-                  child[sibling distance = 1cm] { node[] {$\cdots$}}
-                  child[sibling distance = 1cm] { node[] {$\cdots$}}
-                }
-              child[sibling distance = 1cm] { node[] {$\cdots$}}
-            }
-          child {
-              node[] {$(n,i,\{(b,a)\})$}
-              child[sibling distance = 1cm,red] {
                   node[] {\color{black}$\{c,d\}$}
-                  child[sibling distance = 1cm,red,, edge from parent/.style={draw,dashed}] { node[] {\color{red}42}}
-                  child[sibling distance = 1cm,black] { node[] {$\cdots$}}
+                  child[sibling distance = 1cm] { node[] {$\cdots$}}
+                  child[sibling distance = 1cm] { node[] {$\cdots$}}
                 }
               child[sibling distance = 1cm] { node[] {$\cdots$}}
             }
@@ -600,8 +556,8 @@
       \draw[red] (-3.6,-2) -- (-2.9,-2.5);
       \draw[red] (-3.6,-2.5) -- (-2.9,-2);
 
-      \node [draw=none] at (-0.5, -3) {\color{red} $(\_, 42)$};
-      \node [draw=none] at (-1, -2.25) {\color{red} If $42 < \lceil \log (\vert \mathcal{C}(P,i)\vert ) \rceil$};
+      \node [draw=none] at (-0.8, -3) {\color{red} $=P$};
+      \node [draw=none] at (1.8, -2.25) {\color{red} If $\lceil \log (\vert \mathcal{C}(P,i)\vert ) \rceil > $ remaining comparisons allowed};
 
 
     \end{tikzpicture}
@@ -609,7 +565,7 @@
 
   \note{
     \begin{itemize}
-      \item For example when one child turns out to be solvable with 42 comparisons, the value is propagated upwards. And e.g. this is a min node so upon completion the solution is at most 42. But when log of number of compatible solutions is larger than 42 this branch can be pruned.
+      \item Let's now look at a small example for pruning based on compatible solutions.
     \end{itemize}
   }
 \end{frame}
