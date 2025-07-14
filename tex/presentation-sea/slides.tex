@@ -550,8 +550,10 @@
     \begin{column}{0.65\textwidth}
       \begin{itemize}
       \item<1-> Already applied by Oksanen
-      \item<2-> Idea: Add a useful relation between a large element and a small element
-      \item<3-> Search for unrelated elements $a$ and $b$ such that $a$ a is small and $b$ is large
+      \item<2-> Add a useful relation between a large element and a small element
+      %\item<3-> Search for unrelated elements $a$ and $b$ such that $a$ has at least two smaller elements and $b$ has at least two smaller elements
+        \item<3-> allows more extensive poset reduction
+        \item<4-> allows for pruning because, if problem with the free comparison is not solvable, then so is the original problem
     \end{itemize}
     \end{column}
     \begin{column}{0.35\textwidth}
@@ -582,88 +584,93 @@
   \framesubtitle{\large Free comparison}
   \only<1>{
     \begin{tikzpicture}
-      [
-        level 1/.style = {sibling distance = 4cm},
-        level 2/.style = {sibling distance = 3cm},
-        level 3/.style = {level distance=1.2cm}
-      ]
+    [
+      level distance=1.5cm,
+      level 1/.style = {sibling distance = 4cm, level distance=1.2cm},
+      level 2/.style = {sibling distance = 4cm, level distance=1cm},
+      level 3/.style = {level distance=1.2cm}
+    ]
 
-      \node[] (root) {$(n,i,\emptyset)$}
-      child [dashed] {
-          node[] {\color{red}$\{a,b\}$} 
-          child [solid]{
-              node[] {$(n,i,(a,b))$}
-              child[sibling distance = 1cm] {
-                  node[] {$\{c,d\}$}
-                  child[sibling distance = 1cm] { node[] {\color{red}not}}
-                  child[sibling distance = 1cm] { node[] {\color{red}solved}}
-                }
-              child[sibling distance = 1cm] { node[] {$\cdots$}}
-            }
-          child [solid]{
-              node[] {$(n,i,(b,a))$}
-              child[sibling distance = 1cm] {
-                  node[] {\color{black}$\{c,d\}$}
-                  child[sibling distance = 1cm] { node[] {\color{red}not}}
-                  child[sibling distance = 1cm] { node[] {\color{red}solved}}
-                }
-              child[sibling distance = 1cm] { node[] {$\cdots$}}
-            }
-      }
-      child {
-          node {$\cdots$}
+    \node[] {$(n,i,\emptyset)$}
+      child [dashed]{
+        node[] (root) {$(n,i,P)$}
+        child [solid] {
+            node[] {\color{red}$\{a,b\}$} 
+            child [solid]{
+                node[] {$(n,i,P \cup (a,b))$}
+                child[sibling distance = 1cm] {
+                    node[] {$\{c,d\}$}
+                    child[sibling distance = 1cm] { node[] {\color{red}not}}
+                    child[sibling distance = 1cm] { node[] {\color{red}solved}}
+                  }
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+              }
+            child [solid]{
+                node[] {$(n,i,P \cup (b,a))$}
+                child[sibling distance = 1cm] {
+                    node[] {\color{black}$\{c,d\}$}
+                    child[sibling distance = 1cm] { node[] {\color{red}not}}
+                    child[sibling distance = 1cm] { node[] {\color{red}solved}}
+                  }
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+              }
         }
-      child {
-          node[] {$\cdots$}
-        }
-      ;
-
+        child [solid]{
+            node {$\cdots$}
+          }
+        child [solid] {
+            node[] {$\cdots$}
+          }
+      };
     \end{tikzpicture}
     }
 
   \only<2>{
     \begin{tikzpicture}
-      [
-        level 1/.style = {sibling distance = 4cm},
-        level 2/.style = {sibling distance = 3cm},
-        level 3/.style = {level distance=1.2cm}
-      ]
+    [
+      level distance=1.5cm,
+      level 1/.style = {sibling distance = 4cm, level distance=1.2cm},
+      level 2/.style = {sibling distance = 4cm, level distance=1cm},
+      level 3/.style = {level distance=1.2cm}
+    ]
 
-      \node[] (root) {$(n,i,\emptyset)$}
-      child [dashed] {
-          node[] {\color{red}$\{a,b\}$} 
-          child [solid]{
-              node[] {$(n,i,(a,b))$}
-              child[sibling distance = 1cm] {
-                  node[] {$\{c,d\}$}
-                  child[sibling distance = 1cm] { node[] {\color{red}not}}
-                  child[sibling distance = 1cm] { node[] {\color{red}solved}}
-                }
-              child[sibling distance = 1cm] { node[] {$\cdots$}}
-            }
-          child [solid]{
-              node[] {$(n,i,(b,a))$}
-              child[sibling distance = 1cm] {
-                  node[] {\color{black}$\{c,d\}$}
-                  child[sibling distance = 1cm] { node[] {\color{red}not}}
-                  child[sibling distance = 1cm] { node[] {\color{red}solved}}
-                }
-              child[sibling distance = 1cm] { node[] {$\cdots$}}
-            }
-      }
-      child {
-          node {$\cdots$}
+    \node[] {$(n,i,\emptyset)$}
+      child [dashed]{
+        node[] (root) {$(n,i,P)$}
+        child [solid] {
+            node[] {\color{red}$\{a,b\}$} 
+            child [solid]{
+                node[] {$(n,i,P \cup (a,b))$}
+                child[sibling distance = 1cm] {
+                    node[] {$\{c,d\}$}
+                    child[sibling distance = 1cm] { node[] {\color{red}not}}
+                    child[sibling distance = 1cm] { node[] {\color{red}solved}}
+                  }
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+              }
+            child [solid]{
+                node[] {$(n,i,P \cup (b,a))$}
+                child[sibling distance = 1cm] {
+                    node[] {\color{black}$\{c,d\}$}
+                    child[sibling distance = 1cm] { node[] {\color{red}not}}
+                    child[sibling distance = 1cm] { node[] {\color{red}solved}}
+                  }
+                child[sibling distance = 1cm] { node[] {$\cdots$}}
+              }
         }
-      child {
-          node[] {$\cdots$}
-        }
-      ;
+        child [solid]{
+            node {$\cdots$}
+          }
+        child [solid] {
+            node[] {$\cdots$}
+          }
+      };
 
-      \draw[red] (-0.3,-0.5) -- (.4,-1);
-      \draw[red] (-0.3,-1) -- (.3,-0.5);
+      \draw[red] (-0.3,-1.5) -- (.4,-2);
+      \draw[red] (-0.3,-2) -- (.3,-1.5);
 
-      \draw[red] (1.7,-0.5) -- (2.4,-1);
-      \draw[red] (1.7,-1) -- (2.4,-0.5);
+      \draw[red] (1.7,-1.5) -- (2.4,-2);
+      \draw[red] (1.7,-2) -- (2.4,-1.5);
 
     \end{tikzpicture}
     }
