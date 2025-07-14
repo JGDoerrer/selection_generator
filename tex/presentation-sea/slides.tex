@@ -34,13 +34,13 @@
 
   \note{
     \begin{itemize}
-      \item We concerned ourselves with finding exact lower bounds for the number of comparisons in the selection problem
       \item First of all, what is the Selection Problem?
       \item It can be defined by the task of finding the $i$-th smallest element in a collection of $n$ distinct values.
       \item All baseline algorithms either rely on the principle of sorting or pivoting. 
-      \item I suppose you are familiar with the bubble sort algorithm or insertion sort. With sorting the list first and then just picking the selection problem can be solved in a trivial way.
-      \item However, this is not the most efficient way, since sorting takes $\mathcal{O}(n log n)$
-      \item On the other hand, with pivoting one can leverage the advantages of divide-and-conquer and apply the well-known Quickselect algorithm or the median of medians appraoch.
+      \item I suppose you are familiar with the bubble sort algorithm or insertion sort. With sorting the list first and then just picking the $i$-th element, the selection problem can be solved in a trivial way.
+      \item However, this is not the most efficient way, since sorting is in the complexity class of $\mathcal{O}(n log n)$
+      \item With pivoting, on the other hand, one can leverage the advantages of divide-and-conquer and apply the well-known Quickselect algorithm or the median of medians appraoch.
+      \item \textbf{Let's now look at a more extensive summary of known complexity bounds.}
     \end{itemize}
   }
 \end{frame}
@@ -55,15 +55,13 @@
   \end{itemize}
   \note{
     \begin{itemize}
-      \item By counting the comparisons during runtime one can simultaneously obtain the number of comparisons required, which is also the main time complexity measure.
-      \item Let's now have a look at some known asymptotic bounds of the selection problem.
       \item First of all, let $V_i^n$ be the worst-case number of comparisons for an optimal algorithm.
-      \item E.g. a lower bound for the general selection problem, is the number of comparisons needed for selecting the smallest element.
-      \item That is just $n-1$
+      \item The easisest case is selecting the minimum.
+      \item That is just takes $n-1$ comparisons.
       \item The hardest element to determine is the median.
-      \item The best-known upper bound for selecting the median is $\approx 2.95n$ comparisons.
+      \item For this problem, the best-known upper bound is $\approx 2.95n$ comparisons.
       \item The assumed lower bound for the median is $\approx 2.41n$ comparisons.
-
+      \item \textbf{Let's visualize that.}
     \end{itemize}
   }
 \end{frame}
@@ -75,13 +73,16 @@
   \end{figure}
   \note{
     \begin{itemize}
-      \item Let's visualize that
       \item The green line represents for the numer of comaparions for selecting the smallest element
       \item The orange line represents the lower bound for the median
       \item The blue line represents the upper bound for the median
-      \item We are intereseted in the gap between these existing bounds for small n's
-      \item We explore, how many comparisons are needed for larger i's in contrast to $i=1$
-      \item And also establish optimal algorithms for all $i$ and $n$ and therefore tighten the gap between upper and lower bounds.
+      \item As can be seen there is a significant gap between selecting the smallest element and the median.
+      \item But also between the upper and bound for the median.
+      \item With our approach we aim at establishing lower bounds for exact values for $n$ and $i$
+      \item And therefore elaborate how these exact values relate to the asymptotic bounds.
+      \item This lays ground for elaborating the thightness of the bounds for the median.
+      \item And also gives an idea where values for arbitrary $i$ are located in the spectrum.
+      \item \textbf{This can be summarized by our research question:}
     \end{itemize}
   }
 \end{frame}
@@ -91,14 +92,13 @@
     \includegraphics[height=0.5\textheight]{figures/bounds_diagram.png}
     \caption{\small Complexity Bounds for the Selection Problem}
   \end{figure}
-  \textbf{Our Question:} What are the \textit{exact} values of $V_i^n$ for small $n$ and arbitrary $i$, and how do they compare to these general bounds?
+  \textbf{Our Question:} What are the \textit{exact} values of $V_i^n$ for small $n$ and arbitrary $i$, and how do they compare to asymptotic bounds?
   \note{
     \begin{itemize}
-      \item This is summarized by the question
-      \item What are the \textit{exact} values of $V_i^n$ for small $n$ and arbitrary $i$, and how do they compare to these general bounds?
+      \item What are the \textit{exact} values of $V_i^n$ for small $n$ and arbitrary $i$, and how do they compare to the asymptotic bounds?
       \item Asymptotic analysis, provide useful insights into the growth behavior of a problem. 
-      \item For small instances exact values can be obtained with fully automated decision tree analysis.
-      \item This brings us to most relevant previous work on this topic.
+      \item However, with automatic analysis one can obtain lower bounds for exact $n$ and $i$.
+      \item \textbf{Let's look at some previous work that used automatic analysis for this purpose.}
     \end{itemize}
   }
 \end{frame}
@@ -125,7 +125,7 @@
       \item This lack of scientific documentation led us to revisit the problem ourselves.
       \item  We reimplemented the minimax algorithm and improve upon it by introducing suitable heuristics. 
       \item Additionally we performed backward search, which is another significant improvement over the minimax algorithm.
-      \item I will start with Forward Search and Julius will continue with the very interesting backward search. 
+      \item \textbf{I will start with Forward Search and Julius will continue with the very interesting backward search.}
     \end{itemize}
   }
 \end{frame}
@@ -191,7 +191,7 @@
   \end{tikzpicture}
   \note{\footnotesize 
     \begin{itemize}
-      \item The forward search starts at the root with the initial problem instance which consists of the $n$, the $i$ and an empty set. This set will be filled with all relations resulting from the comparisons.
+      \item \textbf{The forward search starts at the root with the initial problem instance} which consists of the $n$, the $i$ and an empty set. This set will be filled with all relations resulting from the comparisons.
       \item In the following it will also be called partial-order set or short poset.
       \item On the next level, pairs of elements are formed. 
       \item For each pair, the two possible outcomes are expanded on the lower levels (i.e. a<b and a>b).
@@ -210,12 +210,12 @@
       \begin{itemize}
         \item<1-> \textbf{Iterative deepening}
         \item<2-> \textbf{Reduce posets} by removing all elements that cannot be the i-th smallest
-        \item<3-> \textbf{Cache} previous results and the currently known minimum for unsolvable posets.
-        \item<4-> \textbf{Approximated canonical representation} based on a hash of 
+        \item<3-> \textbf{Approximated canonical representation} based on a hash of 
         \begin{itemize}
           \item in- and out-degree
           \item hash of adjacent vertices 
         \end{itemize}
+        \item<4-> \textbf{Cache} previous results and the currently known minimum for unsolvable posets.
       \end{itemize}
     \end{column}
 
@@ -243,12 +243,15 @@
   \note{
     \begin{itemize}
       \item Let's now look at some of the optimizations we applied. 
-      \item We applied iterative deepening to the depth-first search.
-      \item This has significant memory advantages.
+      \item We use iterative deepening, which means that the number of allowed comparisons is increased after each tree traversal.
       \item We work on reduced posets. For each poset, we remove elements that cannot be the i-th smallest. If an element has $i$ or more elements that are smaller or more than $n-i$ elements larger, it is removed.
-      \item We store an approximated canonical representation of the problem and its dual in the cache along with the number of comparisons applied so far.
-      \item Each entry indicates that the poset is not solvable with just this amount of comparisons.
+      \item We compute an approximated canonical representation of the problem based on a hash value
+      \item This hash value is computed for the root note and all other nodes iteratively, based on their in and out-degrees and the hash of the adjacent nodes.
+      \item Doing so a few times yields a pretty good approximation of an canonical representation that can be used for isomorphic testing.
+      \item Furthermore, we cache previous results meaning whether a poset is solvable or not.
+      \item In the case of not solvable we additionally store the currently known lower bound.
       \item Besides simple reuse purposes, the information in the cache can be used for pruning by cutting off branches that contradict the minimum value in the cache.
+      \item \textbf{Speaking of pruning. Let's look at two further pruning techniques we developed.}
     \end{itemize}
   }
 \end{frame}
@@ -270,14 +273,12 @@
     \textbf{Lemma: } & Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
   \end{tabular}}
    \note{\begin{itemize}
-    \item We applied two further pruning techniques.
     \item The first one I would like to talk about leverages the concept of compatible solution.
     \item We say a solved problem is a compatible solution of another problem if there are no contradicting relations.
     \item We denote the \textbf{number} of compatible solutions with the absolute of C(P,i)
     \item The useful lemma related to compatible solutions is the following:
-    \item Selecting the i-th smallest element of a poset P requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
-    \item This is because the number of compatible solutions is the number of leaf nodes below the regarded poset.
-    \item The logarithm of this the depth of the tree which is equivalent to the number of comparisons needed to achieve the solution.
+    \item Selecting the i-th smallest element of a poset $P$ requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
+    \item The reasoning behind this...
     \item 
   \end{itemize}}
 \end{frame}

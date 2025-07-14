@@ -17,7 +17,7 @@ plt.fill_between(n, 2.41 * n, 2.95 * n, alpha=0.2, color='yellow')
 # Annotations
 mid_n = 19
 mid_val = 50
-plt.annotate('Gap between bounds',
+plt.annotate('Gap between asymptotic bounds',
              xy=(mid_n, mid_val),
              xytext=(mid_n + 2, mid_val + 4),
              arrowprops=dict(arrowstyle='->',color='black', linewidth=4),
