@@ -527,10 +527,12 @@
 \section{Backward Search}
 \sectionframe{\insertsection}
 \note{
+  \LARGE
   Thank you! Now I would like to continue with the backward search.
 }
 
-\begin{frame}{\insertsection}
+% \sub{1}{44}
+\begin{frame}<1-5>{\insertsection} % 1:44
   Start with a solved poset and search the empty poset
   \vfill
   \begin{itemize}
@@ -541,6 +543,12 @@
     \item<+-> \textbf{Termination:} The search stops when the initial empty poset $(n, i, \emptyset)$ is generated. Its level is the value $V_i^n$.
   \end{itemize}
   \note{
+    % \fontsize{70}{80}\selectfont
+    % \parbox{\textwidth}{
+    %   \centering
+    %   \textbf{\printTimetag}
+    % }
+    \LARGE
     \only<1>{
       In contrast to the forward search, the backward search starts with a solved poset and seeks to find the empty poset with $n$ elements.
 
@@ -572,7 +580,7 @@
   }
 \end{frame}
 
-\begin{frame}{Predecessor Computation}
+\begin{frame}<1-4>{Predecessor Computation} % 0:50
   \begin{definition}[Predecessor]
     Suppose the set of all posets solvable in $k$ comparisons is known.
     A normalized poset $Q$ is a \textbf{predecessor} iff there exists a comparison between two elements $u,v$ such that
@@ -587,6 +595,7 @@
     This process essentially ``removes'' a comparison to go one step backward.
   }
   \note{
+    \LARGE
     \only<1>{
       Okay, let's now define the concept of a predecessor.
 
@@ -604,7 +613,7 @@
   }
 \end{frame}
 
-\begin{frame}{Example}
+\begin{frame}<1-4>{Example} % 1:16
   \vspace{-0.75cm}
   \begin{figure}[!b]
     \centering
@@ -614,6 +623,7 @@
   \end{figure}
 
   \note{
+    \Large
     \only<1>{
       I've brought an example to illustrate this.
 
@@ -633,14 +643,15 @@
   }
 \end{frame}
 
-\begin{frame}{Removing Comparisons}
+\begin{frame}<1-3>{Removing Comparisons} % 0:44
   \begin{figure}[!b]
     \centering
     \scalebox{1.5}{\input{figures/tikz_problematic_case.tex}}
-    \caption{TODO}
+    \caption{Ambiguous result of removing a comparison due to transitivity}
     \label{fig:backward-problematic-case}
   \end{figure}
   \note{
+    \LARGE
     \only<1>{
       A problem that may already be apparent here is that the removal of comparisons is not unambiguous.
       We are given a poset with three elements, where we know that the bottom element is less than the middle one, and the middle element is less than the top one.
@@ -657,7 +668,7 @@
   }
 \end{frame}
 
-\begin{frame}{Poset Distribution}
+\begin{frame}{Poset Distribution} % 0:28
   \begin{figure}[!b]
     \centering
     \resizebox{0.9\textheight}{!}{%
@@ -666,6 +677,7 @@
     \caption{Number of posets for $n = 14$ depending on the number of comparisons}
   \end{figure}
   \note{
+    \LARGE
     Another interesting aspect is the poset distribution for the backward search.
     Here, we have plotted the number of removed comparisons against the number of found posets on a logarithmic scale for different values of $i$.
     It is noticeable that for larger $i$, significantly more posets must be searched.
@@ -677,7 +689,7 @@
 \section{Results}
 \sectionframe{\insertsection}
 
-\begin{frame}{Exact Bounds} %ready
+\begin{frame}{Exact Bounds} % 0:33
   \vspace{-1cm}
   \begin{table}[!t]
     \label{tab:results}
@@ -705,6 +717,7 @@
     \end{tabular}
   \end{table}
   \note{
+    \LARGE
     Let us first, however, turn to the results.
     In the presented table, all values that we have newly computed are shown in bold.
     We have, of course, verified all other values.
@@ -713,7 +726,7 @@
   }
 \end{frame}
 
-\begin{frame}{Contribution}
+\begin{frame}<1-5>{Contribution} % 1:01
   \definecolor{counterexample}{rgb}{0.8, 0.1, 0.1}
   \setbeamercolor{block title alerted}{bg=gray!20,fg=black}
   \setbeamercolor{block body alerted}{bg=gray!5}
@@ -729,6 +742,7 @@
       \end{alertblock}
   \end{itemize}
   \note{
+    \LARGE
     \only<1>{
       To summarize our contribution, we have verified all previous results and generated executable algorithms with the optimal number of comparisons in Rust.
     }
@@ -749,7 +763,7 @@
   }
 \end{frame}
 
-\begin{frame}{Runtime Comparison} % ready
+\begin{frame}{Runtime Comparison} % 0:51
   \begin{table}[!t]
     \label{tab:times}
     \renewcommand{\arraystretch}{1.0}
@@ -778,6 +792,7 @@
     }
   \end{table}
   \note{
+    \Large
     Finally, it is interesting to see how long we had to heat the university to compute these results.
     An important note here is that the forward search is only single-threaded, whereas the backward search is fully parallelized and runs almost linearly faster with the number of threads. With 48 threads and 1 TB of utilized RAM, this makes a significant difference.
     For $n=14$ and $n=15$, I have marked in bold the values that were computed the fastest.
@@ -786,7 +801,7 @@
   }
 \end{frame}
 
-\begin{frame}{Future Work}
+\begin{frame}<1-3>{Future Work} % 1:00
   \vspace{-1.2cm}
   \begin{columns}
     \begin{column}{.49\textwidth}
@@ -811,6 +826,7 @@
     \end{column}
   \end{columns}
   \note{
+    \LARGE
     \only<1>{
       For the future, we could imagine parallelizing the forward search or developing even better heuristics.
       A bidirectional search would also be conceivable.
@@ -829,27 +845,29 @@
   }
 \end{frame}
 
-\thanksframe
+\thanksframe % 0:06
 
 \note{
+  \LARGE
   On that note, I would like to thank you for your attention.
-  If you have any questions, I would be happy to answer them now.
+  If you have any questions, we would be happy to answer them now.
 }
 
-%TODO: prevent in toc above
-\begin{frame}[shrink=25]{References}
+% TODO: prevent in toc above
+\begin{frame}[shrink=25]{References} % 0:04
   \nocite{*}
   \printbibliography[heading=none]
   \note{
+    \LARGE
     Here are our references, which can also all be found in our paper.
   }
 \end{frame}
 
-% \begin{frame}[shrink=25]{Image References}
-%   \begin{itemize}
-%     \item[] https://medium.com/@teamtechsis/introduction-to-sorting-algorithms-1623b9cdd4f1
-%     \item[] https://www.geeksforgeeks.org/dsa/quick-sort-algorithm/
-%   \end{itemize}
-% \end{frame}
+\begin{frame}[shrink=25]{Image References}
+  \begin{itemize}
+    \item[] https://medium.com/@teamtechsis/introduction-to-sorting-algorithms-1623b9cdd4f1
+    \item[] https://www.geeksforgeeks.org/dsa/quick-sort-algorithm/
+  \end{itemize}
+\end{frame}
 
-% % TODO: unser eigenes Paper
+% TODO: Bildquellen & unser eigenes Paper

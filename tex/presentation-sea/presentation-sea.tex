@@ -1,18 +1,72 @@
 % pdfpc Seminar_Presentation.pdf -d 30 --disable-auto-grouping --notes=left
-\documentclass[compress,11pt,aspectratio=169]{beamer}
 
-%\setbeameroption{show notes}
-\setbeameroption{show notes on second screen=left}
-% \setbeamerfont{note page}{size=\normalsize}
-% \setbeamertemplate{note page}{
-%     \pagecolor{black}
-%     \setlength{\leftmargini}{0pt}
-%     \setbeamercolor{itemize item}{fg=white}
-%     \setbeamercolor{normal text}{fg=white}
-%     \usebeamercolor*{normal text}
-%     \insertnote
-%}
+\newif\ifhandout
+% \handouttrue
+\handoutfalse % uncomment for presentation
 
+\ifhandout
+  \documentclass[compress,11pt,aspectratio=169]{beamer}
+
+  \newcommand*{\anim}{.-}
+  \newcommand*{\onslideA}{}
+\else
+  \documentclass[compress,11pt,aspectratio=169,notes]{beamer}
+
+  \setbeameroption{show notes on second screen=bottom}
+  \setbeamerfont{note page}{size=\normalsize}
+  \setbeamertemplate{note page}{
+      \pagecolor{black}
+      \setlength{\leftmargini}{0pt}
+      \setbeamercolor{itemize item}{fg=white}
+      \setbeamercolor{normal text}{fg=white}
+      \usebeamercolor*{normal text}
+      \insertnote
+  }
+
+  \newcommand*{\anim}{+-}
+  \newcommand*{\onslideA}{\onslide<2>}
+\fi
+
+\usepackage{calculator}
+
+\newcounter{minuteTimetag}
+\newcounter{secondTimetag}
+\setcounter{minuteTimetag}{20}
+\setcounter{secondTimetag}{0}
+
+% Define the sub command
+\newcommand{\sub}[2]{
+  \setcounter{minuteTimetag}{\value{minuteTimetag} - #1}
+  \setcounter{secondTimetag}{\value{secondTimetag} - #2}
+  \ifnum\value{secondTimetag}<0
+    \setcounter{minuteTimetag}{\value{minuteTimetag} - 1}
+    \setcounter{secondTimetag}{\value{secondTimetag} + 60}
+  \fi
+}
+
+\newcommand{\printTimetag}{%
+\the\value{minuteTimetag}:\ifnum\value{secondTimetag}<10{0}\fi\thesecondTimetag
+}
+
+\newcommand{\framewithnote}[5]{%
+  \sub{#1}{#2}
+  \begin{frame}{#3}
+    #4
+    \note{
+      \fontsize{30}{30}\selectfont
+      \begin{itemize}\color{white}
+        {
+          \fontsize{70}{80}\selectfont
+          \item \parbox{\textwidth}{
+            \centering
+            \textbf{\printTimetag}
+          }
+        }
+        #5
+      \end{itemize}
+    }
+  \end{frame}
+}
 
 % language and encodings
 \usepackage[utf8]{inputenc}
@@ -37,7 +91,8 @@
 \usepackage[style=authoryear,
             autocite=footnote,
             backend=biber,
-            giveninits=true]{biblatex}
+            giveninits=true,
+            uniquename=init]{biblatex}
 \usepackage{csquotes}
 \addbibresource{literatur.bib}
 \DeclareNameAlias{sortname}{family-given}
