@@ -3,6 +3,7 @@
 \author{SEA 2025 \hspace{1cm} Johanna Hofmann}
 \section{Introduction}
 
+\sub{1}{0}
 \begin{frame}{The Selection Problem}
   \framesubtitle{Finding the $i$-th Smallest Element}
   \uncover<1->{\textbf{Selection($n,i$):} Find the $i$-th smallest element in a collection of $n$ distinct values.}
@@ -45,6 +46,7 @@
   }
 \end{frame}
 
+\sub{1}{0}
 \begin{frame}{Complexity of the Selection Problem}
   \framesubtitle{Known Asymptotic Bounds}
   \begin{itemize}
@@ -66,6 +68,7 @@
   }
 \end{frame}
 
+\sub{1}{0}
 \begin{frame}{Complexity of the Selection Problem}
   \begin{figure}
     \includegraphics[height=0.7\textheight]{figures/bounds_diagram.png}
@@ -86,6 +89,7 @@
   }
 \end{frame}
 
+\sub{1}{0}
 \begin{frame}{Complexity of the Selection Problem}
   \begin{figure}
     \includegraphics[height=0.5\textheight]{figures/bounds_diagram.png}
@@ -102,6 +106,7 @@
   }
 \end{frame}
 
+\sub{1}{0}
 \begin{frame}{Previous Work on Exact Bounds}
   \begin{tabular}{|p{6cm}|p{6cm}|}
     \hline
@@ -203,6 +208,7 @@
     \end{itemize} }
 \end{frame}
 
+\sub{1}{0}
 \begin{frame}{Optimizations}
   \begin{columns}
     \begin{column}{0.6\textwidth}
@@ -239,7 +245,8 @@
       }
     \end{column}
   \end{columns}
-  \timenote{\small
+  \timenote{
+    \small
     \begin{itemize}
       \item Let's now look at some of the optimizations we applied.
       \item We use iterative deepening, which means that the number of allowed comparisons is increased after each tree traversal.
@@ -255,6 +262,7 @@
   }
 \end{frame}
 
+\sub{1}{0}
 \begin{frame}{Pruning techniques}
   \framesubtitle{\large Compatible solutions}
   \uncover<1->{The solved problem $(S,i)$ is a \textbf{compatible solution} of the problem $(R,i)$, if
@@ -282,6 +290,7 @@
     \end{itemize}}
 \end{frame}
 
+\sub{1}{0}
 \begin{frame}{Pruning techniques}
   \framesubtitle{\large Compatible solutions}
   \only<1>{
@@ -389,6 +398,7 @@
   }
 \end{frame}
 
+\sub{1}{0}
 \begin{frame}{Pruning techniques}
   \framesubtitle{\large Free comparison}
   \begin{columns}
@@ -402,7 +412,7 @@
       \end{itemize}
     \end{column}
     \begin{column}{0.35\textwidth}
-      \only<3->{\begin{figure}
+      \uncover<3->{\begin{figure}
           \begin{tikzpicture}[node distance=1.2cm]
             \node[draw, circle, minimum size=0.5cm] (1) {b};
             \node[draw, circle, minimum size=0.5cm, below right of=1] (2) {};
@@ -425,6 +435,7 @@
   \end{columns}
 \end{frame}
 
+\sub{1}{0}
 \begin{frame}{Pruning techniques}
   \framesubtitle{\large Free comparison}
   \only<1>{
@@ -522,8 +533,6 @@
 \end{frame}
 
 \author{SEA 2025 \hspace{1cm} Julius von Smercek}
-
-\sub{10}{0}
 
 \section{Backward Search}
 \sectionframe{\insertsection}
@@ -858,7 +867,7 @@
   If you have any questions, we would be happy to answer them now.
 }
 
-% TODO: prevent in toc above
+% % TODO: prevent in toc above
 
 % \sub{0}{04}
 % \begin{frame}[shrink=25]{References}
@@ -870,11 +879,11 @@
 %   }
 % \end{frame}
 
-\begin{frame}[shrink=25]{Image References}
-  \begin{itemize}
-    \item[] https://medium.com/@teamtechsis/introduction-to-sorting-algorithms-1623b9cdd4f1
-    \item[] https://www.geeksforgeeks.org/dsa/quick-sort-algorithm/
-  \end{itemize}
-\end{frame}
+% \begin{frame}[shrink=25]{Image References}
+%   \begin{itemize}
+%     \item[] https://medium.com/@teamtechsis/introduction-to-sorting-algorithms-1623b9cdd4f1
+%     \item[] https://www.geeksforgeeks.org/dsa/quick-sort-algorithm/
+%   \end{itemize}
+% \end{frame}
 
-% TODO: Bildquellen & unser eigenes Paper
+% % TODO: Bildquellen & unser eigenes Paper
