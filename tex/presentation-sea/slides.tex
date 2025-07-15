@@ -5,18 +5,18 @@
 
 \begin{frame}{The Selection Problem}
   \framesubtitle{Finding the $i$-th Smallest Element}
-  \only<1->{\textbf{Selection($n,i$):} Find the $i$-th smallest element in a collection of $n$ distinct values.}
+  \uncover<1->{\textbf{Selection($n,i$):} Find the $i$-th smallest element in a collection of $n$ distinct values.}
 
   \vspace{5mm}
 
   \centering
-  \only<2->{Common approaches are based on sorting or partitioning:}
+  \uncover<2->{Common approaches are based on sorting or partitioning:}
 
   \vspace{5mm}
   \begin{columns}[T]
     \begin{column}{0.45\textwidth}
       \centering
-      \only<3->{
+      \uncover<3->{
         \textbf{Sorting}\\
         \includegraphics[width=0.8\textwidth, trim={0 0 0 3.5cm}, clip]{figures/Insertion_sort.jpg}\\
         \tiny{Source: medium.com/@teamtechsis}
@@ -24,7 +24,7 @@
     \end{column}
     \begin{column}{0.45\textwidth}
       \centering
-      \only<4->{
+      \uncover<4->{
         \textbf{Pivoting}\\
         \includegraphics[width=0.8\textwidth]{figures/Pivot.jpg}\\
         \tiny{Source: geeksforgeeks.org}
@@ -49,7 +49,7 @@
   \framesubtitle{Known Asymptotic Bounds}
   \begin{itemize}
     \item<+-> Let $V_i^n$ be the worst-case number of comparisons for an optimal algorithm.
-    \item<+-> Selecting the minimum is simple: $V_1(n) = n-1$.
+    \item<+-> Selecting the minimum is simple: $V_1^n= n-1$.
     \item<+-> The best-known upper bound for selecting the median is $\approx 2.95n$ comparisons.
     \item<+-> The assumed lower bound for the median is $\approx 2.41n$ comparisons (Schönhage et al.).
   \end{itemize}
@@ -79,9 +79,8 @@
       \item As can be seen there is a significant gap between selecting the smallest element and the median.
       \item But also between the upper and bound for the median.
       \item With our approach we aim at establishing lower bounds for exact values for $n$ and $i$
-      \item And therefore elaborate how these exact values relate to the asymptotic bounds.
       \item This lays ground for elaborating the thightness of the bounds for the median.
-      \item And also gives an idea where values for arbitrary $i$ are located in the spectrum.
+      \item And also gives an idea where values for arbitrary $i$ are located in the orange spectrum.
       \item \textbf{This can be summarized by our research question:}
     \end{itemize}
   }
@@ -240,14 +239,13 @@
       }
     \end{column}
   \end{columns}
-  \timenote{
-    \tiny
+  \timenote{\small
     \begin{itemize}
       \item Let's now look at some of the optimizations we applied.
       \item We use iterative deepening, which means that the number of allowed comparisons is increased after each tree traversal.
       \item We work on reduced posets. For each poset, we remove elements that cannot be the i-th smallest. If an element has $i$ or more elements that are smaller or more than $n-i$ elements larger, it is removed.
       \item We compute an approximated canonical representation of the problem based on a hash value
-      \item This hash value is computed for the root timenote and all other nodes iteratively, based on their in and out-degrees and the hash of the adjacent nodes.
+      \item This hash value is computed for the root and all other nodes iteratively, based on their in and out-degrees and the hash of the adjacent nodes.
       \item Doing so a few times yields a pretty good approximation of an canonical representation that can be used for isomorphic testing.
       \item Furthermore, we cache previous results meaning whether a poset is solvable or not.
       \item In the case of not solvable we additionally store the currently known lower bound.
@@ -259,18 +257,18 @@
 
 \begin{frame}{Pruning techniques}
   \framesubtitle{\large Compatible solutions}
-  \only<1->{The solved problem $(S,i)$ is a \textbf{compatible solution} of the problem $(R,i)$, if
+  \uncover<1->{The solved problem $(S,i)$ is a \textbf{compatible solution} of the problem $(R,i)$, if
     \begin{align*}
-      a <_S b \Rightarrow b \not >_R a
+      a <_S b \Rightarrow b \not <_R a
     \end{align*}}
   \vspace*{0.5mm}
 
-  \only<2->{Denote the \textbf{number of compatible solutions} with $\vert \mathcal{C}(P,i) \vert $}
+  \uncover<2->{Denote the \textbf{number of compatible solutions} with $\vert \mathcal{C}(P,i) \vert $}
   \vspace{5mm}
 
   \raggedright
   \hspace*{-3mm}
-  \only<3->{\begin{tabular}{l p{10cm}}
+  \uncover<3->{\begin{tabular}{l p{10cm}}
       \textbf{Lemma: } & Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
     \end{tabular}}
   \timenote{\begin{itemize}
@@ -862,15 +860,15 @@
 
 % TODO: prevent in toc above
 
-\sub{0}{04}
-\begin{frame}[shrink=25]{References}
-  \nocite{*}
-  \printbibliography[heading=none]
-  \timenote{
-    \LARGE
-    Here are our references, which can also all be found in our paper.
-  }
-\end{frame}
+% \sub{0}{04}
+% \begin{frame}[shrink=25]{References}
+%   \nocite{*}
+%   \printbibliography[heading=none]
+%   \timenote{
+%     \LARGE
+%     Here are our references, which can also all be found in our paper.
+%   }
+% \end{frame}
 
 \begin{frame}[shrink=25]{Image References}
   \begin{itemize}
