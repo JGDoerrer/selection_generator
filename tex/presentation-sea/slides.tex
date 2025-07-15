@@ -6,37 +6,37 @@
 \begin{frame}{The Selection Problem}
   \framesubtitle{Finding the $i$-th Smallest Element}
   \only<1->{\textbf{Selection($n,i$):} Find the $i$-th smallest element in a collection of $n$ distinct values.}
-  
+
   \vspace{5mm}
 
   \centering
   \only<2->{Common approaches are based on sorting or partitioning:}
-  
+
   \vspace{5mm}
   \begin{columns}[T]
     \begin{column}{0.45\textwidth}
       \centering
       \only<3->{
-      \textbf{Sorting}\\
-      \includegraphics[width=0.8\textwidth, trim={0 0 0 3.5cm}, clip]{figures/Insertion_sort.jpg}\\
-      \tiny{Source: medium.com/@teamtechsis}
-        }
+        \textbf{Sorting}\\
+        \includegraphics[width=0.8\textwidth, trim={0 0 0 3.5cm}, clip]{figures/Insertion_sort.jpg}\\
+        \tiny{Source: medium.com/@teamtechsis}
+      }
     \end{column}
     \begin{column}{0.45\textwidth}
       \centering
       \only<4->{
-      \textbf{Pivoting}\\
-      \includegraphics[width=0.8\textwidth]{figures/Pivot.jpg}\\
-      \tiny{Source: geeksforgeeks.org}
+        \textbf{Pivoting}\\
+        \includegraphics[width=0.8\textwidth]{figures/Pivot.jpg}\\
+        \tiny{Source: geeksforgeeks.org}
       }
     \end{column}
   \end{columns}
 
-  \note{
+  \timenote{
     \begin{itemize}
       \item First of all, what is the Selection Problem?
       \item It can be defined by the task of finding the $i$-th smallest element in a collection of $n$ distinct values.
-      \item All baseline algorithms either rely on the principle of sorting or pivoting. 
+      \item All baseline algorithms either rely on the principle of sorting or pivoting.
       \item I suppose you are familiar with the bubble sort algorithm or insertion sort. With sorting the list first and then just picking the $i$-th element, the selection problem can be solved in a trivial way.
       \item However, this is not the most efficient way, since sorting is in the complexity class of $\mathcal{O}(n log n)$
       \item With pivoting, on the other hand, one can leverage the advantages of divide-and-conquer and apply the well-known Quickselect algorithm or the median of medians appraoch.
@@ -53,7 +53,7 @@
     \item<+-> The best-known upper bound for selecting the median is $\approx 2.95n$ comparisons.
     \item<+-> The assumed lower bound for the median is $\approx 2.41n$ comparisons (Schönhage et al.).
   \end{itemize}
-  \note{
+  \timenote{
     \begin{itemize}
       \item First of all, let $V_i^n$ be the worst-case number of comparisons for an optimal algorithm.
       \item The easisest case is selecting the minimum.
@@ -71,7 +71,7 @@
     \includegraphics[height=0.7\textheight]{figures/bounds_diagram.png}
     \caption{\small Complexity Bounds for the Selection Problem}
   \end{figure}
-  \note{
+  \timenote{
     \begin{itemize}
       \item The green line represents for the numer of comaparions for selecting the smallest element
       \item The orange line represents the lower bound for the median
@@ -93,10 +93,10 @@
     \caption{\small Complexity Bounds for the Selection Problem}
   \end{figure}
   \textbf{Our Question:} What are the \textit{exact} values of $V_i^n$ for small $n$ and arbitrary $i$, and how do they compare to asymptotic bounds?
-  \note{
+  \timenote{
     \begin{itemize}
       \item What are the \textit{exact} values of $V_i^n$ for small $n$ and arbitrary $i$, and how do they compare to the asymptotic bounds?
-      \item Asymptotic analysis, provide useful insights into the growth behavior of a problem. 
+      \item Asymptotic analysis, provide useful insights into the growth behavior of a problem.
       \item However, with automatic analysis one can obtain lower bounds for exact $n$ and $i$.
       \item \textbf{Let's look at some previous work that used automatic analysis for this purpose.}
     \end{itemize}
@@ -113,17 +113,17 @@
                  \end{itemize} &
     \begin{itemize}
       \item[...] published a computer search algorithm that continues the work of Gasarch et al. for larger $n$ and $i$
-    \end{itemize}                                        \\
+    \end{itemize}                         \\
     \cline{1-2}
   \end{tabular}
 
-  \note{
+  \timenote{
     \begin{itemize}
       \item Gasarch, Kelly and Puth were the first to apply computer search to find lower bounds for the selection problem.
       \item A few years later Oksanen published a computer search algorithm that obtained results for larger $n$ and $i$.
-      \item Results are available on his website, but have not been published in any scientific outlet. 
+      \item Results are available on his website, but have not been published in any scientific outlet.
       \item This lack of scientific documentation led us to revisit the problem ourselves.
-      \item  We reimplemented the minimax algorithm and improve upon it by introducing suitable heuristics. 
+      \item  We reimplemented the minimax algorithm and improve upon it by introducing suitable heuristics.
       \item Additionally we performed backward search, which is another significant improvement over the minimax algorithm.
       \item \textbf{I will start with Forward Search and Julius will continue with the very interesting backward search.}
     \end{itemize}
@@ -189,11 +189,11 @@
     };
 
   \end{tikzpicture}
-  \note{\footnotesize 
+  \timenote{\footnotesize
     \begin{itemize}
       \item \textbf{The forward search starts at the root with the initial problem instance} which consists of the $n$, the $i$ and an empty set. This set will be filled with all relations resulting from the comparisons.
       \item In the following it will also be called partial-order set or short poset.
-      \item On the next level, pairs of elements are formed. 
+      \item On the next level, pairs of elements are formed.
       \item For each pair, the two possible outcomes are expanded on the lower levels (i.e. a<b and a>b).
       \item The optimal number of comparisons in the worst case is obtained using the minimax algorithm.
       \item Between all pairs of elements the pair is compared that yields the smallest number of comparisons.
@@ -210,11 +210,11 @@
       \begin{itemize}
         \item<1-> \textbf{Iterative deepening}
         \item<2-> \textbf{Reduce posets} by removing all elements that cannot be the i-th smallest
-        \item<3-> \textbf{Approximated canonical representation} based on a hash of 
-        \begin{itemize}
-          \item in- and out-degree
-          \item hash of adjacent vertices 
-        \end{itemize}
+        \item<3-> \textbf{Approximated canonical representation} based on a hash of
+          \begin{itemize}
+            \item in- and out-degree
+            \item hash of adjacent vertices
+          \end{itemize}
         \item<4-> \textbf{Cache} previous results and the currently known minimum for unsolvable posets.
       \end{itemize}
     \end{column}
@@ -240,13 +240,14 @@
       }
     \end{column}
   \end{columns}
-  \note{
+  \timenote{
+    \tiny
     \begin{itemize}
-      \item Let's now look at some of the optimizations we applied. 
+      \item Let's now look at some of the optimizations we applied.
       \item We use iterative deepening, which means that the number of allowed comparisons is increased after each tree traversal.
       \item We work on reduced posets. For each poset, we remove elements that cannot be the i-th smallest. If an element has $i$ or more elements that are smaller or more than $n-i$ elements larger, it is removed.
       \item We compute an approximated canonical representation of the problem based on a hash value
-      \item This hash value is computed for the root note and all other nodes iteratively, based on their in and out-degrees and the hash of the adjacent nodes.
+      \item This hash value is computed for the root timenote and all other nodes iteratively, based on their in and out-degrees and the hash of the adjacent nodes.
       \item Doing so a few times yields a pretty good approximation of an canonical representation that can be used for isomorphic testing.
       \item Furthermore, we cache previous results meaning whether a poset is solvable or not.
       \item In the case of not solvable we additionally store the currently known lower bound.
@@ -257,30 +258,30 @@
 \end{frame}
 
 \begin{frame}{Pruning techniques}
-\framesubtitle{\large Compatible solutions}
+  \framesubtitle{\large Compatible solutions}
   \only<1->{The solved problem $(S,i)$ is a \textbf{compatible solution} of the problem $(R,i)$, if
-  \begin{align*}
-    a <_S b \Rightarrow b \not >_R a
-  \end{align*}}
+    \begin{align*}
+      a <_S b \Rightarrow b \not >_R a
+    \end{align*}}
   \vspace*{0.5mm}
 
   \only<2->{Denote the \textbf{number of compatible solutions} with $\vert \mathcal{C}(P,i) \vert $}
   \vspace{5mm}
-  
+
   \raggedright
   \hspace*{-3mm}
   \only<3->{\begin{tabular}{l p{10cm}}
-    \textbf{Lemma: } & Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
-  \end{tabular}}
-   \note{\begin{itemize}
-    \item The first one I would like to talk about leverages the concept of compatible solution.
-    \item We say a solved problem is a compatible solution of another problem if there are no contradicting relations.
-    \item We denote the \textbf{number} of compatible solutions with the absolute of C(P,i)
-    \item The useful lemma related to compatible solutions is the following:
-    \item Selecting the i-th smallest element of a poset $P$ requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
-    \item The reasoning behind this...
-    \item 
-  \end{itemize}}
+      \textbf{Lemma: } & Selecting the $i$-th smallest element of a poset $P$ requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
+    \end{tabular}}
+  \timenote{\begin{itemize}
+      \item The first one I would like to talk about leverages the concept of compatible solution.
+      \item We say a solved problem is a compatible solution of another problem if there are no contradicting relations.
+      \item We denote the \textbf{number} of compatible solutions with the absolute of C(P,i)
+      \item The useful lemma related to compatible solutions is the following:
+      \item Selecting the i-th smallest element of a poset $P$ requires at least $\lceil log (|C(P, i)|) \rceil $ comparisons
+      \item The reasoning behind this...
+      \item
+    \end{itemize}}
 \end{frame}
 
 \begin{frame}{Pruning techniques}
@@ -383,7 +384,7 @@
     \end{tikzpicture}
   }
 
-  \note{
+  \timenote{
     \begin{itemize}
       \item Let's now look at a small example for pruning based on compatible solutions.
     \end{itemize}
@@ -395,33 +396,33 @@
   \begin{columns}
     \begin{column}{0.65\textwidth}
       \begin{itemize}
-      \item<1-> Already applied by Oksanen
-      \item<2-> Add a useful relation between a large element and a small element
-      %\item<3-> Search for unrelated elements $a$ and $b$ such that $a$ has at least two smaller elements and $b$ has at least two smaller elements
+        \item<1-> Already applied by Oksanen
+        \item<2-> Add a useful relation between a large element and a small element
+          %\item<3-> Search for unrelated elements $a$ and $b$ such that $a$ has at least two smaller elements and $b$ has at least two smaller elements
         \item<3-> allows more extensive poset reduction
         \item<4-> allows for pruning because, if problem with the free comparison is not solvable, then so is the original problem
-    \end{itemize}
+      \end{itemize}
     \end{column}
     \begin{column}{0.35\textwidth}
       \only<3->{\begin{figure}
-        \begin{tikzpicture}[node distance=1.2cm]
-          \node[draw, circle, minimum size=0.5cm] (1) {b};
-          \node[draw, circle, minimum size=0.5cm, below right of=1] (2) {};
-          \node[draw, circle, minimum size=0.5cm, below left of=1] (3) {};
+          \begin{tikzpicture}[node distance=1.2cm]
+            \node[draw, circle, minimum size=0.5cm] (1) {b};
+            \node[draw, circle, minimum size=0.5cm, below right of=1] (2) {};
+            \node[draw, circle, minimum size=0.5cm, below left of=1] (3) {};
 
-          \node[draw, circle, minimum size=0.5cm, above of=1, node distance=1.5cm] (4) {a};
-          \node[draw, circle, minimum size=0.5cm, above right of=4] (5) {};
-          \node[draw, circle, minimum size=0.5cm, above left of=4] (6) {};
+            \node[draw, circle, minimum size=0.5cm, above of=1, node distance=1.5cm] (4) {a};
+            \node[draw, circle, minimum size=0.5cm, above right of=4] (5) {};
+            \node[draw, circle, minimum size=0.5cm, above left of=4] (6) {};
 
-          \path[dashed] (1) edge (4);
+            \path[dashed] (1) edge (4);
 
-          \path[-]
-          (1) edge (2)
-          (1) edge (3)
-          (4) edge (5)
-          (4) edge (6);
-        \end{tikzpicture}
-      \end{figure}}
+            \path[-]
+            (1) edge (2)
+            (1) edge (3)
+            (4) edge (5)
+            (4) edge (6);
+          \end{tikzpicture}
+        \end{figure}}
     \end{column}
   \end{columns}
 \end{frame}
@@ -430,87 +431,87 @@
   \framesubtitle{\large Free comparison}
   \only<1>{
     \begin{tikzpicture}
-    [
-      level distance=1.5cm,
-      level 1/.style = {sibling distance = 4cm, level distance=1.2cm},
-      level 2/.style = {sibling distance = 4cm, level distance=1cm},
-      level 3/.style = {level distance=1.2cm}
-    ]
+      [
+        level distance=1.5cm,
+        level 1/.style = {sibling distance = 4cm, level distance=1.2cm},
+        level 2/.style = {sibling distance = 4cm, level distance=1cm},
+        level 3/.style = {level distance=1.2cm}
+      ]
 
-    \node[] {$(n,i,\emptyset)$}
+      \node[] {$(n,i,\emptyset)$}
       child [dashed]{
-        node[] (root) {$(n,i,P)$}
-        child [solid] {
-            node[] {\color{red}$\{a,b\}$} 
-            child [solid]{
-                node[] {$(n,i,P \cup (a,b))$}
-                child[sibling distance = 1cm] {
-                    node[] {$\{c,d\}$}
-                    child[sibling distance = 1cm] { node[] {\color{red}not}}
-                    child[sibling distance = 1cm] { node[] {\color{red}solved}}
-                  }
-                child[sibling distance = 1cm] { node[] {$\cdots$}}
-              }
-            child [solid]{
-                node[] {$(n,i,P \cup (b,a))$}
-                child[sibling distance = 1cm] {
-                    node[] {\color{black}$\{c,d\}$}
-                    child[sibling distance = 1cm] { node[] {\color{red}not}}
-                    child[sibling distance = 1cm] { node[] {\color{red}solved}}
-                  }
-                child[sibling distance = 1cm] { node[] {$\cdots$}}
-              }
-        }
-        child [solid]{
-            node {$\cdots$}
-          }
-        child [solid] {
-            node[] {$\cdots$}
-          }
-      };
+          node[] (root) {$(n,i,P)$}
+          child [solid] {
+              node[] {\color{red}$\{a,b\}$}
+              child [solid]{
+                  node[] {$(n,i,P \cup (a,b))$}
+                  child[sibling distance = 1cm] {
+                      node[] {$\{c,d\}$}
+                      child[sibling distance = 1cm] { node[] {\color{red}not}}
+                      child[sibling distance = 1cm] { node[] {\color{red}solved}}
+                    }
+                  child[sibling distance = 1cm] { node[] {$\cdots$}}
+                }
+              child [solid]{
+                  node[] {$(n,i,P \cup (b,a))$}
+                  child[sibling distance = 1cm] {
+                      node[] {\color{black}$\{c,d\}$}
+                      child[sibling distance = 1cm] { node[] {\color{red}not}}
+                      child[sibling distance = 1cm] { node[] {\color{red}solved}}
+                    }
+                  child[sibling distance = 1cm] { node[] {$\cdots$}}
+                }
+            }
+          child [solid]{
+              node {$\cdots$}
+            }
+          child [solid] {
+              node[] {$\cdots$}
+            }
+        };
     \end{tikzpicture}
-    }
+  }
 
   \only<2>{
     \begin{tikzpicture}
-    [
-      level distance=1.5cm,
-      level 1/.style = {sibling distance = 4cm, level distance=1.2cm},
-      level 2/.style = {sibling distance = 4cm, level distance=1cm},
-      level 3/.style = {level distance=1.2cm}
-    ]
+      [
+        level distance=1.5cm,
+        level 1/.style = {sibling distance = 4cm, level distance=1.2cm},
+        level 2/.style = {sibling distance = 4cm, level distance=1cm},
+        level 3/.style = {level distance=1.2cm}
+      ]
 
-    \node[] {$(n,i,\emptyset)$}
+      \node[] {$(n,i,\emptyset)$}
       child [dashed]{
-        node[] (root) {$(n,i,P)$}
-        child [solid] {
-            node[] {\color{red}$\{a,b\}$} 
-            child [solid]{
-                node[] {$(n,i,P \cup (a,b))$}
-                child[sibling distance = 1cm] {
-                    node[] {$\{c,d\}$}
-                    child[sibling distance = 1cm] { node[] {\color{red}not}}
-                    child[sibling distance = 1cm] { node[] {\color{red}solved}}
-                  }
-                child[sibling distance = 1cm] { node[] {$\cdots$}}
-              }
-            child [solid]{
-                node[] {$(n,i,P \cup (b,a))$}
-                child[sibling distance = 1cm] {
-                    node[] {\color{black}$\{c,d\}$}
-                    child[sibling distance = 1cm] { node[] {\color{red}not}}
-                    child[sibling distance = 1cm] { node[] {\color{red}solved}}
-                  }
-                child[sibling distance = 1cm] { node[] {$\cdots$}}
-              }
-        }
-        child [solid]{
-            node {$\cdots$}
-          }
-        child [solid] {
-            node[] {$\cdots$}
-          }
-      };
+          node[] (root) {$(n,i,P)$}
+          child [solid] {
+              node[] {\color{red}$\{a,b\}$}
+              child [solid]{
+                  node[] {$(n,i,P \cup (a,b))$}
+                  child[sibling distance = 1cm] {
+                      node[] {$\{c,d\}$}
+                      child[sibling distance = 1cm] { node[] {\color{red}not}}
+                      child[sibling distance = 1cm] { node[] {\color{red}solved}}
+                    }
+                  child[sibling distance = 1cm] { node[] {$\cdots$}}
+                }
+              child [solid]{
+                  node[] {$(n,i,P \cup (b,a))$}
+                  child[sibling distance = 1cm] {
+                      node[] {\color{black}$\{c,d\}$}
+                      child[sibling distance = 1cm] { node[] {\color{red}not}}
+                      child[sibling distance = 1cm] { node[] {\color{red}solved}}
+                    }
+                  child[sibling distance = 1cm] { node[] {$\cdots$}}
+                }
+            }
+          child [solid]{
+              node {$\cdots$}
+            }
+          child [solid] {
+              node[] {$\cdots$}
+            }
+        };
 
       \draw[red] (-0.3,-1.5) -- (.4,-2);
       \draw[red] (-0.3,-2) -- (.3,-1.5);
@@ -519,20 +520,22 @@
       \draw[red] (1.7,-2) -- (2.4,-1.5);
 
     \end{tikzpicture}
-    }
+  }
 \end{frame}
 
 \author{SEA 2025 \hspace{1cm} Julius von Smercek}
 
+\sub{10}{0}
+
 \section{Backward Search}
 \sectionframe{\insertsection}
-\note{
+\timenote{
   \LARGE
   Thank you! Now I would like to continue with the backward search.
 }
 
-% \sub{1}{44}
-\begin{frame}<1-5>{\insertsection} % 1:44
+\sub{1}{44}
+\begin{frame}<1-5>{\insertsection}
   Start with a solved poset and search the empty poset
   \vfill
   \begin{itemize}
@@ -542,12 +545,7 @@
     \item<+-> \textbf{Iteration (Level $k \to k+1$):} To find all posets solvable in $k+1$ steps, find all \textit{predecessors} of posets solvable in $\leq k$ steps.
     \item<+-> \textbf{Termination:} The search stops when the initial empty poset $(n, i, \emptyset)$ is generated. Its level is the value $V_i^n$.
   \end{itemize}
-  \note{
-    % \fontsize{70}{80}\selectfont
-    % \parbox{\textwidth}{
-    %   \centering
-    %   \textbf{\printTimetag}
-    % }
+  \timenote{
     \LARGE
     \only<1>{
       In contrast to the forward search, the backward search starts with a solved poset and seeks to find the empty poset with $n$ elements.
@@ -580,7 +578,8 @@
   }
 \end{frame}
 
-\begin{frame}<1-4>{Predecessor Computation} % 0:50
+\sub{0}{50}
+\begin{frame}<1-4>{Predecessor Computation}
   \begin{definition}[Predecessor]
     Suppose the set of all posets solvable in $k$ comparisons is known.
     A normalized poset $Q$ is a \textbf{predecessor} iff there exists a comparison between two elements $u,v$ such that
@@ -594,7 +593,7 @@
   \visible<4>{
     This process essentially ``removes'' a comparison to go one step backward.
   }
-  \note{
+  \timenote{
     \LARGE
     \only<1>{
       Okay, let's now define the concept of a predecessor.
@@ -613,7 +612,8 @@
   }
 \end{frame}
 
-\begin{frame}<1-4>{Example} % 1:16
+\sub{1}{16}
+\begin{frame}<1-4>{Example}
   \vspace{-0.75cm}
   \begin{figure}[!b]
     \centering
@@ -622,7 +622,7 @@
     \label{fig:backward-searchtree-bound4}
   \end{figure}
 
-  \note{
+  \timenote{
     \Large
     \only<1>{
       I've brought an example to illustrate this.
@@ -643,14 +643,15 @@
   }
 \end{frame}
 
-\begin{frame}<1-3>{Removing Comparisons} % 0:44
+\sub{0}{44}
+\begin{frame}<1-3>{Removing Comparisons}
   \begin{figure}[!b]
     \centering
     \scalebox{1.5}{\input{figures/tikz_problematic_case.tex}}
     \caption{Ambiguous result of removing a comparison due to transitivity}
     \label{fig:backward-problematic-case}
   \end{figure}
-  \note{
+  \timenote{
     \LARGE
     \only<1>{
       A problem that may already be apparent here is that the removal of comparisons is not unambiguous.
@@ -668,7 +669,8 @@
   }
 \end{frame}
 
-\begin{frame}{Poset Distribution} % 0:28
+\sub{0}{28}
+\begin{frame}{Poset Distribution}
   \begin{figure}[!b]
     \centering
     \resizebox{0.9\textheight}{!}{%
@@ -676,7 +678,7 @@
     }
     \caption{Number of posets for $n = 14$ depending on the number of comparisons}
   \end{figure}
-  \note{
+  \timenote{
     \LARGE
     Another interesting aspect is the poset distribution for the backward search.
     Here, we have plotted the number of removed comparisons against the number of found posets on a logarithmic scale for different values of $i$.
@@ -689,7 +691,8 @@
 \section{Results}
 \sectionframe{\insertsection}
 
-\begin{frame}{Exact Bounds} % 0:33
+\sub{0}{33}
+\begin{frame}{Exact Bounds}
   \vspace{-1cm}
   \begin{table}[!t]
     \label{tab:results}
@@ -716,7 +719,7 @@
       16  & 15                      & 18 & \textbf{21} & \textbf{24} & \textbf{26} & \textbf{27} & \textbf{28} -- 33 & \textbf{28} -- 36 \\
     \end{tabular}
   \end{table}
-  \note{
+  \timenote{
     \LARGE
     Let us first, however, turn to the results.
     In the presented table, all values that we have newly computed are shown in bold.
@@ -726,7 +729,8 @@
   }
 \end{frame}
 
-\begin{frame}<1-5>{Contribution} % 1:01
+\sub{1}{01}
+\begin{frame}<1-5>{Contribution}
   \definecolor{counterexample}{rgb}{0.8, 0.1, 0.1}
   \setbeamercolor{block title alerted}{bg=gray!20,fg=black}
   \setbeamercolor{block body alerted}{bg=gray!5}
@@ -741,7 +745,7 @@
         \textbf{Our discovered algorithm succeeds with only \textcolor{counterexample}{19} comparisons.}
       \end{alertblock}
   \end{itemize}
-  \note{
+  \timenote{
     \LARGE
     \only<1>{
       To summarize our contribution, we have verified all previous results and generated executable algorithms with the optimal number of comparisons in Rust.
@@ -763,7 +767,8 @@
   }
 \end{frame}
 
-\begin{frame}{Runtime Comparison} % 0:51
+\sub{0}{51}
+\begin{frame}{Runtime Comparison}
   \begin{table}[!t]
     \label{tab:times}
     \renewcommand{\arraystretch}{1.0}
@@ -791,17 +796,18 @@
       \end{tabular}
     }
   \end{table}
-  \note{
+  \timenote{
     \Large
     Finally, it is interesting to see how long we had to heat the university to compute these results.
-    An important note here is that the forward search is only single-threaded, whereas the backward search is fully parallelized and runs almost linearly faster with the number of threads. With 48 threads and 1 TB of utilized RAM, this makes a significant difference.
+    An important timenote here is that the forward search is only single-threaded, whereas the backward search is fully parallelized and runs almost linearly faster with the number of threads. With 48 threads and 1 TB of utilized RAM, this makes a significant difference.
     For $n=14$ and $n=15$, I have marked in bold the values that were computed the fastest.
     For very small values, Oksanen's C program is faster; however, for moderate values, the forward search is superior, and for the large values, the backward search is, which is relatively consistent.
     We can see here, for example, that for ($n=15, i=8$), the backward search, taking three days, significantly outperforms the forward search, which would have taken 14 days.
   }
 \end{frame}
 
-\begin{frame}<1-3>{Future Work} % 1:00
+\sub{1}{00}
+\begin{frame}<1-3>{Future Work}
   \vspace{-1.2cm}
   \begin{columns}
     \begin{column}{.49\textwidth}
@@ -825,7 +831,7 @@
       }
     \end{column}
   \end{columns}
-  \note{
+  \timenote{
     \LARGE
     \only<1>{
       For the future, we could imagine parallelizing the forward search or developing even better heuristics.
@@ -845,19 +851,22 @@
   }
 \end{frame}
 
-\thanksframe % 0:06
+\sub{0}{06}
+\thanksframe
 
-\note{
+\timenote{
   \LARGE
-  On that note, I would like to thank you for your attention.
+  On that timenote, I would like to thank you for your attention.
   If you have any questions, we would be happy to answer them now.
 }
 
 % TODO: prevent in toc above
-\begin{frame}[shrink=25]{References} % 0:04
+
+\sub{0}{04}
+\begin{frame}[shrink=25]{References}
   \nocite{*}
   \printbibliography[heading=none]
-  \note{
+  \timenote{
     \LARGE
     Here are our references, which can also all be found in our paper.
   }

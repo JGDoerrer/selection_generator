@@ -48,24 +48,36 @@
 \the\value{minuteTimetag}:\ifnum\value{secondTimetag}<10{0}\fi\thesecondTimetag
 }
 
-\newcommand{\framewithnote}[5]{%
-  \sub{#1}{#2}
-  \begin{frame}{#3}
-    #4
-    \note{
-      \fontsize{30}{30}\selectfont
-      \begin{itemize}\color{white}
-        {
-          \fontsize{70}{80}\selectfont
-          \item \parbox{\textwidth}{
-            \centering
-            \textbf{\printTimetag}
-          }
-        }
-        #5
-      \end{itemize}
+% \newcommand{\framewithnote}[5]{%
+%   \sub{#1}{#2}
+%   \begin{frame}{#3}
+%     #4
+%     \note{
+%       \fontsize{30}{30}\selectfont
+%       \begin{itemize}\color{white}
+%         {
+%           \fontsize{70}{80}\selectfont
+%           \item \parbox{\textwidth}{
+%             \centering
+%             \textbf{\printTimetag}
+%           }
+%         }
+%         #5
+%       \end{itemize}
+%     }
+%   \end{frame}
+% }
+
+\newcommand{\timenote}[1]{%
+  \note{
+    \fontsize{70}{80}\selectfont
+    \parbox{\textwidth}{
+      \centering
+      \textbf{\printTimetag}
     }
-  \end{frame}
+    \normalsize
+    #1
+  }
 }
 
 % language and encodings
