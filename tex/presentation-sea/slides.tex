@@ -122,17 +122,19 @@
     \end{itemize}                         \\
     \cline{1-2}
   \end{tabular}
-
-  \timenote{
+  \timenote{\footnotesize{
     \begin{itemize}
       \item Gasarch, Kelly and Puth were the first to apply computer search to find lower bounds for the selection problem.
       \item A few years later Oksanen published a computer search algorithm that obtained results for larger $n$ and $i$.
       \item Results are available on his website, but have not been published in any scientific outlet.
       \item This lack of scientific documentation led us to revisit the problem ourselves.
-      \item  We reimplemented the minimax algorithm and improve upon it by introducing suitable heuristics.
+      \item Just to clarify, computer search means that one builds a search tree with all possible comparisons. 
+      \item That way one can determine exact lower bounds.
+      \item Both previous sources built and search the tree in a forward search.
+      \item We reimplemented the forward search and improve upon it by introducing suitable heuristics.
       \item Additionally we performed backward search, which is another significant improvement over the minimax algorithm.
       \item \textbf{I will start with Forward Search and Julius will continue with the very interesting backward search.}
-    \end{itemize}
+    \end{itemize}}
   }
 \end{frame}
 
