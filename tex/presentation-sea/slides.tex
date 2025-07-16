@@ -52,8 +52,9 @@
   \begin{itemize}
     \item<+-> Let $V_i^n$ be the worst-case number of comparisons for an optimal algorithm.
     \item<+-> Selecting the minimum is simple: $V_1^n= n-1$.
-    \item<+-> The best-known upper bound for selecting the median is $\approx 2.95n$ comparisons.
-    \item<+-> The assumed lower bound for the median is $\approx 2.41n$ comparisons (Schönhage et al.).
+    \item<+-> The best-known upper bound for selecting the median is $\approx 2.95n$.
+    \item<+-> The proven lower bound for the median is $2n$ (Bent and John).
+    \item<+-> A conjectured lower bound for the median is $\approx 2.41n$ (Schönhage et al.).
   \end{itemize}
   \timenote{
     \begin{itemize}
@@ -70,6 +71,7 @@
 
 \sub{1}{0}
 \begin{frame}{Complexity of the Selection Problem}
+  \setlength{\abovecaptionskip}{-1pt}
   \begin{figure}
     \includegraphics[height=0.7\textheight]{figures/bounds_diagram.png}
     \caption{\small Complexity Bounds for the Selection Problem}
