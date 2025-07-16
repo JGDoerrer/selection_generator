@@ -256,7 +256,7 @@
       \item We use iterative deepening, which means that the number of allowed comparisons is increased after each tree traversal.
       \item We work on reduced posets. For each poset, we remove elements that cannot be the i-th smallest. If an element has $i$ or more elements that are smaller or more than $n-i$ elements larger, it is removed.
       \item We compute an approximated canonical representation of the problem based on a hash value
-      \item This hash value is computed for the root and all other nodes iteratively, based on their in and out-degrees and the hash of the adjacent nodes.
+      \item This hash value is computed for the sink and all other nodes iteratively, based on their in and out-degrees and the hash of the adjacent nodes.
       \item Doing so a few times yields a pretty good approximation of an canonical representation that can be used for isomorphic testing.
       \item Furthermore, we cache previous results meaning whether a poset is solvable or not.
       \item In the case of not solvable we additionally store the currently known lower bound.
