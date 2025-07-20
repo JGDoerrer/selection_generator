@@ -52,8 +52,8 @@
   \begin{itemize}
     \item<+-> Let $V_i^n$ be the worst-case number of comparisons for an optimal algorithm.
     \item<+-> Selecting the minimum is simple: $V_1^n= n-1$.
-    \item<+-> The best-known upper bound for selecting the median is $\approx 2.95n$.
-    \item<+-> The proven lower bound for the median is $2n$ (Bent and John).
+    \item<+-> The best-known upper bound for selecting the median is $\approx 2.95n$ (Dor and Zwick).
+    \item<+-> The proven lower bound for the median is $\approx 2n$ (Bent and John).
     \item<+-> A conjectured lower bound for the median is $\approx 2.41n$ (Schönhage et al.).
   \end{itemize}
   \timenote{
@@ -130,9 +130,9 @@
       \item This lack of scientific documentation led us to revisit the problem ourselves.
       \item Just to clarify, computer search means that one builds a search tree with all possible comparisons. 
       \item That way one can determine exact lower bounds.
-      \item Both previous sources built and search the tree in a forward search.
+      \item Both previous works build and search the tree in a forward manner, so starting from the root.
       \item We reimplemented the forward search and improve upon it by introducing suitable heuristics.
-      \item Additionally we performed backward search, which is another significant improvement over the minimax algorithm.
+      \item Additionally we performed backward search, which provides further significant improvements.
       \item \textbf{I will start with Forward Search and Julius will continue with the very interesting backward search.}
     \end{itemize}}
   }
@@ -200,14 +200,14 @@
   \timenote{\footnotesize
     \begin{itemize}
       \item \textbf{The forward search starts at the root with the initial problem instance} which consists of the $n$, the $i$ and an empty set. This set will be filled with all relations resulting from the comparisons.
-      \item In the following it will also be called partial-order set or short poset.
+      \item In the following it will also be called partially ordered set or short poset.
       \item On the next level, pairs of elements are formed.
-      \item For each pair, the two possible outcomes are expanded on the lower levels (i.e. a<b and a>b).
-      \item The optimal number of comparisons in the worst case is obtained using the minimax algorithm.
-      \item Between all pairs of elements the pair is compared that yields the smallest number of comparisons.
-      \item Between the two possible outcomes of a comparison, the worst case is assumed.
-      \item To save memory and enable pruning, the search tree is traversed using a depth-first search.
-      \item The maximum number of comparisons assigned to child problems is limited to one less than the current best result.
+      \item Each pair has two child nodes representing both possible outcomes of the comparison.
+      \item With a minimax approach, the optimal number of comparisons in the worst case is obtained.
+      \item The max nodes cosinder the worst case outcome of the comparison 
+      \item The min nodes, however, consider the most intelligent comparison of all pairs.
+      \item The search tree is traversed using a depth-first search. This saves memory and enables pruning.
+      \item We limit the maximum number of comparisons assigned to child problems is limited to one less than the current best result.
       \item The search program builds algorithms by recording, for each problem, the comparison that led to the cheapest result.
     \end{itemize} }
 \end{frame}
