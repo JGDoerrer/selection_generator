@@ -537,17 +537,19 @@
   \end{figure}
 
   \timenote{
-    \Large
+    \LARGE
     \only<1>{
       I've brought an example to illustrate this.
 
       We start with the solved poset at the bottom and are looking for the second smallest element in an empty poset with four elements. Obviously, the solved poset is solved in 0 comparisons; for the initial poset at the top, the number of comparisons is still unknown.
     }
+    \Large
     \only<2>{
       The very first thing we do is compute all posets that are solvable in one comparison. In this case, there is only one poset with two elements for which we are searching the minimum. Theoretically, the dual of this poset - that is, the poset with two elements where we seek the maximum - would also be on this level, but since they are isomorphic, one can be omitted.
 
       The solid arrow here represents the resulting poset if the comparison (u, v) were to be inserted, and the dashed lines represent the resulting poset if the opposite comparison were inserted.
     }
+    \LARGE
     \only<3>{
       Analogously, we can compute the level for $k = 2$. Here you can see it nicely again: the solid arrow always points to the level directly below it, while the other arrow points to some level further down.
     }
@@ -713,7 +715,7 @@
   \timenote{
     \Large
     Finally, it is interesting to see how long we had to heat the university to compute these results.
-    An important timenote here is that the forward search is only single-threaded, whereas the backward search is fully parallelized and runs almost linearly faster with the number of threads. With 48 threads and 1 TB of utilized RAM, this makes a significant difference.
+    An important note here is that the forward search is only single-threaded, whereas the backward search is fully parallelized and runs almost linearly faster with the number of threads. With 48 threads and 1 TB of utilized RAM, this makes a significant difference.
     For $n=14$ and $n=15$, I have marked in bold the values that were computed the fastest.
     For very small values, Oksanen's C program is faster; however, for moderate values, the forward search is superior, and for the large values, the backward search is, which is relatively consistent.
     We can see here, for example, that for ($n=15, i=8$), the backward search, taking three days, significantly outperforms the forward search, which would have taken 14 days.
@@ -770,7 +772,7 @@
 
 \timenote{
   \LARGE
-  On that timenote, I would like to thank you for your attention.
+  On that note, I would like to thank you for your attention.
   If you have any questions, we would be happy to answer them now.
 }
 
