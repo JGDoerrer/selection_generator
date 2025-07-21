@@ -589,12 +589,21 @@
         shading angle=-45] (0,0) rectangle (\paperwidth,\paperheight);}
     \end{textblock}
 
-    \begin{textblock}{128}(5,10)
+    \begin{textblock}{128}(5,25)
         \usebeamerfont{title}%
         \color{white}%
         \only<beamer>{\color{white}}%
         \only<handout>{\color{anthrazit}}%
-        Thank you for your attention!\usebeamercolor[fg]{normal text}
+        Thank you for your attention! \\[5.25cm]
+        \small
+        \url{https://doi.org/10.4230/LIPIcs.SEA.2025.16}
+        \usebeamercolor[fg]{normal text}
+    \end{textblock}
+    \begin{textblock}{128}(5,5)
+        % Adjust the size of the logo based on the general frame size (within reasonable bounds)
+        \edef\@pageWidthCM{\@dimToNum[cm]{\paperwidth}}
+        \edef\@logoWidth{\fpeval{min(0.5 * \@pageWidthCM, max(4, 0.4 * \@pageWidthCM))}cm}
+        \includegraphics[width=\@logoWidth]{\stuttgart@titlePageUniversityLogo}
     \end{textblock}
 
     \edef\@mainCircleRadius{38}

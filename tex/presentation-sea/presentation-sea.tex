@@ -12,6 +12,8 @@
 \else
   \documentclass[compress,11pt,aspectratio=169,notes]{beamer}
 
+  \usepackage{moresize}
+
   \setbeameroption{show notes on second screen=bottom}
   \setbeamerfont{note page}{size=\normalsize}
   \setbeamertemplate{note page}{
@@ -20,12 +22,28 @@
       \setbeamercolor{itemize item}{fg=white}
       \setbeamercolor{normal text}{fg=white}
       \usebeamercolor*{normal text}
-      \insertnote
+      \nointerlineskip%
+      \vspace{0.1cm}
+      \HUGE
+      \parbox{\textwidth}{
+        \centering
+        \textbf{\printTimetag}
+      }
+      \normalsize
+      \parbox{\textwidth}{
+        \insertnote%
+      }
   }
 
   \newcommand*{\anim}{+-}
   \newcommand*{\onslideA}{\onslide<2>}
 \fi
+
+\newcommand{\timenote}[1]{%
+  \note{
+    #1
+  }
+}
 
 \usepackage{calculator}
 
@@ -67,18 +85,6 @@
 %     }
 %   \end{frame}
 % }
-
-\newcommand{\timenote}[1]{%
-  \note{
-    \fontsize{70}{80}\selectfont
-    \parbox{\textwidth}{
-      \centering
-      \textbf{\printTimetag}
-    }
-    \normalsize
-    #1
-  }
-}
 
 % language and encodings
 \usepackage[utf8]{inputenc}
